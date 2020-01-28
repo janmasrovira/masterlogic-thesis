@@ -1,0 +1,42 @@
+#+latex_compiler: xelatex
+#+latex_class: article
+#+options: toc:nil num:nil
+#+title: Interpretability logics
+#+author: Jan Mas Rovira
+#+subtitle: Practice exercises
+
+#+latex_header: \usepackage{unicode-math}
+#+latex_header: \usepackage{fontspec}
+#+latex_header: \usepackage[x11names, table]{xcolor}
+#+latex_header: \usepackage[margin=2.5cm]{geometry}
+#+latex_header: \usepackage{lmodern}
+
+#+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Firebrick4,citecolor=Green4}
+#+latex_header: \newcommand{\ie}[0]{i.e.\ }
+#+latex_header: \newcommand{\todo}[0]{\textcolor{red}{pending}}
+#+latex_header: \newcommand{\red}[1]{\textcolor{red}{#1}}
+#+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
+#+latex_header: \newcommand{\ok}[0]{\textcolor{DeepSkyBlue4}{solved }}
+
+* Set 1
+  Show the following:
+  # 1. $IL⊬R$
+  1. $IL⊬A▷B→¬(A▷¬C)▷B∧□C$.
+
+     We need to find a model $M$ and a world $w$ such that $M,w⊩A▷B$ but
+     $M,w⊮¬(A▷¬C)▷B∧□C$
+  2. $IL⊬A▷B→A▷(B∧□¬A)$
+
+     We need to find a model $M$ and a world $w$ such that $M,w⊩A▷B$ but
+     $M,w⊮A▷(B∧□¬A)$.
+     1. So for all $wRu$ such that $M,u⊩A$ there is a $v$ such that $uS_wv$ and
+        $M,v⊩B$.
+     2. There exists a world $y$ where $wRy$ and there is no $v$ such that
+        $yS_wv$ and $M,v⊩B∧□¬A$.
+  3. $IL⊬A▷B→♢A∧□C▷B∧□C$
+  4. $IL⊢A∧□¬A▷A$
+  5. $IL⊢A▷A∧□¬A$
+  6. $IL⊢⊤▷□⊥$
+
+ # M , w ⊩ A ▷ B ⇔ For all u such that wRu and M , u ⊩ A or there is v such
+ # that Sw u v and M , v ⊩ B

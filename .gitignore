@@ -1,0 +1,11 @@
+*.aux
+*.out
+*.log
+*.fls
+*.fdb_latexmk
+*.gz
+*.lock
+*.agdai
+*.el
+*.tex
+exercises/*.pdf
