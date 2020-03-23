@@ -9,3 +9,4 @@
 *.el
 *.tex
 exercises/*.pdf
+report/report.pdf
