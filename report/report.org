@@ -23,9 +23,8 @@
 
 * Frame condition for $ILR_1$
   Some definitions:
+  1. $R^{-1}[E] ≔ \{x : ∃y∈E. xRy\}$. $E$ denotes a set.
   2. $Rₓ^{-1}[E]≔R^{-1}[E]∩R[x]$. $E$ denotes a set.
-  3. $R^{-1}[E] ≔ \{x : ∃y∈E. xRy\}$. $E$ denotes a set.
-  4. $[A]_v≔\{x : vRx ⊩ A\}$. $A$ denotes a formula.
 
   The $R_1$ principle reads as follows:
   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E))\]
@@ -143,3 +142,9 @@
     It is routine to check that the left part of the implication of $(R¹)_{gen}$
     is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
     definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
+
+* Other principles
+  Additionally, I have proved in Agda the frame condition for the following
+  principles:
+  - Ordinary semantics: $M$.
+  - Generalized semantics: $M,R,P₀$.
