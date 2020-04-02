@@ -1,6 +1,6 @@
 #+latex_compiler: xelatex
 #+latex_class: article
-#+options: toc:nil num:nil
+#+options: toc:nil
 #+title: Interpretability logics
 #+author: Jan Mas Rovira
 #+subtitle: Master's thesis
@@ -12,139 +12,229 @@
 #+latex_header: \usepackage{lmodern}
 #+latex_header: \setmonofont{FreeMono}
 #+latex_header: \usepackage{cancel}
+#+latex_header: \usepackage{amsthm}
 
 #+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Firebrick4,citecolor=Green4}
 #+latex_header: \newcommand{\ie}[0]{i.e.\ }
 #+latex_header: \newcommand{\todo}[0]{\textcolor{red}{pending}}
 #+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
 #+latex_header: \newcommand{\ok}[0]{\textcolor{DeepSkyBlue4}{solved }}
-#+macro: color @@latex:{\color{$1}@@$2@@latex:}@@
 #+macro: red @@latex:{\color{red}@@$1@@latex:}@@
 
-* Frame condition for $ILR_1$
-  Some definitions:
-  1. $R^{-1}[E] ≔ \{x : ∃y∈E. xRy\}$. $E$ denotes a set.
-  2. $Rₓ^{-1}[E]≔R^{-1}[E]∩R[x]$. $E$ denotes a set.
+#+macro: begindef @@latex:\begin{definition}@@
+#+macro: enddef @@latex:\end{definition}@@
 
-  The $R_1$ principle reads as follows:
-  \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E))\]
+#+macro: begincoro @@latex:\begin{corollary}@@
+#+macro: endcoro @@latex:\end{corollary}@@
 
-  The $R_1$ condition reads as follows:
-  \begin{flalign*}
-  &wRxRuS_wV, K∈𝒞(x,u),Γ \\
-  ⇒\ & (∃V'⊆V)(xS_wV',R[V']⊆K,(∀v∈V')(∀c∈K)(vRcSₓRₓ^{-1}[Γ]⇒(∃Γ'⊆Γ)cS_vΓ'))
-  \end{flalign*}
 
-  *Theorem*.
-  $$𝔉⊨R₁⇔𝔉⊨(R₁)_{gen}$$
+#+latex_header: \newtheorem{theorem}{Theorem}
+#+latex_header: \theoremstyle{definition}
+#+latex_header: \newtheorem{corollary}[theorem]{Corollary}
+#+latex_header: \theoremstyle{definition}
+#+latex_header: \newtheorem{definition}[theorem]{Definition}
 
-  /proof/.
-  {{{red(proved in Agda)}}}
-  # 1. If $𝔉⊭(R₁)_{gen}$ then $𝔉⊬R$ \pend.
-  - \boxed{⇒} Assume for a contradiction that $𝔉⊭(R₁)_{gen}$. It follows that there exist $w,x,u,V,K,Γ$ such that $wRxRuS_wV$, $K∈𝒞(x,u)$ and: \[(∀V'⊆V)(xS_wV',
-    R[V']⊆K⇒ (∃v∈V')(∃c∈K)(vRcS_xR_x^{-1}[Γ], (∀Γ'⊆Γ) c\cancel{S}_v Γ'))\]
+* Language
+  The language of interpretability logics is $⟨⊥,→,▷⟩$. We define $∧,□,♢,∨$.
 
-    Let $𝒱$ be a family of sets defined thus:
-    \[𝒱≔ \{U : U⊆V, xS_wU,R[U]⊆K\}\]
+* Semantics
+  In this document we consider two variants of relational semantics for
+  interpretability logic similar to Kripke semantics for modal logic.
 
-    From the condition it follows that for every $U∈𝒱$ the following is valid:
-    \[(∃v_U∈U)(∃c_U∈K)(v_URc_US_xR_x^{-1}[Γ],(∀Γ'⊆Γ) c_U\cancel{S}_{v_U} Γ')\]
+** Ordinary Veltman semantics
+   {{{begindef}}} An ordinary Veltman frame $F=⟨W,R,S⟩$ is a structure
+   constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a ternary
+   relation $S⊆W×W×W$. We write $wRu$ in place of $⟨w,u⟩∈R$ and
+   $uS_wv$ in place of $⟨w,u,v⟩∈S$. The structure must satisfy the following
+   conditions:
 
-    Let us fix such $v_U$ and $c_U$ for all $U∈𝒱$.
+   1. $R$ is a transitive.
+   2. $R$ is conversely well-founded. That is, there is no infinite ascending
+      chain $w₁Rw₂R…$.
+   3. If $uS_wv$ then $wRu$ and $wRv$.
+   4. If $wRu$ then $uS_wu$.
+   5. For every $w$, $S_w$ is transitive.
+   6. If $wRu$ and $uRv$ then $uS_wv$.
+   {{{enddef}}}
 
-    Define a valuation such that the following applies:
-    \begin{flalign*}
-    [⊩a] &= \{u\} \\
-    [⊩b] &= V \\
-    [⊩c] &= K \\
-    [⊩d] &= \{c_U:U∈𝒱\} \\
-    [⊩e] &= Γ
-    \end{flalign*}
 
-    By assumption we have $w ⊩ a ▷ b → (¬(a▷¬c)∧(d▷♢e))▷(b∧□c∧(d▷e))$.
+   {{{begindef}}} An ordinary Veltman model $M=⟨F,V⟩$ is a structure constituted
+   by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$.
 
-    It is easy to see that $w ⊩ a ▷ b$ and $x ⊩ ¬(a ▷ ¬c)$.
+   Given a model $M$, we define a forcing relation $⊩_M⊆W × Fm$. We write
+   $M,w⊩A$ in place of $⟨w,A⟩∈⊩_M$ or simply $w⊩A$ when the model is clear by
+   the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
+   - $w⊮⊥$.
+   - If $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$.
+   - If $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$.
+   - If $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+     that $v⊩B$ and $uS_wv$.
+   {{{enddef}}}
 
-    Let us prove $x ⊩ d▷♢e$. Let $xRc⊩ D$. Then $c = c_U$ for some $U ∈ 𝒱$. From
-    the definition of $c_U$ we have $c_U S_x R_x^{−1} [Γ]$, a forcing is defined
-    such that $e$ is true exactly on the set $Γ$. Hence $R_x^{-1}[Γ]⊩♢e$ and thus
-    $x ⊩ d▷♢e$.
+   {{{begincoro}}}
+   It immediately follows that:
+   - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
+   - If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
+   - If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+   {{{endcoro}}}
 
-    We can also check that for $U ∈ 𝒱$ we have $U⊩ b ∧ □c$ and the following
-    following condition holds for any set $U$:
-    \begin{flalign*}
-      (⋆)\ xS_wU ,U⊩ b ∧ □c⇒U∈ 𝒱
-    \end{flalign*}
-    Then since $w⊩a▷b$ and $wRx⊩(a◁c)∧(d▷♢e)$ there must exist some set $U$
-    such that $xS_wU⊩b∧□c∧(d▷e)$. From $(⋆)$ follows that that $U∈𝒱$ hence
-    there exist $v_U,c_U$ such that $v_URc_US_xR_x^{-1}[Γ],(∀Γ'⊆Γ)
-    c_U\cancel{S}_{v_U} Γ'$. Since $c_U⊩d$ there must exist some $Z$ such that
-    $c_US_{v_U}Z⊩e$, however, by the definition of the valuation it follows
-    that $Z⊆Γ$ and thus $c_U\cancel{S}_{v_U} Z$, which is a contradiction.
-  - \boxed{⇐} Suppose the $𝔉⊫ (R_1)_{gen}$ and prove that $𝔉⊫R_1$. Let's fix the
-    model and let $w ∈ W$ be arbitrary. Suppose $w⊩ A ▷B$, and let $x$ be such
-    that $wRx$ and $x⊩ ¬(A ▷ ¬C) ∧ (D ▷ ♢E)$. It follows from $x ⊩¬(A ▷¬C)$ that
-    there exists $u$ such that $xRu$, such that $u⊩A$, and for every $Z$ such
-    that $uS_x Z$ there is some $c_Z ∈ Z$ such that $c_Z ⊩C$. From $wRu$, $w⊩
-    A▷ B$ and $u⊩ A$ follows in particular that there is a $V$, $uS_w V ⊩B$.
-    Let $K ≔ \{c_Z: uS_x Z\}$. It is easy to check that $K ∈ 𝒞(x, u)$. Let $Γ ≔
-    [⊩E]$ (set of worlds that force $E$). For the selected $w, x, u, V, K, Γ$
-    the property $(R 1)_{gen}$ implies that there exists $V' ⊆ V$ such that:
+** Generalized Veltman semantics
+   {{{begindef}}} An ordinary Veltman frame $F=⟨W,R,S⟩$ is a structure
+   constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a ternary
+   relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$ in place of $⟨w,u⟩∈R$ and
+   $uS_wY$ in place of $⟨w,u,Y⟩∈S$. The structure must satisfy the following
+   conditions:
 
-    \[xS_wV',R[V']⊆K ,(∀v∈V')(∀c∈K)(vRcS_xR_x^{-1}[Γ]⇒(∃Γ'⊆Γ)cS_vΓ')\]
+   1. $R$ is a transitive.
+   2. $R$ is conversely well-founded. That is, there is no infinite ascending
+      chain $w₁Rw₂R…$.
+   3. If $uS_wY$ then for all $y∈Y$ we have $wRy$.
+   4. If $wRu$ then $uS_w\{u\}$.
+   5. If $xS_wY$ and $y∉Z$ and $yS_wZ$ then $wS_wZ$.
+   6. If $wRu$ and $uRv$ then $uS_w{v}$.
+   7. If $V⊆Z$ and $Z⊆wR\_$ then $uS_wZ$.
+   {{{enddef}}}
 
-    We have that $V' ⊩B$ since $V'⊆V$ and $V'⊩□ C$ since $R[V']⊆K$. We now show
-    that $V'⊩ D▷ E$. Assume that for some $c ∈ R [V']$ we have $c⊩ D$. From
-    earlier we have $x⊩ D ▷ ♢E$. Since $c ∈ R [V '] ⊆ C ⊆ R [x]$, then $xRc$ so
-    it follows that there exists $U$ such that $cS_x U$ and $U⊩♢E$. Clearly
-    $U⊆[♢E]_x$ and also $[♢E]_x⊆R[x]$, hence by monotonicity we have
-    $cS_x[♢E]_x$ which is the same as $cS_x R_x^{−1}[Γ]$ so by the above
-    property there exists $Γ'⊆Γ$ such that $cS_v Γ'$. Because $Γ'⊆Γ$ we have
-    $Γ'⊩E$.
+   {{{begindef}}} An generalized Veltman model $M=⟨F,V⟩$ is a structure
+   constituted by a generalized Veltman frame $F$ and a valuation $V⊆W×Var$.
 
-# \newpage
-* $R¹$ Principle
+   Given a model $M$, we define a forcing relation $⊩_M⊆W × Fm$.
+   - $w⊮⊥$.
+   - If $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$.
+   - If $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$.
+   - If $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
+     that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
+     have $y⊩B$.
+   {{{enddef}}}
 
-  The $R¹$ principle reads as follows:
-  \[A ▷ B → (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)\]
 
-  The $(R¹)_{gen}$ condition reads as follows:
-  \begin{flalign*}
-  &∀w,x,y,z,𝔸,𝔹,ℂ,𝔻. \\
-  &wRxRyRz, \\
-  & (∀u.Rwu,u∈𝔸⇒∃V.SwuV,V⊆𝔹), & \text{ensures } w⊩A▷B \\
-  & (∀u.Rxu,u∈𝔻⇒∃V.SxuV,V⊆𝔸), & \text{ensures } x⊩D▷A \\
-  & (∀V.SyzV⇒∃v.v∈V,v∈ℂ),       &  \text{ensures } y⊩¬(D▷¬C) \\
-  & z∈𝔻 \\
-  ⇒\ & ∃V⊆𝔹.xS_wV,R[V]⊆ℂ
-  \end{flalign*}
+
+* Frame conditions
+** $R₁$ Principle
+   Some definitions:
+   1. $R^{-1}[E] ≔ \{x : ∃y∈E. xRy\}$. $E$ denotes a set.
+   2. $Rₓ^{-1}[E]≔R^{-1}[E]∩R[x]$. $E$ denotes a set.
+
+   The $R_1$ principle reads as follows:
+   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E))\]
+
+   The $R_1$ condition reads as follows:
+   \begin{flalign*}
+   &wRxRuS_wV, K∈𝒞(x,u),Γ \\
+   ⇒\ & (∃V'⊆V)(xS_wV',R[V']⊆K,(∀v∈V')(∀c∈K)(vRcSₓRₓ^{-1}[Γ]⇒(∃Γ'⊆Γ)cS_vΓ'))
+   \end{flalign*}
 
    *Theorem*.
-  $$𝔉⊨R¹⇔𝔉⊨(R¹)_{gen}$$
+   $$𝔉⊨R₁⇔𝔉⊨(R₁)_{gen}$$
 
-  /proof/.
-  {{{red(proved in Agda)}}}
-  - \boxed{⇒} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
-    assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part of
-    the implication of $(R¹)_{gen}$ holds. Now let $V$ be a valuation defined by
-    \begin{flalign*}
-     V(u)⊩a &⇔ u∈𝔸 \\
-     V(u)⊩b &⇔ u∈𝔹 \\
-     V(u)⊩c &⇔ u∈ℂ \\
-     V(u)⊩d &⇔ u∈𝔻
-    \end{flalign*}
-    Now one can easily check that $w⊩A▷B$, $x⊩♢¬(D▷¬C)∧(D▷A)$, hence there exists $U$
-    such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
-  - \boxed{⇐} Fix a model $M$ and a world $w$, we are to prove that $w⊩A ▷ B →
-    (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for some
-    $x,y,z$ we have $wRxRyRz$ and $x⊩D▷A$, $y⊩¬(D▷¬C)$, $z⊩D$. Now let
-    $𝔸≔\{w:w⊩A\}$. We define $𝔹,ℂ,𝔻$ likewise for formulas $B,C,D$ respectively.
-    It is routine to check that the left part of the implication of $(R¹)_{gen}$
-    is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
-    definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
+   /proof/.
+   {{{red(proved in Agda)}}}
+   # 1. If $𝔉⊭(R₁)_{gen}$ then $𝔉⊬R$ \pend.
+   - \boxed{⇒} Assume for a contradiction that $𝔉⊭(R₁)_{gen}$. It follows that there exist $w,x,u,V,K,Γ$ such that $wRxRuS_wV$, $K∈𝒞(x,u)$ and: \[(∀V'⊆V)(xS_wV',
+     R[V']⊆K⇒ (∃v∈V')(∃c∈K)(vRcS_xR_x^{-1}[Γ], (∀Γ'⊆Γ) c\cancel{S}_v Γ'))\]
 
-* Other principles
-  Additionally, I have proved in Agda the frame condition for the following
-  principles:
-  - Ordinary semantics: $M$.
-  - Generalized semantics: $M,R,P₀$.
+     Let $𝒱$ be a family of sets defined thus:
+     \[𝒱≔ \{U : U⊆V, xS_wU,R[U]⊆K\}\]
+
+     From the condition it follows that for every $U∈𝒱$ the following is valid:
+     \[(∃v_U∈U)(∃c_U∈K)(v_URc_US_xR_x^{-1}[Γ],(∀Γ'⊆Γ) c_U\cancel{S}_{v_U} Γ')\]
+
+     Let us fix such $v_U$ and $c_U$ for all $U∈𝒱$.
+
+     Define a valuation such that the following applies:
+     \begin{flalign*}
+     [⊩a] &= \{u\} \\
+     [⊩b] &= V \\
+     [⊩c] &= K \\
+     [⊩d] &= \{c_U:U∈𝒱\} \\
+     [⊩e] &= Γ
+     \end{flalign*}
+
+     By assumption we have $w ⊩ a ▷ b → (¬(a▷¬c)∧(d▷♢e))▷(b∧□c∧(d▷e))$.
+
+     It is easy to see that $w ⊩ a ▷ b$ and $x ⊩ ¬(a ▷ ¬c)$.
+
+     Let us prove $x ⊩ d▷♢e$. Let $xRc⊩ D$. Then $c = c_U$ for some $U ∈ 𝒱$. From
+     the definition of $c_U$ we have $c_U S_x R_x^{−1} [Γ]$, a forcing is defined
+     such that $e$ is true exactly on the set $Γ$. Hence $R_x^{-1}[Γ]⊩♢e$ and thus
+     $x ⊩ d▷♢e$.
+
+     We can also check that for $U ∈ 𝒱$ we have $U⊩ b ∧ □c$ and the following
+     following condition holds for any set $U$:
+     \begin{flalign*}
+       (⋆)\ xS_wU ,U⊩ b ∧ □c⇒U∈ 𝒱
+     \end{flalign*}
+     Then since $w⊩a▷b$ and $wRx⊩(a◁c)∧(d▷♢e)$ there must exist some set $U$
+     such that $xS_wU⊩b∧□c∧(d▷e)$. From $(⋆)$ follows that that $U∈𝒱$ hence
+     there exist $v_U,c_U$ such that $v_URc_US_xR_x^{-1}[Γ],(∀Γ'⊆Γ)
+     c_U\cancel{S}_{v_U} Γ'$. Since $c_U⊩d$ there must exist some $Z$ such that
+     $c_US_{v_U}Z⊩e$, however, by the definition of the valuation it follows
+     that $Z⊆Γ$ and thus $c_U\cancel{S}_{v_U} Z$, which is a contradiction.
+   - \boxed{⇐} Suppose the $𝔉⊫ (R_1)_{gen}$ and prove that $𝔉⊫R_1$. Let's fix the
+     model and let $w ∈ W$ be arbitrary. Suppose $w⊩ A ▷B$, and let $x$ be such
+     that $wRx$ and $x⊩ ¬(A ▷ ¬C) ∧ (D ▷ ♢E)$. It follows from $x ⊩¬(A ▷¬C)$ that
+     there exists $u$ such that $xRu$, such that $u⊩A$, and for every $Z$ such
+     that $uS_x Z$ there is some $c_Z ∈ Z$ such that $c_Z ⊩C$. From $wRu$, $w⊩
+     A▷ B$ and $u⊩ A$ follows in particular that there is a $V$, $uS_w V ⊩B$.
+     Let $K ≔ \{c_Z: uS_x Z\}$. It is easy to check that $K ∈ 𝒞(x, u)$. Let $Γ ≔
+     [⊩E]$ (set of worlds that force $E$). For the selected $w, x, u, V, K, Γ$
+     the property $(R 1)_{gen}$ implies that there exists $V' ⊆ V$ such that:
+
+     \[xS_wV',R[V']⊆K ,(∀v∈V')(∀c∈K)(vRcS_xR_x^{-1}[Γ]⇒(∃Γ'⊆Γ)cS_vΓ')\]
+
+     We have that $V' ⊩B$ since $V'⊆V$ and $V'⊩□ C$ since $R[V']⊆K$. We now show
+     that $V'⊩ D▷ E$. Assume that for some $c ∈ R [V']$ we have $c⊩ D$. From
+     earlier we have $x⊩ D ▷ ♢E$. Since $c ∈ R [V '] ⊆ C ⊆ R [x]$, then $xRc$ so
+     it follows that there exists $U$ such that $cS_x U$ and $U⊩♢E$. Clearly
+     $U⊆[♢E]_x$ and also $[♢E]_x⊆R[x]$, hence by monotonicity we have
+     $cS_x[♢E]_x$ which is the same as $cS_x R_x^{−1}[Γ]$ so by the above
+     property there exists $Γ'⊆Γ$ such that $cS_v Γ'$. Because $Γ'⊆Γ$ we have
+     $Γ'⊩E$.
+
+ # \newpage
+** $R¹$ Principle
+
+   The $R¹$ principle reads as follows:
+   \[A ▷ B → (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)\]
+
+   The $(R¹)_{gen}$ condition reads as follows:
+   \begin{flalign*}
+   &∀w,x,y,z,𝔸,𝔹,ℂ,𝔻. \\
+   &wRxRyRz, \\
+   & (∀u.Rwu,u∈𝔸⇒∃V.SwuV,V⊆𝔹), & \text{ensures } w⊩A▷B \\
+   & (∀u.Rxu,u∈𝔻⇒∃V.SxuV,V⊆𝔸), & \text{ensures } x⊩D▷A \\
+   & (∀V.SyzV⇒∃v.v∈V,v∈ℂ),       &  \text{ensures } y⊩¬(D▷¬C) \\
+   & z∈𝔻 \\
+   ⇒\ & ∃V⊆𝔹.xS_wV,R[V]⊆ℂ
+   \end{flalign*}
+
+   \begin{theorem}
+   $$𝔉⊨R¹⇔𝔉⊨(R¹)_{gen}$$
+   \end{theorem}
+
+   /proof/.
+   {{{red(proved in Agda)}}}
+   - \boxed{⇒} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
+     assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part of
+     the implication of $(R¹)_{gen}$ holds. Now let $V$ be a valuation defined by
+     \begin{flalign*}
+      V(u)⊩a &⇔ u∈𝔸 \\
+      V(u)⊩b &⇔ u∈𝔹 \\
+      V(u)⊩c &⇔ u∈ℂ \\
+      V(u)⊩d &⇔ u∈𝔻
+     \end{flalign*}
+     Now one can easily check that $w⊩A▷B$, $x⊩♢¬(D▷¬C)∧(D▷A)$, hence there exists $U$
+     such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
+   - \boxed{⇐} Fix a model $M$ and a world $w$, we are to prove that $w⊩A ▷ B →
+     (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for some
+     $x,y,z$ we have $wRxRyRz$ and $x⊩D▷A$, $y⊩¬(D▷¬C)$, $z⊩D$. Now let
+     $𝔸≔\{w:w⊩A\}$. We define $𝔹,ℂ,𝔻$ likewise for formulas $B,C,D$ respectively.
+     It is routine to check that the left part of the implication of $(R¹)_{gen}$
+     is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
+     definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
+
+** Other principles
+   Additionally, I have proved in Agda the frame condition for the following
+   principles:
+   - Ordinary semantics: $M$.
+   - Generalized semantics: $M,R,P₀$.
