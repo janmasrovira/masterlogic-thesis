@@ -133,7 +133,7 @@
 *** Ordinary semantics
    The frame condition for $M$ for ordinary semantics, name it $M_{ord}$,
    reads as follows:
-   \[xS_w zRu ⇒ xRu\]
+   \[∀x,w,z,u(xS_w zRu ⇒ xRu)\]
 
    #+caption: Ordinary frame condition for $M$
    #+name: fig:ord-M-condition
@@ -176,20 +176,100 @@
    The frame condition for $M$ for generalized semantics, name it $M_{gen}$,
    reads as follows:
 
-   \[ uS_wV⇒ ΣV'⊆V(uS_wV',∀v'∈V'(Rv'z⇒Ruz))\]
-
-  #  S w u V → Σ 𝕎 λ V' → V' ⊆ V × S w u V' × ∀ {z v'} → v' ∈ V' → R v' z → R u z
+   \[ ∀u,w,V(uS_wV⇒ ΣV'⊆V(uS_wV',∀v'∈V'∀z(v'Rz⇒uRz)))\]
 
    #+caption: Generalized frame condition for $M$
    #+name: fig:gen-M-condition
    #+attr_latex: :float t :width 0.20\textwidth :placement [H]
    [[file:wip.png]]
 
-   {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
-   $M_{ord}$ condition iff any model based on $F$ forces every instantiation of
+   {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
+   $M_{gen}$ condition iff any model based on $F$ forces every instantiation of
    the $M$ principle. In symbols:
 
-   \[F ⊨ M_{ord} ⇔ F ⊩ M\] {{{endtheorem}}}
+   \[F ⊨ M_{gen} ⇔ F ⊩ M\] {{{endtheorem}}}
+
+   {{{beginproof}}}
+   - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
+     that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
+     Our aim is to find a set $Z$ such that $xS_wZ⊩B∧□C$. Since $wRx⊩A$ and
+     $w⊩A▷B$ there is set $Z$ such that $xS_wZ⊩B$. Then by the $M_{gen}$
+     condition it follows that there is a world $Z'⊆Z$ such that $xS_wZ'$ and
+     $∀v∈Z'∀z(vRz⇒xRz)$. Now we show $Z'⊩□C$. Let $v∈Z'$ and $u$ such that
+     $vRu$, by the condition above it follows $xRu$ and since $x⊩□C$ we have
+     $u⊩C$. Hence $Z'$ is the desired set.
+   - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (a ∧ □ c) ▷ (b ∧ □ c)$ and
+     $uS_wV$. Assume for a contradiction that $(⋆)\ ∀V'⊆V(uSwV'⇒
+     ∃v∈V'∃z(vRz,u\cancel{R}z))$. Consider a model satisfying the following
+     \begin{flalign*}
+     [a] &= \{u\} \\
+     [b] &= V \\
+     [c] & \{v:uRv\} \\
+     \end{flalign*}
+     We see that $w⊩a▷b$ since $a$ is only true in $u$ and we have $uS_wV⊩bS$.
+     It follows that ${w⊩(a ∧ □ c)▷(b∧□c)}$. It is easy to see that $u⊩a∧□c$,
+     hence there must exist $V'$ such that $uS_wV'⊩b∧□c$. Clearly $V'⊆V$, hence
+     by $(⋆)$ it follows that there exists $v∈V'$ and $z$ such that $vRz$ and
+     $u\cancel{R}z$. By the fact that $vRz$ it follows $z⊩c$ and by the fact
+     that $u\cancel{R}z$ it follows $z⊮c$, which is an absurd.
+   {{{endproof}}}
+** $R$ principle
+   The $R$ principle reads as follows:
+
+   \[A ▷ B → (¬ (A ▷ ¬C) ▷ (B ∧ □ C))\]
+
+*** Ordinary semantics
+    The $R_{ord}$ condition reads as follows:
+    \[∀w,x,y,z(wRxRyS_wz⇒∀v(zRv⇒yS_xv)) \]
+
+   #+caption: Ordinary frame condition for $R$
+   #+name: fig:ord-R-condition
+   #+attr_latex: :float t :width 0.20\textwidth :placement [H]
+   [[file:wip.png]]
+
+*** Generalized semantics
+
+    We first introduce the concept of choice set
+
+   {{{begindef}}} If $xRy$ we say that a set of worlds $K$ is a choice set for
+   $⟨x,y⟩$ iff for any $V$ such that $yS_xV$ we have $V∩K≠∅$. We denote the
+   family of choice sets for $⟨x,y⟩$ by $𝒞(x,y)$. Note that this definition
+   depends on the frame, but it should always be clear by context.
+   {{{enddef}}}
+
+    The $R_{gen}$ condition reads as follows:
+    \begin{flalign*}
+    &∀w,x,y,Y,K(wRxRyS_wY,K∈𝒞(x,y))   \\
+    ⇒& ∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz→z∈K))
+    \end{flalign*}
+
+   #+caption: Generalized frame condition for $R$
+   #+name: fig:gen-R-condition
+   #+attr_latex: :float t :width 0.20\textwidth :placement [H]
+   [[file:wip.png]]
+
+   {{{begintheorem}}}
+   For any generalized frame $F$, we have that $F$ satisfies the
+   $R_{gen}$ condition iff any model based on $F$ forces every instantiation of
+   the $R$ principle. In symbols:
+
+   \[F ⊨ R_{gen} ⇔ F ⊩ R\]
+   {{{endtheorem}}}
+   {{{beginproof}}}
+   - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
+     that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)$. We need to
+     show that there is a set $Z$ such that $xS_wZ⊩B∧□C$. From $x⊩¬(A▷¬C)$ it
+     follows that there is a world $y$ such that $xRy⊩A$ and $(⋆)\
+     ∀V(yS_xV⇒∃c∈V(c⊩C))$. Consider the set $K≔\{c:c⊩C,∃V(c∈V,yS_xV)\}$. Clearly
+     by $(⋆)$ it follows that $K$ is a choice set for $⟨x,y⟩$. By transitivity
+     of $R$ we get $wRy$ and since $w⊩A▷B$ then there must exist some $Y$ such
+     that $yS_wY⊩B$. We can now apply the $R_{gen}$ condition and get a $Y'⊆Y$
+     such that $xS_wY'$ and $(†)\ ∀y'∈Y'∀z(y'Rz→z∈K)$. To show that $Y'$ is the
+     desired set it remains to see that $Y'⊩B∧□C$. From the fact that $Y'⊆Y⊩B$
+     it easily follows that $Y'⊩B$. Now, let $y'∈Y'$ and $u$ such that $y'Ru$,
+     from $(†)$ we get $u∈K$ and by definition of $K$ we have $u⊩C$.
+   - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩ a ▷ b → (¬ (a ▷ ¬c) ▷ (b ∧ □ c))$.
+   {{{endproof}}}
 
 ** $R₁$ principle
   Some definitions:
@@ -224,7 +304,7 @@
 
     Define a valuation such that the following applies:
     \begin{flalign*}
-    [⊩a] &= \{u\} \\
+    [⊩a] & \{u\} \\
     [⊩b] &= V \\
     [⊩c] &= K \\
     [⊩d] &= \{c_U:U∈𝒱\} \\
