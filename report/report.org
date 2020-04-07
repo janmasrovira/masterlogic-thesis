@@ -120,7 +120,7 @@
      that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
      have $y⊩B$.
    {{{enddef}}}
-* Frafme conditions
+* Frame conditions
   A principle is a schema of formulas that carries some special significance.
 
   In this section we present a series of principles in conjunction with their
@@ -214,9 +214,80 @@
      that $u\cancel{R}z$ it follows $z⊮c$, which is an absurd.
    {{{endproof}}}
    \newpage
-** TODO $M₀$ principle
+   \newpage
+** $M₀$ principle
+   The $M₀$ principle reads as follows:
+   \[A ▷ B → (♢ A ∧ □ C) ▷ (B ∧ □ C)\]
+
 *** Ordinary semantics
+    The $(M₀)_{ord}$ condition reads as follows:
+    \[∀w,x,y,z(wRxRyS_wz⇒xS_wz,∀u(zRu⇒xRu))\]
+
+    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
+    $(M₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
+    the $M₀$ principle. In symbols:
+
+    \[F ⊨ (M₀)_{ord} ⇔ F ⊩ M₀\] {{{endtheorem}}}
+
+    {{{beginproof}}}
+    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
+      that $w⊩A▷B$ and that there exists some $x$ such that $wRx⊩ ♢ A ∧ □ C$. It
+      follows that there exists some world $y$ such that $xRy⊩A$, then since
+      $wRy$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. By the
+      $(M₀)_{ord}$ condition we have that $xS_wz$ and $(⋆)\ ∀u(zRu⇒xRu)$. Hence,
+      it remains to show $z⊩□C$. Consider some world $u$ such that $zRu$, by
+      $(⋆)$ it follows that $xRu$ and since $x⊩□C$ we also have $u⊩C$.
+    - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$ and
+      assume that for some $w,x,y,z$ we have $wRxRyS_wz$. Consider a model based
+      on $F$ such that the following holds:
+      \begin{flalign*}
+      [a] &= \{y\} \\
+      [b] &= \{z\} \\
+      [c] &= \{w:xRw\}
+      \end{flalign*}
+      Observe that $w⊩a▷b$ since $a$ is forced only in $y$ and we have $yS_wz⊩b$.
+      It follows that $w⊩(♢ a ∧ □ c) ▷ (b ∧ □ c)$. Clearly $x⊩♢a∧□c$, hence there
+      must exist some world $v$ such that $xS_wv⊩b∧□c$ but since $b$ is only
+      forced in $z$ we have $z=v$ and thus $xS_wz$. To prove the remaining
+      implication let $u$ such that $zRu$, then $u⊩c$ and thus $xRu$.
+    {{{endproof}}}
+
+
 *** Generalized semantics
+    The $(M₀)_{gen}$ condition reads as follows:
+    \[∀w,x,y,Y(wRxRyS_wY⇒∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz⇒xRz)))\]
+
+    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
+    $(M₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+    the $M₀$ principle. In symbols:
+
+    \[F ⊨ (M₀)_{gen} ⇔ F ⊩ M₀\] {{{endtheorem}}}
+
+    {{{beginproof}}}
+    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
+      that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩♢A∧□C$. Then
+      there must exist some world $y$ such that $xRy⊩A$. Since $wRy$ and $w⊩A▷B$
+      there exists some set $Y$ such that $yS_wY⊩B$. Then by the $(M₀)_{gen}$
+      condition we have that there exists some $Y'⊆Y$ such that $xS_wY'$ and
+      $(⋆)\ ∀y'∈Y'∀z(y'Rz⇒xRz)$. Clearly $Y'⊩B$ since $Y'⊆Y$. To show that
+      $Y'⊩□C$ consider some $y'∈Y'$ and some $z$ such that $y'Rz$. Then, by
+      $(⋆)$ it follows that $xRz$ and since $x⊩□C$ we also have $x⊩C$.
+    - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$
+      and assume that for some $w,x,y,Y$ we have $wRxRyS_wY$. Then consider a
+      model based on $F$ such that.
+      \begin{flalign*}
+      [a] &= \{y\} \\
+      [b] &= Y \\
+      [c] &= \{w:xRw\}
+      \end{flalign*}
+      Observe that $w⊩a▷b$ as $a$ is only forced in $y$ and we have $yS_wY⊩b$.
+      Consequently it holds that $w⊩(♢ a ∧ □ c) ▷ (b ∧ □ c)$. See also that
+      $x⊩♢a$ since $xRy⊩a$ and also $x⊩□c$ by definition of the model. Then
+      there must exist some set $Y'$ such that $xS_wY'⊩b∧□c$. Clearly $Y'⊆Y$ since
+      $Y'⊩b$. To show the remaining condition pick some $y'∈Y'$ and some $z$
+      such that $y'Rz$. Since $Y'⊩□c$ then $z⊩c$ and thus $xRz$.
+    {{{endproof}}}
+
 ** $P₀$ principle
 
    The $P₀$ principle reads as follows.
