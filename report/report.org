@@ -162,7 +162,7 @@
      \begin{flalign*}
      [a] &= \{x\} \\
      [b] &= \{z\} \\
-     [c] &= \{v:xRv\} \\
+     [c] &= \{v:xRv\}
      \end{flalign*}
      We observe that $w⊩a▷b$ because $a$ is only forced in $x$ and we have
      $xS_wz⊩b$. Then it follows that $w⊩(a∧□c)▷(b∧□c)$. It is easy to observe
@@ -204,7 +204,7 @@
      \begin{flalign*}
      [a] &= \{u\} \\
      [b] &= V \\
-     [c] & \{v:uRv\} \\
+     [c] &= \{v:uRv\}
      \end{flalign*}
      We see that $w⊩a▷b$ since $a$ is only true in $u$ and we have $uS_wV⊩bS$.
      It follows that ${w⊩(a ∧ □ c)▷(b∧□c)}$. It is easy to see that $u⊩a∧□c$,
@@ -213,6 +213,77 @@
      $u\cancel{R}z$. By the fact that $vRz$ it follows $z⊩c$ and by the fact
      that $u\cancel{R}z$ it follows $z⊮c$, which is an absurd.
    {{{endproof}}}
+   \newpage
+** TODO $M₀$ principle
+*** Ordinary semantics
+*** Generalized semantics
+** $P₀$ principle
+
+   The $P₀$ principle reads as follows.
+   The $P₀$ principle reads as follows:
+   \[A ▷ ♢ B → □ (A ▷ B)\]
+*** Ordinary semantics
+    The $(P₀)_{ord}$ condition reads as follows:
+    \[∀w,x,y,z,u(wRxRyS_wzRu⇒yS_xu)\]
+
+   {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
+   $(P₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
+   the $P₀$ principle. In symbols:
+
+   \[F ⊨ (P₀)_{ord} ⇔ F ⊩ P₀\] {{{endtheorem}}}
+
+   {{{beginproof}}}
+   - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
+     that $w⊩A▷♢B$ and that there is a world $x$ such that $wRx$. Our goal is to
+     show that $x⊩A▷B$. Consider a world $y$ such that $xRy⊩A$. As $wRy$ and
+     $w⊩A▷♢B$ then there exist some worlds $z,u$ such that $yS_wzRu⊩B$. By the
+     $(P₀)_{ord}$ condition it follows that $yS_xu$ and thus $x⊩A▷B$.
+   - \boxed{⇐} Let $a,b∈Var$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume that
+     $wRxRyS_wzRu$. We want to show $yS_xu$. Consider a model based on $F$ such
+     that:
+     \begin{flalign*}
+     [a] = \{y \} \\
+     [b] = \{u \}
+     \end{flalign*}
+     Observe that $w⊩a▷♢b$ as the only world that forces $a$ is $y$ and we have
+     $yS_wz⊩♢b$, because $zRu⊩b$. Consequently we have $w⊩□(a▷b)$ and therefore
+     $x⊩a▷b$. Then, since $xRy⊩a$ it follows that there exist some $v$ such that
+     $yS_xv⊩b$, but since $b$ is only forced in $u$, it must be $u=v$ and so
+     $yS_xu$.
+   {{{endproof}}}
+
+*** Generalized semantics
+    The $(P₉)_{gen}$ condition reads as follows:
+    \[∀w,x,y,Y,Z((wRxRyS_wY,∀y∈Y∃z∈Z(yRz))⇒∃Z'⊆Z(yS_xZ'))\]
+
+   {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
+   $(P₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+   the $P₀$ principle. In symbols:
+
+   \[F ⊨ (P₀)_{gen} ⇔ F ⊩ P₀\] {{{endtheorem}}}
+
+   {{{beginproof}}}
+   - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
+     that $w⊩A▷♢B$ and that there is a world $x$ such that $wRx$. We aim to show
+     that $x⊩A▷B$. Assume there is a world $u$ such that $xRu⊩A$ and as $wRu$
+     and $w⊩A▷♢B$ then there exists a set $Y$ $uS_xY⊩♢B$. Let $𝔹=\{w:w⊩B\}$.
+     Then observe that $∀y∈Y$ there exists some $z∈𝔹$ since $Y⊩♢B$. Hence by the
+     $(P₀)_{gen}$ condition there exists some $𝔹'⊆𝔹$ such that $yS_x𝔹'$. Clearly
+     $𝔹'⊩B$, therefore $x⊩A▷B$.
+   - \boxed{⇐} Let $a,b∈Var$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume
+     that for some $w,x,y,Y,Z$ we have $wRxRyS_wY$ and $(⋆)\ ∀y∈Y∃z∈Z(yRz)$.
+     Consider a model based on $F$ such that:
+     \begin{flalign*}
+    [a] &= \{y\} \\
+    [b] &= Z
+     \end{flalign*}
+     See that $w⊩a▷♢b$ as the only world that forces $a$ is $y$ and we have
+     $yS_wY$ and by $(⋆)$ it follows that $Y⊩♢b$. Consequently it holds that
+     $w⊩□(a▷b)$ and since $wRx$ then $x⊩a▷b$. Also, since $xRy⊩a$ then there
+     exists $Z'$ such that $yS_xZ'⊩b$. Clearly $Z'⊩b$ implies $Z'⊆Z$ so we are
+     done.
+   {{{endproof}}}
+
 ** $R$ principle
    The $R$ principle reads as follows:
 
@@ -319,16 +390,14 @@
      from $Y'⊩□c$ we get $∀y'∈Y'(∀z(y'Rz→z∈K))$, hence $Y'$ is the desired set.
    {{{endproof}}}
 
-   \newpage
 ** $R₁$ principle
   The $R_1$ principle reads as follows:
   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E))\]
 
-  \newpage
 *** Ordinary semantics
 
-    The $(R₁)_{ord}$ frame condition reads as follows:
-    \[∀w,x,y,z,u,v,m(wRxRyS_wzRu⇒(yS_xu,((uS_xv,vRm)⇒uS_zm)))\]
+    The $(R₁)_{ord}$ frame condition reads as follows (pull quantifiers out?):
+    \[∀w,x,y,z(wRxRyS_wz⇒∀u(zRu⇒yS_xu,∀v(uS_xv⇒∀m(vRm⇒uS_zm))))\]
 
     # #+caption: Ordinary frame condition for $R₁$
     # #+name: fig:ord-R₁-condition
@@ -345,18 +414,21 @@
 
     {{{beginproof}}}
     - \boxed{⇐} Let $a,b,c,d,e∈Var$ and assume $F⊩ a ▷ b → ((¬ (a ▷ ¬c) ∧(d▷♢e))
-      ▷ (b ∧ □ c ∧ (d▷e)))$. Consider some worlds $w,x,y,z,u,v,m$ and assume
-      $wRxRyS_wzRu$. Now consider a model based on $F$ that satisfies the
-      following:
+      ▷ (b ∧ □ c ∧ (d▷e)))$. Consider some worlds $w,x,y,z,u,v,m$ and assume for
+      a contradiction that $wRxRyS_wzRu,yS_xu⇒(uS_xv,vRm,u\cancel{S}_zm)$. Now
+      consider a model based on $F$ that satisfies the following:
       \begin{flalign*}
       [a] &= \{y\} \\
       [b] &= \{z\} \\
-      [c] &= ? \\
-      [d] &= ? \\
-      [e] &= ? \\
+      [c] &= \{w:yS_xw\} \\
+      [d] &= \{?\} \\
+      [e] &= \{?\} \\
       \end{flalign*}
       First observe that $w⊩a▷b$ since $a$ is only forced in $y$ and we have
-      $yS_wz⊩b$.
+      $yS_wz⊩b$. Therefore $w⊩¬ (a ▷ ¬c) ∧(d▷♢e) ▷ (b ∧ □ c ∧ (d▷e))$. Now we
+      show that $x⊩¬ (a ▷ ¬c)$. Since $a$ is only forced in $y$ and $xRy$, we
+      need to show that $∀u(yS_xu⇒u⊩c)$, which clearly holds. We proceed by
+      showing $x⊩d▷♢e$.
     - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
       that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)∧(D▷♢E)$. Then
       there exists world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$. As
