@@ -32,6 +32,8 @@
 #+macro: beginproof @@latex:\begin{proof}@@
 #+macro: endproof @@latex:\end{proof}@@
 
+#+macro: agda @@latex:\includegraphics[height=\baselineskip]{agda}@@
+
 
 #+latex_header: \newtheorem{theorem}{Theorem}
 #+latex_header: \theoremstyle{definition}
@@ -355,6 +357,7 @@
      done.
    {{{endproof}}}
 
+   \newpage
 ** $R$ principle
    The $R$ principle reads as follows:
 
@@ -609,42 +612,48 @@
    The $R¹$ principle reads as follows:
    \[A ▷ B → (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)\]
 
-   The $(R¹)_{gen}$ condition reads as follows:
-   \begin{flalign*}
-   &∀w,x,y,z,𝔸,𝔹,ℂ,𝔻. \\
-   &wRxRyRz, \\
-   & (∀u.Rwu,u∈𝔸⇒∃V.SwuV,V⊆𝔹), & \text{ensures } w⊩A▷B \\
-   & (∀u.Rxu,u∈𝔻⇒∃V.SxuV,V⊆𝔸), & \text{ensures } x⊩D▷A \\
-   & (∀V.SyzV⇒∃v.v∈V,v∈ℂ),       &  \text{ensures } y⊩¬(D▷¬C) \\
-   & z∈𝔻 \\
-   ⇒\ & ∃V⊆𝔹.xS_wV,R[V]⊆ℂ
-   \end{flalign*}
+*** Generalized semantics
+    The $(R¹)_{gen}$ condition reads as follows:
+    \begin{flalign*}
+    &∀w,x,y,z,𝔸,𝔹,ℂ,𝔻. \\
+    &wRxRyRz, \\
+    & (∀u.Rwu,u∈𝔸⇒∃V.SwuV,V⊆𝔹), \\
+    & (∀u.Rxu,u∈𝔻⇒∃V.SxuV,V⊆𝔸), \\
+    & (∀V.SyzV⇒∃v.v∈V,v∈ℂ),      \\
+    & z∈𝔻 \\
+    ⇒\ & ∃V⊆𝔹.xS_wV,R[V]⊆ℂ
+    \end{flalign*}
 
-   \begin{theorem}
-   $$𝔉⊨R¹⇔𝔉⊨(R¹)_{gen}$$
-   \end{theorem}
+    {{{begintheorem}}}
+    For any generalized frame $F$, we have that $F$ satisfies the
+    $(R¹)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+    the $R¹$ principle. In symbols:
 
-   /proof/.
-   {{{red(proved in Agda)}}}
-   - \boxed{⇒} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
-     assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part of
-     the implication of $(R¹)_{gen}$ holds. Now let $V$ be a valuation defined by
-     \begin{flalign*}
-      V(u)⊩a &⇔ u∈𝔸 \\
-      V(u)⊩b &⇔ u∈𝔹 \\
-      V(u)⊩c &⇔ u∈ℂ \\
-      V(u)⊩d &⇔ u∈𝔻
-     \end{flalign*}
-     Now one can easily check that $w⊩A▷B$, $x⊩♢¬(D▷¬C)∧(D▷A)$, hence there exists $U$
-     such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
-   - \boxed{⇐} Fix a model $M$ and a world $w$, we are to prove that $w⊩A ▷ B →
-     (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for some
-     $x,y,z$ we have $wRxRyRz$ and $x⊩D▷A$, $y⊩¬(D▷¬C)$, $z⊩D$. Now let
-     $𝔸≔\{w:w⊩A\}$. We define $𝔹,ℂ,𝔻$ likewise for formulas $B,C,D$ respectively.
-     It is routine to check that the left part of the implication of $(R¹)_{gen}$
-     is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
-     definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
+    \[F⊨(R¹)_{gen}⇔F⊩R¹\]
+    {{{endtheorem}}}
 
+
+    {{{beginproof}}}
+    {{{agda}}}
+    - \boxed{⇒} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
+      assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part of
+      the implication of $(R¹)_{gen}$ holds. Now let $V$ be a valuation defined by
+      \begin{flalign*}
+       [a] &= 𝔸 \\
+       [b] &= 𝔹 \\
+       [c] &= ℂ \\
+       [d] &= 𝔻
+      \end{flalign*}
+      Now one can easily check that $w⊩A▷B$, $x⊩♢¬(D▷¬C)∧(D▷A)$, hence there exists $U$
+      such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
+    - \boxed{⇐} Fix a model $M$ and a world $w$, we are to prove that $w⊩A ▷ B →
+      (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for some
+      $x,y,z$ we have $wRxRyRz$ and $x⊩D▷A$, $y⊩¬(D▷¬C)$, $z⊩D$. Now let
+      $𝔸≔\{w:w⊩A\}$. We define $𝔹,ℂ,𝔻$ likewise for formulas $B,C,D$ respectively.
+      It is routine to check that the left part of the implication of $(R¹)_{gen}$
+      is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
+      definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
+    {{{endproof}}}
 ** Other principles
    Additionally, I have proved in Agda the frame condition for the following
    principles:
