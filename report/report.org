@@ -9,9 +9,10 @@
 #+latex_header: \usepackage[x11names, table]{xcolor}
 #+latex_header: \usepackage[margin=2.5cm]{geometry}
 #+latex_header: \usepackage{lmodern}
-# #+latex_header: \setmonofont{FreeMono}
+# #+latex_header: \setmonofont{DejaVu Sans Mono}
 #+latex_header: \usepackage{cancel}
 #+latex_header: \usepackage{amsthm}
+#+latex_header: \usepackage{float}
 
 #+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Firebrick4,citecolor=Green4}
 #+latex_header: \newcommand{\ie}[0]{i.e.\ }
@@ -758,3 +759,8 @@
     & z∈𝔻 \\
     ⇒\ & ∃V⊆𝔹.x₀S_wV,R[V]⊆ℂ
     \end{flalign*}
+
+
+    #+begin_src tex
+    hi λ Γ ₁ 
+    #+end_src

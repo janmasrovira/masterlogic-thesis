@@ -12,3 +12,4 @@ exercises/*.pdf
 report/report.pdf
 *.toc
 *.xdv
+/report/_minted-report/
