@@ -12,3 +12,6 @@ export:
       - ls
       - emacs report.org --batch -f org-latex-export-to-latex --kill
       - cat report.tex
+  artifacts:
+    paths:
+    - report/report.tex
