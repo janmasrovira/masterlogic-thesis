@@ -1,0 +1,12 @@
+image: silex/emacs:26.3
+
+stages:
+  - build
+
+export:
+  stage: build
+  script:
+      - emacs --version
+      - cd report
+      - pwd
+      - ls
