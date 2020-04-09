@@ -9,6 +9,11 @@ export:
       - cd report
       - emacs report.org --batch -f org-latex-export-to-latex --kill
       - cp report.tex ../
+      - cp -r img ../
   artifacts:
     paths:
     - report.tex
+    - img/
+
+# To browse the latest generated .tex file, visit the following URL:
+# https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=export
