@@ -11,3 +11,4 @@
 exercises/*.pdf
 report/report.pdf
 *.toc
+*.xdv

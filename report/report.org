@@ -742,10 +742,12 @@
       there exists some $s$ such that $zRs⊩E$ and $(⋆)\ ∀V(sS_zV⇒∃c∈V(c⊩C))$.
     - \boxed{⇐}
     {{{endproof}}}
+
     \newpage
 ** $Rⁿ$ principle
 *** Generalized semantics
     The $(Rⁿ)_{gen}$ condition reads as follows:
+
     \begin{flalign*}
     &∀w,x₀,…x_{n-1},y,z,𝔸,𝔹,ℂ,𝔻₀,…,𝔻_{n-1}.\\
     &wRx₀R…Rx_{n-1}RyRz, \\
@@ -756,3 +758,5 @@
     & z∈𝔻 \\
     ⇒\ & ∃V⊆𝔹.x₀S_wV,R[V]⊆ℂ
     \end{flalign*}
+
+    Is this real life

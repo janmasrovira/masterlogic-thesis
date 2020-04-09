@@ -1,19 +1,31 @@
-image: silex/emacs:26.3
-
 stages:
-  - build
+  - org
+  - pdf
 
-export:
-  stage: build
+org2tex:
+  image: silex/emacs:26.3
+  stage: org
   script:
       - cd report
       - emacs report.org --batch -f org-latex-export-to-latex --kill
-      - cp report.tex ../
+  artifacts:
+    paths:
+    - report/report.tex
+
+tex2pdf:
+  stage: pdf
+  image: silex/emacs:26.3
+  script:
+      - cd report
+      - latexmk -e 'pdflatex=q/xelatex --halt-on-error --synctex=1 --shell-escape %O %S'
       - cp -r img ../
+      - cp report.tex report.pdf ../
   artifacts:
     paths:
     - report.tex
+    - report.pdf
     - img/
 
+
 # To browse the latest generated .tex file, visit the following URL:
-# https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=export
+# https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=tex2pdf
