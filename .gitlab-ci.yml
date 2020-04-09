@@ -11,6 +11,7 @@ org2tex:
   artifacts:
     paths:
     - report/report.tex
+    expire_in: 1 month
 
 tex2pdf:
   stage: pdf
@@ -27,4 +28,7 @@ tex2pdf:
 
 
 # To browse the latest generated .tex file, visit the following URL:
+# https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex
+
+# To browse the latest generated .tex file plus pdf, visit the following URL:
 # https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=tex2pdf
