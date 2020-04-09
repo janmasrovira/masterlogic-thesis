@@ -6,8 +6,8 @@ org2tex:
   image: silex/emacs:26.3
   stage: org
   script:
-      - cd report
-      - emacs report.org --batch -f org-latex-export-to-latex --kill
+    - cd report
+    - emacs report.org --batch -f org-latex-export-to-latex --kill
   artifacts:
     paths:
     - report/report.tex
@@ -17,9 +17,12 @@ tex2pdf:
   stage: pdf
   image: mirisbowring/texlive_ctan_full:2019
   script:
-      - cd report
-      - latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
-      - cp -r img report.tex report.pdf ../
+    - mkdir -p ~/.fonts/truetype/FreeMono
+    - cp fonts/FreeMono.otf ~/.fonts/
+    - fc-cache -fv
+    - cd report
+    - latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
+    - cp -r img report.tex report.pdf ../
   artifacts:
     paths:
     - report.tex
