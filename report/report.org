@@ -758,5 +758,3 @@
     & z∈𝔻 \\
     ⇒\ & ∃V⊆𝔹.x₀S_wV,R[V]⊆ℂ
     \end{flalign*}
-
-    Is this real life

@@ -17,9 +17,8 @@ tex2pdf:
   image: silex/emacs:26.3
   script:
       - cd report
-      - latexmk -e 'pdflatex=q/xelatex --halt-on-error --synctex=1 --shell-escape %O %S'
-      - cp -r img ../
-      - cp report.tex report.pdf ../
+      - latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
+      - cp -r img report.tex report.pdf ../
   artifacts:
     paths:
     - report.tex
