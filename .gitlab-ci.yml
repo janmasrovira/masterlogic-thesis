@@ -10,3 +10,5 @@ export:
       - cd report
       - pwd
       - ls
+      - emacs report.org --batch -f org-latex-export-to-latex --kill
+      - cat report.tex
