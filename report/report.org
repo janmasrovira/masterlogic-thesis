@@ -52,6 +52,7 @@
   - $wRu⊩A$ iff $wRu$ and $u⊩A$.
   - $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$.
   - $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$.
+  - $[A]≔\{w:w⊩A\}$.
 * Semantics
   In this document we consider two variants of relational semantics for
   interpretability logic similar to Kripke semantics for modal logic.
@@ -89,9 +90,13 @@
    {{{begincoro}}}
    It immediately follows that:
    - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
+   - If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
    - If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
    - If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
    {{{endcoro}}}
+   {{{beginproof}}}
+   {{{agda}}}
+   {{{endproof}}}
 
 ** Generalized Veltman semantics
    {{{begindef}}} An ordinary Veltman frame $F=⟨W,R,S⟩$ is a structure
@@ -103,7 +108,7 @@
    1. $R$ is a transitive.
    2. $R$ is conversely well-founded. That is, there is no infinite ascending
       chain $w₁Rw₂R…$.
-   3. If $uS_wY$ then for all $y∈Y$ we have $wRy$.
+   3. If $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$.
    4. If $wRu$ then $uS_w\{u\}$.
    5. If $xS_wY$ and $y∉Z$ and $yS_wZ$ then $wS_wZ$.
    6. If $wRu$ and $uRv$ then $uS_w{v}$.
@@ -122,6 +127,51 @@
      that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
      have $y⊩B$.
    {{{enddef}}}
+   {{{begincoro}}}
+   It immediately follows that:
+   - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
+   - If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
+   - If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
+   - If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+   {{{endcoro}}}
+   {{{beginproof}}}
+   {{{agda}}}
+   {{{endproof}}}
+
+
+\newpage
+* Logic $IL$
+  The logic $IL$ encompasses all classical tautologies in the new language plus
+  the following axiom schemes:
+  - K: $□ (A → B) → □ A → □ B$
+  - J1: $□ (A → B) → A ▷ B$
+  - J2: $A ▷ B ∧ B ▷ C → A ▷ C$
+  - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$
+  - J4: $A ▷ B → ♢ A → ♢ B$
+  - J5: $♢ A ▷ A$
+  Additionally it has the following rules:
+  - Necessitation: if $⊢_{IL}A$ then $⊢_{IL}□A$.
+  - Modus ponens: if $Π⊢_{IL}A→B$ and $Π⊢_{IL}A$ then $Π⊢_{IL}B$.
+  - Identity: If $A∈Π$ then $Π⊢_{IL}A$.
+
+ {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
+ $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that
+ $w⊩Π$, then $w⊩A$.
+  {{{endtheorem}}}
+  {{{beginproof}}}
+  {{{agda}}}
+  {{{endproof}}}
+
+ {{{begintheorem}}} *Local soundness for generalized semantics*. That is, if
+ $Π⊢_{IL}A$ and $M$ is a generalized model with a world $w$ such that
+ $w⊩Π$, then $w⊩A$.
+  {{{endtheorem}}}
+  {{{beginproof}}}
+  {{{agda}}}
+  {{{endproof}}}
+
+
+\newpage
 * Frame conditions
   A principle is a schema of formulas that carries some special significance.
 
@@ -135,7 +185,7 @@
 *** Ordinary semantics
    The frame condition for $M$ for ordinary semantics, name it $M_{ord}$,
    reads as follows:
-   \[∀x,w,z,u(xS_w zRu ⇒ xRu)\]
+   \[∀w,x,y,z(xS_w yRz ⇒ xRz)\]
 
    #+caption: Ordinary frame condition for $M$
    #+name: fig:ord-M-condition
@@ -149,6 +199,7 @@
    \[F ⊨ M_{ord} ⇔ F ⊩ M\] {{{endtheorem}}}
 
    {{{beginproof}}}
+   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
      Our aim is to find a world $z$ such that $xS_wz⊩B∧□C$. Since $wRx⊩A$ and
@@ -159,8 +210,7 @@
 
    - \boxed{⇐} Let $a,b,c∈Var$, assume $F⊩ a▷b→(a∧□c)▷(b∧□c)$. Then for some
      $x,w,u$ we have $xS_wzRu$. Our goal is to prove $xRu$. Consider a model
-     such that the following holds (for any formula $A$, we define
-     $[A]≔\{w:w⊩A\}$.
+     such that the following holds.
      \begin{flalign*}
      [a] &= \{x\} \\
      [b] &= \{z\} \\
@@ -178,7 +228,7 @@
    The frame condition for $M$ for generalized semantics, name it $M_{gen}$,
    reads as follows:
 
-   \[ ∀u,w,V(uS_wV⇒ ΣV'⊆V(uS_wV',∀v'∈V'∀z(v'Rz⇒uRz)))\]
+   \[ ∀w,x,V(xS_wV⇒ ΣV'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz)))\]
 
    #+caption: Generalized frame condition for $M$
    #+name: fig:gen-M-condition
@@ -192,6 +242,7 @@
    \[F ⊨ M_{gen} ⇔ F ⊩ M\] {{{endtheorem}}}
 
    {{{beginproof}}}
+   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
      Our aim is to find a set $Z$ such that $xS_wZ⊩B∧□C$. Since $wRx⊩A$ and
@@ -201,19 +252,17 @@
      $vRu$, by the condition above it follows $xRu$ and since $x⊩□C$ we have
      $u⊩C$. Hence $Z'$ is the desired set.
    - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (a ∧ □ c) ▷ (b ∧ □ c)$ and
-     $uS_wV$. Assume for a contradiction that $(⋆)\ ∀V'⊆V(uSwV'⇒
-     ∃v∈V'∃z(vRz,u\cancel{R}z))$. Consider a model satisfying the following
+     $uS_wV$. Consider a model satisfying the following
      \begin{flalign*}
      [a] &= \{u\} \\
      [b] &= V \\
      [c] &= \{v:uRv\}
      \end{flalign*}
-     We see that $w⊩a▷b$ since $a$ is only true in $u$ and we have $uS_wV⊩bS$.
-     It follows that ${w⊩(a ∧ □ c)▷(b∧□c)}$. It is easy to see that $u⊩a∧□c$,
-     hence there must exist $V'$ such that $uS_wV'⊩b∧□c$. Clearly $V'⊆V$, hence
-     by $(⋆)$ it follows that there exists $v∈V'$ and $z$ such that $vRz$ and
-     $u\cancel{R}z$. By the fact that $vRz$ it follows $z⊩c$ and by the fact
-     that $u\cancel{R}z$ it follows $z⊮c$, which is an absurd.
+     We see that $w⊩a▷b$ since $a$ is only true in $u$ and we have $uS_wV⊩b$. It
+     follows that ${w⊩(a ∧ □ c)▷(b∧□c)}$. It is easy to see that $u⊩a∧□c$, hence
+     there must exist $V'$ such that $uS_wV'⊩b∧□c$. Clearly $V'⊆V$ since $b$ is
+     forced exactly in $V$. Now let $v',z$ such that $v'∈V'$ and $v'Rz$. Since
+     $v'⊩□c$, then $z⊩c$ and thus $uRz$. Therefore $V'$ is the desired set.
    {{{endproof}}}
    \newpage
    \newpage
@@ -266,6 +315,7 @@
     \[F ⊨ (M₀)_{gen} ⇔ F ⊩ M₀\] {{{endtheorem}}}
 
     {{{beginproof}}}
+    {{{agda}}}
     - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
       that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩♢A∧□C$. Then
       there must exist some world $y$ such that $xRy⊩A$. Since $wRy$ and $w⊩A▷B$
@@ -336,6 +386,7 @@
    \[F ⊨ (P₀)_{gen} ⇔ F ⊩ P₀\] {{{endtheorem}}}
 
    {{{beginproof}}}
+   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷♢B$ and that there is a world $x$ such that $wRx$. We aim to show
      that $x⊩A▷B$. Assume there is a world $u$ such that $xRu⊩A$ and as $wRu$
@@ -435,6 +486,7 @@
    \[F ⊨ R_{gen} ⇔ F ⊩ R\]
    {{{endtheorem}}}
    {{{beginproof}}}
+   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
      that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)$. We need to
      show that there is a set $Z$ such that $xS_wZ⊩B∧□C$. From $x⊩¬(A▷¬C)$ it
@@ -540,7 +592,7 @@
     {{{endtheorem}}}
 
     {{{beginproof}}}
-    {{{red(proved in Agda)}}}
+    {{{agda}}}
     - \boxed{⇒} Let's fix the model and let $w ∈ W$ be arbitrary. Suppose $w⊩ A
       ▷B$, and let $x$ be such that $wRx$ and $x⊩ ¬(A ▷ ¬C) ∧ (D ▷ ♢E)$. It
       follows from $x ⊩¬(A ▷¬C)$ that there exists $u$ such that $xRu$, such
@@ -576,7 +628,7 @@
 
       Define a valuation such that the following applies:
       \begin{flalign*}
-      [⊩a] & \{u\} \\
+      [⊩a] &= \{u\} \\
       [⊩b] &= V \\
       [⊩c] &= K \\
       [⊩d] &= \{c_U:U∈𝒱\} \\
@@ -617,11 +669,11 @@
     \begin{flalign*}
     &∀w,x,y,z,𝔸,𝔹,ℂ,𝔻. \\
     &wRxRyRz, \\
-    & (∀u.Rwu,u∈𝔸⇒∃V.SwuV,V⊆𝔹), \\
-    & (∀u.Rxu,u∈𝔻⇒∃V.SxuV,V⊆𝔸), \\
-    & (∀V.SyzV⇒∃v.v∈V,v∈ℂ),      \\
+    & (∀u.wRu,u∈𝔸⇒∃V.uS_wV,V⊆𝔹), \\
+    & (∀u.xRu,u∈𝔻⇒∃V.uS_xV,V⊆𝔸), \\
+    & (∀V.zS_yV⇒∃v∈V.v∈ℂ),      \\
     & z∈𝔻 \\
-    ⇒\ & ∃V⊆𝔹.xS_wV,R[V]⊆ℂ
+    ⇒\ & ∃V⊆𝔹(xS_wV,R[V]⊆ℂ)
     \end{flalign*}
 
     {{{begintheorem}}}
@@ -635,7 +687,14 @@
 
     {{{beginproof}}}
     {{{agda}}}
-    - \boxed{⇒} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
+    - \boxed{⇒} Fix a model $M$ and a world $w$, we are to prove that $w⊩A ▷ B →
+      (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for some
+      $x,y,z$ we have $wRxRyRz$ and $x⊩D▷A$, $y⊩¬(D▷¬C)$, $z⊩D$. Now let
+      $𝔸≔\{w:w⊩A\}$. We define $𝔹,ℂ,𝔻$ likewise for formulas $B,C,D$ respectively.
+      It is routine to check that the left part of the implication of $(R¹)_{gen}$
+      is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
+      definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
+    - \boxed{⇐} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
       assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part of
       the implication of $(R¹)_{gen}$ holds. Now let $V$ be a valuation defined by
       \begin{flalign*}
@@ -646,16 +705,54 @@
       \end{flalign*}
       Now one can easily check that $w⊩A▷B$, $x⊩♢¬(D▷¬C)∧(D▷A)$, hence there exists $U$
       such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
-    - \boxed{⇐} Fix a model $M$ and a world $w$, we are to prove that $w⊩A ▷ B →
-      (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for some
-      $x,y,z$ we have $wRxRyRz$ and $x⊩D▷A$, $y⊩¬(D▷¬C)$, $z⊩D$. Now let
-      $𝔸≔\{w:w⊩A\}$. We define $𝔹,ℂ,𝔻$ likewise for formulas $B,C,D$ respectively.
-      It is routine to check that the left part of the implication of $(R¹)_{gen}$
-      is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
-      definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
     {{{endproof}}}
-** Other principles
-   Additionally, I have proved in Agda the frame condition for the following
-   principles:
-   - Ordinary semantics: $M$.
-   - Generalized semantics: $M,R,P₀$.
+
+\newpage
+** $R²$ principle
+
+   The $R²$ principle reads as follows:
+   \[A ▷ B → (♢ [(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)] ∧ (D ▷ A)) ▷ (B ∧ □ C) \]
+
+*** Generalized semantics
+    The $(R²)_{gen}$ condition reads as follows:
+    \begin{flalign*}
+    &∀w,x,y,z,s,𝔸,𝔹,ℂ,𝔻,𝔼.\\
+    &wRxRyRzRs, \\
+    & (∀u.wRu∈𝔸⇒∃V.uS_wV⊆𝔹), \\
+    & (∀u.xRu∈𝔻⇒∃V.uS_xV⊆𝔸), \\
+    & (∀u.yRu∈𝔼⇒∃V.uS_yV⊆𝔻), \\
+    & (∀V.sS_zV⇒V∩ℂ≠0),      \\
+    & s∈𝔻 \\
+    ⇒\ & ∃V⊆𝔹.xS_wV,R[V]⊆ℂ
+    \end{flalign*}
+
+    {{{begintheorem}}}
+    For any generalized frame $F$, we have that $F$ satisfies the
+    $(R²)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+    the $R²$ principle. In symbols:
+
+    \[F⊨(R²)_{gen}⇔F⊩R²\]
+    {{{endtheorem}}}
+
+    {{{beginproof}}}
+    - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
+      Consider some $x$ such that $wRx⊩♢ [(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)] ∧ (D ▷ A)$.
+      Hence there exists some $y$ such that $xRy⊩(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)$. It
+      follows that there exists some $z$ such that $yRz⊩ ¬ (E ▷ ¬ C)$ and thus
+      there exists some $s$ such that $zRs⊩E$ and $(⋆)\ ∀V(sS_zV⇒∃c∈V(c⊩C))$.
+    - \boxed{⇐}
+    {{{endproof}}}
+    \newpage
+** $Rⁿ$ principle
+*** Generalized semantics
+    The $(Rⁿ)_{gen}$ condition reads as follows:
+    \begin{flalign*}
+    &∀w,x₀,…x_{n-1},y,z,𝔸,𝔹,ℂ,𝔻₀,…,𝔻_{n-1}.\\
+    &wRx₀R…Rx_{n-1}RyRz, \\
+    & (∀u.wRu,u∈𝔸⇒∃V.uS_wV⊆𝔹), \\
+    & (∀u.x₀Ru∈𝔻ₙ⇒∃V.uS_{x₀}V⊆𝔸), \\
+    & (∀i∈\{1…n-1\}∀u.xᵢRu∈𝔻ₙ₋ᵢ⇒∃V.uS_{xᵢ}V⊆𝔻ₙ), \\
+    & (∀V.zS_yV⇒V∩ℂ≠0),      \\
+    & z∈𝔻 \\
+    ⇒\ & ∃V⊆𝔹.x₀S_wV,R[V]⊆ℂ
+    \end{flalign*}
