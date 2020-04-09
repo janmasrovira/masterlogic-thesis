@@ -9,7 +9,7 @@
 #+latex_header: \usepackage[x11names, table]{xcolor}
 #+latex_header: \usepackage[margin=2.5cm]{geometry}
 #+latex_header: \usepackage{lmodern}
-#+latex_header: \setmonofont{FreeMono}
+# #+latex_header: \setmonofont{FreeMono}
 #+latex_header: \usepackage{cancel}
 #+latex_header: \usepackage{amsthm}
 #+latex_header: \usepackage{float}

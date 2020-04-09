@@ -15,11 +15,10 @@ org2tex:
 
 tex2pdf:
   stage: pdf
-  image: mirisbowring/texlive_ctan_full:2019
+  image: mirisbowring/texlive_ctan_basic:2019
   script:
     - mkdir -p ~/.fonts/truetype/FreeMono
     - cp fonts/FreeMono.otf ~/.fonts/
-    - fc-cache -fv
     - cd report
     - latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
     - cp -r img report.tex report.pdf ../
