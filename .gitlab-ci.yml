@@ -6,12 +6,9 @@ stages:
 export:
   stage: build
   script:
-      - emacs --version
       - cd report
-      - pwd
-      - ls
       - emacs report.org --batch -f org-latex-export-to-latex --kill
-      - cat report.tex
+      - cp report.tex ../
   artifacts:
     paths:
-    - report/report.tex
+    - report.tex
