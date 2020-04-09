@@ -14,7 +14,7 @@ org2tex:
 
 tex2pdf:
   stage: pdf
-  image: silex/emacs:26.3
+  image: mirisbowring/texlive_ctan_full:2019
   script:
       - cd report
       - latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
