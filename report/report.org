@@ -44,34 +44,34 @@
 #+latex_header: \graphicspath{{img/}}
 
 * Language
-  The language of interpretability logics is $⟨⊥,→,▷⟩$. We define $∧,□,♢,∨$.
+  The language of interpretability logics is $⟨⊥,→,▷⟩$. We define $∧,□,♢,∨,→$.
 
 * Notation
   Is this intuitive enough that is not even worth mentioning?
-  - $wRuRv$ iff $wRu$ and $uRv$.
-  - $wRuS_xv$ iff $wRu$ and $uS_xv$.
-  - $wRu⊩A$ iff $wRu$ and $u⊩A$.
-  - $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$.
-  - $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$.
+  - $wRuRv$ iff $wRu$ and $uRv$;
+  - $wRuS_xv$ iff $wRu$ and $uS_xv$;
+  - $wRu⊩A$ iff $wRu$ and $u⊩A$;
+  - $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
+  - $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
   - $[A]≔\{w:w⊩A\}$.
 * Semantics
   In this document we consider two variants of relational semantics for
-  interpretability logic similar to Kripke semantics for modal logic.
+  interpretability logic similar to Kripke semantics for other modal logics.
 
 ** Ordinary Veltman semantics
    {{{begindef}}} An ordinary Veltman frame $F=⟨W,R,S⟩$ is a structure
    constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a ternary
-   relation $S⊆W×W×W$. We write $wRu$ in place of $⟨w,u⟩∈R$ and
-   $uS_wv$ in place of $⟨w,u,v⟩∈S$. The structure must satisfy the following
+   relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and
+   $uS_wv$ instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following
    conditions:
 
-   1. $R$ is a transitive.
+   1. $R$ is a transitive;
    2. $R$ is conversely well-founded. That is, there is no infinite ascending
-      chain $w₁Rw₂R…$.
-   3. If $uS_wv$ then $wRu$ and $wRv$.
-   4. If $wRu$ then $uS_wu$.
-   5. For every $w$, $S_w$ is transitive.
-   6. If $wRu$ and $uRv$ then $uS_wv$.
+      chain $w₁Rw₂R…$;
+   3. if $uS_wv$ then $wRu$ and $wRv$;
+   4. if $wRu$ then $uS_wu$;
+   5. for every $w$, $S_w$ is transitive;
+   6. if $wRu$ and $uRv$ then $uS_wv$.
    {{{enddef}}}
 
 
@@ -79,54 +79,55 @@
    by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$.
 
    Given a model $M$, we define a forcing relation $⊩_M⊆W × Fm$. We write
-   $M,w⊩A$ in place of $⟨w,A⟩∈⊩_M$ or simply $w⊩A$ when the model is clear by
+   $M,w⊩A$ instead of $⟨w,A⟩∈⊩_M$ or simply $w⊩A$ when the model is clear by
    the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
-   - $w⊮⊥$.
-   - If $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$.
-   - If $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$.
-   - If $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+   - $w⊮⊥$;
+   - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+   - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+   - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
      that $v⊩B$ and $uS_wv$.
    {{{enddef}}}
 
    {{{begincoro}}}
    It immediately follows that:
-   - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
-   - If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
-   - If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
-   - If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+   - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$;
+   - if $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
+   - if $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
+   - if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
    {{{endcoro}}}
    {{{beginproof}}}
    {{{agda}}}
    {{{endproof}}}
 
 ** Generalized Veltman semantics
-   {{{begindef}}} An ordinary Veltman frame $F=⟨W,R,S⟩$ is a structure
+   {{{begindef}}} An generalized Veltman frame $F=⟨W,R,S⟩$ is a structure
    constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a ternary
-   relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$ in place of $⟨w,u⟩∈R$ and
-   $uS_wY$ in place of $⟨w,u,Y⟩∈S$. The structure must satisfy the following
+   relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$ instead of $⟨w,u⟩∈R$ and
+   $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must satisfy the following
    conditions:
 
-   1. $R$ is a transitive.
+   1. $R$ is a transitive;
    2. $R$ is conversely well-founded. That is, there is no infinite ascending
-      chain $w₁Rw₂R…$.
-   3. If $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$.
-   4. If $wRu$ then $uS_w\{u\}$.
-   5. If $xS_wY$ and $y∉Z$ and $yS_wZ$ then $wS_wZ$.
-   6. If $wRu$ and $uRv$ then $uS_w{v}$.
-   7. If $V⊆Z$ and $Z⊆wR\_$ then $uS_wZ$.
+      chain $w₁Rw₂R…$;
+   3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
+   4. if $wRu$ then $uS_w\{u\}$;
+   5. if $xS_wY$ and $yS_wZ$ and $y∈Y∖Z$ then $xS_wZ$;
+   6. if $wRu$ and $uRv$ then $uS_w\{v\}$;
+   7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
+      $uS_wZ$.
    {{{enddef}}}
 
-   {{{begindef}}} An generalized Veltman model $M=⟨F,V⟩$ is a structure
+   {{{begindef}}} A generalized Veltman model $M=⟨F,V⟩$ is a structure
    constituted by a generalized Veltman frame $F$ and a valuation $V⊆W×Var$.
 
    Given a model $M$, we define a forcing relation $⊩_M⊆W × Fm$. We use the same
    notation conventions as in the ordinary semantics.
-   - $w⊮⊥$.
-   - If $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$.
-   - If $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$.
-   - If $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
+   - $w⊮⊥$;
+   - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+   - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+   - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
      that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
-     have $y⊩B$.
+     have $y⊩B$;
    {{{enddef}}}
    {{{begincoro}}}
    It immediately follows that:
@@ -140,7 +141,6 @@
    {{{endproof}}}
 
 
-\newpage
 * Logic $IL$
   The logic $IL$ encompasses all classical tautologies in the new language plus
   the following axiom schemes:
@@ -759,7 +759,3 @@
     & z∈𝔻 \\
     ⇒\ & ∃V⊆𝔹.x₀S_wV,R[V]⊆ℂ
     \end{flalign*}
-
-    #+begin_src tex
-    hi λ Γ ₁ ⊩ ⊢ ∷  ⇒ ⇐ ⇔ ♢ □  ⇒
-    #+end_src
