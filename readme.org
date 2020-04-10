@@ -1,2 +1,4 @@
 * Readme
-  You can find the latest build here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]].
+  # You can find the latest build here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]].
+
+  The latest tex file can be found here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
