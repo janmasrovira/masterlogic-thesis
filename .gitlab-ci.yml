@@ -7,7 +7,7 @@ org2tex:
   script:
     - cd report
     - emacs report.org --batch -f org-latex-export-to-latex --kill
-    cp -r img report.tex ../
+    - cp -r img report.tex ../
   artifacts:
     paths:
     - report.tex
