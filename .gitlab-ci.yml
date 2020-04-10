@@ -1,6 +1,5 @@
 stages:
   - org
-  - pdf
 
 org2tex:
   image: silex/emacs:26.3
@@ -8,30 +7,12 @@ org2tex:
   script:
     - cd report
     - emacs report.org --batch -f org-latex-export-to-latex --kill
-  artifacts:
-    paths:
-    - report/report.tex
-    expire_in: 1 month
-
-tex2pdf:
-  stage: pdf
-  # image: mirisbowring/texlive_ctan_full:2019
-  image: laurenss/texlive-full:2019
-  script:
-    - mkdir -p ~/.fonts/truetype/FreeMono
-    - cp fonts/FreeMono.otf ~/.fonts/
-    - cd report
-    - latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
-    - cp -r img report.tex report.pdf ../
+    cp -r img report.tex ../
   artifacts:
     paths:
     - report.tex
-    - report.pdf
-    - img/
-
+    - img
+    expire_in: 1 month
 
 # To browse the latest generated .tex file, visit the following URL:
 # https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex
-
-# To browse the latest generated .tex file plus pdf, visit the following URL:
-# https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=tex2pdf

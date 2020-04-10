@@ -13,3 +13,4 @@ report/report.pdf
 *.toc
 *.xdv
 /report/_minted-report/
+/report/*.pdf
