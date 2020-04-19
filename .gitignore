@@ -14,3 +14,7 @@ report/report.pdf
 *.xdv
 /report/_minted-report/
 /report/*.pdf
+*.xml
+*.blg
+*.bcf
+*.bbl

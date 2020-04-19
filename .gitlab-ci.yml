@@ -7,11 +7,12 @@ org2tex:
   script:
     - cd report
     - emacs report.org --batch -f org-latex-export-to-latex --kill
-    - cp -r img report.tex ../
+    - cp -r img report.tex refs.bib ../
   artifacts:
     paths:
     - report.tex
     - img
+    - refs.bib
     expire_in: 1 month
 
 # To browse the latest generated .tex file, visit the following URL:

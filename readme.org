@@ -2,3 +2,7 @@
   # You can find the latest build here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]].
 
   The latest tex file can be found here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
+  Compile with the following command:
+  #+begin_example
+  latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
+  #+end_example
