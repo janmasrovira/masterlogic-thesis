@@ -54,17 +54,17 @@
   - $wRu⊩A$ iff $wRu$ and $u⊩A$;
   - $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
   - $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
-  - $[A]≔\{w:w⊩A\}$.
+  - $⟦A⟧≔\{w:w⊩A\}$.
+
 * Semantics
   In this document we consider two variants of relational semantics for
   interpretability logic similar to Kripke semantics for other modal logics.
 
 ** Ordinary Veltman semantics
-   {{{begindef}}} An ordinary Veltman frame $F=⟨W,R,S⟩$ is a structure
-   constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a ternary
-   relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and
-   $uS_wv$ instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following
-   conditions:
+   {{{begindef}}} cite:modal-matters An ordinary Veltman frame $F=⟨W,R,S⟩$ is a
+   structure constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a
+   ternary relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$
+   instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following conditions:
 
    1. $R$ is a transitive;
    2. $R$ is conversely well-founded. That is, there is no infinite ascending
@@ -89,6 +89,9 @@
      that $v⊩B$ and $uS_wv$.
    {{{enddef}}}
 
+   If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ do
+   denote that for every valuation we have $⟨F,V⟩⊩A$.
+
    {{{begincoro}}}
    It immediately follows that:
    - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$;
@@ -101,18 +104,18 @@
    {{{endproof}}}
 
 ** Generalized Veltman semantics
-   {{{begindef}}} An generalized Veltman frame $F=⟨W,R,S⟩$ is a structure
-   constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a ternary
-   relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$ instead of $⟨w,u⟩∈R$ and
-   $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must satisfy the following
-   conditions:
+   {{{begindef}}} cite:mikec2019interpretability A generalized Veltman frame
+   $F=⟨W,R,S⟩$ is a structure constituted by a set of worlds $W$, a binary
+   relation $R⊆W²$ and a ternary relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$
+   instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
+   satisfy the following conditions :
 
    1. $R$ is a transitive;
    2. $R$ is conversely well-founded. That is, there is no infinite ascending
       chain $w₁Rw₂R…$;
    3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
    4. if $wRu$ then $uS_w\{u\}$;
-   5. if $xS_wY$ and $yS_wZ$ and $y∈Y∖Z$ then $xS_wZ$;
+   5. if $uS_wY$ and $vS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
    6. if $wRu$ and $uRv$ then $uS_w\{v\}$;
    7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
       $uS_wZ$.
@@ -130,6 +133,10 @@
      that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
      have $y⊩B$;
    {{{enddef}}}
+
+   If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ do
+   denote that for every valuation we have $⟨F,V⟩⊩A$.
+
    {{{begincoro}}}
    It immediately follows that:
    - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
@@ -176,6 +183,9 @@
 * Frame conditions
   A principle is a schema of formulas that carries some special significance.
 
+  JOOST: OF COURSE, YOU WILL NEED SOME GENERAL BACKGROUND. WHAT DOES FRAME VALIDITY MEAN, WHAT ARE FRAME CONDITIONS, ETC.
+
+
   In this section we present a series of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
   semantics.
@@ -183,8 +193,11 @@
    The $M$ principle reads as follows:
    \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C)\]
 
+   JOOST: AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE PRINCIPLE INTRODUCED AND BY WHOM. ALSO, WHY IS IT IMPORTANT, ETC.
+
+
 *** Ordinary semantics
-   The frame condition for $M$ for ordinary semantics, name it $M_{ord}$,
+   The frame condition for $M$ for ordinary semantics, we write $M_{ord}$,
    reads as follows:
    \[∀w,x,y,z(xS_w yRz ⇒ xRz)\]
 
@@ -199,23 +212,26 @@
 
    \[F ⊨ M_{ord} ⇔ F ⊩ M\] {{{endtheorem}}}
 
+   JOOST: NOTE THAT YOUR MODELS SYMBOLS IS A BIT OVERLOADEN. YOU NOW USE IT IN
+   THE SENSE WHERE F IS CONSIDERED A FIRST (OR HIGHER ORDER) STRUCTURE/MODEL.
+
    {{{beginproof}}}
    {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
      Our aim is to find a world $z$ such that $xS_wz⊩B∧□C$. Since $wRx⊩A$ and
      $w⊩A▷B$ there is a world $z$ such that $xS_wz⊩B$. We now show that $z⊩□C$.
-     Let $u$ be such that $zRu$, by the frame condition it follows that $xRz$
-     and we know $x⊩□C$ hence $u⊩C$ and thus $z⊩□C$. Hence $z$ is the desired
-     world.
+     Consider an arbitrary $u$ such that $zRu$. By the frame condition it
+     follows that $xRz$ and we know $x⊩□C$ hence $u⊩C$ and thus $z⊩□C$. Hence
+     $z$ is the desired world.
 
    - \boxed{⇐} Let $a,b,c∈Var$, assume $F⊩a▷b→(a∧□c)▷(b∧□c)$. Assume also that
      for some $x,w,u$ we have $xS_wzRu$. Our goal is to prove $xRu$. Consider a
      model such that the following holds.
      \begin{flalign*}
-     [a] &= \{x\} \\
-     [b] &= \{z\} \\
-     [c] &= \{v:xRv\}
+     ⟦a⟧ &= \{x\} \\
+     ⟦b⟧ &= \{z\} \\
+     ⟦c⟧ &= \{v:xRv\}
      \end{flalign*}
      We observe that $w⊩a▷b$ because $a$ is only forced in $x$ and we have
      $xS_wz⊩b$. Then it follows that $w⊩(a∧□c)▷(b∧□c)$. It is easy to observe
@@ -226,10 +242,15 @@
    {{{endproof}}}
 
 *** Generalized semantics
-   The frame condition for $M$ for generalized semantics, name it $M_{gen}$,
+   The frame condition for $M$ for generalized semantics, we write $M_{gen}$,
    reads as follows:
 
-   \[ ∀w,x,V(xS_wV⇒ ΣV'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz)))\]
+   \[ ∀w,x,V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz)))\]
+
+   JOOST: I THINK LUKA HAS VERY NICE AND CONCISE NOTATION FOR THIS SO THAT
+   FURTHERMORE IT BECOMES VERY CLEAR THAT THE GENERALISED IS VERY CLOSE TO THE
+   REGULAR FRAME CONDITION. PLEASE ASK HIM.
+
 
    #+caption: Generalized frame condition for $M$
    #+name: fig:gen-M-condition
@@ -255,9 +276,9 @@
    - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (a ∧ □ c) ▷ (b ∧ □ c)$ and
      $uS_wV$. Consider a model satisfying the following
      \begin{flalign*}
-     [a] &= \{u\} \\
-     [b] &= V \\
-     [c] &= \{v:uRv\}
+     ⟦a⟧ &= \{u\} \\
+     ⟦b⟧ &= V \\
+     ⟦c⟧ &= \{v:uRv\}
      \end{flalign*}
      We see that $w⊩a▷b$ since $a$ is only true in $u$ and we have $uS_wV⊩b$. It
      follows that ${w⊩(a ∧ □ c)▷(b∧□c)}$. It is easy to see that $u⊩a∧□c$, hence
@@ -293,9 +314,9 @@
       assume that for some $w,x,y,z$ we have $wRxRyS_wz$. Consider a model based
       on $F$ such that the following holds:
       \begin{flalign*}
-      [a] &= \{y\} \\
-      [b] &= \{z\} \\
-      [c] &= \{w:xRw\}
+      ⟦a⟧ &= \{y\} \\
+      ⟦b⟧ &= \{z\} \\
+      ⟦c⟧ &= \{w:xRw\}
       \end{flalign*}
       Observe that $w⊩a▷b$ since $a$ is forced only in $y$ and we have $yS_wz⊩b$.
       It follows that $w⊩(♢ a ∧ □ c) ▷ (b ∧ □ c)$. Clearly $x⊩♢a∧□c$, hence there
@@ -328,9 +349,9 @@
       and assume that for some $w,x,y,Y$ we have $wRxRyS_wY$. Then consider a
       model based on $F$ such that.
       \begin{flalign*}
-      [a] &= \{y\} \\
-      [b] &= Y \\
-      [c] &= \{w:xRw\}
+      ⟦a⟧ &= \{y\} \\
+      ⟦b⟧ &= Y \\
+      ⟦c⟧ &= \{w:xRw\}
       \end{flalign*}
       Observe that $w⊩a▷b$ as $a$ is only forced in $y$ and we have $yS_wY⊩b$.
       Consequently it holds that $w⊩(♢ a ∧ □ c) ▷ (b ∧ □ c)$. See also that
@@ -365,8 +386,8 @@
      $wRxRyS_wzRu$. We want to show $yS_xu$. Consider a model based on $F$ such
      that:
      \begin{flalign*}
-     [a] = \{y \} \\
-     [b] = \{u \}
+     ⟦a⟧ = \{y \} \\
+     ⟦b⟧ = \{u \}
      \end{flalign*}
      Observe that $w⊩a▷♢b$ as the only world that forces $a$ is $y$ and we have
      $yS_wz⊩♢b$, because $zRu⊩b$. Consequently we have $w⊩□(a▷b)$ and therefore
@@ -398,8 +419,8 @@
      that for some $w,x,y,Y,Z$ we have $wRxRyS_wY$ and $(⋆)\ ∀y∈Y∃z∈Z(yRz)$.
      Consider a model based on $F$ such that:
      \begin{flalign*}
-    [a] &= \{y\} \\
-    [b] &= Z
+    ⟦a⟧ &= \{y\} \\
+    ⟦b⟧ &= Z
      \end{flalign*}
      See that $w⊩a▷♢b$ as the only world that forces $a$ is $y$ and we have
      $yS_wY$ and by $(⋆)$ it follows that $Y⊩♢b$. Consequently it holds that
@@ -443,9 +464,9 @@
      $wRxRyS_wz$ . Consider a model
      based on $F$ that satisfies the following.
     \begin{flalign*}
-     [a] &= \{y\} \\
-     [b] &= \{z\} \\
-     [c] &= \{u:yS_xu\}
+     ⟦a⟧ &= \{y\} \\
+     ⟦b⟧ &= \{z\} \\
+     ⟦c⟧ &= \{u:yS_xu\}
     \end{flalign*}
      By assumption we have that $w⊩a ▷ b → (¬ (a ▷ ¬c) ▷ (b ∧ □ c))$. Clearly
      $w⊩a▷b$ as we have $yS_wz⊩b$. Consequently it holds that $w⊩¬ (a ▷ ¬c) ▷ (b
@@ -503,9 +524,9 @@
      Assume also that for some $w,x,y,Y,K$ we have $wRxRyS_wY,K∈𝒞(x,y)$. Now
      consider a model based on $F$ that satisfies the following:
     \begin{flalign*}
-    [a] &=\{y\} \\
-    [b] &=Y \\
-    [c] &= K \\
+    ⟦a⟧ &=\{y\} \\
+    ⟦b⟧ &=Y \\
+    ⟦c⟧ &= K \\
     \end{flalign*}
     By assumption we have $w⊩a ▷ b → (¬ (a ▷ ¬c) ▷ (b ∧ □ c))$. Observe that
      that $w⊩a▷b$ since $yS_wY⊩b$. Thus $w⊩¬ (a ▷ ¬c) ▷ (b ∧ □ c)$. Being $y$
@@ -545,11 +566,11 @@
       a contradiction that $wRxRyS_wzRu,yS_xu⇒(uS_xv,vRm,u\cancel{S}_zm)$. Now
       consider a model based on $F$ that satisfies the following:
       \begin{flalign*}
-      [a] &= \{y\} \\
-      [b] &= \{z\} \\
-      [c] &= \{w:yS_xw\} \\
-      [d] &= \{?\} \\
-      [e] &= \{?\} \\
+      ⟦a⟧ &= \{y\} \\
+      ⟦b⟧ &= \{z\} \\
+      ⟦c⟧ &= \{w:yS_xw\} \\
+      ⟦d⟧ &= \{?\} \\
+      ⟦e⟧ &= \{?\} \\
       \end{flalign*}
       First observe that $w⊩a▷b$ since $a$ is only forced in $y$ and we have
       $yS_wz⊩b$. Therefore $w⊩¬ (a ▷ ¬c) ∧(d▷♢e) ▷ (b ∧ □ c ∧ (d▷e))$. Now we
@@ -629,11 +650,11 @@
 
       Define a valuation such that the following applies:
       \begin{flalign*}
-      [⊩a] &= \{u\} \\
-      [⊩b] &= V \\
-      [⊩c] &= K \\
-      [⊩d] &= \{c_U:U∈𝒱\} \\
-      [⊩e] &= 𝔼
+      ⟦a⟧ &= \{u\} \\
+      ⟦b⟧ &= V \\
+      ⟦c⟧ &= K \\
+      ⟦d⟧ &= \{c_U:U∈𝒱\} \\
+      ⟦e⟧ &= 𝔼
       \end{flalign*}
 
       By assumption we have $w ⊩ a ▷ b → (¬(a▷¬c)∧(d▷♢e))▷(b∧□c∧(d▷e))$.
@@ -699,10 +720,10 @@
       assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part of
       the implication of $(R¹)_{gen}$ holds. Now let $V$ be a valuation defined by
       \begin{flalign*}
-       [a] &= 𝔸 \\
-       [b] &= 𝔹 \\
-       [c] &= ℂ \\
-       [d] &= 𝔻
+       ⟦a⟧ &= 𝔸 \\
+       ⟦b⟧ &= 𝔹 \\
+       ⟦c⟧ &= ℂ \\
+       ⟦d⟧ &= 𝔻
       \end{flalign*}
       Now one can easily check that $w⊩A▷B$, $x⊩♢¬(D▷¬C)∧(D▷A)$, hence there exists $U$
       such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
@@ -793,7 +814,10 @@
 * Agda in the project
   Everything about agda in the project.
 
-
+  - Formulas.
+  - Semantics (positivity restriction).
+  - Derivability.
+  - No known previous work in interpretability logics in Agda.
 
 
 \printbibliography[
