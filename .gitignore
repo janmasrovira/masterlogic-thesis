@@ -18,3 +18,8 @@ report/report.pdf
 *.blg
 *.bcf
 *.bbl
+*.glg
+*.glo
+*.gls
+*.ist
+*.xdy

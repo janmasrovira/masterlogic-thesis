@@ -13,8 +13,11 @@
 #+latex_header: \usepackage{cancel}
 #+latex_header: \usepackage{amsthm}
 #+latex_header: \usepackage{float}
+#+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
+
 #+latex_header: \bibliography{refs}
+#+latex_header: \makeglossaries
 
 #+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Firebrick4,citecolor=Green4}
 #+latex_header: \newcommand{\ie}[0]{i.e.\ }
@@ -32,159 +35,194 @@
 #+macro: begintheorem @@latex:\begin{theorem}@@
 #+macro: endtheorem @@latex:\end{theorem}@@
 
+#+macro: beginlemma @@latex:\begin{lemma}@@
+#+macro: endlemma @@latex:\end{lemma}@@
+
 #+macro: beginproof @@latex:\begin{proof}@@
 #+macro: endproof @@latex:\end{proof}@@
 
-#+macro: agda @@latex:\includegraphics[height=\baselineskip]{img/agda}@@
+
+#+macro: defglossary @@latex:\newglossaryentry{$1}{name=$2,description={$3}}@@
+#+macro: defacronym @@latex:\newacronym{$1}{$2}{$3}@@
 
 
 #+latex_header: \newtheorem{theorem}{Theorem}
 #+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{corollary}[theorem]{Corollary}
 #+latex_header: \theoremstyle{definition}
+#+latex_header: \newtheorem{lemma}[theorem]{Lemma}
+#+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{definition}[theorem]{Definition}
 
-* Language
-  The language of interpretability logics is $⟨⊥,→,▷⟩$. We define $∧,□,♢,∨,→$.
+#+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A proof formalized in Agda}}
 
-* Notation
-  Some notation that we use throughout the report:
-  - $wRuRv$ iff $wRu$ and $uRv$;
-  - $wRuS_xv$ iff $wRu$ and $uS_xv$;
-  - $wRu⊩A$ iff $wRu$ and $u⊩A$;
-  - $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
-  - $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
-  - $⟦A⟧≔\{w:w⊩A\}$.
+{{{defglossary(gvm,model,Generalized Veltman model)}}}
+{{{defglossary(gvf,frame,Generalized Veltman frame)}}}
+{{{defglossary(ovf,frame,Ordinary Veltman frame)}}}
+{{{defglossary(ovm,model,Ordinary Veltman model)}}}
+{{{defglossary(forcing-gen,{\ensuremath{⊩^{gen}_M}},Forcing relation for generalized semantics)}}}
+{{{defglossary(forcing-ord,{\ensuremath{⊩^{ord}_M}},Forcing relation for ordinary semantics)}}}
+{{{defglossary(choice-set,choice set,Choice set)}}}
 
-* Semantics
-  In this document we consider two variants of relational semantics for
-  interpretability logic similar to Kripke semantics for other modal logics.
-
-** Ordinary Veltman semantics
-   {{{begindef}}} cite:modal-matters An ordinary Veltman frame $F=⟨W,R,S⟩$ is a
-   structure constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a
-   ternary relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$
-   instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following conditions:
-
-   1. $R$ is a transitive;
-   2. $R$ is conversely well-founded. That is, there is no infinite ascending
-      chain $w₁Rw₂R…$;
-   3. if $uS_wv$ then $wRu$ and $wRv$;
-   4. if $wRu$ then $uS_wu$;
-   5. for every $w$, $S_w$ is transitive;
-   6. if $wRu$ and $uRv$ then $uS_wv$.
-   {{{enddef}}}
+#+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 
 
-   {{{begindef}}} An ordinary Veltman model $M=⟨F,V⟩$ is a structure constituted
-   by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$.
+* Introduction
 
-   Given a model $M$, we define a forcing relation $⊩_M⊆W × Fm$. We write
-   $M,w⊩A$ instead of $⟨w,A⟩∈⊩_M$ or simply $w⊩A$ when the model is clear by
-   the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
-   - $w⊮⊥$;
-   - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
-   - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-   - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
-     that $v⊩B$ and $uS_wv$.
-   {{{enddef}}}
 
-   If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ do
-   denote that for every valuation we have $⟨F,V⟩⊩A$.
+** Overview of interpretability logics
 
-   {{{begincoro}}}
-   It immediately follows that:
-   - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$;
-   - if $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
-   - if $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
-   - if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
-   {{{endcoro}}}
+** Original contributions
+   This work includes the following original contributions:
+   1. Generalized frame condition for $R₁$. [[theorem:R₁][Link]].
+   2. Generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]].
+
+** Language
+   The language of interpretability logics is $⊥,→,▷$. We define $∧,□,♢,∨,→$.
+
+** Notation
+   Some notation that we use throughout the report:
+   - $wRuRv$ iff $wRu$ and $uRv$;
+   - $wRuS_xv$ iff $wRu$ and $uS_xv$;
+   - $wRu⊩A$ iff $wRu$ and $u⊩A$;
+   - $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
+   - $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
+   - $⟦A⟧≔\{w:w⊩A\}$;
+   - {{{agda}}} this is Agda's logo, and every proof that is formalized in Agda
+     has been tagged with it.
+   - When we write a dot after the quantification of some variables, the scope of
+     the variables extends to the rightmost part of what follows. Hence the
+     formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$
+
+** Semantics
+   In this document we consider two variants of relational semantics for
+   interpretability logic similar to Kripke semantics for other modal logics.
+
+*** Ordinary Veltman semantics
+    {{{begindef}}} cite:modal-matters An ordinary Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a
+    structure constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a
+    ternary relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$
+    instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following conditions:
+
+    1. $R$ is a transitive;
+    2. $R$ is conversely well-founded. That is, there is no infinite ascending
+       chain $w₁Rw₂R…$;
+    3. if $uS_wv$ then $wRu$ and $wRv$;
+    4. if $wRu$ then $uS_wu$;
+    5. for every $w$, $S_w$ is transitive;
+    6. if $wRu$ and $uRv$ then $uS_wv$.
+    {{{enddef}}}
+
+
+    {{{begindef}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$ is a structure
+    constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$.
+
+    Given a model $M$, we define a forcing relation $\gls{forcing-ord}⊆W × Fm$. We write
+    $M,w⊩A$ instead of $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear by
+    the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
+    - $w⊮⊥$;
+    - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+    - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+    - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+      that $v⊩B$ and $uS_wv$.
+    {{{enddef}}}
+
+    If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ do
+    denote that for every valuation we have $⟨F,V⟩⊩A$.
+
+    {{{begincoro}}}
+    It immediately follows that:
+    - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$;
+    - if $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
+    - if $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
+    - if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+    {{{endcoro}}}
+    {{{beginproof}}}
+    {{{agda}}}
+    {{{endproof}}}
+
+*** Generalized Veltman semantics
+    {{{begindef}}} cite:mikec2019interpretability A generalized Veltman \gls{gvf}
+    $F=⟨W,R,S⟩$ is a structure constituted by a set of worlds $W$, a binary
+    relation $R⊆W²$ and a ternary relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$
+    instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
+    satisfy the following conditions :
+
+    1. $R$ is a transitive; <<R-trans>>
+    2. $R$ is conversely well-founded. That is, there is no infinite ascending
+       chain $w₁Rw₂R…$;
+    3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
+    4. if $wRu$ then $uS_w\{u\}$;
+    5. if $uS_wY$ and $vS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
+    6. if $wRu$ and $uRv$ then $uS_w\{v\}$;
+    7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
+       $uS_wZ$.
+    {{{enddef}}}
+
+    {{{begindef}}} A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
+    constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×Var$.
+
+    Given a model $M$, we define a forcing relation $\gls{forcing-gen}_M⊆W ×
+    Fm$. We use the same notation conventions as in the ordinary semantics.
+    - $w⊮⊥$;
+    - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+    - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+    - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
+      that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
+      have $y⊩B$;
+    {{{enddef}}}
+
+    If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ do
+    denote that for every valuation we have $⟨F,V⟩⊩A$.
+
+    {{{begincoro}}}
+    It immediately follows that:
+    - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
+    - If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
+    - If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
+    - If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+    {{{endcoro}}}
+    {{{beginproof}}}
+    {{{agda}}}
+    {{{endproof}}}
+
+** Logic $IL$
+   The logic $IL$ encompasses all classical tautologies in the new language plus
+   the following axiom schemes:
+   - K: $□ (A → B) → □ A → □ B$
+   - J1: $□ (A → B) → A ▷ B$
+   - J2: $A ▷ B ∧ B ▷ C → A ▷ C$
+   - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$
+   - J4: $A ▷ B → ♢ A → ♢ B$
+   - J5: $♢ A ▷ A$
+   Additionally it has the following rules:
+   - Necessitation: if $⊢_{IL}A$ then $⊢_{IL}□A$.
+   - Modus ponens: if $Π⊢_{IL}A→B$ and $Π⊢_{IL}A$ then $Π⊢_{IL}B$.
+   - Identity: If $A∈Π$ then $Π⊢_{IL}A$.
+
+  {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
+  $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that
+  $w⊩Π$, then $w⊩A$.
+   {{{endtheorem}}}
    {{{beginproof}}}
    {{{agda}}}
    {{{endproof}}}
 
-** Generalized Veltman semantics
-   {{{begindef}}} cite:mikec2019interpretability A generalized Veltman frame
-   $F=⟨W,R,S⟩$ is a structure constituted by a set of worlds $W$, a binary
-   relation $R⊆W²$ and a ternary relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$
-   instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
-   satisfy the following conditions :
-
-   1. $R$ is a transitive;
-   2. $R$ is conversely well-founded. That is, there is no infinite ascending
-      chain $w₁Rw₂R…$;
-   3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
-   4. if $wRu$ then $uS_w\{u\}$;
-   5. if $uS_wY$ and $vS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
-   6. if $wRu$ and $uRv$ then $uS_w\{v\}$;
-   7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
-      $uS_wZ$.
-   {{{enddef}}}
-
-   {{{begindef}}} A generalized Veltman model $M=⟨F,V⟩$ is a structure
-   constituted by a generalized Veltman frame $F$ and a valuation $V⊆W×Var$.
-
-   Given a model $M$, we define a forcing relation $⊩_M⊆W × Fm$. We use the same
-   notation conventions as in the ordinary semantics.
-   - $w⊮⊥$;
-   - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
-   - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-   - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
-     that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
-     have $y⊩B$;
-   {{{enddef}}}
-
-   If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ do
-   denote that for every valuation we have $⟨F,V⟩⊩A$.
-
-   {{{begincoro}}}
-   It immediately follows that:
-   - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
-   - If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
-   - If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
-   - If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
-   {{{endcoro}}}
+  {{{begintheorem}}} *Local soundness for generalized semantics*. That is, if
+  $Π⊢_{IL}A$ and $M$ is a generalized model with a world $w$ such that
+  $w⊩Π$, then $w⊩A$.
+   {{{endtheorem}}}
    {{{beginproof}}}
    {{{agda}}}
    {{{endproof}}}
 
-* Logic $IL$
-  The logic $IL$ encompasses all classical tautologies in the new language plus
-  the following axiom schemes:
-  - K: $□ (A → B) → □ A → □ B$
-  - J1: $□ (A → B) → A ▷ B$
-  - J2: $A ▷ B ∧ B ▷ C → A ▷ C$
-  - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$
-  - J4: $A ▷ B → ♢ A → ♢ B$
-  - J5: $♢ A ▷ A$
-  Additionally it has the following rules:
-  - Necessitation: if $⊢_{IL}A$ then $⊢_{IL}□A$.
-  - Modus ponens: if $Π⊢_{IL}A→B$ and $Π⊢_{IL}A$ then $Π⊢_{IL}B$.
-  - Identity: If $A∈Π$ then $Π⊢_{IL}A$.
 
- {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
- $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that
- $w⊩Π$, then $w⊩A$.
-  {{{endtheorem}}}
-  {{{beginproof}}}
-  {{{agda}}}
-  {{{endproof}}}
-
- {{{begintheorem}}} *Local soundness for generalized semantics*. That is, if
- $Π⊢_{IL}A$ and $M$ is a generalized model with a world $w$ such that
- $w⊩Π$, then $w⊩A$.
-  {{{endtheorem}}}
-  {{{beginproof}}}
-  {{{agda}}}
-  {{{endproof}}}
-
-
-\newpage
+ \newpage
 * Frame conditions
   A principle is a schema of formulas that carries some special significance.
 
-  JOOST: OF COURSE, YOU WILL NEED SOME GENERAL BACKGROUND. WHAT DOES FRAME VALIDITY MEAN, WHAT ARE FRAME CONDITIONS, ETC.
-
+  JOOST: OF COURSE, YOU WILL NEED SOME GENERAL BACKGROUND. WHAT DOES FRAME
+  VALIDITY MEAN, WHAT ARE FRAME CONDITIONS, ETC.
 
   In this section we present a series of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
@@ -482,7 +520,7 @@
 
     We first introduce the concept of choice set
 
-   {{{begindef}}} If $xRy$ we say that a set of worlds $K$ is a choice set for
+   {{{begindef}}} If $xRy$ we say that a set of worlds $K$ is a \gls{choice-set} for
    $⟨x,y⟩$ iff for any $V$ such that $yS_xV$ we have $V∩K≠∅$. We denote the
    family of choice sets for $⟨x,y⟩$ by $𝒞(x,y)$. Note that this definition
    depends on the frame, but it should always be clear by context.
@@ -500,6 +538,7 @@
    [[file:img/wip.png]]
 
    {{{begintheorem}}}
+   <<theorem:R⁰>>
    For any generalized frame $F$, we have that $F$ satisfies the
    $R_{gen}$ condition iff any model based on $F$ forces every instantiation of
    the $R$ principle. In symbols:
@@ -538,13 +577,12 @@
    {{{endproof}}}
 
 ** $R₁$ principle
-
   The $R_1$ principle reads as follows:
   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E))\]
 
 *** Ordinary semantics
 
-    The $(R₁)_{ord}$ frame condition reads as follows (pull quantifiers out?):
+    The $(R₁)_{ord}$ frame condition reads as follows:
     \[∀w,x,y,z(wRxRyS_wz⇒∀u(zRu⇒yS_xu,∀v(uS_xv⇒∀m(vRm⇒uS_zm))))\]
 
     # #+caption: Ordinary frame condition for $R₁$
@@ -606,6 +644,7 @@
     \end{flalign*}
 
     {{{begintheorem}}}
+    <<theorem:R₁>>
     For any generalized frame $F$, we have that $F$ satisfies the
     $(R₁)_{gen}$ condition iff any model based on $F$ forces every instantiation of
     the $R₁$ principle. In symbols:
@@ -767,50 +806,92 @@
 
     \newpage
 ** $Rⁿ$ principle
-   The $R^n$ principle is defined:
+   The $R^n$ principle is defined thus cite:two-new-series:
    \begin{flalign*}
    Ω₀ &≔¬(D_0▷¬C)\\
-   Ω₀ &≔(Dᵣ▷D_{r+1}) ∧ Uᵣ\\
+   Ω_{r+1} &≔(Dᵣ▷D_{r+1}) ∧ Uᵣ\\
    \\
-   U₀ &≔ ♢Ω₀ \\
-   U_{r+1} &≔ ♢() \\
+   U_i &≔ ♢Ω_i \\
    \\
    R⁰& ≔ A ▷ B → ¬ (A ▷ ¬ C) ▷ B ∧ □ C \\
-   R^{n+1}& ≔ A ▷ B → (U_{n}∧(D_{n}▷A)) ▷ B ∧ □ C
+   R^{n+1}& ≔ A ▷ B → ((D_{n}▷A) ∧ U_{n}) ▷ B ∧ □ C
    \end{flalign*}
+*** Ordinary semantics
+    The frame condition for ordinary semantics $(R^n)_{ord}$ can be found in
+    cite:two-new-series.
 
 *** Generalized semantics
     The $(Rⁿ)_{gen}$ condition reads as follows:
-
-    \begin{flalign*}
-    &∀w,x₀,…,x_{n-1},y,z,𝔸,𝔹,ℂ,𝔻₀,…,𝔻_{n-1}.\\
-    &wRx₀R…Rx_{n-1}RyRz, \\
-    & (∀u.wRu,u∈𝔸⇒∃V.uS_wV⊆𝔹), \\
-    & (∀u.x₀Ru∈𝔻_{n-1}⇒∃V.uS_{x₀}V⊆𝔸), \\
-    & (∀i∈\{1…n-1\}∀u.xᵢRu∈𝔻_{n-i-1}⇒∃V.uS_{xᵢ}V⊆𝔻ₙ), \\
-    & (∀V.zS_yV⇒V∩ℂ≠0),      \\
-    & z∈𝔻₀ \\
-    ⇒\ & ∃V⊆𝔹.x₀S_wV,R[V]⊆ℂ
-    \end{flalign*}
-    \newpage
-*** Generalized semantics 2
-    The $(Rⁿ)_{gen}$ condition reads as follows:
-
     \begin{flalign*}
     &∀w,x₀,…,x_{n-1},y,z,𝔸,𝔹,ℂ,𝔻₀,…,𝔻_{n-1}.\\
     &wRx_{n-1}R…Rx_0RyRz, \\
     & (∀u.wRu,u∈𝔸⇒∃V.uS_wV⊆𝔹), \\
-    & (∀u.x_{n-1}Ru∈𝔻_{n-1}⇒∃V.uS_{x₀}V⊆𝔸), \\
-    & (∀i∈\{1…n-1\}∀u.xᵢRu∈𝔻_{n-i-1}⇒∃V.uS_{xᵢ}V⊆𝔻ₙ), \\
+    & (∀u.x_{n-1}Ru∈𝔻_{n-1}⇒∃V.uS_{x_{n-1}}V⊆𝔸), \\
+    & (∀i∈\{1…n-1\}∀u.xᵢRu∈𝔻_i⇒∃V.uS_{x_i}V⊆𝔻_{i+1}), \\
     & (∀V.zS_yV⇒V∩ℂ≠0),      \\
     & z∈𝔻₀ \\
-    ⇒\ & ∃V⊆𝔹.x₀S_wV,R[V]⊆ℂ
+    ⇒\ & ∃V⊆𝔹.x_{n-1}S_wV,R[V]⊆ℂ
     \end{flalign*}
+    \newpage
+    {{{beginlemma}}}
+    <<lemma:Rⁿ>>
+    Let $M$ be a model, let $x$ be a world of $M$ and let $n∈ℕ$. For any $i≤n$ we have
+    that if $M , x ⊩ U_i$ then there exist some worlds $y,z,x₀,…,x_{i}$ such that:
+    1. $xᵢ=x$;
+    2. $x_iR…Rx₀RyRz$;
+    3. for all $j≤i$ we have that $M,x_j⊩U_j$;
+    4. for all $j<i$ we have that $M,x_j⊩D_j▷D_{j+1}$;
+    5. for all $V$ we have that if $zS_yV$ then $V∩\{w:M,w⊩C\}≠∅$;
+    6. $M,z⊩D₀$.
+    {{{beginproof}}}
+    {{{agda}}}
+
+    By induction on $i$.
+    - For $i=0$ we have that $x⊩♢¬(D₀▷¬C)$. It follows that there exists some
+      $y$ such that $xRy⊩¬(D₀▷¬C)$ and therefore there exists some $z$ such that
+      $yRz⊩D₀$ and for any $V$, if $zS_yV$, then $V∩\{w:M,w⊩C\}≠∅$. It is clear
+      that all claims are met.
+    - For $i+1$ we have that $x⊩♢(D_i▷D_{i+1}∧U_i)$. It follows that there
+      exists some $x_{i}$ such that $x_i⊩D_i▷D_{i+1}∧U_i$. By IH there exist
+      $y,z,x₀,…,x_{i}$ such that satisfy claims $1…6$. We set $x_{i+1}≔x$. It is
+      trivial to observe that by using the IH all conditions are met for $i+1$.
+    {{{endproof}}}
+    {{{endlemma}}}
+    {{{begintheorem}}}
+    <<theorem:Rⁿ>>
+    For any generalized frame $F$, we have that $F$ satisfies
+    the $(Rⁿ)_{gen}$ condition iff any model based on $F$ forces every
+    instantiation of the $Rⁿ$ principle. In symbols:
+
+    \[F⊨(Rⁿ)_{gen}⇔F⊩Rⁿ\]
+    {{{endtheorem}}}
+
+    {{{beginproof}}}
+    {{{agda}}}
+
+    If $n=0$ we refer to theorem [[theorem:R⁰]]. For $n+1$ proceed as follows.
+    - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
+      Then assume also that $wRx⊩((Dₙ▷A)∧U_n)$. By lemma [[lemma:Rⁿ]] it follows
+      that there exist $y,z,x₀,…,x_{n-1}$ satisfying $1…6$. Then let $𝔸≔⟦A⟧$,
+      $𝔹≔⟦B⟧$, $ℂ≔⟦C⟧$ and for $i<n$ let $𝔻ᵢ≔⟦Dᵢ⟧$. It is routine to check that
+      the left part of the $(Rⁿ)_{gen}$ holds and thus we get that there exists
+      some $V⊆𝔹$ such that $x_{n-1}S_wV$ and $R[V]⊆ℂ$. Since $V⊆𝔹$ we have that
+      $x_{n-1}⊩B$ and since $R[V]⊆ℂ$ we have $x_{n-1}⊩□C$. Finally, since
+      $x_{n-1}=x$ we conclude $x⊩B∧□C$.
+    - \boxed{⇐}
+    {{{endproof}}}
+
+** $Rₙ$ principle
+   The $R_n$ principle is defined thus cite:two-new-series:
+   \begin{flalign*}
+   wip
+   \end{flalign*}
 
 * Agda
   Everything about agda in general.
   Look here cite:norell:thesis.
 
+  By property [[R-trans][R-trans]].
 * Agda in the project
   Everything about agda in the project.
 
@@ -819,6 +900,7 @@
   - Derivability.
   - No known previous work in interpretability logics in Agda.
 
+\printglossary
 
 \printbibliography[
   heading=bibintoc,
