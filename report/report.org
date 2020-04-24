@@ -916,7 +916,6 @@
    [[sec:language]]. It is a very simple type yet an insightful introductory example.
 
    First we define variables to be natural numbers:
-
    #+begin_src text
 Var : Set
 Var = Nat
@@ -1143,8 +1142,3 @@ record Frame : Set₁ where
   heading=bibintoc,
   title=Bibliography
   ]
-
-    - Formulas.
-    - Semantics (positivity restriction).
-    - Derivability.
-    - No known previous work in interpretability logics in Agda.
