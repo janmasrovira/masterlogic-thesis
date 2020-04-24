@@ -63,6 +63,8 @@
 {{{defglossary(forcing-gen,{\ensuremath{⊩^{gen}_M}},Forcing relation for generalized semantics)}}}
 {{{defglossary(forcing-ord,{\ensuremath{⊩^{ord}_M}},Forcing relation for ordinary semantics)}}}
 {{{defglossary(choice-set,choice set,Choice set)}}}
+{{{defglossary(noetherian,Noetherian,Conversely well-founded relation)}}}
+#+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first}}
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 
@@ -71,13 +73,13 @@
 
 
 ** Overview of interpretability logics
-
 ** Original contributions
    This work includes the following original contributions:
-   1. Generalized frame condition for $R₁$. [[theorem:R₁][Link]].
+   1. Generalized frame condition for $R₁$ (in collaboration with Luka). [[theorem:R₁][Link]].
    2. Generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]].
 
 ** Language
+   <<sec:language>>
    The language of interpretability logics is $⊥,→,▷$. We define $∧,□,♢,∨,→$.
 
 ** Notation
@@ -217,7 +219,6 @@
    {{{endproof}}}
 
 
- \newpage
 * Frame conditions
   A principle is a schema of formulas that carries some special significance.
 
@@ -324,8 +325,6 @@
      forced exactly in $V$. Now let $v',z$ such that $v'∈V'$ and $v'Rz$. Since
      $v'⊩□c$, then $z⊩c$ and thus $uRz$. Therefore $V'$ is the desired set.
    {{{endproof}}}
-   \newpage
-   \newpage
 ** $M₀$ principle
    The $M₀$ principle reads as follows:
    \[A ▷ B → (♢ A ∧ □ C) ▷ (B ∧ □ C)\]
@@ -467,7 +466,6 @@
      done.
    {{{endproof}}}
 
-   \newpage
 ** $R$ principle
    The $R$ principle reads as follows:
 
@@ -614,7 +612,7 @@
       $yS_wz⊩b$. Therefore $w⊩¬ (a ▷ ¬c) ∧(d▷♢e) ▷ (b ∧ □ c ∧ (d▷e))$. Now we
       show that $x⊩¬ (a ▷ ¬c)$. Since $a$ is only forced in $y$ and $xRy$, we
       need to show that $∀u(yS_xu⇒u⊩c)$, which clearly holds. We proceed by
-      showing $x⊩d▷♢e$.
+      showing $x⊩d▷♢e$ (????).
     - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
       that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)∧(D▷♢E)$. Then
       there exists world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$. As
@@ -756,8 +754,9 @@
       is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
       definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
     - \boxed{⇐} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
-      assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part of
-      the implication of $(R¹)_{gen}$ holds. Now let $V$ be a valuation defined by
+      assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part
+      of the implication of $(R¹)_{gen}$ holds. Now consider a model extending
+      $F$ such that:
       \begin{flalign*}
        ⟦a⟧ &= 𝔸 \\
        ⟦b⟧ &= 𝔹 \\
@@ -768,8 +767,7 @@
       such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
     {{{endproof}}}
 
-\newpage
-** $R²$ principle
+** $R²$ principle                                                  :noexport:
 
    The $R²$ principle reads as follows:
    \[A ▷ B → (♢ [(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)] ∧ (D ▷ A)) ▷ (B ∧ □ C) \]
@@ -804,14 +802,11 @@
     - \boxed{⇐}
     {{{endproof}}}
 
-    \newpage
 ** $Rⁿ$ principle
    The $R^n$ principle is defined thus cite:two-new-series:
    \begin{flalign*}
-   Ω₀ &≔¬(D_0▷¬C)\\
-   Ω_{r+1} &≔(Dᵣ▷D_{r+1}) ∧ Uᵣ\\
-   \\
-   U_i &≔ ♢Ω_i \\
+   U_0 &≔ ♢¬(D_0▷¬C) \\
+   U_{r+1} &≔ ♢((Dᵣ▷D_{r+1}) ∧ Uᵣ) \\
    \\
    R⁰& ≔ A ▷ B → ¬ (A ▷ ¬ C) ▷ B ∧ □ C \\
    R^{n+1}& ≔ A ▷ B → ((D_{n}▷A) ∧ U_{n}) ▷ B ∧ □ C
@@ -832,7 +827,6 @@
     & z∈𝔻₀ \\
     ⇒\ & ∃V⊆𝔹.x_{n-1}S_wV,R[V]⊆ℂ
     \end{flalign*}
-    \newpage
     {{{beginlemma}}}
     <<lemma:Rⁿ>>
     Let $M$ be a model, let $x$ be a world of $M$ and let $n∈ℕ$. For any $i≤n$ we have
@@ -872,13 +866,25 @@
     If $n=0$ we refer to theorem [[theorem:R⁰]]. For $n+1$ proceed as follows.
     - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
       Then assume also that $wRx⊩((Dₙ▷A)∧U_n)$. By lemma [[lemma:Rⁿ]] it follows
-      that there exist $y,z,x₀,…,x_{n-1}$ satisfying $1…6$. Then let $𝔸≔⟦A⟧$,
-      $𝔹≔⟦B⟧$, $ℂ≔⟦C⟧$ and for $i<n$ let $𝔻ᵢ≔⟦Dᵢ⟧$. It is routine to check that
-      the left part of the $(Rⁿ)_{gen}$ holds and thus we get that there exists
-      some $V⊆𝔹$ such that $x_{n-1}S_wV$ and $R[V]⊆ℂ$. Since $V⊆𝔹$ we have that
-      $x_{n-1}⊩B$ and since $R[V]⊆ℂ$ we have $x_{n-1}⊩□C$. Finally, since
-      $x_{n-1}=x$ we conclude $x⊩B∧□C$.
-    - \boxed{⇐}
+      that there exist $y,z,x₀,…,x_{n}$ satisfying $1…6$. Then let $𝔸≔⟦A⟧$,
+      $𝔹≔⟦B⟧$, $ℂ≔⟦C⟧$ and for $i≤n$ let $𝔻ᵢ≔⟦Dᵢ⟧$. It is routine to check that
+      the left part of the $(R^{n+1})_{gen}$ holds and thus we get that there exists
+      some $V⊆𝔹$ such that $x_{n}S_wV$ and $R[V]⊆ℂ$. Since $V⊆𝔹$ we have that
+      $x_{n}⊩B$ and since $R[V]⊆ℂ$ we have $x_{n}⊩□C$. Finally, since
+      $x_{n}=x$ we conclude $x⊩B∧□C$.
+    - \boxed{⇐} Fix a frame $F$ and let $a,b,c,d₀,…,dₙ$ be propositional
+      variables and assume $F⊩R^{n+1}$. Assume that the left part of the
+      implication of $(R^{n+1})_{gen}$ holds. Now consider a model based on $F$
+      that satisfies the following:
+      \begin{flalign*}
+       ⟦a⟧ &= 𝔸 \\
+       ⟦b⟧ &= 𝔹 \\
+       ⟦c⟧ &= ℂ \\
+       ⟦dᵢ⟧ &= 𝔻ᵢ, \text{ for all } i∈\{0…n\}
+      \end{flalign*}
+      Now one can routinely check that $w⊩A▷B$ and $x⊩((D_n▷A)∧U_n)$, hence there
+      exists $U$ such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$
+      and $R[U]⊆ℂ$.
     {{{endproof}}}
 
 ** $Rₙ$ principle
@@ -891,14 +897,245 @@
   Everything about agda in general.
   Look here cite:norell:thesis.
 
-  By property [[R-trans][R-trans]].
+** Universe hierarchy
+   In Agda we have $Setᵢ : Set_{i+1}$ for $i∈ℕ$.
 * Agda in the project
-  Everything about agda in the project.
+  The goal of this section is to guide the reader through a brief practical
+  introduction to the language while explaining some key parts of code that we
+  have implemented.
 
-  - Formulas.
-  - Semantics (positivity restriction).
-  - Derivability.
-  - No known previous work in interpretability logics in Agda.
+  It is worth noting that we have started from scratch as we believe that no
+  other previous work in interpretability logics has been done in Agda.
+
+** Naming conventions
+   1. If we have =f : T= we say that =f= has type =T= or that =f= is a proof of =T=.
+   2. If we have =f : A → B → C= we say =f= has arguments =A= and =B= and it has
+      return type =C=.
+** Modal formulas
+   Here we present the Agda type that represents a formula as defined in section
+   [[sec:language]]. It is a very simple type yet an insightful introductory example.
+
+   First we define variables to be natural numbers:
+
+   #+begin_src text
+Var : Set
+Var = Nat
+   #+end_src
+
+   We proceed by inductively defining the formula type: =Fm=. We add a
+   constructor for variables and one for each primitive operator.
+   #+begin_src text
+data Fm : Set where
+  var : Var → Fm
+  ⊥' : Fm
+  _↝_ : Fm → Fm → Fm
+  _▷_ : Fm → Fm → Fm
+   #+end_src
+   There are a number of things to take notice:
+   1. The =data= keyword is used to introduce the definition of a new type;
+   2. the newly introduced =Fm= type is not indexed by any other type, hence it
+      has type =Set= as indicated by =Fm : Set=;
+   3. take the constructor =var=, which has type =Var → Fm=. This means that if
+      we apply =var= to a variable (i.e. a natural number) we get a term of type
+      =Fm=. For instance, =var 3= has type =Fm=.
+   4. we have named the bottom constructor =⊥'= since the symbol =⊥= is commonly
+      used in Agda. We have used the =↝= to denote an implication since =→= is a
+      reserved symbol;
+   5. the underscores in =_↝_= and =_▷_= mean that these constructors are infix
+      operators. Thus, the following formula is syntactically valid: =(var 1 ▷
+      var 0) ↝ ⊥'=.
+
+      It is often the case that we define priority for our infix operators. The
+      following code defines the /infixity/ of =_↝_= and =_▷_=
+        #+begin_src text
+      infixr 20 _↝_
+      infixr 50 _▷_
+        #+end_src
+      The higher the number the more priority, hence we can drop the parentheses
+      from the previous formula =var 1 ▷ var 0 ↝ ⊥'=. The $r$ in =infixr= stands
+      for right associativity.
+
+   We finally add definable operators as Agda functions. For instance, we define
+   negation thus:
+  #+begin_src text
+infix 60 ¬'_
+¬'_ : Fm → Fm
+¬' a = a ↝ ⊥'
+  #+end_src
+  We use the symbol =¬'= instead of =¬= for the same reason we used =⊥'= instead
+  of =⊥=.
+
+** Predicates and relations
+   In this section we give a short description on how to represent predicates
+   and relations in Agda.
+
+   We define a predicate to have the following type[fn::We leave universe
+   polymorphism out for simplicity.]:
+   #+begin_src text
+   Pred : Set → Set₁
+   Pred A = A → Set
+   #+end_src
+   Hence, a predicate on the elements of some type =A= is a function from =A= to
+   =Set=.
+
+   Relations follow the same pattern:
+   #+begin_src text
+   Rel : Set → Set → Set₁
+   Rel A B = A → B → Set
+   #+end_src
+
+   Now consider as an example the natural numbers and the =≤= relation, which is
+   defined inductively according to the following definition.
+   1. For all $a∈ℕ$ we have $0≤a$;
+   2. for all $a,b∈ℕ$ we have that if $a≤b$ then also $a+1≤b+1$.
+   #+begin_src text
+   data Nat : Set where
+     zero : Nat
+     suc : Nat → Nat
+
+   data _≤_ : Rel Nat Nat where
+     z≤n : (a : Nat) → zero ≤ a
+     s≤s : {a b : Nat} → a ≤ b → suc a ≤ suc b
+   #+end_src
+   Note that =≤= is the first indexed type that we present as it is indexed by
+   two natural numbers. Keep in mind that =Rel Nat Nat = Nat → Nat → Set=.
+   If =t : a ≤ b= we say that =t= is a proof that =a= is less or equal than =b=.
+
+   Let us prove that $1≤2$; hence we need to build a term of type =suc zero ≤
+   suc (suc zero)=.
+   #+begin_src text
+   1≤2 : suc zero ≤ suc (suc zero)
+   1≤2 = s≤s (z≤n (suc zero))
+   #+end_src
+   Note that we did not explicitly give parameters =a, b= for the =s≤s=
+   constructor as they are declared in curly braces[fn::Arguments defined in
+   curly braces do not need to be given explicitly so long as Agda can infer its
+   values.] and can be inferred by the type =a ≤ b=. Note that we could have
+   done the same with the argument =a= of =z≤n= but we keep it explicit for
+   illustrating the difference.
+
+   We can also build proofs recursively. Let us prove that =_≤_= is reflexive:
+   #+begin_src text
+   ≤-refl : (a : Nat) → a ≤ a
+   ≤-refl zero = z≤n zero
+   ≤-refl (suc a) = s≤s (≤-refl a)
+   #+end_src
+   A key feature to notice is that we can name arguments and refer to them in
+   subsequent arguments and in the return type. For instance here we have named
+   =a= the first argument, which is a natural number. We use the syntax =(a :
+   Nat)=. And then we use the name =a= to build the return type, that is: =a ≤ a=.
+
+   We can also define the property of transitivity.
+   #+begin_src text
+   Transitive : {A : Set} → Rel A A → Set
+   Transitive R = ∀ {a b c} → R a b → R b c → R a c
+   #+end_src
+   We see that a proof that some relation is transitive is a function that given
+   proofs of =R a b= and =R b c= constructs a proof of =R a c=. Notice that the
+   arguments =a b c= are declared implicit as they can be inferred from the types
+   =a ≤ b= and =b ≤ c=. Let us prove that =≤= is transitive:
+   #+begin_src text
+   ≤-trans : Transitive _≤_
+   ≤-trans {a} {b} {c} (z≤n b) b≤c = z≤n c
+   ≤-trans {suc a} {suc b} {suc c} (s≤s a≤b) (s≤s b≤c) = s≤s (≤-trans a≤b b≤c)
+   #+end_src
+   The previous proof works as follows. We perform induction on the proof of =a
+   ≤ b=, that is, the first explicit argument.
+   - Case =z≤n=; we know that =a = zero= and we can easily build a proof of
+     =a ≤ c= by using the =z≤n= constructor.
+   - Case =s≤s a≤b=; then is must be that the second proof is built using the
+     =s≤s= constructor since we have =suc b=. Hence we have =a≤b : a ≤ b= and
+     =b≤c : b ≤ c=. By using a recursive call (induction hypothesis) to
+     =≤-trans= we can build a proof of =a ≤ c=. Finally we can apply the
+     constructor =s≤s= to obtain a proof of =suc a ≤ suc c=.
+** Dependent pairs
+    Consider the following non-dependent pair definition (again, we present a non universe
+    polymorphic version for simplicity):
+    #+begin_src text
+data Pair (A B : Set) : Set where
+  pair : A → B → Pair A B
+    #+end_src
+    Notice that =Pair= is a parameterized type as it has parameters =(A B :
+    Set)=, which are the types of each component of the pair. Parameters are
+    shared parameters by all constructors (in this case there is only one
+    constructor).
+
+    See that we can easily build a pair $⟨0,1⟩$ thus:
+    #+begin_src text
+    p : Pair Nat Nat
+    p = pair zero (suc zero)
+    #+end_src
+
+    We now introduce the notion of \glspl*{dependent-pair}, also called
+    \(Σ\)-pairs. Consider the following definition.
+    #+begin_src text
+data Σ (A : Set) (B : A → Set) : Set where
+  Σ-pair : (a : A) → (b : B a) → Σ A (B a)
+    #+end_src
+    The only, although essential, difference, is that the type of the second
+    parameter is indexed by the value of the first. This is specially useful to
+    represent existential quantification. For instance, we can design a type
+    that asserts that some predicate is satisfiable[fn::we could simply write
+    =P= instead of =(λ a → P a)= since eta-reductions are valid in Agda.]:
+    #+begin_src text
+    Satisfiable : {A : Set} → Pred A → Set
+    Satisfiable {A} P = Σ A (λ a → P a)
+    #+end_src
+    Let us prove that for every natural $n$ there exists some $m$ such that
+    $n+1≤m$. Since we have already proven that $≤$ is reflexive the proof
+    becomes trivial as we can pick $m≔n+1$:
+    #+begin_src text
+    n+1≤m : (n : Nat) → Σ Nat (λ m → n ≤ m)
+    n+1≤m n = Σ-pair (suc n) (≤-refl (suc n))
+    #+end_src
+
+
+** Noetherian relations
+    We say that a relation is \gls*{noetherian} if it is conversely
+    well-founded. We begin by formalizing the concept of infinite ascending
+    chain in Agda.
+    #+begin_src text
+InfAscChain : {W : Set} → (_∼_ : Rel W) → Set₁
+InfAscChain {W} _∼_ =
+  Σ ({a b : W} → R a b → Set) λ f
+  → Σ (Pair W W) λ {(pair a b)
+  → Pair (Pair (R a b) (f a b))
+  (∀ a' b' → (Ra'b' : R a' b') → f Ra'b' → Σ W λ c → (Σ (R b' c) f))}
+    #+end_src
+    In words the previous type defines an infinite ascending chain on
+    some relation =R= with domain =W= as:
+    1. A label function =f= that for any =a,b=, maps a proof of =R a b= to a
+       type. This is used to carry additional information that may be necessary
+       to build the infinite chain.
+    2. A pair of starting values =a,b= of type =W=. A proof of =R a b= and a
+       proof of =f a b=.
+    3. A function that for any =a',b'= and a proof of =R a' b'= and =f a' b'=,
+       finds some =c= and builds a proof of =R b' c= and =f b' c=.
+
+    To see an example refer to the proof of soundness for J5 (pending).
+** Semantics
+   In this section we explain how we have represented ordinary Veltman semantics
+   in Agda.
+
+   To represent ordinary Veltman semantics in Agda, the first step is to
+   define the type of an ordinary Veltman frame:
+   #+begin_src text
+record Frame : Set₁ where
+  constructor frame
+  field
+    W : Set
+    witness : W
+    R : Rel W lzero
+    S : Rel₃ W lzero
+    R-trans : Transitive R
+    R-noetherian : Noetherian R
+    Sw⊆R[w]² : ∀ {w u v} → S w u v → R w u × R w v
+    Sw-refl : ∀ {w u} → R w u → S w u u
+    Sw-trans : ∀ {w} → Transitive (S w)
+    R-Sw-trans : ∀ {w u v} → R w u → R u v → S w u v
+   #+end_src
+
+
 
 \printglossary
 
@@ -906,3 +1143,8 @@
   heading=bibintoc,
   title=Bibliography
   ]
+
+    - Formulas.
+    - Semantics (positivity restriction).
+    - Derivability.
+    - No known previous work in interpretability logics in Agda.
