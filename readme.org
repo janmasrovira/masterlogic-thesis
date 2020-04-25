@@ -2,7 +2,12 @@
   # You can find the latest build here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]].
 
   The latest tex file can be found here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
-  Compile with the following command:
+  To do it automatically follow these commands:
+
+  #+INCLUDE: "get-pdf.sh"
+
   #+begin_example
+  curl --location "https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/download?job=org2tex" --output artifacts.zip
+  unzip artifacts.zip
   latexmk -pdf report
   #+end_example

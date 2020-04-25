@@ -14,6 +14,7 @@ org2tex:
     - img
     - refs.bib
     - .latexmkrc
+    - readme.org
     expire_in: 1 month
 
 # To browse the latest generated .tex file, visit the following URL:
