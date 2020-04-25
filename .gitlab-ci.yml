@@ -23,6 +23,7 @@ tex2pdf:
   stage: pdf
   # image: mirisbowring/texlive_ctan_full:2019
   # image: laurenss/texlive-full:2019
+  # NOTE: need texlive 2020 to compile. Does not work with 2019 version.
   image: danteev/texlive:latest
   only:
     - master

@@ -119,7 +119,9 @@
 
     {{{begindef}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$ is a structure
     constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$.
-
+    {{{enddef}}}
+    {{{begindef}}}
+    <<def:ord-forcing>>
     Given a model $M$, we define a forcing relation $\gls{forcing-ord}⊆W × Fm$. We write
     $M,w⊩A$ instead of $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear by
     the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
@@ -164,7 +166,8 @@
 
     {{{begindef}}} A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
     constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×Var$.
-
+    {{{enddef}}}
+    {{{begindef}}}
     Given a model $M$, we define a forcing relation $\gls{forcing-gen}_M⊆W ×
     Fm$. We use the same notation conventions as in the ordinary semantics.
     - $w⊮⊥$;
@@ -899,6 +902,7 @@
   Look here cite:norell:thesis.
 
 ** Universe hierarchy
+   <<sec:universe-hierarchy>>
    In Agda we have $Setᵢ : Set_{i+1}$ for $i∈ℕ$.
 * Agda in the project
   The goal of this section is to guide the reader through a brief practical
@@ -982,8 +986,13 @@ infix 60 ¬'_
 
    Relations follow the same pattern:
    #+begin_src text
+   REL : Set → Set → Set₁
+   REL A B = A → B → Set
+   #+end_src
+   For homogeneous relations we use the name =Rel=:
+   #+begin_src text
    Rel : Set → Set → Set₁
-   Rel A B = A → B → Set
+   Rel A = REL A A
    #+end_src
 
    Now consider as an example the natural numbers and the =≤= relation, which is
@@ -995,12 +1004,12 @@ infix 60 ¬'_
      zero : Nat
      suc : Nat → Nat
 
-   data _≤_ : Rel Nat Nat where
+   data _≤_ : Rel Nat where
      z≤n : (a : Nat) → zero ≤ a
      s≤s : {a b : Nat} → a ≤ b → suc a ≤ suc b
    #+end_src
    Note that =≤= is the first indexed type that we present as it is indexed by
-   two natural numbers. Keep in mind that =Rel Nat Nat = Nat → Nat → Set=.
+   two natural numbers. Keep in mind that =Rel Nat = Nat → Nat → Set=.
    If =t : a ≤ b= we say that =t= is a proof that =a= is less or equal than =b=.
 
    Let us prove that $1≤2$; hence we need to build a term of type =suc zero ≤
@@ -1029,7 +1038,7 @@ infix 60 ¬'_
 
    We can also define the property of transitivity.
    #+begin_src text
-   Transitive : {A : Set} → Rel A A → Set
+   Transitive : {A : Set} → Rel A → Set
    Transitive R = ∀ {a b c} → R a b → R b c → R a c
    #+end_src
    We see that a proof that some relation is transitive is a function that given
@@ -1143,7 +1152,73 @@ record Frame : Set₁ where
    The second component, =witness= is required to make sure that the set of
    worlds is not empty. The =R= and =S= components are the relations. The
    remaining components are the properties that must be satisfied according to
-   definition [[def:ordinary-frames]].
+   definition [[def:ordinary-frames]]. Notice the =lzero= in the type of =R= and =S=
+   which restricts this relations to be in the 0 level of the universe hierarchy
+   (i.e. =R= has type =W → W → Set₀=, see [[sec:universe-hierarchy]]) as making them
+   universe polymorphic has no gains for the purposes of this work and it would
+   make code harder to read.
+
+   We define a valuation on a frame thus:
+   #+begin_src text
+Valuation : Frame → Set₁
+Valuation F = REL W Var lzero
+  where open Frame F
+   #+end_src
+
+   And then we define a model to be a tuple of a frame and a valuation on that
+   frame.
+   #+begin_src text
+record Model : Set₁ where
+  constructor model
+  field
+    F : Frame
+    V : Valuation F
+   #+end_src
+
+   Our next step is to define the forcing relation.
+   #+begin_src text
+data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
+   ...
+   #+end_src
+   We set a model and a world of that model as parameters as they should be
+   shared by all constructors. We leave the formula as an index as it may vary
+   depending on the constructor. We should introduce a constructor for each case
+   in definition [[def:ord-forcing]]:[fn::we have slightly
+   simplified the types of the constructors below to make them more readable.]
+   1. We do not need a constructor for =⊥'= as its absence implicitly implies that
+      we can never build an instance of =M , w ⊩ ⊥'= regardless of =M= and =w=.
+   2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+      #+begin_src text
+  var : {x : Var} → V w x → M , w ⊩ var x
+      #+end_src
+   3. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+      that $v⊩B$ and $uS_wv$.
+      #+begin_src text
+   rhd : {A B : Fm} →
+     ({u : W} → R w u → M , u ⊩ A → (Σ W λ v → S w u v × (M , v ⊩ B)))
+     → M , w ⊩ A ▷ B
+      #+end_src
+   4. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+      #+begin_src text
+  impl : {A B : Fm} → ((M , w ⊩ A) → (M , w ⊩ B)) → M , w ⊩ (A ↝ B)
+      #+end_src
+
+   Unfortunately the definition above is not valid. The reason is that constructors
+   =rhd= and =impl= both fail the positivity check.
+
+   when we define a type in Agda, it cannot appear in a negative position in one
+   of its constructors. since constructors =rhd= and =impl= are conflicting
+
+
+   Final definition:
+   #+begin_src text
+data _,_⊩_ M w where
+  var : {x : Var} → V w x → M , w ⊩ var x
+  impl : {A B : Fm} → M , w ⊮ A ⊎ M , w ⊩ B → M , w ⊩ A ↝ B
+  rhd : {A B : Fm} →
+    (∀ {u} → R w u → M , u ⊮ A ⊎ (Σ W λ v → S w u v × M , v ⊩ B))
+    → M , w ⊩ A ▷ B
+   #+end_src
 
 
 \printglossary
