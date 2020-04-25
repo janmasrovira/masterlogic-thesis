@@ -24,7 +24,7 @@ tex2pdf:
     - mkdir -p ~/.fonts/truetype/FreeMono
     - cp fonts/FreeMono.otf ~/.fonts/
     - cd report
-    - latexmk -pdf -e '$pdflatex=q/xelatex --halt-on-error --shell-escape %O %S/' report
+    - latexmk -pdf report
     - cp -r img report.tex report.pdf ../
   artifacts:
     paths:

@@ -1133,7 +1133,8 @@ record Frame : Set₁ where
     Sw-trans : ∀ {w} → Transitive (S w)
     R-Sw-trans : ∀ {w u v} → R w u → R u v → S w u v
    #+end_src
-
+   The keyword =record= is used to define a new product type (a tuple) in which
+   each component (or field) has a name.
 
 
 \printglossary
