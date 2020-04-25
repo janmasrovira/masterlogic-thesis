@@ -101,7 +101,8 @@
    interpretability logic similar to Kripke semantics for other modal logics.
 
 *** Ordinary Veltman semantics
-    {{{begindef}}} cite:modal-matters An ordinary Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a
+    {{{begindef}}} <<def:ordinary-frames>>
+    cite:modal-matters An ordinary Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a
     structure constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a
     ternary relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$
     instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following conditions:
@@ -907,6 +908,8 @@
   It is worth noting that we have started from scratch as we believe that no
   other previous work in interpretability logics has been done in Agda.
 
+  The implementation relies on the Agda standard library cite:agda-stdlib.
+
 ** Naming conventions
    1. If we have =f : T= we say that =f= has type =T= or that =f= is a proof of =T=.
    2. If we have =f : A → B → C= we say =f= has arguments =A= and =B= and it has
@@ -1135,6 +1138,12 @@ record Frame : Set₁ where
    #+end_src
    The keyword =record= is used to define a new product type (a tuple) in which
    each component (or field) has a name.
+
+   The first component, =W=, corresponds to the type of the worlds in the frame.
+   The second component, =witness= is required to make sure that the set of
+   worlds is not empty. The =R= and =S= components are the relations. The
+   remaining components are the properties that must be satisfied according to
+   definition [[def:ordinary-frames]].
 
 
 \printglossary

@@ -28,9 +28,7 @@ tex2pdf:
   script:
     - mkdir -p ~/.fonts/truetype/FreeMono
     - cp fonts/FreeMono.otf ~/.fonts/
-    - cd report
     - latexmk -pdf report
-    - cp report.pdf ../
   artifacts:
     paths:
     - report.pdf
