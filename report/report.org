@@ -65,6 +65,7 @@
 {{{defglossary(choice-set,choice set,Choice set)}}}
 {{{defglossary(noetherian,Noetherian,Conversely well-founded relation)}}}
 #+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first}}
+#+latex_header: \newglossaryentry{sum type}{name={sum type},description={A disjunction of two ore more types}}
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 
@@ -904,6 +905,10 @@
 ** Universe hierarchy
    <<sec:universe-hierarchy>>
    In Agda we have $Setᵢ : Set_{i+1}$ for $i∈ℕ$.
+** Positivity
+   <<sec:positivity>>
+
+   See cite:agda-doc.
 * Agda in the project
   The goal of this section is to guide the reader through a brief practical
   introduction to the language while explaining some key parts of code that we
@@ -1059,29 +1064,83 @@ infix 60 ¬'_
      =b≤c : b ≤ c=. By using a recursive call (induction hypothesis) to
      =≤-trans= we can build a proof of =a ≤ c=. Finally we can apply the
      constructor =s≤s= to obtain a proof of =suc a ≤ suc c=.
+** Top and bottom
+   In Agda we call top (=⊤=) to the unit type, i.e. the type with only one
+   inhabitant.
+   #+begin_src text
+   data ⊤ : Set where
+     tt : ⊤
+   #+end_src
+   For instance, we can define a predicate that is always satisfied thus:
+   #+begin_src text
+   Trivial : Pred Nat
+   Trivial n = ⊤
+   #+end_src
+   It is always satisfied as we can build a proof of =Trivial= for any =n= using
+   the =tt= constructor:
+   #+begin_src text
+   Trivial-n : (n : Nat) → Trivial n
+   Trivial-n n = tt
+   #+end_src
+
+   We call bottom (=⊥=) the empty type.
+   #+begin_src text
+   data ⊥ : Set where
+   #+end_src
+   Notice that it has no constructors hence it is impossible to construct a term
+   with type =⊥=. The bottom type is specially useful to define negation in Agda:
+   #+begin_src text
+   ¬ : Set → Set
+   ¬ A = A → ⊥
+   #+end_src
+   The principle of explosion can be trivially proved thus:
+   #+begin_src text
+   explosion : {A : Set} → ⊥ → A
+   explosion ()
+   #+end_src
+   Since the type =⊥= has no constructors when we pattern match against the
+   argument we get an empty case (denoted by =()=) and thus there is no need to
+   provide a term of type =A=.
+** Sum types
+   We say that a type is a \gls*{sum type} if it is the disjunction of two (or
+   more) types.
+
+   In Agda we can define a two options sum type in the following way:
+   #+begin_src text
+   data _⊎_ (A B : Set) : Set where
+     inj₁ : A → A ⊎ B
+     inj₂ : B → A ⊎ B
+   #+end_src
+
+   For instance, let us prove that every natural is either even or odd:
+   #+begin_src text
+   even odd : Pred Nat
+   even zero = ⊤
+   even (suc n) = 
+   #+end_src
 ** Dependent pairs
     Consider the following non-dependent pair definition (again, we present a non universe
     polymorphic version for simplicity):
     #+begin_src text
-data Pair (A B : Set) : Set where
-  pair : A → B → Pair A B
+data _×_ (A B : Set) : Set where
+  _,_ : A → B → A × B
     #+end_src
-    Notice that =Pair= is a parameterized type as it has parameters =(A B :
+    Notice that =_×_= is a parameterized type as it has parameters =(A B :
     Set)=, which are the types of each component of the pair. Parameters are
     shared parameters by all constructors (in this case there is only one
     constructor).
 
     See that we can easily build a pair $⟨0,1⟩$ thus:
     #+begin_src text
-    p : Pair Nat Nat
-    p = pair zero (suc zero)
+    p : Nat × Nat
+    p = zero , (suc zero)
     #+end_src
 
     We now introduce the notion of \glspl*{dependent-pair}, also called
     \(Σ\)-pairs. Consider the following definition.
     #+begin_src text
 data Σ (A : Set) (B : A → Set) : Set where
-  Σ-pair : (a : A) → (b : B a) → Σ A (B a)
+  _,_ : (a : A) → (b : B a) → Σ A (B a)
     #+end_src
     The only, although essential, difference, is that the type of the second
     parameter is indexed by the value of the first. This is specially useful to
@@ -1092,14 +1151,10 @@ data Σ (A : Set) (B : A → Set) : Set where
     Satisfiable : {A : Set} → Pred A → Set
     Satisfiable {A} P = Σ A (λ a → P a)
     #+end_src
-    Let us prove that for every natural $n$ there exists some $m$ such that
-    $n+1≤m$. Since we have already proven that $≤$ is reflexive the proof
-    becomes trivial as we can pick $m≔n+1$:
+    For instance:
     #+begin_src text
-    n+1≤m : (n : Nat) → Σ Nat (λ m → n ≤ m)
-    n+1≤m n = Σ-pair (suc n) (≤-refl (suc n))
+    show meaningful example of dependent pair
     #+end_src
-
 
 ** Noetherian relations
     We say that a relation is \gls*{noetherian} if it is conversely
@@ -1109,8 +1164,8 @@ data Σ (A : Set) (B : A → Set) : Set where
 InfAscChain : {W : Set} → (_∼_ : Rel W) → Set₁
 InfAscChain {W} _∼_ =
   Σ ({a b : W} → R a b → Set) λ f
-  → Σ (Pair W W) λ {(pair a b)
-  → Pair (Pair (R a b) (f a b))
+  → Σ (W × W) λ {(a , b)
+  → (R a b) , (f a b) ,
   (∀ a' b' → (Ra'b' : R a' b') → f Ra'b' → Σ W λ c → (Σ (R b' c) f))}
     #+end_src
     In words the previous type defines an infinite ascending chain on
@@ -1191,24 +1246,35 @@ data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
       #+begin_src text
   var : {x : Var} → V w x → M , w ⊩ var x
       #+end_src
-   3. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+   3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+      #+begin_src text
+  impl : {A B : Fm} → ((M , w ⊩ A) → (M , w ⊩ B)) → M , w ⊩ (A ↝ B)
+      #+end_src
+   4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
       that $v⊩B$ and $uS_wv$.
       #+begin_src text
    rhd : {A B : Fm} →
      ({u : W} → R w u → M , u ⊩ A → (Σ W λ v → S w u v × (M , v ⊩ B)))
      → M , w ⊩ A ▷ B
       #+end_src
-   4. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-      #+begin_src text
-  impl : {A B : Fm} → ((M , w ⊩ A) → (M , w ⊩ B)) → M , w ⊩ (A ↝ B)
-      #+end_src
 
-   Unfortunately the definition above is not valid. The reason is that constructors
-   =rhd= and =impl= both fail the positivity check.
+   Unfortunately the definition above is not valid in Agda. The reason is that
+   constructors =rhd= and =impl= both fail the positivity check (see
+   [[sec:positivity]]). For instance, see that in the =impl= constructor we have
+   =(M , w ⊩ A)= on the left of an arrow =→=.
 
-   when we define a type in Agda, it cannot appear in a negative position in one
-   of its constructors. since constructors =rhd= and =impl= are conflicting
+   We have circumvented this problem by providing mutually recursive definitions
+   for /forcing/ (=_,_⊩_=) and /not forcing/ (=_,_⊮_=). The idea is the
+   following; take the =impl= constructor as an example. Initially we had
+   =impl : {A B : Fm} → ((M , w ⊩ A) → (M , w ⊩ B)) → M , w ⊩ (A ↝ B)=
 
+
+   Hence we can define the following in
+   Agda.
+   #+begin_src text
+   data _,_⊮_ (M : Model) (w : MW M) : Fm → Set
+   data _,_⊩_ (M : Model) (w : MW M) : Fm → Set
+   #+end_src
 
    Final definition:
    #+begin_src text
