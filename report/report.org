@@ -1179,7 +1179,7 @@ InfAscChain {W} _∼_ =
        finds some =c= and builds a proof of =R b' c= and =f b' c=.
 
     To see an example refer to the proof of soundness for J5 (pending).
-** Semantics
+** TODO Semantics
    In this section we explain how we have represented ordinary Veltman semantics
    in Agda.
 
@@ -1264,19 +1264,56 @@ data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
    =(M , w ⊩ A)= on the left of an arrow =→=.
 
    We have circumvented this problem by providing mutually recursive definitions
-   for /forcing/ (=_,_⊩_=) and /not forcing/ (=_,_⊮_=). The idea is the
-   following; take the =impl= constructor as an example. Initially we had
-   =impl : {A B : Fm} → ((M , w ⊩ A) → (M , w ⊩ B)) → M , w ⊩ (A ↝ B)=
+   for /forcing/ (=_,_⊩_=) and /not forcing/ (=_,_⊮_=).
 
-
-   Hence we can define the following in
-   Agda.
+   The type definition without the constructors is as follows.
    #+begin_src text
    data _,_⊮_ (M : Model) (w : MW M) : Fm → Set
    data _,_⊩_ (M : Model) (w : MW M) : Fm → Set
    #+end_src
 
-   Final definition:
+   Next we provide the strictly positive types of each constructor of the
+   =_,_⊩_= and =_,_⊮_= relations.
+   1. For the =⊥'= constant.
+      1. Forcing (=_,_⊩_=). No constructor is required.
+      2. Not forcing (=_,_⊮_=).
+        #+begin_example
+        bot : M , w ⊮ ⊥'
+        #+end_example
+   2. For variables.
+    1. Forcing (=_,_⊩_=).
+       #+begin_src text
+  var : {x : Var} → V w x → M , w ⊩ var x
+       #+end_src
+    2. Not forcing (=_,_⊮_=).
+       #+begin_example
+  var : {x : Var} → ¬ (V w x) → M , w ⊮ var x
+       #+end_example
+
+   3. For implication (=↝=).
+    1. Forcing (=_,_⊩_=).
+       #+begin_src text
+  impl : {A B : Fm} → M , w ⊮ A ⊎ M , w ⊩ B → M , w ⊩ A ↝ B
+       #+end_src
+    2. Not forcing (=_,_⊮_=).
+       #+begin_src text
+  impl : {A B : Fm} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
+       #+end_src
+   4. For interpretability (=▷=).
+    1. Forcing (=_,_⊩_=).
+       #+begin_src text
+  rhd : {A B : Fm} →
+    (∀ {u} → R w u → M , u ⊮ A ⊎ (Σ W λ v → S w u v × M , v ⊩ B))
+    → M , w ⊩ A ▷ B
+       #+end_src
+    2. Not forcing (=_,_⊮_=).
+       #+begin_src text
+  rhd : {A B : Fm} →
+    Σ W (λ u → R w u × M , u ⊩ A × ∀ v → (¬ S w u v) ⊎ M , v ⊮ B)
+    → M , w ⊮ A ▷ B
+       #+end_src
+
+   Final definitions:
    #+begin_src text
 data _,_⊩_ M w where
   var : {x : Var} → V w x → M , w ⊩ var x
@@ -1284,6 +1321,15 @@ data _,_⊩_ M w where
   rhd : {A B : Fm} →
     (∀ {u} → R w u → M , u ⊮ A ⊎ (Σ W λ v → S w u v × M , v ⊩ B))
     → M , w ⊩ A ▷ B
+   #+end_src
+   #+begin_src text
+data _,_⊮_ M w where
+  var : {a : Var} → a ∉ Model.V M w → M , w ⊮ var a
+  impl : {A B : Fm} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
+  rhd : {A B : Fm} →
+    Σ W (λ u → R w u × M , u ⊩ A × ∀ v → (¬ S w u v) ⊎ M , v ⊮ B)
+    → M , w ⊮ A ▷ B
+  bot : M , w ⊮ ⊥'
    #+end_src
 
 
