@@ -1179,7 +1179,7 @@ InfAscChain {W} _∼_ =
        finds some =c= and builds a proof of =R b' c= and =f b' c=.
 
     To see an example refer to the proof of soundness for J5 (pending).
-** TODO Semantics
+** Ordinary semantics
    In this section we explain how we have represented ordinary Veltman semantics
    in Agda.
 
@@ -1324,7 +1324,7 @@ data _,_⊩_ M w where
    #+end_src
    #+begin_src text
 data _,_⊮_ M w where
-  var : {a : Var} → a ∉ Model.V M w → M , w ⊮ var a
+  var : {x : Var} → ¬ (V w x) → M , w ⊮ var a
   impl : {A B : Fm} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
   rhd : {A B : Fm} →
     Σ W (λ u → R w u × M , u ⊩ A × ((v : W) → (¬ S w u v) ⊎ M , v ⊮ B))
@@ -1334,15 +1334,34 @@ data _,_⊮_ M w where
 
    To prove that =_,_⊩= and =_,_⊮= are indeed the negation of each other
    we should prove two lemmas; in Agda types[fn::=A ⇔ B ≔ A → B × B → A=]:
+   {{{beginlemma}}}
+   <<lemma:forcing-neg>>
+   \hfill
    1. =∀ {M w A} → M , w ⊩ A ⇔ ¬ (M , w ⊮ A)=.
-   1. =∀ {M w A} → ¬ (M , w ⊩ A) ⇔ M , w ⊮ A=.
-   For lemma 1 we can prove $⇒$ and for lemma 2 we can prove $⇐$. However, it is
-   not possible to prove the remaining directions. In general terms, this is due
-   to the fact that in Agda (and in intuitionistic logic in general) we can
-   prove that =(¬ A ⊎ B) → A → B= but we cannot prove =A → B → (¬ A ⊎ B)= since
-   we lack the non-constructive law of excluded middle.
+   2. =∀ {M w A} → ¬ (M , w ⊩ A) ⇔ M , w ⊮ A=.
+   {{{endlemma}}} For lemma 1 we can prove $⇒$ and for lemma 2 we can prove $⇐$.
+   However, it is not possible to prove the remaining directions. In general
+   terms, this is due to the fact that in Agda (and in intuitionistic logic in
+   general) we can prove that =(¬ A ⊎ B) → A → B= but we cannot prove =A → B →
+   (¬ A ⊎ B)=. The reason being that we lack the law of excluded middle, as it
+   is a non-constructive axiom. In order to prove the remaining directions we
+   need to assume that the forcing relation is decidable.
 
+   {{{begindef}}} We say that a model =M= is decidable if for any world =w= and
+   formula =A= we have that either =M , w ⊩ A= or =M , w ⊮ A=.
 
+   In Agda terms:
+   #+begin_src text
+DecidableModel : Model → Set
+DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
+   #+end_src
+   {{{enddef}}}
+
+   {{{beginproof}}}
+   {{{agda}}}
+
+   Under the assumption that the model is decidable we can
+   prove lemma [[lemma:forcing-neg]]. {{{endproof}}}
 
 \printglossary
 
