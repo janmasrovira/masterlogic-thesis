@@ -1116,7 +1116,7 @@ infix 60 ¬'_
    #+begin_src text
    even odd : Pred Nat
    even zero = ⊤
-   even (suc n) = 
+   even (suc n) =
    #+end_src
 ** Dependent pairs
     Consider the following non-dependent pair definition (again, we present a non universe
@@ -1309,11 +1309,11 @@ data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
     2. Not forcing (=_,_⊮_=).
        #+begin_src text
   rhd : {A B : Fm} →
-    Σ W (λ u → R w u × M , u ⊩ A × ∀ v → (¬ S w u v) ⊎ M , v ⊮ B)
+    Σ W (λ u → R w u × M , u ⊩ A × ((v : W) → (¬ S w u v) ⊎ M , v ⊮ B))
     → M , w ⊮ A ▷ B
        #+end_src
 
-   Final definitions:
+   Putting it all together results in the following definitions:
    #+begin_src text
 data _,_⊩_ M w where
   var : {x : Var} → V w x → M , w ⊩ var x
@@ -1327,10 +1327,21 @@ data _,_⊮_ M w where
   var : {a : Var} → a ∉ Model.V M w → M , w ⊮ var a
   impl : {A B : Fm} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
   rhd : {A B : Fm} →
-    Σ W (λ u → R w u × M , u ⊩ A × ∀ v → (¬ S w u v) ⊎ M , v ⊮ B)
+    Σ W (λ u → R w u × M , u ⊩ A × ((v : W) → (¬ S w u v) ⊎ M , v ⊮ B))
     → M , w ⊮ A ▷ B
   bot : M , w ⊮ ⊥'
    #+end_src
+
+   To prove that =_,_⊩= and =_,_⊮= are indeed the negation of each other
+   we should prove two lemmas; in Agda types[fn::=A ⇔ B ≔ A → B × B → A=]:
+   1. =∀ {M w A} → M , w ⊩ A ⇔ ¬ (M , w ⊮ A)=.
+   1. =∀ {M w A} → ¬ (M , w ⊩ A) ⇔ M , w ⊮ A=.
+   For lemma 1 we can prove $⇒$ and for lemma 2 we can prove $⇐$. However, it is
+   not possible to prove the remaining directions. In general terms, this is due
+   to the fact that in Agda (and in intuitionistic logic in general) we can
+   prove that =(¬ A ⊎ B) → A → B= but we cannot prove =A → B → (¬ A ⊎ B)= since
+   we lack the non-constructive law of excluded middle.
+
 
 
 \printglossary
@@ -1339,3 +1350,8 @@ data _,_⊮_ M w where
   heading=bibintoc,
   title=Bibliography
   ]
+
+* Appendix
+  :PROPERTIES:
+  :END:
+  All the Agda cope goes here.
