@@ -66,6 +66,7 @@
 {{{defglossary(noetherian,Noetherian,Conversely well-founded relation)}}}
 #+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first}}
 #+latex_header: \newglossaryentry{sum type}{name={sum type},description={A disjunction of two ore more types}}
+#+latex_header: \newglossaryentry{decidable model}{name={decidable model},description={A model whose forcing relation is decidable}}
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 
@@ -1339,15 +1340,16 @@ data _,_⊮_ M w where
    \hfill
    1. =∀ {M w A} → M , w ⊩ A ⇔ ¬ (M , w ⊮ A)=.
    2. =∀ {M w A} → ¬ (M , w ⊩ A) ⇔ M , w ⊮ A=.
-   {{{endlemma}}} For lemma 1 we can prove $⇒$ and for lemma 2 we can prove $⇐$.
-   However, it is not possible to prove the remaining directions. In general
-   terms, this is due to the fact that in Agda (and in intuitionistic logic in
-   general) we can prove that =(¬ A ⊎ B) → A → B= but we cannot prove =A → B →
-   (¬ A ⊎ B)=. The reason being that we lack the law of excluded middle, as it
-   is a non-constructive axiom. In order to prove the remaining directions we
-   need to assume that the forcing relation is decidable.
+   {{{endlemma}}} For lemma 1 we can prove $⇒$ and for lemma 2 we can prove $⇐$
+   (see lemma [[lemma:equiv]]). However, it is not possible to prove the remaining
+   directions. In general terms, this is due to the fact that in Agda (and in
+   intuitionistic logic in general) we can prove that =(¬ A ⊎ B) → A → B= but we
+   cannot prove =A → B → (¬ A ⊎ B)=. The reason being that we lack the law of
+   excluded middle, as it is a non-constructive axiom. In order to prove the
+   remaining directions we need to assume that the forcing relation is
+   decidable.
 
-   {{{begindef}}} We say that a model =M= is decidable if for any world =w= and
+   {{{begindef}}} We say that =M= is \gls*{decidable model} if for any world =w= and
    formula =A= we have that either =M , w ⊩ A= or =M , w ⊮ A=.
 
    In Agda terms:
@@ -1360,8 +1362,53 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    {{{beginproof}}}
    {{{agda}}}
 
-   Under the assumption that the model is decidable we can
-   prove lemma [[lemma:forcing-neg]]. {{{endproof}}}
+   Under the assumption that we restrict ourselves to decidable models we can
+   prove lemma [[lemma:forcing-neg]].
+   {{{endproof}}}
+
+   {{{beginlemma}}} <<lemma:equiv>> The following is true[fn::Note that =MR M=
+   is the =R= of the frame on which the model =M= is based. We give analogous
+   definitions to =MW= and =MS=.]:
+
+   1. =⊩⊥ : ∀ {M w} → ¬ (M , w ⊩ ⊥')=;
+   2. =⊮→¬⊩ : ∀ {M w A} → M , w ⊮ A → ¬ (M , w ⊩ A)=;
+   3. =⊩→¬⊮ : ∀ {M w A} → M , w ⊩ A → ¬ (M , w ⊮ A)=;
+   4. =⊩MP : ∀ {M w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B=;
+   5. =⊩¬ : ∀ {M w A} → (M , w ⊩ ¬' A) ⇔ (M , w ⊮ A)=;
+   6. =⊮¬ : ∀ {M w A} → M , w ⊮ ¬' A ⇔ M , w ⊩ A=;
+   7. =⊩¬¬ : ∀ {M w A} → M , w ⊩ ¬' ¬' A ⇔ M , w ⊩ A=;
+   8. =⊮¬¬ : ∀ {M w A} → M , w ⊮ ¬' ¬' A ⇔ M , w ⊮ A=;
+   9. =⊩∧ : ∀ {M w A B} → M , w ⊩ A ∧ B ⇔ (M , w ⊩ A × M , w ⊩ B)=;
+   10. =⊮∧ : ∀ {M w A B} → M , w ⊮ A ∧ B ⇔ (M , w ⊮ A ⊎ M , w ⊮ B)=;
+   11. =⊩∨ : ∀ {M w A B} → M , w ⊩ A ∨ B ⇔ (M , w ⊩ A ⊎ M , w ⊩ B)=;
+   12. =⊩□ : ∀ {M w A} → M , w ⊩ □ A ⇔ (∀ {v} → MR M w v → M , v ⊩ A)=;
+   13. =⊮□ : ∀ {M w A} → M , w ⊮ □ A ⇔ (Σ (MW M) λ u → MR M w u × M , u ⊮ A)=;
+   14. =⊩♢ : ∀ {M w A} → M , w ⊩ ♢ A ⇔ (Σ (MW M) λ u → MR M w u × M , u ⊩ A)=;
+   15. =⊮♢ : ∀ {M w A} → M , w ⊮ ♢ A ⇔ (∀ {u} → MR M w u → M , u ⊮ A)=;
+   16. =⊩↝⇨ : ∀ {M w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B=;
+   17. =⊩▷⇨ : ∀ {M w A B} → M , w ⊩ A ▷ B → (∀ {u} → MR M w u → M , u ⊩ A → Σ (MW M) λ v → (MS M) w u v × M , v ⊩ B)=.
+   {{{endlemma}}}
+   {{{beginproof}}} {{{agda}}} All of the above has been proven
+   in Agda without assuming that the model is decidable. {{{endproof}}}
+
+
+   {{{beginlemma}}} <<lemma:ord-equiv-dec>> A series of equivalences that can be proven for decidable
+   models.
+
+   1. =⊩↝ : ∀ {w A B} → M , w ⊩ A ↝ B ⇔ (M , w ⊩ A → M , w ⊩ B)=;
+   2. =⊩▷ : ∀ {w A B} → M , w ⊩ A ▷ B ⇔
+      (∀ {u} → MR M w u → M , u ⊩ A → Σ (MW M) λ v → (MS M) w u v × M , v ⊩ B)=;
+   3. =⊩⇔¬⊮ : ∀ {w A} → M , w ⊩ A ⇔ (¬ M , w ⊮ A)=;
+   4. =⊮⇔¬⊩ : ∀ {w A} → M , w ⊮ A ⇔ (¬ M , w ⊩ A)=.
+   {{{endlemma}}} {{{beginproof}}} {{{agda}}} Note that we only need the
+   decidability assumption for 1 ($⇐$), 2 ($⇐$), 3 ($⇐$) and 4 ($⇐$). {{{endproof}}}
+
+   From now on, we always restrict ourselves to decidable models as the usage of
+   lemma [[lemma:ord-equiv-dec]] is ubiquitous. If we were to assume that we are
+   outside of Agda and that we accept the law of excluded middle as part of our
+   metalogic, the mentioned assumption could be dropped.
+
+
 
 \printglossary
 
