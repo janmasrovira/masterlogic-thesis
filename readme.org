@@ -1,8 +1,10 @@
 * Readme
   # You can find the latest build here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]].
 
-  The latest tex file can be found here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
-  To do it automatically follow these commands or run the [[file:./get-pdf.sh]] script:
+  The latest tex file can be found here:
+  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
+  To download the TeX file and compile it automatically follow these commands or
+  run the [[file:./get-pdf.sh]] script:
 
   #+begin_example
   curl --location "https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/download?job=org2tex" --output artifacts.zip
@@ -10,10 +12,19 @@
   latexmk -pdf report
   #+end_example
 
-  To download the latest pdf:
-  #+begin_example
-  https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/raw/report.pdf?job=tex2pdf
-  #+end_example
+  Browse the pdf online using the following url:
+#+begin_center
+  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]]
+#+end_center
+  Or directly downloading it:
+#+begin_center
+  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/raw/report.pdf?job=tex2pdf]]
+#+end_center
+
+
+  Note that this pdf's are generated using Gitlab's pipelines and I have set the
+  expiration period to 1 month to avoid bloating the repository. This means that
+  they will become unavailable eventually. It is pending to fix this.
 
 ** Fonts
    Some extra fonts are required to compile, which can be found in
