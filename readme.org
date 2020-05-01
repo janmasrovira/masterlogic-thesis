@@ -16,7 +16,7 @@
 #+begin_center
   [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]]
 #+end_center
-  Or directly download it:
+  Or download it directly:
 #+begin_center
   [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/raw/report.pdf?job=tex2pdf]]
 #+end_center

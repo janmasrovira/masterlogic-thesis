@@ -1538,4 +1538,4 @@ title=Bibliography
 * Appendix
   :PROPERTIES:
   :END:
-  All the Agda cope goes here.
+  All the Agda code goes here.

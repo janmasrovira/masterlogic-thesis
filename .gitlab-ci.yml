@@ -26,7 +26,7 @@ tex2pdf:
   only:
     - master
   script:
-    - mkdir -p ~/.fonts/truetype/FreeMono
+    - mkdir -p ~/.fonts
     - cp fonts/*.otf ~/.fonts/
     - latexmk -pdf report
   artifacts:
