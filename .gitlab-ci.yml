@@ -7,6 +7,7 @@ org2tex:
   stage: org
   script:
     - cd report
+    - stow --version
     - emacs report.org --batch -f org-latex-export-to-latex --kill
     - cp -r img report.tex refs.bib .latexmkrc ../
   artifacts:
