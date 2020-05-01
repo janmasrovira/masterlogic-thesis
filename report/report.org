@@ -978,6 +978,7 @@ infix 60 ¬'_
   of =⊥=.
 
 ** Predicates and relations
+   <<sec:predicates>>
    In this section we give a short description on how to represent predicates
    and relations in Agda.
 
@@ -1409,13 +1410,69 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    metalogic, the mentioned assumption could be dropped.
 
 
+** IL and syntactic proofs
+** Subsets (predicates revisited)
+   In Agda, the keyword =Set= refers to an Agda type (insert ref to previous
+   section), which is the closest concept to regular mathematics /set/. In this
+   section when we say /set/ we refer to a subset of an Agda type. The most
+   natural way to represent subsets in Agda is to use predicates. See
+   [[sec:predicates]] for an introduction. A predicate represents the characteristic
+   function of the associated subset. For instance consider the predicate:
+   #+begin_src text
+   even : Pred Nat
+   even = ...
+   #+end_src
+   Then =even= represents the subset of natural numbers that are even. It is
+   important to note that predicates are always restricted to a specific type,
+   in this case =Nat=, and for that reason the term /subset/ may be more adequate.
+
+   Next we present how we represent in Agda common operations on sets.
+   1. \boxed{∈} A proof of membership is a simple function application.
+      #+begin_src text
+      _∈_ : {A : Set} → A → Pred A → Set
+      a ∈ X = X a
+      #+end_src
+      This definition is mostly superfluous but it helps to have a syntax closer
+      to regular mathematics.
+   2. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
+      membership to =X= to a proof of membership to =Y=.
+      #+begin_example
+      _⊆_ : {A : Set} → Pred A → Pred A → Set
+      X ⊆ Y = ∀ {x} → x ∈ X → x ∈ Y
+      #+end_example
+   3. \boxed{∩} We use pairs to represent the intersection. Each component is a
+      proof of membership to =X= and =Y= respectively.
+      #+begin_src text
+      _∩_ : {A : Set} → Pred A → Pred A → Pred A
+      X ∩ Y = λ x → x ∈ X × x ∈ Y
+      #+end_src
+   4. \boxed{∪} We use a sum type to represent the union.
+      #+begin_src text
+      _∪_ : {A : Set} → Pred A → Pred A → Pred A
+      X ∪ Y = λ x → x ∈ X ⊎ x ∈ Y
+      #+end_src
+   5. \boxed{∅}
+      The empty set is represented by a characteristic constant function to =⊥=.
+      #+begin_src text
+      ∅ : {A : Set} → Pred A
+      ∅ = λ x → ⊥
+      #+end_src
+   6. \boxed{𝟏}
+      Similarly, the universe set is represented by a characteristic constant function to =⊤=.
+      #+begin_src text
+      U : {A : Set} → Pred A
+      U = λ x → ⊤
+      #+end_src
+** Generalized semantics
+
+* 
 
 \printglossary
 
 \printbibliography[
-  heading=bibintoc,
-  title=Bibliography
-  ]
+heading=bibintoc,
+title=Bibliography
+]
 
 * Appendix
   :PROPERTIES:
