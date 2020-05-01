@@ -65,22 +65,21 @@
 {{{defglossary(forcing-ord,{\ensuremath{⊩^{ord}_M}},Forcing relation for ordinary semantics)}}}
 {{{defglossary(choice-set,choice set,Choice set)}}}
 {{{defglossary(noetherian,Noetherian,Conversely well-founded relation)}}}
-#+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first}}
+#+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first component}}
 #+latex_header: \newglossaryentry{sum type}{name={sum type},description={A disjunction of two ore more types}}
 #+latex_header: \newglossaryentry{decidable model}{name={decidable model},description={A model whose forcing relation is decidable}}
+#+latex_header: \newglossaryentry{Rel}{name={\texttt{Rel}},description={Homogeneous relation}}
+#+latex_header: \newglossaryentry{REL}{name={\texttt{REL}},description={Heterogeneous relation}}
+#+latex_header: \newglossaryentry{Pred}{name={\texttt{Pred}},description={A predicate or a subset}}
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 
-# Missing characters
+# Missing monospaced characters
 #+latex_header: \setmathfont{XITS Math}
 #+latex_header: \newfontfamily{\myfont}{XITS Math}
-# #+latex_header: \newunicodechar{𝕎}{\ensuremath{𝕎}}
-
-#+latex_header: \newunicodechar{𝕎}{\makebox[.5em]{\myfont𝕎}}
-# #+latex_header: \newunicodechar{𝕎}{\myfont{\ensuremath{𝕎}}}
+#+latex_header: \newunicodechar{𝕎}{\makebox[1em]{\myfont𝕎}}
 #+latex_header: \newunicodechar{｛}{\ensuremath{\{}}
 #+latex_header: \newunicodechar{｝}{\ensuremath{\}}}
-
 #+latex_header: \setmathfont{Latin Modern Math}
 
 * Introduction
@@ -995,7 +994,7 @@ infix 60 ¬'_
    and relations in Agda.
 
    We define a predicate to have the following type[fn::We leave universe
-   polymorphism out for simplicity.]:
+   polymorphism out for simplicity.]:\glsadd{Pred}
    #+begin_src text
    Pred : Set → Set₁
    Pred A = A → Set
@@ -1003,12 +1002,12 @@ infix 60 ¬'_
    Hence, a predicate on the elements of some type =A= is a function from =A= to
    =Set=.
 
-   Relations follow the same pattern:
+   Relations follow the same pattern:\glsadd{REL}
    #+begin_src text
    REL : Set → Set → Set₁
    REL A B = A → B → Set
    #+end_src
-   For homogeneous relations we use the name =Rel=:
+   For homogeneous relations we use the name =Rel=:\glsadd{Rel}
    #+begin_src text
    Rel : Set → Set → Set₁
    Rel A = REL A A
@@ -1154,7 +1153,7 @@ data _×_ (A B : Set) : Set where
     \(Σ\)-pairs. Consider the following definition.
     #+begin_src text
 data Σ (A : Set) (B : A → Set) : Set where
-  _,_ : (a : A) → (b : B a) → Σ A (B a)
+  _,_ : (a : A) → (b : B a) → Σ A B
     #+end_src
     The only, although essential, difference, is that the type of the second
     parameter is indexed by the value of the first. This is specially useful to
@@ -1167,9 +1166,17 @@ data Σ (A : Set) (B : A → Set) : Set where
     #+end_src
     For instance:
     #+begin_src text
-    show meaningful example of dependent pair
+    TODO: show meaningful example of dependent pair
     #+end_src
 
+    It useful to define the projection of each component:
+    #+begin_src text
+    proj₁ : {A : Set} {B : A → Set} → Σ A B → A
+    proj₁ (a , b) = a
+
+    proj₂ : {A : Set} {B : A → Set} → (p : Σ A B) → B (proj₁ p)
+    proj₂ (a , b) = b
+    #+end_src
 ** Noetherian relations
     We say that a relation is \gls*{noetherian} if it is conversely
     well-founded. We begin by formalizing the concept of infinite ascending
@@ -1423,6 +1430,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
 
 ** IL and syntactic proofs
 ** Subsets (predicates revisited)
+   \glsadd{Pred}
    In Agda, the keyword =Set= refers to an Agda type (insert ref to previous
    section), which is the closest concept to regular mathematics /set/. In this
    section when we say /set/ we refer to a subset of an Agda type. The most
@@ -1438,49 +1446,59 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    in this case =Nat=, and for that reason the term /subset/ may be more adequate.
 
    Next we present how we represent in Agda common operations on sets.
+   Assume for the below definitions that we have some =A : Set= in scope.
    1. \boxed{∈} A proof of membership is a simple function application.
       #+begin_src text
-      _∈_ : {A : Set} → A → Pred A → Set
+      _∈_ : REL A (Pred A)
       a ∈ X = X a
       #+end_src
       This definition is mostly superfluous but it helps to have a syntax closer
       to regular mathematics.
-   1. \boxed{∉} A proof of non membership is function from a proof of membership to =⊥=.
+   2. \boxed{∉} A proof of non membership is function from a proof of membership to =⊥=.
       #+begin_src text
-      _∉_ : {A : Set} → A → Pred A → Set
+      _∉_ : REL A (Pred A)
       a ∉ X = ¬ (a ∈ X)
       #+end_src
-   2. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
+   3. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
       membership to =X= to a proof of membership to =Y=.
       #+begin_example
-      _⊆_ : {A : Set} → Pred A → Pred A → Set
+      _⊆_ : Rel (Pred A)
       X ⊆ Y = ∀ {x} → x ∈ X → x ∈ Y
       #+end_example
-   3. \boxed{∩} We use pairs to represent the intersection. Each component is a
+   4. \boxed{∩} We use pairs to represent the intersection. Each component is a
       proof of membership to =X= and =Y= respectively.
       #+begin_src text
-      _∩_ : {A : Set} → Pred A → Pred A → Pred A
+      _∩_ : Pred A → Pred A → Pred A
       X ∩ Y = λ x → x ∈ X × x ∈ Y
       #+end_src
-   4. \boxed{∪} We use a sum type to represent the union.
+   5. \boxed{∪} We use a sum type to represent the union.
       #+begin_src text
-      _∪_ : {A : Set} → Pred A → Pred A → Pred A
+      _∪_ : Pred A → Pred A → Pred A
       X ∪ Y = λ x → x ∈ X ⊎ x ∈ Y
       #+end_src
-   5. \boxed{∅}
+   6. \boxed{∅}
       The empty set is represented by a characteristic constant function to =⊥=.
       #+begin_src text
-      ∅ : {A : Set} → Pred A
+      ∅ : Pred A
       ∅ = λ x → ⊥
       #+end_src
-   6. \boxed{𝟏}
+   7. \boxed{𝟏}
       Similarly, the universe set is represented by a characteristic constant function to =⊤=.
       #+begin_src text
-      U : {A : Set} → Pred A
+      U : Pred A
       U = λ x → ⊤
       #+end_src
+   8. \(\boxed{\{x\}}\) A singleton set is defined using equality (TODO: define
+      equality in Agda).
+      #+begin_example
+      ｛_｝ : A → Pred A
+      ｛ x ｝ = λ y → x ≡ y
+      #+end_example
 ** Generalized semantics
+   In this section we explain how we have represented generalized Veltman
+   semantics in Agda.
 
+   Analogously to ordinary semantics we start by defining a frame:
 
    #+begin_src text
 record Frame {ℓ} : Set (lsuc ℓ) where
@@ -1500,10 +1518,13 @@ record Frame {ℓ} : Set (lsuc ℓ) where
     SwuY⊆R[w] : ∀ {w u Y} → S w u Y → ∀ {y} → y ∈ Y → R w y
     S-quasirefl : ∀ {w u} → R w u → S w u ｛ u ｝
     S-quasitrans : ∀ {w u V} → S w u V → (f : ∀ {v} → v ∈ V → Σ 𝕎 λ Z → S w v Z)
-      → S w u λ {x → Σ W λ v → Σ (v ∈ V) λ v∈V → x ∈ (proj₁ (f v∈V))}
+      → S w u λ {x → Σ W λ v → Σ (v ∈ V) λ v∈V → x ∈ proj₁ (f v∈V)}
     R-Sw-trans : ∀ {w u v} → R w u → R u v → S w u ｛ v ｝
     S-monotone : ∀ {w u} {V Z : 𝕎} → S w u V → V ⊆ Z → Z ⊆ R w → S w u Z
    #+end_src
+
+   Notice that just below the definition of the field =W : Set=, we have introduced a
+   definition of the type =𝕎 : Set₁=
 
 * tmp
 
