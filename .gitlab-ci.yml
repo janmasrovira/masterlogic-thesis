@@ -3,12 +3,13 @@ stages:
   - pdf
 
 org2tex:
-  image: silex/emacs:26.3
+  # image: silex/emacs:26.3
+  image: silex/emacs:27
   stage: org
   script:
     - cd report
-    - perl --version
     - emacs report.org --batch -f org-latex-export-to-latex --kill
+    - emacs --version
     - cp -r img report.tex refs.bib .latexmkrc ../
   artifacts:
     paths:
