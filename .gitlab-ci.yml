@@ -30,7 +30,7 @@ tex2pdf:
     - master
   script:
     - mkdir -p ~/.fonts/truetype/FreeMono
-    - cp fonts/FreeMono.otf ~/.fonts/
+    - cp fonts/*.otf ~/.fonts/
     - latexmk -pdf report
   artifacts:
     paths:

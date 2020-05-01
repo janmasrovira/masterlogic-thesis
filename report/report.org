@@ -13,6 +13,7 @@
 #+latex_header: \usepackage{cancel}
 #+latex_header: \usepackage{amsthm}
 #+latex_header: \usepackage{float}
+#+latex_header: \usepackage{newunicodechar}
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 
@@ -70,6 +71,17 @@
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 
+# Missing characters
+#+latex_header: \setmathfont{XITS Math}
+#+latex_header: \newfontfamily{\myfont}{XITS Math}
+# #+latex_header: \newunicodechar{𝕎}{\ensuremath{𝕎}}
+
+#+latex_header: \newunicodechar{𝕎}{\makebox[.5em]{\myfont𝕎}}
+# #+latex_header: \newunicodechar{𝕎}{\myfont{\ensuremath{𝕎}}}
+#+latex_header: \newunicodechar{｛}{\ensuremath{\{}}
+#+latex_header: \newunicodechar{｝}{\ensuremath{\}}}
+
+#+latex_header: \setmathfont{Latin Modern Math}
 
 * Introduction
 
@@ -899,7 +911,7 @@
    wip
    \end{flalign*}
 
-* Agda
+* The logic of agda
   Everything about agda in general.
   Look here cite:norell:thesis.
 
@@ -1409,7 +1421,6 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    outside of Agda and that we accept the law of excluded middle as part of our
    metalogic, the mentioned assumption could be dropped.
 
-
 ** IL and syntactic proofs
 ** Subsets (predicates revisited)
    In Agda, the keyword =Set= refers to an Agda type (insert ref to previous
@@ -1434,6 +1445,11 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
       #+end_src
       This definition is mostly superfluous but it helps to have a syntax closer
       to regular mathematics.
+   1. \boxed{∉} A proof of non membership is function from a proof of membership to =⊥=.
+      #+begin_src text
+      _∉_ : {A : Set} → A → Pred A → Set
+      a ∉ X = ¬ (a ∈ X)
+      #+end_src
    2. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
       membership to =X= to a proof of membership to =Y=.
       #+begin_example
@@ -1465,7 +1481,31 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
       #+end_src
 ** Generalized semantics
 
-* 
+
+   #+begin_src text
+record Frame {ℓ} : Set (lsuc ℓ) where
+  constructor frame
+  field
+    W : Set
+  𝕎 : Set₁
+  𝕎 = Pred W lzero
+  field
+    witness : W
+    R : Rel W lzero
+    S : REL₃ W W 𝕎 lzero
+    Swu-sat : ∀ {w u Y} → S w u Y → Satisfiable Y
+    R-trans : Transitive R
+    R-noetherian : Noetherian {ℓ} R
+    Sw⊆R[w] : ∀ {w u Y} → S w u Y → R w u
+    SwuY⊆R[w] : ∀ {w u Y} → S w u Y → ∀ {y} → y ∈ Y → R w y
+    S-quasirefl : ∀ {w u} → R w u → S w u ｛ u ｝
+    S-quasitrans : ∀ {w u V} → S w u V → (f : ∀ {v} → v ∈ V → Σ 𝕎 λ Z → S w v Z)
+      → S w u λ {x → Σ W λ v → Σ (v ∈ V) λ v∈V → x ∈ (proj₁ (f v∈V))}
+    R-Sw-trans : ∀ {w u v} → R w u → R u v → S w u ｛ v ｝
+    S-monotone : ∀ {w u} {V Z : 𝕎} → S w u V → V ⊆ Z → Z ⊆ R w → S w u Z
+   #+end_src
+
+* tmp
 
 \printglossary
 
