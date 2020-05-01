@@ -14,3 +14,11 @@
   #+begin_example
   https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/raw/report.pdf?job=tex2pdf
   #+end_example
+
+** Fonts
+   Some extra fonts are required to compile, which can be found in
+   [[file::./fonts]]. To install them on a unix-like system do:
+   #+begin_example
+   cp fonts/*.otf ~/.fonts/
+   fc-cache -fv
+   #+end_example
