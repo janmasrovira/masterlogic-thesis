@@ -7,7 +7,7 @@ org2tex:
   image: janmasrovira/emacs-org:27.0
   stage: org
   script:
-    - mv /home/* /home/.* report
+    - mv /home/* /home/.* report/
     - cd report
     - cask emacs report.org --batch -l init.el -f org-latex-export-to-latex --kill
     - cp -r img report.tex refs.bib .latexmkrc ../
