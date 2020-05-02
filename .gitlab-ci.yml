@@ -3,13 +3,13 @@ stages:
   - pdf
 
 org2tex:
-  # image: silex/emacs:26.3
-  image: silex/emacs:27
+  # image: silex/emacs:27
+  image: janmasrovira/emacs-org:27.0
   stage: org
   script:
+    - mv /home/* /home/.* report
     - cd report
     - emacs report.org --batch -f org-latex-export-to-latex --kill
-    - emacs --version
     - cp -r img report.tex refs.bib .latexmkrc ../
   artifacts:
     paths:
