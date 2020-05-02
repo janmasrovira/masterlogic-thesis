@@ -3,7 +3,6 @@ stages:
   - pdf
 
 org2tex:
-  # image: silex/emacs:27
   image: janmasrovira/emacs-org:27.0
   stage: org
   script:
