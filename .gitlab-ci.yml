@@ -6,9 +6,8 @@ org2tex:
   image: janmasrovira/emacs-org:27.0
   stage: org
   script:
-    - mv /home/* /home/.cask report/
     - cd report
-    - cask emacs report.org --batch -l init.el -f org-latex-export-to-latex --kill
+    - emacs report.org -batch -l ~/init.el -f org-latex-export-to-latex
     - cp -r img report.tex refs.bib .latexmkrc ../
   artifacts:
     paths:
