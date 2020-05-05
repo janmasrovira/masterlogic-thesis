@@ -236,6 +236,31 @@
    {{{endproof}}}
 
 
+\newpage
+* Transitivity
+\begin{center}
+\begin{tabular}{l|c|l}
+Nr. & Semantic requirement for transitivity &\ \ \ \ mentioned in \\
+ \hline
+(1) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z\ (Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ)\Big)$ &  This paper\\
+ \hline
+(2) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$ &  De Jongh?\\
+ \hline
+(3) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper \\
+ \hline
+(4) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Joosten '98 \cite{Joosten:1998:MasterThesis}, p.43  \\
+\hline
+(5) &$uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper  \\
+\hline
+(6) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Verbrugge '92 \cite{Verbrugge}  \\
+\hline
+(7) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$ & This paper   \\
+\hline
+(8) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$ & Goris, Joosten '09 \cite{GorisJoosten:2011:ANewPrinciple}, p6, \cite{Joosten:2004:InterpretabilityFormalized}   \\
+\end{tabular}
+\end{center}
+
+\newpage
 * Frame conditions
   A principle is a schema of formulas that carries some special significance.
 
@@ -910,7 +935,7 @@
    wip
    \end{flalign*}
 
-* The logic of agda
+* The logic of Agda
   Everything about agda in general.
   Look here cite:norell:thesis.
 
