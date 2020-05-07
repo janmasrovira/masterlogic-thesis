@@ -33,6 +33,9 @@
 #+macro: begincoro @@latex:\begin{corollary}@@
 #+macro: endcoro @@latex:\end{corollary}@@
 
+#+macro: beginremark @@latex:\begin{remark}@@
+#+macro: endremark @@latex:\end{remark}@@
+
 #+macro: begintheorem @@latex:\begin{theorem}@@
 #+macro: endtheorem @@latex:\end{theorem}@@
 
@@ -54,6 +57,8 @@
 #+latex_header: \newtheorem{lemma}[theorem]{Lemma}
 #+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{definition}[theorem]{Definition}
+#+latex_header: \theoremstyle{definition}
+#+latex_header: \newtheorem{remark}[theorem]{Remark}
 
 #+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A proof formalized in Agda}}
 
@@ -83,8 +88,6 @@
 #+latex_header: \setmathfont{Latin Modern Math}
 
 * Introduction
-
-
 ** Overview of interpretability logics
 ** Original contributions
    This work includes the following original contributions:
@@ -171,10 +174,10 @@
        chain $w₁Rw₂R…$;
     3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
     4. if $wRu$ then $uS_w\{u\}$;
-    5. if $uS_wY$ and $vS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
+    5. if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
     6. if $wRu$ and $uRv$ then $uS_w\{v\}$;
-    7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
-       $uS_wZ$.
+    # 7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
+    #    $uS_wZ$.
     {{{enddef}}}
 
     {{{begindef}}} A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
@@ -205,6 +208,95 @@
     {{{agda}}}
     {{{endproof}}}
 
+** Monotonicity
+   Consider the following monotonicity condition:
+
+  #+begin_center
+    if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
+  #+end_center
+
+  {{{begintheorem}}} Taking the monotone closure of $S$ does not change the
+  forcing relation. That is, if we can show that $M,w⊩A$ assuming the
+  monotonicity condition, then we can prove $M,w⊩A$ without assuming such
+  condition. {{{endtheorem}}}
+
+  {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
+  Assume that $M,w⊩A▷B$ and that there is some world $x$ such that $wRx⊩A$. By
+  assumption there exists some $Y$ (assuming we took the monotonic closure of
+  $S$) such that $xS_wY⊩B$. Without assuming monotonicity it must be that there
+  exists some $Y'⊆Y$ such that $uS_wY'$. Clearly $Y'⊩B$ so we are done.
+  {{{endproof}}}
+
+  As a consequence of the previous theorem it is sometimes the case that
+  generalized Veltman frames are assumed to satisfy the monotonicity condition,
+  as it can make some proofs shorter.
+
+  {{{beginremark}}} As Luka pointed out during online correspondence, there is a
+  subtlety that is worth mentioning: It is not the same to take the monotone
+  closure of $S$ as to assume that monotonicity is required by definition. In
+  the latter case it may interact with quasi transitivity and change the forcing
+  relation. Consider the following example:
+
+  Let $M$ be a model such that $wRu$, $wRv_1$, $wRv_2$, $wRv_3$, $uS_w\{v_1\}$,
+  $v_2S_w\{v_3\}$, $⟦p⟧ = \{u\}$, $⟦q⟧ = \{v_2\}$. No other worlds exist (we do
+  not write $S$ relations implied by $wRu⇒uS_W\{u\}$). We see that $w⊩¬(p ▷ q)$
+  as $p$ is only true in $u$ and we only have $uS_w\{v_1\}$ with $v_1⊮q$. If we
+  take the monotonic closure of $S$ we have $u S_w \{v_1, v_2\}$ and by
+  quasi-transitivity (8) (see [[sec:trans]]) we get $u S_w \{v_3\}$ and
+  consequently $w⊮¬(p ▷ q)$.
+
+  {{{endremark}}}
+
+** Transitivity
+   <<sec:trans>>
+ \begin{center}
+ \begin{tabular}{l|c|l}
+ Nr. & Semantic requirement for transitivity &\ \ \ \ mentioned in \\
+  \hline
+ (1) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z\ (Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ)\Big)$ &  This paper\\
+  \hline
+ (2) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$ &  De Jongh?\\
+  \hline
+ (3) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper \\
+  \hline
+ (4) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Joosten '98 \cite{Joosten:1998:MasterThesis}, p.43  \\
+ \hline
+ (5) &$uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper  \\
+ \hline
+ (6) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Verbrugge '92 \cite{Verbrugge}  \\
+ \hline
+ (7) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$ & This paper   \\
+ \hline
+ (8) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$ & Goris, Joosten '09 \cite{GorisJoosten:2011:ANewPrinciple}, p6, \cite{Joosten:2004:InterpretabilityFormalized}   \\
+ \end{tabular}
+ \end{center}
+
+ {{{begintheorem}}} Let $F$ be a generalized Veltman frame. The following is true.
+   1. Monotone → Trans-1 → Trans-2
+   2. Trans-2 → Trans-1
+   3. Monotone → Trans-3 → Trans-4
+   4. Trans-4 → Trans-3
+   5. Trans-5 → Trans-1
+   6. Monotone → Trans-5 → Trans-2
+   7. Trans-5 → Trans-3
+   8. Monotone → Trans-5 → Trans-4
+   9. Monotone → Trans-5 → Trans-6
+   10. Trans-5 → Trans-7
+   11. Monotone → Trans-5 → Trans-8
+   12. Trans-6 → Trans-1
+   13. Monotone → Trans-6 → Trans-2
+   14. Trans-6 → Trans-3
+   15. Trans-6 → Trans-4
+   16. Trans-6 → Trans-5
+   17. Trans-6 → Trans-7
+   18. Trans-6 → Trans-8
+   19. Monotone → Trans-7 → Trans-8
+   20. Trans-8 → Trans-7
+ {{{endtheorem}}}
+ {{{beginproof}}}
+ {{{agda}}}
+ {{{endproof}}}
+ \newpage
 ** Logic $IL$
    The logic $IL$ encompasses all classical tautologies in the new language plus
    the following axiom schemes:
@@ -235,30 +327,6 @@
    {{{agda}}}
    {{{endproof}}}
 
-
-\newpage
-* Transitivity
-\begin{center}
-\begin{tabular}{l|c|l}
-Nr. & Semantic requirement for transitivity &\ \ \ \ mentioned in \\
- \hline
-(1) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z\ (Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ)\Big)$ &  This paper\\
- \hline
-(2) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$ &  De Jongh?\\
- \hline
-(3) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper \\
- \hline
-(4) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Joosten '98 \cite{Joosten:1998:MasterThesis}, p.43  \\
-\hline
-(5) &$uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper  \\
-\hline
-(6) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Verbrugge '92 \cite{Verbrugge}  \\
-\hline
-(7) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$ & This paper   \\
-\hline
-(8) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$ & Goris, Joosten '09 \cite{GorisJoosten:2011:ANewPrinciple}, p6, \cite{Joosten:2004:InterpretabilityFormalized}   \\
-\end{tabular}
-\end{center}
 
 \newpage
 * Frame conditions
