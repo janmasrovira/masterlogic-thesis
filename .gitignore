@@ -7,7 +7,7 @@
 *.lock
 *.agdai
 *.el
-*.tex
+report/*.tex
 exercises/*.pdf
 report/report.pdf
 *.toc
@@ -23,3 +23,4 @@ report/report.pdf
 *.gls
 *.ist
 *.xdy
+/report/img/tikz/*.pdf

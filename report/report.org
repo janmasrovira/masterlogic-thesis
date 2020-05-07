@@ -17,6 +17,10 @@
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 
+#+latex_header: \usepackage{tikz}
+#+latex_header: \usetikzlibrary{external}
+#+latex_header: \tikzexternalize
+
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
 
@@ -215,16 +219,19 @@
     if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
   #+end_center
 
-  {{{begintheorem}}} Taking the monotone closure of $S$ does not change the
-  forcing relation. That is, if we can show that $M,w⊩A$ assuming the
-  monotonicity condition, then we can prove $M,w⊩A$ without assuming such
-  condition. {{{endtheorem}}}
+  {{{begintheorem}}} Let $M$ be a generalized Veltman model and let $N$ be the
+  monotonic closure of $N$. Then for any world $w$ and formula $A$ we have
+  \[M,w⊩A⇔N,w⊩A\]
+  {{{endtheorem}}}
 
   {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
-  Assume that $M,w⊩A▷B$ and that there is some world $x$ such that $wRx⊩A$. By
-  assumption there exists some $Y$ (assuming we took the monotonic closure of
-  $S$) such that $xS_wY⊩B$. Without assuming monotonicity it must be that there
-  exists some $Y'⊆Y$ such that $uS_wY'$. Clearly $Y'⊩B$ so we are done.
+  - \boxed{⇒} Assume that $M,w⊩A▷B$ and that there is some world $x$ such that
+    $wRx⊩A$. By assumption there exists some $Y$ (assuming we took the monotonic
+    closure of $S$) such that $xS_wY⊩B$. Without assuming monotonicity it must
+    be that there exists some $Y'⊆Y$ such that $uS_wY'$. Clearly $Y'⊩B$ so we
+    are done.
+  - \boxed{⇐}
+
   {{{endproof}}}
 
   As a consequence of the previous theorem it is sometimes the case that
@@ -353,7 +360,7 @@
    #+caption: Ordinary frame condition for $M$
    #+name: fig:ord-M-condition
    #+attr_latex: :float t :width 0.20\textwidth :placement [H]
-   [[file:img/wip.png]]
+   [[file:img/M-ord.pdf]]
 
    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
    $M_{ord}$ condition iff any model based on $F$ forces every instantiation of the $M$
@@ -1625,6 +1632,17 @@ record Frame {ℓ} : Set (lsuc ℓ) where
    definition of the type =𝕎 : Set₁=
 
 * tmp
+
+
+* other
+
+\printglossary
+
+\printbibliography[
+heading=bibintoc,
+title=Bibliography
+]
+
 
 * Appendix
   :PROPERTIES:
