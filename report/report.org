@@ -100,17 +100,18 @@
 
 ** Notation
    Some notation that we use throughout the report:
-   - $wRuRv$ iff $wRu$ and $uRv$;
-   - $wRuS_xv$ iff $wRu$ and $uS_xv$;
-   - $wRu⊩A$ iff $wRu$ and $u⊩A$;
-   - $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
-   - $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
-   - $⟦A⟧≔\{w:w⊩A\}$;
-   - {{{agda}}} this is Agda's logo, and every proof that is formalized in Agda
-     has been tagged with it.
-   - When we write a dot after the quantification of some variables, the scope of
-     the variables extends to the rightmost part of what follows. Hence the
-     formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$
+   1. $wRuRv$ iff $wRu$ and $uRv$;
+   2. $wRuS_xv$ iff $wRu$ and $uS_xv$;
+   3. $wRu⊩A$ iff $wRu$ and $u⊩A$;
+   4. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
+   5. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
+   6. $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
+   7. $⟦A⟧≔\{w:w⊩A\}$;
+   8. {{{agda}}} this is Agda's logo, and every proof that is formalized in Agda
+      has been tagged with it.
+   9. When we write a dot after the quantification of some variables, the scope of
+      the variables extends to the rightmost part of what follows. Hence the
+      formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$
 
 ** Semantics
    In this document we consider two variants of relational semantics for
@@ -128,8 +129,8 @@
        chain $w₁Rw₂R…$;
     3. if $uS_wv$ then $wRu$ and $wRv$;
     4. if $wRu$ then $uS_wu$;
-    5. for every $w$, $S_w$ is transitive;
-    6. if $wRu$ and $uRv$ then $uS_wv$.
+    5. if $wRu$ and $uRv$ then $uS_wv$.
+    6. for every $w$, $S_w$ is transitive;
     {{{enddef}}}
 
 
@@ -141,11 +142,11 @@
     Given a model $M$, we define a forcing relation $\gls{forcing-ord}⊆W × Fm$. We write
     $M,w⊩A$ instead of $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear by
     the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
-    - $w⊮⊥$;
-    - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
-    - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
-      that $v⊩B$ and $uS_wv$.
+    1. $w⊮⊥$;
+    2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+    3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+       that $v⊩B$ and $uS_wv$.
     {{{enddef}}}
 
     If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ do
@@ -153,10 +154,10 @@
 
     {{{begincoro}}}
     It immediately follows that:
-    - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$;
-    - if $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
-    - if $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
-    - if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+    1. If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$;
+    2. if $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
+    3. if $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
+    4. if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
     {{{endcoro}}}
     {{{beginproof}}}
     {{{agda}}}
@@ -174,24 +175,26 @@
        chain $w₁Rw₂R…$;
     3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
     4. if $wRu$ then $uS_w\{u\}$;
-    5. if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
-    6. if $wRu$ and $uRv$ then $uS_w\{v\}$;
+    5. if $wRu$ and $uRv$ then $uS_w\{v\}$;
+    6. if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
     # 7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
     #    $uS_wZ$.
     {{{enddef}}}
 
-    {{{begindef}}} A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
+    {{{begindef}}}
+    <<def:gen-frame>>
+    A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
     constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×Var$.
     {{{enddef}}}
     {{{begindef}}}
     Given a model $M$, we define a forcing relation $\gls{forcing-gen}_M⊆W ×
     Fm$. We use the same notation conventions as in the ordinary semantics.
-    - $w⊮⊥$;
-    - if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
-    - if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    - if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
-      that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
-      have $y⊩B$;
+    1. $w⊮⊥$;
+    2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+    3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
+       that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
+       have $y⊩B$;
     {{{enddef}}}
 
     If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ do
@@ -199,10 +202,10 @@
 
     {{{begincoro}}}
     It immediately follows that:
-    - If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
-    - If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
-    - If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
-    - If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+    1. If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
+    2. If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
+    3. If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
+    4. If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
     {{{endcoro}}}
     {{{beginproof}}}
     {{{agda}}}
@@ -240,13 +243,17 @@
   the latter case it may interact with quasi transitivity and change the forcing
   relation. Consider the following example:
 
-  Let $M$ be a model such that $wRu$, $wRv_1$, $wRv_2$, $wRv_3$, $uS_w\{v_1\}$,
-  $v_2S_w\{v_3\}$, $⟦p⟧ = \{u\}$, $⟦q⟧ = \{v_2\}$. No other worlds exist (we do
-  not write $S$ relations implied by $wRu⇒uS_W\{u\}$). We see that $w⊩¬(p ▷ q)$
-  as $p$ is only true in $u$ and we only have $uS_w\{v_1\}$ with $v_1⊮q$. If we
-  take the monotonic closure of $S$ we have $u S_w \{v_1, v_2\}$ and by
-  quasi-transitivity (8) (see [[sec:trans]]) we get $u S_w \{v_3\}$ and
-  consequently $w⊮¬(p ▷ q)$.
+   #+caption: Example frame.
+   #+name: fig:example-trans
+   #+attr_latex: :float t :width 0.28\textwidth :placement [H]
+   [[file:img/example-trans.pdf]]
+
+  Let $M$ be a model based on the frame displayed in figure [[fig:example-trans]] such that $⟦p⟧ = \{u\}$, $⟦q⟧ =
+  \{v_2\}$. No other worlds exist (we do not write $S$ relations implied by
+  $wRu⇒uS_W\{u\}$). We see that $w⊩¬(p ▷ q)$ as $p$ is only true in $u$ and we
+  only have $uS_w\{v_1\}$ with $v_1⊮q$. If we take the monotonic closure of $S$
+  we have $u S_w \{v_1, v_2\}$ and by quasi-transitivity (8) (see [[sec:trans]]) we
+  get $u S_w \{v_3\}$ and consequently $w⊮¬(p ▷ q)$.
 
   {{{endremark}}}
 
@@ -299,7 +306,30 @@
  {{{beginproof}}}
  {{{agda}}}
  {{{endproof}}}
- \newpage
+ {{{begintheorem}}}
+ {{{agda}}}
+ Soundness for 1-8
+ {{{endtheorem}}}
+
+ {{{begintheorem}}} Given an ordinary Veltman model $M=⟨W,R,S,V⟩$ we can find some
+ generalized Veltman model $M'=⟨W,R,S',V⟩$ satisfying transitivity
+ $i∈\{1…8\}$ such that for every world $w$ and formula $A$ \[M,w⊩A⇔M',w⊩A\]
+ {{{endtheorem}}}
+
+ {{{beginproof}}} We prove it for the transitivity condition 2 (the rest can be
+ proven in the same way). Consider an $M'$ with $S'$ defined thus
+ \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}\] It is easy to observe that $M'$ satisfies
+ conditions $1…5$ from definition [[def:gen-frame]]. It is also easy to see that it
+ satisfies transitivity 2. We show that they prove the same formulas by
+ induction on the formula. The only interesting case is $A▷B$.
+   - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$, it follows that
+     there exists some $y$ such that $xS_wy⊩B$. By definition of $M'$ we have
+     $xS_w\{y\}$ and also $\{y\}⊩B$, therefore $M',w⊩A▷B$.
+   - Assume $M,w⊮A▷B$, then there exists some $x$ such that $wRx⊩A$ and
+     $∀y(xS_wy⇒y⊮B)$. It is obvious that for $M'$ we have $∀y(xS_w\{y\}⇒y⊮B)$
+     and also $∀Y(xS_wY⇒Y⊮B)$, which is the required property.
+ {{{endproof}}}
+
 ** Logic $IL$
    The logic $IL$ encompasses all classical tautologies in the new language plus
    the following axiom schemes:
@@ -615,7 +645,7 @@
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩¬(A▷¬C)$. We need
      to see that there is some world $v$ such that $xS_wv⊩B∧□C$. From
      $x⊩¬(A▷¬C)$ we get a world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$.
-     Since $w⊩A→B$ and by transitivity we have $wRy$ it follows that there
+     Since $w⊩A▷B$ and by transitivity we have $wRy$ it follows that there
      exists a world $z$ such that $yS_wz⊩B$. To see that $z$ is the desired
      world it remains to see that $z⊩□C$. Let $u$ be such that $zRu$, then by
      $R_{ord}$ it follows that $yS_xu$ and by $(⋆)$ we get $u⊩C$.
