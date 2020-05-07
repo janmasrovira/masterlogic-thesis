@@ -17,10 +17,6 @@
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 
-#+latex_header: \usepackage{tikz}
-#+latex_header: \usetikzlibrary{external}
-#+latex_header: \tikzexternalize
-
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
 
@@ -450,6 +446,11 @@
     The $(M₀)_{ord}$ condition reads as follows:
     \[∀w,x,y,z(wRxRyS_wz⇒xS_wz,∀u(zRu⇒xRu))\]
 
+   #+caption: Ordinary frame condition for $M₀$
+   #+name: fig:M_0-ord
+   #+attr_latex: :float t :width 0.25\textwidth :placement [H]
+   [[file:img/M_0-ord.pdf]]
+
     {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
     $(M₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
     the $M₀$ principle. In symbols:
@@ -523,6 +524,11 @@
 *** Ordinary semantics
     The $(P₀)_{ord}$ condition reads as follows:
     \[∀w,x,y,z,u(wRxRyS_wzRu⇒yS_xu)\]
+
+   #+caption: Ordinary frame condition for $P₀$
+   #+name: fig:P_0-ord
+   #+attr_latex: :float t :width 0.15\textwidth :placement [H]
+   [[file:img/P_0-ord.pdf]]
 
    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
    $(P₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
