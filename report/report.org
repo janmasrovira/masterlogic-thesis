@@ -495,6 +495,7 @@
     \[F ⊨ (M₀)_{ord} ⇔ F ⊩ M₀\] {{{endtheorem}}}
 
     {{{beginproof}}}
+    {{{agda}}}
     - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
       that $w⊩A▷B$ and that there exists some $x$ such that $wRx⊩ ♢ A ∧ □ C$. It
       follows that there exists some world $y$ such that $xRy⊩A$, then since
@@ -574,6 +575,7 @@
    \[F ⊨ (P₀)_{ord} ⇔ F ⊩ P₀\] {{{endtheorem}}}
 
    {{{beginproof}}}
+   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷♢B$ and that there is a world $x$ such that $wRx$. Our goal is to
      show that $x⊩A▷B$. Consider a world $y$ such that $xRy⊩A$. As $wRy$ and
@@ -648,14 +650,17 @@
    \[F ⊨ R_{ord} ⇔ F ⊩ R\]
    {{{endtheorem}}}
    {{{beginproof}}}
+   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩¬(A▷¬C)$. We need
      to see that there is some world $v$ such that $xS_wv⊩B∧□C$. From
      $x⊩¬(A▷¬C)$ we get a world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$.
      Since $w⊩A▷B$ and by transitivity we have $wRy$ it follows that there
      exists a world $z$ such that $yS_wz⊩B$. To see that $z$ is the desired
-     world it remains to see that $z⊩□C$. Let $u$ be such that $zRu$, then by
-     $R_{ord}$ it follows that $yS_xu$ and by $(⋆)$ we get $u⊩C$.
+     world we first see that $z⊩□C$. Let $u$ be such that $zRu$, then by
+     $R_{ord}$ it follows that $yS_xu$ and by $(⋆)$ we get $u⊩C$. Finally, we
+     have see that $xS_wz$. Since $wRxRy$ we have that $xS_wy$ and we have
+     $yS_wz$ from before, hence by transitivity of $S_w$ we get $xS_wz$
    - \boxed{⇐} Let $a,b,c∈Var$ and assume that for some $w,x,y,z$ we have
      $wRxRyS_wz$ . Consider a model
      based on $F$ that satisfies the following.
