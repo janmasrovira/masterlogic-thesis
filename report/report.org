@@ -135,8 +135,9 @@
 
 
     {{{begindef}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$ is a structure
-    constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$.
-    {{{enddef}}}
+    constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$. If
+    $F=⟨W,R,S⟩$ we will write $M=⟨W,R,S,V⟩$ instead of $M=⟨⟨W,R,S⟩,V⟩$. {{{enddef}}}
+
     {{{begindef}}}
     <<def:ord-forcing>>
     Given a model $M$, we define a forcing relation $\gls{forcing-ord}⊆W × Fm$. We write
@@ -218,18 +219,19 @@
     if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
   #+end_center
 
-  {{{begintheorem}}} Let $M$ be a generalized Veltman model and let $N$ be the
-  monotonic closure of $N$. Then for any world $w$ and formula $A$ we have
-  \[M,w⊩A⇔N,w⊩A\]
-  {{{endtheorem}}}
+  {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be a generalized Veltman model and let
+  $N=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$.
+  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S\}, Y⊆Y'⊆\{u:wRu\}\}\]
+
+  Then for any world
+  $w$ and formula $A$ we have \[M,w⊩A⇔N,w⊩A\] {{{endtheorem}}}
 
   {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
-  - \boxed{⇒} Assume that $M,w⊩A▷B$ and that there is some world $x$ such that
-    $wRx⊩A$. By assumption there exists some $Y$ (assuming we took the monotonic
-    closure of $S$) such that $xS_wY⊩B$. Without assuming monotonicity it must
-    be that there exists some $Y'⊆Y$ such that $uS_wY'$. Clearly $Y'⊩B$ so we
-    are done.
-  - \boxed{⇐}
+  - Assume that $M,w⊩A▷B$ and that there is some world $x$ such that $wRx⊩A$. It
+    follows that there exists some $Y$ such that $xS_wY⊩B$. By definition of
+    $S'$ it follows that $xS'_wY⊩B$, and thus $M',w⊩A▷B$.
+  - Assume that $M,w⊮A▷B$, it follows that there is some $x$ such that $wRx⊩A$
+    and $∀Y(xS_wY⇒Y⊮B)$.
 
   {{{endproof}}}
 
@@ -240,20 +242,20 @@
   {{{beginremark}}} As Luka pointed out during online correspondence, there is a
   subtlety that is worth mentioning: It is not the same to take the monotone
   closure of $S$ as to assume that monotonicity is required by definition. In
-  the latter case it may interact with quasi transitivity and change the forcing
+  the latter case it may interact with quasi-transitivity and change the forcing
   relation. Consider the following example:
 
-   #+caption: Example frame.
+   #+caption: Example frame: $wRv_{0…3}$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
    #+name: fig:example-trans
    #+attr_latex: :float t :width 0.28\textwidth :placement [H]
    [[file:img/example-trans.pdf]]
 
-  Let $M$ be a model based on the frame displayed in figure [[fig:example-trans]] such that $⟦p⟧ = \{u\}$, $⟦q⟧ =
-  \{v_2\}$. No other worlds exist (we do not write $S$ relations implied by
-  $wRu⇒uS_W\{u\}$). We see that $w⊩¬(p ▷ q)$ as $p$ is only true in $u$ and we
-  only have $uS_w\{v_1\}$ with $v_1⊮q$. If we take the monotonic closure of $S$
-  we have $u S_w \{v_1, v_2\}$ and by quasi-transitivity (8) (see [[sec:trans]]) we
-  get $u S_w \{v_3\}$ and consequently $w⊮¬(p ▷ q)$.
+  Let $M$ be a model based on the frame displayed in figure [[fig:example-trans]]
+  such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that $w⊩¬(p ▷ q)$ as
+  $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ with $v_1⊮q$. If we
+  take the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
+  quasi-transitivity 8 (see [[sec:trans]]) we get $v_0S_w \{v_3\}$ and consequently
+  $w⊩¬(p ▷ q)$ is no longer true.
 
   {{{endremark}}}
 
