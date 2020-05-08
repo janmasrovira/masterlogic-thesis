@@ -220,18 +220,21 @@
   #+end_center
 
   {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be a generalized Veltman model and let
-  $N=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$.
-  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S\}, Y⊆Y'⊆\{u:wRu\}\}\]
+  $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$.
+  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
 
-  Then for any world
-  $w$ and formula $A$ we have \[M,w⊩A⇔N,w⊩A\] {{{endtheorem}}}
+  Then for any world $w$ and formula $A$ we have \[M,w⊩A⇔N,w⊩A\]
+  {{{endtheorem}}}
 
   {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
   - Assume that $M,w⊩A▷B$ and that there is some world $x$ such that $wRx⊩A$. It
     follows that there exists some $Y$ such that $xS_wY⊩B$. By definition of
     $S'$ it follows that $xS'_wY⊩B$, and thus $M',w⊩A▷B$.
   - Assume that $M,w⊮A▷B$, it follows that there is some $x$ such that $wRx⊩A$
-    and $∀Y(xS_wY⇒Y⊮B)$.
+    and $(⋆)\ ∀Y(xS_wY⇒Y⊮B)$. We want to prove that $∀Y'(xS'_wY'⇒Y'⊮B)$. Assume
+    that for some $Y'$ we have $xS'_wY'$, by definition of $S'$ it follows there
+    exists some $Y$ such that $Y⊆Y'$ and $xS_wY$. Hence by $(⋆)$ we have that
+    $Y⊮B$ and thus there exists $y∈Y$ such that $y⊮B$, therefore $Y'⊮B$ and $M',w⊩A▷B$.
 
   {{{endproof}}}
 
