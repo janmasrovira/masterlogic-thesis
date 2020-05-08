@@ -639,8 +639,8 @@
 
    #+caption: Ordinary frame condition for $R$
    #+name: fig:ord-R-condition
-   #+attr_latex: :float t :width 0.20\textwidth :placement [H]
-   [[file:img/wip.png]]
+   #+attr_latex: :float t :width 0.15\textwidth :placement [H]
+   [[file:img/R-ord.pdf]]
 
    {{{begintheorem}}}
    For any ordinary frame $F$, we have that $F$ satisfies the
