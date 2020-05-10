@@ -39,5 +39,8 @@
     gsub("∅", "\\empty ");
     gsub("≤", "\\leq ");
     gsub("¬", "\\neg ");
+    gsub("⊮", "\\nVdash ");
+    gsub("⊢", "\\vdash ");
+    gsub("⊬", "\\nvdash ");
     print;
 };

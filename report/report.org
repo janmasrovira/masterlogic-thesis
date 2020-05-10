@@ -276,7 +276,7 @@
   \hline
  (3) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper \\
   \hline
- (4) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Joosten '98 \cite{Joosten:1998:MasterThesis}, p.43  \\
+ (4) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & \cite{joosten-master}  \\
  \hline
  (5) &$uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper  \\
  \hline
@@ -284,11 +284,20 @@
  \hline
  (7) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$ & This paper   \\
  \hline
- (8) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$ & Goris, Joosten '09 \cite{GorisJoosten:2011:ANewPrinciple}, p6, \cite{Joosten:2004:InterpretabilityFormalized}   \\
+ (8) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$ & \cite{a-new-principle}  \cite{interpretability-formalized}   \\
  \end{tabular}
  \end{center}
 
- {{{begintheorem}}} Let $F$ be a generalized Veltman frame. The following is true.
+   #+caption: Diagrams for conditions 2, 4 and 6.
+   #+name: fig:diagrams-transitivity
+   #+attr_latex: :float t :width 0.9\textwidth :placement [H]
+   [[file:img/trans-2-4-6.pdf]]
+
+
+ {{{begintheorem}}} Let $F$ be a generalized Veltman frame. Then the following
+ implications are true. For instance the first item should be read as 'if $F$ is
+ monotone and satisfies transitivity condition (1), then it satisfies
+ transitivity condition (2).
    1. Monotone → Trans-1 → Trans-2
    2. Trans-2 → Trans-1
    3. Monotone → Trans-3 → Trans-4
@@ -314,9 +323,13 @@
  {{{agda}}}
  {{{endproof}}}
  {{{begintheorem}}}
- {{{agda}}}
  Soundness for 1-8
  {{{endtheorem}}}
+
+ {{{beginproof}}}
+ {{{agda}}}
+ We only need to check for J5.
+ {{{endproof}}}
 
  {{{begintheorem}}} Given an ordinary Veltman model $M=⟨W,R,S,V⟩$ we can find some
  generalized Veltman model $M'=⟨W,R,S',V⟩$ satisfying transitivity
@@ -324,11 +337,12 @@
  {{{endtheorem}}}
 
  {{{beginproof}}} We prove it for the transitivity condition 2 (the rest can be
- proven in the same way). Consider an $M'$ with $S'$ defined thus
- \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}\] It is easy to observe that $M'$ satisfies
- conditions $1…5$ from definition [[def:gen-frame]]. It is also easy to see that it
- satisfies transitivity 2. We show that they prove the same formulas by
- induction on the formula. The only interesting case is $A▷B$.
+ proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
+ $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}\] It is easy to
+ observe that $M'$ satisfies conditions $1…5$ from definition [[def:gen-frame]]. It
+ is also easy to see that it satisfies transitivity 2. We show that they force
+ the same formulas by induction on the formula. The only interesting case is
+ $A▷B$.
    - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$, it follows that
      there exists some $y$ such that $xS_wy⊩B$. By definition of $M'$ we have
      $xS_w\{y\}$ and also $\{y\}⊩B$, therefore $M',w⊩A▷B$.
