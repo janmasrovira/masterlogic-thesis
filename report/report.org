@@ -16,6 +16,7 @@
 #+latex_header: \usepackage{newunicodechar}
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
+#+latex_header: \usepackage{multicol}
 
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
@@ -62,6 +63,9 @@
 
 #+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A proof formalized in Agda}}
 
+#+macro: beginmulticols @@latex:\begin{multicols}{$1}@@
+#+macro: endmulticols @@latex:\end{multicols}@@
+
 {{{defglossary(gvm,model,Generalized Veltman model)}}}
 {{{defglossary(gvf,frame,Generalized Veltman frame)}}}
 {{{defglossary(ovf,frame,Ordinary Veltman frame)}}}
@@ -93,6 +97,7 @@
    This work includes the following original contributions:
    1. Generalized frame condition for $R₁$ (in collaboration with Luka). [[theorem:R₁][Link]].
    2. Generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]].
+   3. Analysis of transitivity. [[theorem:trans][Link]].
 
 ** Language
    <<sec:language>>
@@ -220,7 +225,9 @@
   #+end_center
 
   {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be a generalized Veltman model and let
-  $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$.
+  $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$. Note that $M'$
+  is not necessarily a Veltman model.
+
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
 
   Then for any world $w$ and formula $A$ we have \[M,w⊩A⇔N,w⊩A\]
@@ -265,7 +272,12 @@
   {{{endremark}}}
 
 ** Transitivity
-   <<sec:trans>>
+   <<sec:trans>> In the literature one can find several semantic requirements
+   for the quasi transitivity condition. Theorem [[theorem:trans]] presents the
+   direct implications between them. Theorems [[theorem:trans-sound]] and
+   [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
+   for proving completeness of IL.
+
  \begin{center}
  \begin{tabular}{l|c|l}
  Nr. & Semantic requirement for transitivity &\ \ \ \ mentioned in \\
@@ -294,36 +306,43 @@
    [[file:img/trans-2-4-6.pdf]]
 
 
- {{{begintheorem}}} Let $F$ be a generalized Veltman frame. Then the following
- implications are true. For instance the first item should be read as 'if $F$ is
- monotone and satisfies transitivity condition (1), then it satisfies
- transitivity condition (2).
-   1. Monotone → Trans-1 → Trans-2
-   2. Trans-2 → Trans-1
-   3. Monotone → Trans-3 → Trans-4
-   4. Trans-4 → Trans-3
-   5. Trans-5 → Trans-1
-   6. Monotone → Trans-5 → Trans-2
-   7. Trans-5 → Trans-3
-   8. Monotone → Trans-5 → Trans-4
-   9. Monotone → Trans-5 → Trans-6
-   10. Trans-5 → Trans-7
-   11. Monotone → Trans-5 → Trans-8
-   12. Trans-6 → Trans-1
-   13. Monotone → Trans-6 → Trans-2
-   14. Trans-6 → Trans-3
-   15. Trans-6 → Trans-4
-   16. Trans-6 → Trans-5
-   17. Trans-6 → Trans-7
-   18. Trans-6 → Trans-8
-   19. Monotone → Trans-7 → Trans-8
-   20. Trans-8 → Trans-7
+ {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
+ $M≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)$ represent the monotonicity condition. The
+ following implications hold.
+
+ The first item should be read as $F⊨M∧(1)→(2)$.
+
+ {{{beginmulticols(3)}}}
+
+   1. $M ∧ (1) ⇒ (2)$
+   2. $(2) ⇒ (1)$
+   3. $M ∧ (3) ⇒ (4)$
+   4. $(4) ⇒ (3)$
+   5. $(5) ⇒ (1)$
+   6. $M ∧ (5) ⇒ (2)$
+   7. $(5) ⇒ (3)$
+   8. $M ∧ (5) ⇒ (4)$
+   9. $M ∧ (5) ⇒ (6)$
+   10. $(5) ⇒ (7)$
+   11. $M ∧ (5) ⇒ (8)$
+   12. $(6) ⇒ (1)$
+   13. $M ∧ (6) ⇒ (2)$
+   14. $(6) ⇒ (3)$
+   15. $(6) ⇒ (4)$
+   16. $(6) ⇒ (5)$
+   17. $(6) ⇒ (7)$
+   18. $(6) ⇒ (8)$
+   19. $M ∧ (7) ⇒ (8)$
+   20. $(8) ⇒ (7)$
+
+ {{{endmulticols}}}
  {{{endtheorem}}}
  {{{beginproof}}}
  {{{agda}}}
  {{{endproof}}}
  {{{begintheorem}}}
- Soundness for 1-8
+ <<theorem:trans-sound>>
+ IL soundness for (1)-(8)
  {{{endtheorem}}}
 
  {{{beginproof}}}
@@ -331,7 +350,9 @@
  We only need to check for J5.
  {{{endproof}}}
 
- {{{begintheorem}}} Given an ordinary Veltman model $M=⟨W,R,S,V⟩$ we can find some
+ {{{begintheorem}}}
+ <<theorem:trans-extend>>
+ Given an ordinary Veltman model $M=⟨W,R,S,V⟩$ we can find some
  generalized Veltman model $M'=⟨W,R,S',V⟩$ satisfying transitivity
  $i∈\{1…8\}$ such that for every world $w$ and formula $A$ \[M,w⊩A⇔M',w⊩A\]
  {{{endtheorem}}}
@@ -397,7 +418,6 @@
    \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C)\]
 
    JOOST: AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE PRINCIPLE INTRODUCED AND BY WHOM. ALSO, WHY IS IT IMPORTANT, ETC.
-
 
 *** Ordinary semantics
    The frame condition for $M$ for ordinary semantics, we write $M_{ord}$,
@@ -536,6 +556,12 @@
     The $(M₀)_{gen}$ condition reads as follows:
     \[∀w,x,y,Y(wRxRyS_wY⇒∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz⇒xRz)))\]
 
+   #+caption: Generalized frame condition for $M₀$
+   #+name: fig:M_0-gen
+   #+attr_latex: :float t :width 0.30\textwidth :placement [H]
+   [[file:img/M_0-gen.pdf]]
+
+
     {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
     $(M₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of
     the $M₀$ principle. In symbols:
@@ -612,6 +638,12 @@
 *** Generalized semantics
     The $(P₉)_{gen}$ condition reads as follows:
     \[∀w,x,y,Y,Z((wRxRyS_wY,∀y∈Y∃z∈Z(yRz))⇒∃Z'⊆Z(yS_xZ'))\]
+
+   #+caption: Generalized frame condition for $P₀$
+   #+name: fig:P_0-gen
+   #+attr_latex: :float t :width 0.31\textwidth :placement [H]
+   [[file:img/P_0-gen.pdf]]
+
 
    {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
    $(P₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of

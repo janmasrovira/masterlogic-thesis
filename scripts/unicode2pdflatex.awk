@@ -3,7 +3,7 @@
 # usage: ./unicode2pdflatex.awk input > output
 # alternative usage for the fish shell to rerun the program each time is modified:
 # while inotifywait -e close_write ./unicode2pdflatex.awk
-#     ./unicode2pdflatex.awk text > out
+#     ./unicode2pdflatex.awk input > output
 # end
 
 {
@@ -42,5 +42,6 @@
     gsub("⊮", "\\nVdash ");
     gsub("⊢", "\\vdash ");
     gsub("⊬", "\\nvdash ");
+    gsub("→", "\\to ");
     print;
 };
