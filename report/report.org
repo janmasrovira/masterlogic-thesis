@@ -741,10 +741,10 @@
     ⇒& ∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz→z∈K)))
     \end{flalign*}
 
-   #+caption: Generalized frame condition for $R$
+   #+caption: Generalized frame condition for $R$.
    #+name: fig:gen-R-condition
-   #+attr_latex: :float t :width 0.20\textwidth :placement [H]
-   [[file:img/wip.png]]
+   #+attr_latex: :float t :width 0.35\textwidth :placement [H]
+   [[file:img/R-gen.pdf]]
 
    {{{begintheorem}}}
    <<theorem:R⁰>>
