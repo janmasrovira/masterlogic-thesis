@@ -224,13 +224,14 @@
     if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
   #+end_center
 
-  {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be a generalized Veltman model and let
-  $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$. Note that $M'$
-  is not necessarily a Veltman model.
+  {{{begintheorem}}} <<theorem:mono-1>> Let $M=⟨W,R,S,V⟩$ be a generalized Veltman model with any
+  of the quasi-transitivity conditions presented in section [[sec:trans]]. Let
+  $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$. Note that $M'$ is
+  not necessarily a Veltman model.
 
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
 
-  Then for any world $w$ and formula $A$ we have \[M,w⊩A⇔N,w⊩A\]
+  Then for any world $w$ and formula $A$ we have \[M,w⊩A⇔M',w⊩A\]
   {{{endtheorem}}}
 
   {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
@@ -251,11 +252,38 @@
   generalized Veltman frames are assumed to satisfy the monotonicity condition,
   as it can make some proofs shorter.
 
-  {{{beginremark}}} As Luka pointed out during online correspondence, there is a
-  subtlety that is worth mentioning: It is not the same to take the monotone
-  closure of $S$ as to assume that monotonicity is required by definition. In
-  the latter case it may interact with quasi-transitivity and change the forcing
-  relation. Consider the following example:
+  {{{begintheorem}}} <<theorem:mono-1>> Let $F=⟨W,R,S⟩$ be a generalized Veltman frame
+  with quasi-transitivity (2) (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
+  monotonic closure of $S$.
+
+  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
+
+  Then for any valuation $V$, let $M≔⟨F,V⟩$, $M'≔⟨F',V⟩$. For any world $w$ and
+  formula $A$ we have \[M,w⊩A⇔M',w⊩A;\] additionally, $F'$ is a Veltman
+  frame with quasi-transitivity condition (2). {{{endtheorem}}}
+
+
+  {{{beginproof}}} The first part follows from theorem [[theorem:mono-1]]. For the
+  second part we check conditions listed in definition [[def:gen-frame]].
+  - conditions 1 and 2 are clear since $R$ is unchanged;
+  - condition 3 follows from the fact that in the definition of $S'$ we require
+    $Y'⊆\{u:wRu\}$;
+  - for conditions 4 and 5 observe that $S⊆S'$. Since these condition hold for
+    $F$ they also hold for $F'$;
+  - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
+    we have $y'S'_xY'_{y'}$, we need to show that $uS'_x⋃_{y'∈Y'}Y'_{y'}$. By
+    assumption it follows that for some $Y⊆Y'$ we have $uS_xY$ and for every
+    $y'∈Y'$ we there exists some $Y_{y'}⊆Y'_{y'}$ such that $y'S_xY_{y'}$. By
+    (2) for $F$ it follows that $uS_x⋃_{y'∈Y'}Y_{y'}$ and since $S⊆S'$ we get
+    $uS'_x⋃_{y'∈Y'}Y_{y'}$.
+  {{{endproof}}}
+
+
+  {{{beginremark}}}
+
+  As Luka pointed out during online correspondence, theorem [[theorem:mono-1]] does
+  not hold in general for all quasi-transitivty conditions. For instance, here
+  we present a counterexample for condition (8).
 
    #+caption: Example frame: $wRv_{0…3}$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
    #+name: fig:example-trans
@@ -266,7 +294,7 @@
   such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that $w⊩¬(p ▷ q)$ as
   $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ with $v_1⊮q$. If we
   take the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
-  quasi-transitivity 8 (see [[sec:trans]]) we get $v_0S_w \{v_3\}$ and consequently
+  quasi-transitivity (8) we get $v_0S_w \{v_3\}$ and consequently
   $w⊩¬(p ▷ q)$ is no longer true.
 
   {{{endremark}}}
@@ -469,10 +497,6 @@
    reads as follows:
 
    \[ ∀w,x,V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz)))\]
-
-   JOOST: I THINK LUKA HAS VERY NICE AND CONCISE NOTATION FOR THIS SO THAT
-   FURTHERMORE IT BECOMES VERY CLEAR THAT THE GENERALISED IS VERY CLOSE TO THE
-   REGULAR FRAME CONDITION. PLEASE ASK HIM.
 
 
    #+caption: Generalized frame condition for $M$
@@ -934,6 +958,41 @@
     {{{endproof}}}
 
 # \newpage
+** $R₂$ principle
+  The $R₂$ principle reads as follows:
+  \[A₀ ▷ (B₀ ∧ (A₁ ▷ B₁)) → ¬(A₀ ▷ ¬C₀)∧ (E₁▷¬(A₁▷¬C₁))▷ B₀∧(A₁▷B₁)∧□C₀∧(E₁▷A₁)∧(E₁▷B₁∧□C₁)\]
+
+*** Ordinary semantics
+
+
+*** Generalized semantics
+    Some definitions:
+
+    The $(R_1)_{gen}$ condition reads as follows:
+    \begin{flalign*}
+    &∀w,x,u,𝔹,ℂ,𝔼(wRxRuS_w𝔹, ℂ∈𝒞(x,u) \\
+    ⇒\ & (∃𝔹'⊆𝔹)(xS_w𝔹',R[𝔹']⊆ℂ,(∀v∈𝔹')(∀c∈ℂ)(vRcSₓRₓ^{-1}[𝔼]⇒(∃𝔼'⊆𝔼)cS_v𝔼')))
+    \end{flalign*}
+    \begin{flalign*}
+    &∀w,x,u,𝔹,ℂ,𝔼(wRxRuS_w𝔹, ℂ∈𝒞(x,u) \\
+    ⇒\ & (∃𝔹'⊆𝔹)(xS_w𝔹',R[𝔹']⊆ℂ,(∀v∈𝔹')(∀c∈ℂ)(∃U⊆Rₓ^{-1}[𝔼],vRcSₓU)⇒(∃𝔼'⊆𝔼)cS_v𝔼')))
+    \end{flalign*}
+
+    {{{begintheorem}}}
+    <<theorem:R₂>>
+    For any generalized frame $F$, we have that $F$ satisfies the
+    $(R₂)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+    the $R₂$ principle. In symbols:
+
+    \[F⊨(R₂)_{gen}⇔F⊩R₂\]
+    {{{endtheorem}}}
+
+    {{{beginproof}}}
+
+    {{{endproof}}}
+
+# \newpage
+
 ** $R¹$ principle
 
    The $R¹$ principle reads as follows:
