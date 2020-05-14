@@ -226,24 +226,43 @@
    for proving completeness of IL.
 
 
-#+name: fig:table1
+#+name: fig:table-trans
 #+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
-| Nr. | Semantic requirement for transitivity                                                       | Mentioned in                                                                      |
-|-----+---------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------|
+| Nr. | Semantic requirement for transitivity                                                  | Mentioned in                                                                      |
+|-----+----------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------|
 | (1) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | This paper                                                                        |
-| (2) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$               | Verbrugge                                                                         |
-| (3) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                                  | This paper                                                                        |
-| (4) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                                   | \cite{joosten-master}                                                             |
-| (5) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                                  | This paper                                                                        |
-| (6) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                                   | Verbrugge '92 \cite{Verbrugge}                                                    |
-| (7) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$                        | This paper                                                                        |
-| (8) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$                                        | Goris, Joosten '09 \cite{a-new-principle}, p6  \cite{interpretability-formalized} |
+| (2) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge                                                                         |
+| (3) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                                                        |
+| (4) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Joosten '98 \cite{joosten-master}                                              |
+| (5) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                                                        |
+| (6) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}                                                    |
+| (7) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | This paper                                                                        |
+| (8) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle}, \cite{interpretability-formalized} |
 
    #+caption: Diagrams for conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
    #+attr_latex: :float t :width 0.9\textwidth :placement [H]
    [[file:img/trans-2-4-6.pdf]]
+
+
+ # All of the presented quasi-transitivity requirements are adequate for proving
+ # IL soundness and completeness. For soundness it is routine to check that every
+ # instantiation of $J2$ holds. For the completeness part it is enough to see that
+ # any ordinary Veltman model $M=⟨W,R,S,V⟩$ can be transformed into a generalized
+ # Veltman model $M'=⟨W,R,S',V⟩$ where $S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}$ and see that
+ # $M'$ has the same truth value as $M$. This has been verified in Agda.
+
+ {{{begintheorem}}} <<theorem:trans-sound>> Let $(i)∈\{1…8\}$ and
+ $F$ a generalized Veltman frame with quasi-transitivity condition $(i)$.
+
+ IL soundness for (1)-(8)
+ {{{endtheorem}}}
+
+ {{{beginproof}}}
+ {{{agda}}}
+ We only need to check for J5.
+ {{{endproof}}}
 
 
  {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
@@ -275,19 +294,10 @@
    19. $M ∧ (7) ⇒ (8)$
    20. $(8) ⇒ (7)$
 
- {{{endmulticols}}}
- {{{endtheorem}}}
- {{{beginproof}}}
- {{{agda}}}
- {{{endproof}}}
- {{{begintheorem}}}
- <<theorem:trans-sound>>
- IL soundness for (1)-(8)
- {{{endtheorem}}}
+ {{{endmulticols}}} {{{endtheorem}}}
 
  {{{beginproof}}}
  {{{agda}}}
- We only need to check for J5.
  {{{endproof}}}
 
  {{{begintheorem}}}
@@ -349,7 +359,7 @@
   as it can make some proofs shorter.
 
   {{{begintheorem}}} <<theorem:mono-2>> Let $F=⟨W,R,S⟩$ be a generalized Veltman frame
-  with quasi-transitivity (2) (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
+  with quasi-transitivity (1) or (2) (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
   monotonic closure of $S$.
 
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
