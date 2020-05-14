@@ -359,7 +359,7 @@
   as it can make some proofs shorter.
 
   {{{begintheorem}}} <<theorem:mono-2>> Let $F=⟨W,R,S⟩$ be a generalized Veltman frame
-  with quasi-transitivity (1) or (2) (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
+  with quasi-transitivity $(i)∈{1…6}$ (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
   monotonic closure of $S$.
 
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
