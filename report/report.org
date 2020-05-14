@@ -225,40 +225,13 @@
    [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
    for proving completeness of IL.
 
-\newpage
 
- \begin{center}
- \begin{tabular}{l|c|l}
- Nr. & Semantic requirement for transitivity &\ \ \ \ mentioned in \\
-  \hline
- (1) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z\ (Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ)\Big)$ &  This paper\\
-  \hline
- (2) & $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$ &  De Jongh?\\
-  \hline
- (3) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper \\
-  \hline
- (4) &$uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & \cite{joosten-master}  \\
- \hline
- (5) &$uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$ & This paper  \\
- \hline
- (6) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$ & Verbrugge '92 \cite{Verbrugge}  \\
- \hline
- (7) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$ & This paper   \\
- \hline
- (8) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$ & \cite{a-new-principle}  \cite{interpretability-formalized}   \\
- \end{tabular}
- \end{center}
-
-
-#+begin_export latex
-\centering
-\scalebox{0.9}{
-#+end_export
-
-#+attr_latex: :environment tabular :align c|l|l :center :booktabs :width 0.3\textwidth
-| Nr. | Semantic requirement for transitivity                                                       | mentioned in                                                                      |
+#+name: fig:table1
+#+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
+#+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
+| Nr. | Semantic requirement for transitivity                                                       | Mentioned in                                                                      |
 |-----+---------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------|
-| (1) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z\ (Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ)\Big)$ | This paper                                                                        |
+| (1) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | This paper                                                                        |
 | (2) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$               | Verbrugge                                                                         |
 | (3) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                                  | This paper                                                                        |
 | (4) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                                   | \cite{joosten-master}                                                             |
@@ -266,11 +239,6 @@
 | (6) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                                   | Verbrugge '92 \cite{Verbrugge}                                                    |
 | (7) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$                        | This paper                                                                        |
 | (8) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$                                        | Goris, Joosten '09 \cite{a-new-principle}, p6  \cite{interpretability-formalized} |
-
-#+begin_export latex
-}
-#+end_export
-
 
    #+caption: Diagrams for conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
