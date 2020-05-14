@@ -19,6 +19,7 @@
     gsub("⇐", "\\Leftarrow ");
     gsub("≠", "\\neq ");
     gsub("∈", "\\in ");
+    gsub("∉", "\\notin ");
     gsub("∃", "\\exists ");
     gsub("⊩", "\\Vdash ");
     gsub("≔", "\\coloneqq ");
@@ -43,5 +44,9 @@
     gsub("⊢", "\\vdash ");
     gsub("⊬", "\\nvdash ");
     gsub("→", "\\to ");
+    gsub("⟨", "\\langle ");
+    gsub("⟩", "\\rangle ");
+    gsub("⋃", "\\bigcup ");
+
     print;
 };

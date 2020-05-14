@@ -98,6 +98,7 @@
    1. Generalized frame condition for $R₁$ (in collaboration with Luka). [[theorem:R₁][Link]].
    2. Generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]].
    3. Analysis of transitivity. [[theorem:trans][Link]].
+   4. Every Agda proof.
 
 ** Language
    <<sec:language>>
@@ -217,94 +218,14 @@
     {{{agda}}}
     {{{endproof}}}
 
-** Monotonicity
-   Consider the following monotonicity condition:
-
-  #+begin_center
-    if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
-  #+end_center
-
-  {{{begintheorem}}} <<theorem:mono-1>> Let $M=⟨W,R,S,V⟩$ be a generalized Veltman model with any
-  of the quasi-transitivity conditions presented in section [[sec:trans]]. Let
-  $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of $S$. Note that $M'$ is
-  not necessarily a Veltman model.
-
-  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
-
-  Then for any world $w$ and formula $A$ we have \[M,w⊩A⇔M',w⊩A\]
-  {{{endtheorem}}}
-
-  {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
-  - Assume that $M,w⊩A▷B$ and that there is some world $x$ such that $wRx$ and
-    $M',x⊩A$. By IH we have $M,x⊩A$, so there exists some $Y$ such that $xS_wY$
-    and $M,Y⊩B$. By IH we have $M',Y⊩B$ and by definition of $S'$ it follows
-    that $xS'_wY$, therefore $M',w⊩A▷B$.
-  - Assume that $M,w⊮A▷B$. It follows that there is some $x$ such that $wRx$,
-    $M,x⊩A$ and $(⋆)\ ∀Y(xS_wY⇒M,Y⊮B)$. We want to prove that
-    $∀Y'(xS'_wY'⇒M',Y'⊮B)$. Assume that for some $Y'$ we have $xS'_wY'$, by
-    definition of $S'$ it follows there exists some $Y$ such that $Y⊆Y'$ and
-    $xS_wY$. Hence by $(⋆)$ we have that $M,Y⊮B$ and thus there exists $y∈Y$
-    such that $M,y⊮B$. By IH we get that $M',y⊮B$ and since $y∈Y⊆Y'$ we have
-    $Y'⊮B$, so $M',w⊩A▷B$.
-  {{{endproof}}}
-
-  As a consequence of the previous theorem it is sometimes the case that
-  generalized Veltman frames are assumed to satisfy the monotonicity condition,
-  as it can make some proofs shorter.
-
-  {{{begintheorem}}} <<theorem:mono-1>> Let $F=⟨W,R,S⟩$ be a generalized Veltman frame
-  with quasi-transitivity (2) (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
-  monotonic closure of $S$.
-
-  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
-
-  Then for any valuation $V$, let $M≔⟨F,V⟩$, $M'≔⟨F',V⟩$. For any world $w$ and
-  formula $A$ we have \[M,w⊩A⇔M',w⊩A;\] additionally, $F'$ is a Veltman
-  frame with quasi-transitivity condition (2). {{{endtheorem}}}
-
-
-  {{{beginproof}}} The first part follows from theorem [[theorem:mono-1]]. For the
-  second part we check conditions listed in definition [[def:gen-frame]].
-  - conditions 1 and 2 are clear since $R$ is unchanged;
-  - condition 3 follows from the fact that in the definition of $S'$ we require
-    $Y'⊆\{u:wRu\}$;
-  - for conditions 4 and 5 observe that $S⊆S'$. Since these condition hold for
-    $F$ they also hold for $F'$;
-  - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
-    we have $y'S'_xY'_{y'}$, we need to show that $uS'_x⋃_{y'∈Y'}Y'_{y'}$. By
-    assumption it follows that for some $Y⊆Y'$ we have $uS_xY$ and for every
-    $y'∈Y'$ we there exists some $Y_{y'}⊆Y'_{y'}$ such that $y'S_xY_{y'}$. By
-    (2) for $F$ it follows that $uS_x⋃_{y'∈Y'}Y_{y'}$ and since $S⊆S'$ we get
-    $uS'_x⋃_{y'∈Y'}Y_{y'}$.
-  {{{endproof}}}
-
-
-  {{{beginremark}}}
-
-  As Luka pointed out during online correspondence, theorem [[theorem:mono-1]] does
-  not hold in general for all quasi-transitivty conditions. For instance, here
-  we present a counterexample for condition (8).
-
-   #+caption: Example frame: $wRv_{0…3}$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
-   #+name: fig:example-trans
-   #+attr_latex: :float t :width 0.28\textwidth :placement [H]
-   [[file:img/example-trans.pdf]]
-
-  Let $M$ be a model based on the frame displayed in figure [[fig:example-trans]]
-  such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that $w⊩¬(p ▷ q)$ as
-  $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ with $v_1⊮q$. If we
-  take the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
-  quasi-transitivity (8) we get $v_0S_w \{v_3\}$ and consequently
-  $w⊩¬(p ▷ q)$ is no longer true.
-
-  {{{endremark}}}
-
 ** Transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
    for the quasi transitivity condition. Theorem [[theorem:trans]] presents the
    direct implications between them. Theorems [[theorem:trans-sound]] and
    [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
    for proving completeness of IL.
+
+\newpage
 
  \begin{center}
  \begin{tabular}{l|c|l}
@@ -327,6 +248,29 @@
  (8) & $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$ & \cite{a-new-principle}  \cite{interpretability-formalized}   \\
  \end{tabular}
  \end{center}
+
+
+#+begin_export latex
+\centering
+\scalebox{0.9}{
+#+end_export
+
+#+attr_latex: :environment tabular :align c|l|l :center :booktabs :width 0.3\textwidth
+| Nr. | Semantic requirement for transitivity                                                       | mentioned in                                                                      |
+|-----+---------------------------------------------------------------------------------------------+-----------------------------------------------------------------------------------|
+| (1) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z\ (Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ)\Big)$ | This paper                                                                        |
+| (2) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$               | Verbrugge                                                                         |
+| (3) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                                  | This paper                                                                        |
+| (4) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                                   | \cite{joosten-master}                                                             |
+| (5) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                                  | This paper                                                                        |
+| (6) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                                   | Verbrugge '92 \cite{Verbrugge}                                                    |
+| (7) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$                        | This paper                                                                        |
+| (8) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$                                        | Goris, Joosten '09 \cite{a-new-principle}, p6  \cite{interpretability-formalized} |
+
+#+begin_export latex
+}
+#+end_export
+
 
    #+caption: Diagrams for conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
@@ -382,7 +326,7 @@
  <<theorem:trans-extend>>
  Given an ordinary Veltman model $M=⟨W,R,S,V⟩$ we can find some
  generalized Veltman model $M'=⟨W,R,S',V⟩$ satisfying transitivity
- $i∈\{1…8\}$ such that for every world $w$ and formula $A$ \[M,w⊩A⇔M',w⊩A\]
+ $(i)∈\{1…8\}$ such that for every world $w$ and formula $A$ \[M,w⊩A⇔M',w⊩A\]
  {{{endtheorem}}}
 
  {{{beginproof}}} We prove it for the transitivity condition 2 (the rest can be
@@ -399,6 +343,101 @@
      $∀y(xS_wy⇒y⊮B)$. It is obvious that for $M'$ we have $∀y(xS_w\{y\}⇒y⊮B)$
      and also $∀Y(xS_wY⇒Y⊮B)$, which is the required property.
  {{{endproof}}}
+
+** Monotonicity
+   Consider the following monotonicity condition:
+
+  #+begin_center
+    if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
+  #+end_center
+
+  {{{begintheorem}}} <<theorem:mono-1>> Let $M=⟨W,R,S,V⟩$ be a generalized
+  Veltman model with any of the quasi-transitivity conditions presented in
+  section [[sec:trans]]. Let $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of
+  $S$. Note that $M'$ is not necessarily a Veltman model, for instance it may
+  not satisfy the quasi-transitivity condition.
+
+  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
+
+  Then for any world $w$ and formula $A$ we have \[M,w⊩A⇔M',w⊩A\]
+  {{{endtheorem}}}
+
+  {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
+  - Assume that $M,w⊩A▷B$ and that there is some world $x$ such that $wRx$ and
+    $M',x⊩A$. By IH we have $M,x⊩A$, so there exists some $Y$ such that $xS_wY$
+    and $M,Y⊩B$. By IH we have $M',Y⊩B$ and by definition of $S'$ it follows
+    that $xS'_wY$, therefore $M',w⊩A▷B$.
+  - Assume that $M,w⊮A▷B$. It follows that there is some $x$ such that $wRx$,
+    $M,x⊩A$ and $(⋆)\ ∀Y(xS_wY⇒M,Y⊮B)$. We want to prove that
+    $∀Y'(xS'_wY'⇒M',Y'⊮B)$. Assume that for some $Y'$ we have $xS'_wY'$, by
+    definition of $S'$ it follows there exists some $Y$ such that $Y⊆Y'$ and
+    $xS_wY$. Hence by $(⋆)$ we have that $M,Y⊮B$ and thus there exists $y∈Y$
+    such that $M,y⊮B$. By IH we get that $M',y⊮B$ and since $y∈Y⊆Y'$ we have
+    $Y'⊮B$, so $M',w⊩A▷B$.
+  {{{endproof}}}
+
+  As a consequence of the previous theorem it is sometimes the case that
+  generalized Veltman frames are assumed to satisfy the monotonicity condition,
+  as it can make some proofs shorter.
+
+  {{{begintheorem}}} <<theorem:mono-2>> Let $F=⟨W,R,S⟩$ be a generalized Veltman frame
+  with quasi-transitivity (2) (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
+  monotonic closure of $S$.
+
+  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
+
+  Then for any valuation $V$, let $M≔⟨F,V⟩$, $M'≔⟨F',V⟩$. For any world $w$ and
+  formula $A$ we have \[M,w⊩A⇔M',w⊩A;\] additionally, $F'$ is a Veltman frame
+  with quasi-transitivity condition (2).
+  {{{endtheorem}}}
+
+
+  {{{beginproof}}} {{{agda}}}
+
+  The first part follows from theorem [[theorem:mono-1]]. For the
+  second part we check conditions listed in definition [[def:gen-frame]].
+  - Conditions 1 and 2 are clear since $R$ is unchanged;
+  - condition 3 follows from the fact that in the definition of $S'$ we require
+    $Y'⊆\{u:wRu\}$;
+  - for conditions 4 and 5 observe that $S⊆S'$. Since these conditions hold for
+    $F$ they also hold for $F'$;
+  # - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
+  #   we have $y'S'_xY'_{y'}$. We need to show that $uS'_x⋃_{y'∈Y'}Y'_{y'}$. By
+  #   assumption it follows that for some $Y⊆Y'$ we have $uS_xY$ and for every
+  #   $y'∈Y'$ we there exists some $Y_{y'}⊆Y'_{y'}$ such that $y'S_xY_{y'}$. Since
+  #   $F$ satisfies (2) it follows that $uS_x⋃_{y'∈Y'}Y_{y'}$ and since $S⊆S'$ we get
+  #   $uS'_x⋃_{y'∈Y'}Y_{y'}$.
+  - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
+    we have $y'S'_xΥ_{y'}$. We need to show that $uS'_x⋃_{y'∈Y'}Υ_{y'}$. By
+    definition of $S'$ it follows that there exists $Y⊆Y'$ such that $uS_xY$,
+    furthermore, for every $y'∈Y'$ we have that there exists $f(Υ_{y'})⊆Υ_{y'}$
+    such that $y'S_xf(Υ_{y'})$. From $Y⊆Y'$ it follows that for all $y∈Y$ there
+    exists $f(Υ_{y})⊆Υ_{y}$ such that $yS_xf(Υ_{y})$. Then by (2) for $F$ it follows
+    that $uS_x⋃_{y∈Y}f(Υ_{y})$. Then see that $⋃_{y∈Y}f(Υ_{y})⊆⋃_{y'∈Y'}Υ_{y'}$.
+    It remains to show $⋃_{y'∈Y'}Υ_{y'}⊆xR\_$.
+  {{{endproof}}}
+
+  The previous lemma allows us to safely assume that monotonicity is a condition
+  for a Veltman frame with quasi-transitivity (2).
+
+  {{{beginremark}}}
+  As Luka pointed out during online correspondence, theorem [[theorem:mono-2]] does
+  not hold in general for all quasi-transitivity conditions. For instance, here
+  we present a counterexample for condition (8).
+
+   #+caption: Example frame: $wRv_{0…3}$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
+   #+name: fig:example-trans
+   #+attr_latex: :float t :width 0.28\textwidth :placement [H]
+   [[file:img/example.pdf]]
+
+  Let $M$ be a model based on the frame displayed in figure [[fig:example-trans]]
+  such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that $w⊩¬(p ▷ q)$ as
+  $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ with $v_1⊮q$. If we
+  take the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
+  quasi-transitivity (8) we get $v_0S_w \{v_3\}$ and consequently
+  $w⊩¬(p ▷ q)$ is no longer true.
+
+  {{{endremark}}}
 
 ** Logic $IL$
    The logic $IL$ encompasses all classical tautologies in the new language plus
