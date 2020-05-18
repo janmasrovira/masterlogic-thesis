@@ -24,3 +24,4 @@ report/report.pdf
 *.ist
 *.xdy
 /report/img/tikz/*.pdf
+/ref/
