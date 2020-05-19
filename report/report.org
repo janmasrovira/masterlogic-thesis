@@ -27,6 +27,7 @@
 #+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
 #+latex_header: \newcommand{\ok}[0]{\textcolor{DeepSkyBlue4}{solved }}
 #+macro: red @@latex:{\color{red}@@$1@@latex:}@@
+#+macro: jan @@latex:{\color{red}@@Jan: $1@@latex:}@@
 
 #+macro: begindef @@latex:\begin{definition}@@
 #+macro: enddef @@latex:\end{definition}@@
@@ -448,7 +449,6 @@
    {{{endproof}}}
 
 
-\newpage
 * Frame conditions
   A principle is a schema of formulas that carries some special significance.
 
@@ -1185,6 +1185,48 @@
    wip
    \end{flalign*}
 
+   \newpage
+* Generic generalized frame condition
+  In this section we present a method that given a formula $A$, builds a (first
+  order??) formula that is a generalized frame condition for $A$.
+
+  {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$, let
+  $ℱ:(Var(A) → 𝒫(W))×Fm→𝒫(W)$ be defined by
+\begin{flalign*}
+  ℱ(G,x) &≔ G (x) \\
+  ℱ(G,⊥) &≔ ∅ \\
+  ℱ(G,A→B) &≔ \{w:w ∈ ℱ(G,A) ⇒ w ∈ ℱ(G,B)\} \\
+  ℱ(G,A▷B) &≔ \{w:∀ u.(wRu,u∈ℱ(A))⇒∃Y.uS_wY⊆ℱ(B))\} \\
+\end{flalign*}
+
+  Then define
+  \[(A)^*_{gen}≔∀(G:Var(A) → 𝒫(W))∀w∈W.w∈ℱ(G,A) \]
+
+  Since $Var(A)=x₁,…,xₙ$ is finite, we can have instead
+  \[(A)^*_{gen}≔∀𝕏₁…𝕏ₙ∀w∈W.w∈ℱ(𝕏₁,…,𝕏ₙ,A) \]
+  where $G(xᵢ)$ is replaced by $𝕏ᵢ$ for $i∈\{1…n\}$.
+  {{{jan(Is $(A)^*_{gen}$ acceptable as a frame condition?)}}}
+  {{{enddef}}}
+
+  {{{begintheorem}}}
+
+  Let $A$ be a formula. For any generalized frame $F$, we have that $F$
+  satisfies the $(A)^*_{gen}$ condition iff any model based on $F$ forces $A$.
+  In symbols:
+
+    \[F⊨(A)^*_{gen}⇔F⊩A\]
+  {{{endtheorem}}}
+
+  {{{beginproof}}}
+  {{{agda}}}
+  Proved in Agda.
+  {{{endproof}}}
+
+  {{{beginremark}}}
+  For instance, if we want the frame condition for $P₀$ we look at
+   \[(a ▷ ♢ b → □ (a ▷ b))^*_{gen}\]
+   where $a,b$ are different variables.
+  {{{endremark}}}
 * The logic of Agda
   Everything about agda in general.
   Look here cite:norell:thesis.
