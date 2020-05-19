@@ -1201,7 +1201,7 @@
 \end{flalign*}
 
   Then define
-  \[(A)^*_{gen}≔∀𝕏₁…𝕏ₙ∀w∈W.w∈ℱ(G,A) \]
+  \[(A)^*_{gen}≔∀𝕏₁…𝕏ₙ∀w∈W.w∈ℱ(𝕏_*,A) \]
 
   {{{jan(Is $(A)^*_{gen}$ acceptable as a frame condition?)}}}
   {{{enddef}}}
