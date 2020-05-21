@@ -31,6 +31,9 @@
 ** Docker alternative
    If you don't have TeXLive 2020 you can use the [[file:./scripts/get-pdf-docker.sh][get-pdf-docker.sh]] script for a
    self-contained alternative.
+   #+begin_example
+   ./scripts/get-pdf-docker.sh workdir
+   #+end_example
 ** Fonts
    Some extra fonts are required to compile, which can be found in
    [[file::./fonts]]. To install them on a unix-like system do:
