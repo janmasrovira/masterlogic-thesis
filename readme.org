@@ -29,7 +29,8 @@
    *Important: TeXLive 2020 is required.*
 
 ** Docker alternative
-   If you don't have TeXLive 2020 you can use the [[file:./scripts/get-pdf-docker.sh][get-pdf-docker.sh]].
+   If you don't have TeXLive 2020 you can use the [[file:./scripts/get-pdf-docker.sh][get-pdf-docker.sh]] script for a
+   self-contained alternative.
 ** Fonts
    Some extra fonts are required to compile, which can be found in
    [[file::./fonts]]. To install them on a unix-like system do:
