@@ -11,6 +11,7 @@
   unzip artifacts.zip
   latexmk -pdf report
   #+end_example
+  *Important: TeXLive 2020 is required.*
 
   Browse the pdf online using the following url:
 #+begin_center

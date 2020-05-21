@@ -677,7 +677,7 @@
    {{{endproof}}}
 
 *** Generalized semantics
-    The $(P₉)_{gen}$ condition reads as follows:
+    The $(P_0)_{gen}$ condition reads as follows:
     \[∀w,x,y,Y,Z((wRxRyS_wY,∀y∈Y∃z∈Z(yRz))⇒∃Z'⊆Z(yS_xZ'))\]
 
    #+caption: Generalized frame condition for $P₀$
@@ -1188,7 +1188,7 @@
    \newpage
 * Generic generalized frame condition
   In this section we present a method that given a formula $A$, builds a (second
-  order??) formula that is a generalized frame condition for $A$.
+  order?) formula that is a generalized frame condition for $A$.
 
   {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$ with
   $Var(A)=x₁,…,xₙ$. Let $ℱ$ be defined by (we write $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$).
@@ -1201,7 +1201,7 @@
 \end{flalign*}
 
   Then define
-  \[(A)^*_{gen}≔∀𝕏₁…𝕏ₙ∀w∈W.w∈ℱ(𝕏_*,A) \]
+  \[(A)^*_{gen}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A) \]
 
   {{{jan(Is $(A)^*_{gen}$ acceptable as a frame condition?)}}}
   {{{enddef}}}
