@@ -4,7 +4,7 @@
   The latest tex file can be found here:
   [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
   To download the TeX file and compile it automatically follow these commands or
-  run the [[file:./get-pdf.sh]] script:
+  run the [[file:./scripts/get-pdf.sh]] script:
 
   #+begin_example
   curl --location "https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/download?job=org2tex" --output artifacts.zip
