@@ -1,18 +1,6 @@
 * Readme
   # You can find the latest build here: [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]].
 
-  The latest tex file can be found here:
-  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
-  To download the TeX file and compile it automatically follow these commands or
-  run the [[file:./scripts/get-pdf.sh]] script:
-
-  #+begin_example
-  curl --location "https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/download?job=org2tex" --output artifacts.zip
-  unzip artifacts.zip
-  latexmk -pdf report
-  #+end_example
-  *Important: TeXLive 2020 is required.*
-
   Browse the pdf online using the following url:
 #+begin_center
   [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]]
@@ -27,6 +15,21 @@
   expiration period to 1 month to avoid bloating the repository. This means that
   they will become unavailable eventually. It is pending to fix this.
 
+** Compiling yourself
+   The latest tex file can be found here:
+   [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
+   To download the TeX file and compile it automatically follow these commands or
+   run the [[file:./scripts/get-pdf.sh][get-pdf.sh]] script:
+
+   #+begin_example
+   curl --location "https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/download?job=org2tex" --output artifacts.zip
+   unzip artifacts.zip
+   latexmk -pdf report
+   #+end_example
+   *Important: TeXLive 2020 is required.*
+
+** Docker alternative
+   If you don't have TeXLive 2020 you can use the [[file:./scripts/get-pdf-docker.sh][get-pdf-docker.sh]].
 ** Fonts
    Some extra fonts are required to compile, which can be found in
    [[file::./fonts]]. To install them on a unix-like system do:
