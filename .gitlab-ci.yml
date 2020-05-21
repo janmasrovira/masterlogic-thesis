@@ -8,6 +8,9 @@ org2tex:
   script:
     - cd report
     - emacs report.org -batch -l ~/init.el -f org-latex-export-to-latex
+    - mv report.tex report1.tex
+    - echo "% !TEX TS-program = xelatex" > header
+    - cat header report1.tex > report.tex
     - cp -r img report.tex refs.bib .latexmkrc ../
   artifacts:
     paths:
