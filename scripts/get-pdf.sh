@@ -1,6 +1,8 @@
 #!/bin/bash
+parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
+workdir=$(pwd)/$1
 
-curl --location "https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/download?job=org2tex" --output artifacts.zip
+./get-artifacts.sh
 unzip -o artifacts.zip -d workdir
 cd workdir
 latexmk -pdf report
