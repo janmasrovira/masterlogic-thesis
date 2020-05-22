@@ -3,7 +3,7 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 workdir=$( realpath $1 )
 cd $parent_path
 
-docker create -ti --rm --name cont nopreserveroot/texlive-full:2020.04.17 bash
+docker create -ti --rm --name cont janmasrovira/texlive:2020-custom
 docker start cont
 docker cp $workdir cont:/root/workdir
 docker cp ../fonts cont:/root/.fonts

@@ -86,6 +86,9 @@
 #+latex_header: \newglossaryentry{Pred}{name={\texttt{Pred}},description={A predicate or a subset}}
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
+#+latex_header: \newcommand{\prin}[1]{\text{$\mathsf{#1}$}}
+#+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
+#+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
 
 # Missing monospaced characters
 #+latex_header: \setmathfont{XITS Math}
@@ -461,27 +464,28 @@
   In this section we present a series of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
   semantics.
-** $M$ principle
-   The $M$ principle reads as follows:
+** \prin{M} principle
+   The \prin{M} principle reads as follows:
    \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C)\]
 
-   JOOST: AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE PRINCIPLE INTRODUCED AND BY WHOM. ALSO, WHY IS IT IMPORTANT, ETC.
+   JOOST: AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE
+   PRINCIPLE INTRODUCED AND BY WHOM. ALSO, WHY IS IT IMPORTANT, ETC.
 
 *** Ordinary semantics
-   The frame condition for $M$ for ordinary semantics, we write $M_{ord}$,
+   The frame condition for \prin{M} for ordinary semantics, we write $\kord{M}$,
    reads as follows:
    \[∀w,x,y,z(xS_w yRz ⇒ xRz)\]
 
-   #+caption: Ordinary frame condition for $M$
+   #+caption: Ordinary frame condition for \prin{M}
    #+name: fig:ord-M-condition
    #+attr_latex: :float t :width 0.20\textwidth :placement [H]
    [[file:img/M-ord.pdf]]
 
    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
-   $M_{ord}$ condition iff any model based on $F$ forces every instantiation of the $M$
+   $\kord{M}$ condition iff any model based on $F$ forces every instantiation of the \prin{M}
    principle. In symbols:
 
-   \[F ⊨ M_{ord} ⇔ F ⊩ M\] {{{endtheorem}}}
+   \[F ⊨ \kord{M} ⇔ F ⊩ M\] {{{endtheorem}}}
 
    JOOST: NOTE THAT YOUR MODELS SYMBOLS IS A BIT OVERLOADEN. YOU NOW USE IT IN
    THE SENSE WHERE F IS CONSIDERED A FIRST (OR HIGHER ORDER) STRUCTURE/MODEL.
@@ -513,29 +517,29 @@
    {{{endproof}}}
 
 *** Generalized semantics
-   The frame condition for $M$ for generalized semantics, we write $M_{gen}$,
+   The frame condition for \prin{M} for generalized semantics, we write $\kgen{M}$,
    reads as follows:
 
    \[ ∀w,x,V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz)))\]
 
 
-   #+caption: Generalized frame condition for $M$
+   #+caption: Generalized frame condition for \prin{M}
    #+name: fig:gen-M-condition
    #+attr_latex: :float t :width 0.20\textwidth :placement [H]
    [[file:img/wip.png]]
 
    {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
-   $M_{gen}$ condition iff any model based on $F$ forces every instantiation of
-   the $M$ principle. In symbols:
+   $\kgen{M}$ condition iff any model based on $F$ forces every instantiation of
+   the \prin{M} principle. In symbols:
 
-   \[F ⊨ M_{gen} ⇔ F ⊩ M\] {{{endtheorem}}}
+   \[F ⊨ \kgen{M} ⇔ F ⊩ M\] {{{endtheorem}}}
 
    {{{beginproof}}}
    {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
      Our aim is to find a set $Z$ such that $xS_wZ⊩B∧□C$. Since $wRx⊩A$ and
-     $w⊩A▷B$ there is set $Z$ such that $xS_wZ⊩B$. Then by the $M_{gen}$
+     $w⊩A▷B$ there is set $Z$ such that $xS_wZ⊩B$. Then by the $\kgen{M}$
      condition it follows that there is a world $Z'⊆Z$ such that $xS_wZ'$ and
      $∀v∈Z'∀z(vRz⇒xRz)$. Now we show $Z'⊩□C$. Let $v∈Z'$ and $u$ such that
      $vRu$, by the condition above it follows $xRu$ and since $x⊩□C$ we have
@@ -553,24 +557,24 @@
      forced exactly in $V$. Now let $v',z$ such that $v'∈V'$ and $v'Rz$. Since
      $v'⊩□c$, then $z⊩c$ and thus $uRz$. Therefore $V'$ is the desired set.
    {{{endproof}}}
-** $M₀$ principle
-   The $M₀$ principle reads as follows:
+** \prin{M₀} principle
+   The \prin{M₀} principle reads as follows:
    \[A ▷ B → (♢ A ∧ □ C) ▷ (B ∧ □ C)\]
 
 *** Ordinary semantics
-    The $(M₀)_{ord}$ condition reads as follows:
+    The $\kord{M₀}$ condition reads as follows:
     \[∀w,x,y,z(wRxRyS_wz⇒xS_wz,∀u(zRu⇒xRu))\]
 
-   #+caption: Ordinary frame condition for $M₀$
+   #+caption: Ordinary frame condition for \prin{M₀}
    #+name: fig:M_0-ord
    #+attr_latex: :float t :width 0.25\textwidth :placement [H]
    [[file:img/M_0-ord.pdf]]
 
     {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
-    $(M₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
-    the $M₀$ principle. In symbols:
+    $\kord{M₀}$ condition iff any model based on $F$ forces every instantiation of
+    the \prin{M₀} principle. In symbols:
 
-    \[F ⊨ (M₀)_{ord} ⇔ F ⊩ M₀\] {{{endtheorem}}}
+    \[F ⊨ \kord{M₀} ⇔ F ⊩ M₀\] {{{endtheorem}}}
 
     {{{beginproof}}}
     {{{agda}}}
@@ -578,7 +582,7 @@
       that $w⊩A▷B$ and that there exists some $x$ such that $wRx⊩ ♢ A ∧ □ C$. It
       follows that there exists some world $y$ such that $xRy⊩A$, then since
       $wRy$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. By the
-      $(M₀)_{ord}$ condition we have that $xS_wz$ and $(⋆)\ ∀u(zRu⇒xRu)$. Hence,
+      $\kord{M₀}$ condition we have that $xS_wz$ and $(⋆)\ ∀u(zRu⇒xRu)$. Hence,
       it remains to show $z⊩□C$. Consider some world $u$ such that $zRu$, by
       $(⋆)$ it follows that $xRu$ and since $x⊩□C$ we also have $u⊩C$.
     - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$ and
@@ -597,27 +601,27 @@
     {{{endproof}}}
 
 *** Generalized semantics
-    The $(M₀)_{gen}$ condition reads as follows:
+    The $\kgen{M₀}$ condition reads as follows:
     \[∀w,x,y,Y(wRxRyS_wY⇒∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz⇒xRz)))\]
 
-   #+caption: Generalized frame condition for $M₀$
+   #+caption: Generalized frame condition for \prin{M₀}
    #+name: fig:M_0-gen
    #+attr_latex: :float t :width 0.30\textwidth :placement [H]
    [[file:img/M_0-gen.pdf]]
 
 
     {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
-    $(M₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of
-    the $M₀$ principle. In symbols:
+    $\kgen{M₀}$ condition iff any model based on $F$ forces every instantiation of
+    the \prin{M₀} principle. In symbols:
 
-    \[F ⊨ (M₀)_{gen} ⇔ F ⊩ M₀\] {{{endtheorem}}}
+    \[F ⊨ \kgen{M₀} ⇔ F ⊩ M₀\] {{{endtheorem}}}
 
     {{{beginproof}}}
     {{{agda}}}
     - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
       that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩♢A∧□C$. Then
       there must exist some world $y$ such that $xRy⊩A$. Since $wRy$ and $w⊩A▷B$
-      there exists some set $Y$ such that $yS_wY⊩B$. Then by the $(M₀)_{gen}$
+      there exists some set $Y$ such that $yS_wY⊩B$. Then by the $\kgen{M₀}$
       condition we have that there exists some $Y'⊆Y$ such that $xS_wY'$ and
       $(⋆)\ ∀y'∈Y'∀z(y'Rz⇒xRz)$. Clearly $Y'⊩B$ since $Y'⊆Y$. To show that
       $Y'⊩□C$ consider some $y'∈Y'$ and some $z$ such that $y'Rz$. Then, by
@@ -638,23 +642,22 @@
       such that $y'Rz$. Since $Y'⊩□c$ then $z⊩c$ and thus $xRz$.
     {{{endproof}}}
 
-** $P₀$ principle
+** \prin{P₀} principle
 
-   The $P₀$ principle reads as follows.
-   The $P₀$ principle reads as follows:
+   The \prin{P₀} principle reads as follows:
    \[A ▷ ♢ B → □ (A ▷ B)\]
 *** Ordinary semantics
     The $(P₀)_{ord}$ condition reads as follows:
     \[∀w,x,y,z,u(wRxRyS_wzRu⇒yS_xu)\]
 
-   #+caption: Ordinary frame condition for $P₀$
+   #+caption: Ordinary frame condition for \prin{P₀}
    #+name: fig:P_0-ord
    #+attr_latex: :float t :width 0.15\textwidth :placement [H]
    [[file:img/P_0-ord.pdf]]
 
    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
    $(P₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
-   the $P₀$ principle. In symbols:
+   the \prin{P₀} principle. In symbols:
 
    \[F ⊨ (P₀)_{ord} ⇔ F ⊩ P₀\] {{{endtheorem}}}
 
@@ -683,7 +686,7 @@
     The $(P_0)_{gen}$ condition reads as follows:
     \[∀w,x,y,Y,Z((wRxRyS_wY,∀y∈Y∃z∈Z(yRz))⇒∃Z'⊆Z(yS_xZ'))\]
 
-   #+caption: Generalized frame condition for $P₀$
+   #+caption: Generalized frame condition for \prin{P₀}
    #+name: fig:P_0-gen
    #+attr_latex: :float t :width 0.31\textwidth :placement [H]
    [[file:img/P_0-gen.pdf]]
@@ -691,7 +694,7 @@
 
    {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
    $(P₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of
-   the $P₀$ principle. In symbols:
+   the \prin{P₀} principle. In symbols:
 
    \[F ⊨ (P₀)_{gen} ⇔ F ⊩ P₀\] {{{endtheorem}}}
 
@@ -718,26 +721,31 @@
      done.
    {{{endproof}}}
 
-** $R$ principle
-   The $R$ principle reads as follows:
+** \prin{R} principle
+   The \prin{R} principle reads as follows:
 
-   \[A ▷ B → (¬ (A ▷ ¬C) ▷ (B ∧ □ C))\]
+   \[A ▷ B → ¬ (A ▷ ¬C) ▷ (B ∧ □ C)\ .\]
+
+   IT WOULD BE NICE IF EACH PRINCIPLE HAS A SHORT DESCRIPTION: WHEN INTRODUCED,
+   WHY, BY WHOM, WHY INTERESTING, CURRENT STATUS. WE CAN THINK IF WE DO THIS IN
+   ONE SECTION FOR ALL OR EACH TIME WHEN THE PRINCIPLE IS INTRODUCED. OR
+   POSSIBLY EVEN A MIXTURE OF BOTH
 
 *** Ordinary semantics
-    The $R_{ord}$ condition reads as follows:
-    \[∀w,x,y,z(wRxRyS_wz⇒∀v(zRv⇒yS_xv)) \]
+    The $\kord{R}$ condition reads as follows:
+    \[∀w,x,y,z(wRxRyS_wz⇒∀v(zRv⇒yS_xv))\ .\]
 
-   #+caption: Ordinary frame condition for $R$
+   #+caption: Ordinary frame condition for \prin{R}
    #+name: fig:ord-R-condition
    #+attr_latex: :float t :width 0.15\textwidth :placement [H]
    [[file:img/R-ord.pdf]]
 
    {{{begintheorem}}}
    For any ordinary frame $F$, we have that $F$ satisfies the
-   $R_{ord}$ condition iff any model based on $F$ forces every instantiation of
-   the $R$ principle. In symbols:
+   $\kord{R}$ condition iff any model based on $F$ forces every instantiation of
+   the \prin{R} principle. In symbols:
 
-   \[F ⊨ R_{ord} ⇔ F ⊩ R\]
+   \[F ⊨ \kord{R} ⇔ F ⊩ R\]
    {{{endtheorem}}}
    {{{beginproof}}}
    {{{agda}}}
@@ -748,7 +756,7 @@
      Since $w⊩A▷B$ and by transitivity we have $wRy$ it follows that there
      exists a world $z$ such that $yS_wz⊩B$. To see that $z$ is the desired
      world we first see that $z⊩□C$. Let $u$ be such that $zRu$, then by
-     $R_{ord}$ it follows that $yS_xu$ and by $(⋆)$ we get $u⊩C$. Finally, we
+     $\kord{R}$ it follows that $yS_xu$ and by $(⋆)$ we get $u⊩C$. Finally, we
      have see that $xS_wz$. Since $wRxRy$ we have that $xS_wy$ and we have
      $yS_wz$ from before, hence by transitivity of $S_w$ we get $xS_wz$
    - \boxed{⇐} Let $a,b,c∈Var$ and assume that for some $w,x,y,z$ we have
@@ -785,7 +793,7 @@
     ⇒& ∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz→z∈K)))
     \end{flalign*}
 
-   #+caption: Generalized frame condition for $R$.
+   #+caption: Generalized frame condition for \prin{R}.
    #+name: fig:gen-R-condition
    #+attr_latex: :float t :width 0.35\textwidth :placement [H]
    [[file:img/R-gen.pdf]]
@@ -794,7 +802,7 @@
    <<theorem:R⁰>>
    For any generalized frame $F$, we have that $F$ satisfies the
    $R_{gen}$ condition iff any model based on $F$ forces every instantiation of
-   the $R$ principle. In symbols:
+   the \prin{R} principle. In symbols:
 
    \[F ⊨ R_{gen} ⇔ F ⊩ R\]
    {{{endtheorem}}}
@@ -829,26 +837,26 @@
      from $Y'⊩□c$ we get $∀y'∈Y'(∀z(y'Rz→z∈K))$, hence $Y'$ is the desired set.
    {{{endproof}}}
 
-** $R₁$ principle
+** \prin{R₁} principle
   The $R_1$ principle reads as follows:
   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E))\]
 
 *** Ordinary semantics
 
-    The $(R₁)_{ord}$ frame condition reads as follows:
+    The $\kord{R_1}$ frame condition reads as follows:
     \[∀w,x,y,z(wRxRyS_wz⇒∀u(zRu⇒yS_xu,∀v(uS_xv⇒∀m(vRm⇒uS_zm))))\]
 
-    # #+caption: Ordinary frame condition for $R₁$
+    # #+caption: Ordinary frame condition for \prin{R₁}
     # #+name: fig:ord-R₁-condition
     # #+attr_latex: :float t :width 0.20\textwidth :placement [H]
     # [[file:img/wip.png]]
 
     {{{begintheorem}}}
     For any ordinary frame $F$, we have that $F$ satisfies the
-    $(R₁)_{ord}$ condition iff any model based on $F$ forces every instantiation of
-    the $R₁$ principle. In symbols:
+    $\kord{R_1}$ condition iff any model based on $F$ forces every instantiation of
+    the \prin{R₁} principle. In symbols:
 
-    \[F ⊨ (R₁)_{ord} ⇔ F ⊩ R₁\]
+    \[F ⊨ \kord{R_1} ⇔ F ⊩ R₁\]
     {{{endtheorem}}}
 
     {{{beginproof}}}
@@ -873,9 +881,9 @@
       there exists world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$. As
       $wRy⊩A$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. It
       remains to show that $z⊩□C∧(D▷E)$. We first see that $z⊩□C$. Consider
-      $v$ such that $zRv$, by $(R₁)_{ord}$ it follows that $yS_xv$ and by $(⋆)$
+      $v$ such that $zRv$, by $\kord{R_1}$ it follows that $yS_xv$ and by $(⋆)$
       we get $v⊩C$. Now we show $z⊩D▷E$. Let $u$ be such that $zRu⊩D$, we need
-      to find some $m$ such that $uS_zm⊩E$. By $(R₁)_{ord}$ we get $yS_xu$ and
+      to find some $m$ such that $uS_zm⊩E$. By $\kord{R_1}$ we get $yS_xu$ and
       $(†)\ ∀v,m((uS_xv,vRm)⇒uS_zm)$. See that $yS_xu$ implies $xRu$ and since
       $x⊩D▷♢E$ and $u⊩D$ we get that there is some $n$ such that $uS_xn⊩♢E$.
       Hence there is a world $m$ such that $nRm⊩E$. Finally by $(†)$ and $uS_xn$
@@ -904,7 +912,7 @@
     <<theorem:R₁>>
     For any generalized frame $F$, we have that $F$ satisfies the
     $(R₁)_{gen}$ condition iff any model based on $F$ forces every instantiation of
-    the $R₁$ principle. In symbols:
+    the \prin{R₁} principle. In symbols:
 
     \[F⊨(R₁)_{gen}⇔F⊩R₁\]
     {{{endtheorem}}}
@@ -978,17 +986,14 @@
     {{{endproof}}}
 
 # \newpage
-** $R₂$ principle
-  The $R₂$ principle reads as follows:
+** \prin{R_2} principle                                            :noexport:
+  The \prin{R_2} principle reads as follows:
   \[A₀ ▷ (B₀ ∧ (A₁ ▷ B₁)) → ¬(A₀ ▷ ¬C₀)∧ (E₁▷¬(A₁▷¬C₁))▷ B₀∧(A₁▷B₁)∧□C₀∧(E₁▷A₁)∧(E₁▷B₁∧□C₁)\]
-
-*** Ordinary semantics
-
 
 *** Generalized semantics
     Some definitions:
 
-    The $(R_1)_{gen}$ condition reads as follows:
+    The $(R_2)_{gen}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x,u,𝔹,ℂ,𝔼(wRxRuS_w𝔹, ℂ∈𝒞(x,u) \\
     ⇒\ & (∃𝔹'⊆𝔹)(xS_w𝔹',R[𝔹']⊆ℂ,(∀v∈𝔹')(∀c∈ℂ)(vRcSₓRₓ^{-1}[𝔼]⇒(∃𝔼'⊆𝔼)cS_v𝔼')))
@@ -1002,24 +1007,23 @@
     <<theorem:R₂>>
     For any generalized frame $F$, we have that $F$ satisfies the
     $(R₂)_{gen}$ condition iff any model based on $F$ forces every instantiation of
-    the $R₂$ principle. In symbols:
+    the \prin{R_2} principle. In symbols:
 
     \[F⊨(R₂)_{gen}⇔F⊩R₂\]
     {{{endtheorem}}}
 
     {{{beginproof}}}
-
     {{{endproof}}}
 
 # \newpage
 
-** $R¹$ principle
+** \prin{R¹} principle
 
-   The $R¹$ principle reads as follows:
+   The \prin{R¹} principle reads as follows:
    \[A ▷ B → (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)\]
 
 *** Generalized semantics
-    The $(R¹)_{gen}$ condition reads as follows:
+    The $\kgen{R¹}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x,y,z,𝔸,𝔹,ℂ,𝔻. \\
     &wRxRyRz, \\
@@ -1032,10 +1036,10 @@
 
     {{{begintheorem}}}
     For any generalized frame $F$, we have that $F$ satisfies the
-    $(R¹)_{gen}$ condition iff any model based on $F$ forces every instantiation of
-    the $R¹$ principle. In symbols:
+    $\kgen{R¹}$ condition iff any model based on $F$ forces every instantiation of
+    the \prin{R¹} principle. In symbols:
 
-    \[F⊨(R¹)_{gen}⇔F⊩R¹\]
+    \[F⊨\kgen{R¹}⇔F⊩R¹\]
     {{{endtheorem}}}
 
 
@@ -1045,12 +1049,12 @@
       (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for some
       $x,y,z$ we have $wRxRyRz$ and $x⊩D▷A$, $y⊩¬(D▷¬C)$, $z⊩D$. Now let
       $𝔸≔\{w:w⊩A\}$. We define $𝔹,ℂ,𝔻$ likewise for formulas $B,C,D$ respectively.
-      It is routine to check that the left part of the implication of $(R¹)_{gen}$
+      It is routine to check that the left part of the implication of $\kgen{R¹}$
       is met. Hence there exist a set $V⊆𝔹$ such that $xS_wV$ and $R[V]⊆ℂ$. By the
       definition of the sets $𝔹$ and $ℂ$ it follows that $V⊩B∧□C$.
     - \boxed{⇐} Fix a frame $F$ and let $a,b,c,d$ be propositional variables and
       assume $F⊩a ▷ b → (♢¬(d ▷ ¬c)∧ (d▷a))▷(b∧□c)$. Assume that the left part
-      of the implication of $(R¹)_{gen}$ holds. Now consider a model extending
+      of the implication of $\kgen{R¹}$ holds. Now consider a model extending
       $F$ such that:
       \begin{flalign*}
        ⟦a⟧ &= 𝔸 \\
@@ -1097,8 +1101,8 @@
     - \boxed{⇐}
     {{{endproof}}}
 
-** $Rⁿ$ principle
-   The $R^n$ principle is defined thus cite:two-new-series:
+** \prin{Rⁿ} principle
+   The \prin{R^n} principle is defined thus cite:two-new-series:
    \begin{flalign*}
    U_0 &≔ ♢¬(D_0▷¬C) \\
    U_{r+1} &≔ ♢((Dᵣ▷D_{r+1}) ∧ Uᵣ) \\
@@ -1107,11 +1111,11 @@
    R^{n+1}& ≔ A ▷ B → ((D_{n}▷A) ∧ U_{n}) ▷ B ∧ □ C
    \end{flalign*}
 *** Ordinary semantics
-    The frame condition for ordinary semantics $(R^n)_{ord}$ can be found in
+    The frame condition for ordinary semantics $\kord{R^n}$ can be found in
     cite:two-new-series.
 
 *** Generalized semantics
-    The $(Rⁿ)_{gen}$ condition reads as follows:
+    The $\kgen{Rⁿ}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x₀,…,x_{n-1},y,z,𝔸,𝔹,ℂ,𝔻₀,…,𝔻_{n-1}.\\
     &wRx_{n-1}R…Rx_0RyRz, \\
@@ -1149,10 +1153,10 @@
     {{{begintheorem}}}
     <<theorem:Rⁿ>>
     For any generalized frame $F$, we have that $F$ satisfies
-    the $(Rⁿ)_{gen}$ condition iff any model based on $F$ forces every
-    instantiation of the $Rⁿ$ principle. In symbols:
+    the $\kgen{Rⁿ}$ condition iff any model based on $F$ forces every
+    instantiation of the \prin{Rⁿ} principle. In symbols:
 
-    \[F⊨(Rⁿ)_{gen}⇔F⊩Rⁿ\]
+    \[F⊨\kgen{Rⁿ}⇔F⊩Rⁿ\]
     {{{endtheorem}}}
 
     {{{beginproof}}}
@@ -1182,7 +1186,7 @@
       and $R[U]⊆ℂ$.
     {{{endproof}}}
 
-** $Rₙ$ principle
+** \prin{Rₙ} principle
    The $R_n$ principle is defined thus cite:two-new-series:
    \begin{flalign*}
    wip
@@ -1224,7 +1228,7 @@
   {{{endproof}}}
 
   {{{beginremark}}}
-  For instance, if we want the frame condition for $P₀$ we look at
+  For instance, if we want the frame condition for \prin{P₀} we look at
    \[(a ▷ ♢ b → □ (a ▷ b))^*_{gen}\]
    where $a,b$ are different variables.
   {{{endremark}}}
