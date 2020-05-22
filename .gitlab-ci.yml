@@ -24,7 +24,6 @@ org2tex:
 tex2pdf:
   stage: pdf
   # NOTE: need texlive 2020 to compile. Does not work with 2019 version.
-  # image: nopreserveroot/texlive-full:2020.04.17
   image: janmasrovira/texlive:2020-custom
   only:
     - master
