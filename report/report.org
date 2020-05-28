@@ -252,6 +252,12 @@
    #+attr_latex: :float t :width 0.9\textwidth :placement [H]
    [[file:img/trans-2-4-6.pdf]]
 
+I NOW SEE THAT THE TABLE IN YOUR SECTION 1.6 HAS BEEN UPDATED IN OUR PAPER
+
+OF COURSE, YOU SHOULD ADAPT IT TO YOUR THESIS.
+SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
+
+
 
  # All of the presented quasi-transitivity requirements are adequate for proving
  # IL soundness and completeness. For soundness it is routine to check that every
@@ -733,32 +739,68 @@
 
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
-    \[∀w,x,y,z(wRxRyS_wz⇒∀v(zRv⇒yS_xv))\ .\]
+    \[∀w,x,y,z\left(wRxRyS_wz⇒∀v(zRv⇒yS_xv)\right)\ .\]
 
    #+caption: Ordinary frame condition for \prin{R}
    #+name: fig:ord-R-condition
    #+attr_latex: :float t :width 0.15\textwidth :placement [H]
    [[file:img/R-ord.pdf]]
 
+WHERE DO YOU EXPLAIN HOW TO READ YOUR DIAGRAMS?
+TO NOT OVERLOAD WRITING, SHALL WE SPEAK OF FRAMES WHEN SPEAKING OF REGULAR/ORDINARY FRAMES AND ONLY INDICATE GENERALISED WHERE NEEDED?
+LUKA, WHAT DO YOU THINK?
+
+LM: I agree, that's what Croatian authors do
+
+
    {{{begintheorem}}}
    For any ordinary frame $F$, we have that $F$ satisfies the
    $\kord{R}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{R} principle. In symbols:
 
-   \[F ⊨ \kord{R} ⇔ F ⊩ R\]
+   \[F ⊨ \kord{R} ⇔ F ⊩ R\ .\]
    {{{endtheorem}}}
+
+   # LM: it would be good if you used \sf fonts when writing principles (\textsf{...}, \mathsf{...}, {\sf ...})
+HERE AND IN THE THESIS IN GENERAL, I MISS A DISCUSSION ABOUT ASSURINGNESS. THIS
+SHOULD BE ADDED AND USED. AT THIS PARTICULAR POINT IN YOUR PROOF YOU SHOULD
+MENTION THAT y IS A C-assuring SUCCESSOR OF x SO THAT YOU OBTAIN (*).
+
+LM: Joost, would you use assuringness/criticality even in semantic context? I
+would add a note, something along the lines of "of course, we can associate a
+MCS with every world of a model, if we suppose e.g. that all propositional
+variables p_i for i > ... are evaluated as false and let mcs(w) = {A : w \vdash
+A}".
+
+YOUR CURRENT SECTION 1 SHOULD BE SPLIT INTO AN INTRODUCTION AND A SECTION(S) WHERE YOU DISCUSS THE NEEDED/DESIRED PRELIMINARIES. WHAT TO PUT INTO THE PRELIMINARIES. THE LOWER-BOUND IS WHAT IS NEEDED TO READ THE THESIS. TYPICALLY YOU INCLUDE MORE BASED ON YOUR PERSONAL CRITERION. PERSONALLY I WOULD INCLUDE THINGS ON THE BASIS OF TWO CRITERIA: 
+(1) THE THINGS THAT YOU GET EXCITED ABOUT AND YOU WISH TO SHARE THAT BEAUTY WITH THE WORLD/READING COMMITTEE.
+(2) THINGS YOU WANT TO SHOW OFF WITH AND SHOW THE COMMITTEE THAT YOU LEARNED AND UNDERSTOOD COOL AND DIFFICULT THINGS.
+
+a world \(y\) such that \(xRy⊩A\) and \((⋆)\ ∀v(yS_xv⇒v⊩C)\).
+
+MAKE THIS FORMULA DISPLAYED. MOREOVER, IT IS BETTER TO GENERATE A LABEL. FOR EXAMPLE:
+
+
+
    {{{beginproof}}}
    {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩¬(A▷¬C)$. We need
      to see that there is some world $v$ such that $xS_wv⊩B∧□C$. From
      $x⊩¬(A▷¬C)$ we get a world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$.
-     Since $w⊩A▷B$ and by transitivity we have $wRy$ it follows that there
+     Since $w⊩A▷B$, and by transitivity we have $wRy$, it follows that there
      exists a world $z$ such that $yS_wz⊩B$. To see that $z$ is the desired
      world we first see that $z⊩□C$. Let $u$ be such that $zRu$, then by
      $\kord{R}$ it follows that $yS_xu$ and by $(⋆)$ we get $u⊩C$. Finally, we
-     have see that $xS_wz$. Since $wRxRy$ we have that $xS_wy$ and we have
-     $yS_wz$ from before, hence by transitivity of $S_w$ we get $xS_wz$
+     have to see that $xS_wz$. Since $wRxRy$ we have that $xS_wy$ and we have
+     $yS_wz$ from before, hence by transitivity of $S_w$ we get $xS_wz$.
+
+   To see that \(z\) is the desired world. I WOULD SAY HERE: "WE HAVE TO VERIFY
+TWO THINGS". THEN YOU MENTION THE TWO THINGS AND THEN YOU PROVE THEM ONE BY ONE.
+LIKE THIS, YOU HELP THE NON-EXPERIENCED READER REMIND WHAT IS IT THAT YOU ARE
+AFTER
+
+
    - \boxed{⇐} Let $a,b,c∈Var$ and assume that for some $w,x,y,z$ we have
      $wRxRyS_wz$ . Consider a model
      based on $F$ that satisfies the following.
