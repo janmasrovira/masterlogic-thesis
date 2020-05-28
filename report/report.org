@@ -6,7 +6,6 @@
 
 #+latex_header: \usepackage{hyperref}
 #+latex_header: \usepackage{graphicx}
-#+latex_header: \usepackage{minted}
 #+latex_header: \usepackage{unicode-math}
 #+latex_header: \usepackage{fontspec}
 #+latex_header: \usepackage[x11names, table]{xcolor}
