@@ -25,8 +25,6 @@ tex2pdf:
   stage: pdf
   # NOTE: need texlive 2020 to compile. Does not work with 2019 version.
   image: janmasrovira/texlive:2020-custom
-  only:
-    - master
   script:
     - mkdir -p ~/.fonts
     - cp fonts/*.otf ~/.fonts/
