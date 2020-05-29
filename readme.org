@@ -3,11 +3,11 @@
 
   Browse the pdf online using the following url:
 #+begin_center
-  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/file/report.pdf?job=tex2pdf]]
+  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/short-paper/file/report.pdf?job=tex2pdf]]
 #+end_center
   Or download it directly:
 #+begin_center
-  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/raw/report.pdf?job=tex2pdf]]
+  [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/short-paper/raw/report.pdf?job=tex2pdf]]
 #+end_center
 
 
@@ -17,7 +17,7 @@
 
 ** Compiling yourself
    The latest tex file can be found here:
-   [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/master/browse?job=org2tex]].
+   [[https://gitlab.com/janmasrovira/masterlogic-thesis/-/jobs/artifacts/short-paper/browse?job=org2tex]].
    To download the TeX file and compile it automatically follow these commands or
    run the [[file:./scripts/get-pdf.sh][get-pdf.sh]] script:
 
@@ -28,12 +28,6 @@
    #+end_example
    *Important: TeXLive 2020 is required.*
 
-** Docker alternative
-   If you don't have TeXLive 2020 you can use the [[file:./scripts/get-pdf-docker.sh][get-pdf-docker.sh]] script for a
-   self-contained alternative.
-   #+begin_example
-   ./scripts/get-pdf-docker.sh workdir
-   #+end_example
 ** Fonts
    Some extra fonts are required to compile, which can be found in
    [[file::./fonts]]. To install them on a unix-like system do:
