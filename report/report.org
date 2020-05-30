@@ -204,6 +204,7 @@ in Agda and we briefly comment on this formalisation.
    The logic $IL$ encompasses all classical tautologies in the new language plus
    the following axiom schemes:
    - K: $□ (A → B) → □ A → □ B$
+   - L: $□ (□ A → A) → □ A$
    - J1: $□ (A → B) → A ▷ B$
    - J2: $A ▷ B ∧ B ▷ C → A ▷ C$
    - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$
@@ -240,39 +241,6 @@ in Agda and we briefly comment on this formalisation.
 
     \[F ⊨ \kord{R_1} ⇔ F ⊩ R₁\]
     {{{endtheorem}}}
-
-    {{{beginproof}}}
-    - \boxed{⇐} Let $a,b,c,d,e∈Var$ and assume $F⊩ a ▷ b → ((¬ (a ▷ ¬c) ∧(d▷♢e))
-      ▷ (b ∧ □ c ∧ (d▷e)))$. Consider some worlds $w,x,y,z,u,v,m$ and assume for
-      a contradiction that $wRxRyS_wzRu,yS_xu⇒(uS_xv,vRm,u\cancel{S}_zm)$. Now
-      consider a model based on $F$ that satisfies the following:
-      \begin{flalign*}
-      ⟦a⟧ &= \{y\} \\
-      ⟦b⟧ &= \{z\} \\
-      ⟦c⟧ &= \{w:yS_xw\} \\
-      ⟦d⟧ &= \{?\} \\
-      ⟦e⟧ &= \{?\} \\
-      \end{flalign*}
-      First observe that $w⊩a▷b$ since $a$ is only forced in $y$ and we have
-      $yS_wz⊩b$. Therefore $w⊩¬ (a ▷ ¬c) ∧(d▷♢e) ▷ (b ∧ □ c ∧ (d▷e))$. Now we
-      show that $x⊩¬ (a ▷ ¬c)$. Since $a$ is only forced in $y$ and $xRy$, we
-      need to show that $∀u(yS_xu⇒u⊩c)$, which clearly holds. We proceed by
-      showing $x⊩d▷♢e$ (????).
-    - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
-      that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)∧(D▷♢E)$. Then
-      there exists world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$. As
-      $wRy⊩A$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. It
-      remains to show that $z⊩□C∧(D▷E)$. We first see that $z⊩□C$. Consider
-      $v$ such that $zRv$, by $\kord{R_1}$ it follows that $yS_xv$ and by $(⋆)$
-      we get $v⊩C$. Now we show $z⊩D▷E$. Let $u$ be such that $zRu⊩D$, we need
-      to find some $m$ such that $uS_zm⊩E$. By $\kord{R_1}$ we get $yS_xu$ and
-      $(†)\ ∀v,m((uS_xv,vRm)⇒uS_zm)$. See that $yS_xu$ implies $xRu$ and since
-      $x⊩D▷♢E$ and $u⊩D$ we get that there is some $n$ such that $uS_xn⊩♢E$.
-      Hence there is a world $m$ such that $nRm⊩E$. Finally by $(†)$ and $uS_xn$
-      and $nRm$ we get $uS_zm$ and thus we have the desired $m$ and we conclude
-      $z⊩D▷E$.
-
-    {{{endproof}}}
 
 *** Generalized semantics
     Some definitions:
