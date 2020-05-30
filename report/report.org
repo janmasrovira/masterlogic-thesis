@@ -17,12 +17,10 @@
 #+latex_header: \usepackage{amsthm}
 #+latex_header: \usepackage{float}
 #+latex_header: \usepackage{newunicodechar}
-#+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 #+latex_header: \usepackage{multicol}
 
 #+latex_header: \bibliography{refs}
-#+latex_header: \makeglossaries
 
 #+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Firebrick4,citecolor=Green4}
 #+latex_header: \newcommand{\ie}[0]{i.e.\ }
@@ -51,10 +49,6 @@
 #+macro: endproof @@latex:\end{proof}@@
 
 
-#+macro: defglossary @@latex:\newglossaryentry{$1}{name=$2,description={$3}}@@
-#+macro: defacronym @@latex:\newacronym{$1}{$2}{$3}@@
-
-
 #+latex_header: \newtheorem{theorem}{Theorem}
 #+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{corollary}[theorem]{Corollary}
@@ -65,27 +59,9 @@
 #+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{remark}[theorem]{Remark}
 
-#+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A proof formalized in Agda}}
-
 #+macro: beginmulticols @@latex:\begin{multicols}{$1}@@
 #+macro: endmulticols @@latex:\end{multicols}@@
 
-{{{defglossary(gvm,model,Generalized Veltman model)}}}
-{{{defglossary(gvf,frame,Generalized Veltman frame)}}}
-{{{defglossary(ovf,frame,Ordinary Veltman frame)}}}
-{{{defglossary(ovm,model,Ordinary Veltman model)}}}
-{{{defglossary(forcing-gen,{\ensuremath{⊩^{gen}_M}},Forcing relation for generalized semantics)}}}
-{{{defglossary(forcing-ord,{\ensuremath{⊩^{ord}_M}},Forcing relation for ordinary semantics)}}}
-{{{defglossary(choice-set,choice set,Choice set)}}}
-{{{defglossary(noetherian,Noetherian,Conversely well-founded relation)}}}
-#+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first component}}
-#+latex_header: \newglossaryentry{sum type}{name={sum type},description={A disjunction of two ore more types}}
-#+latex_header: \newglossaryentry{decidable model}{name={decidable model},description={A model whose forcing relation is decidable}}
-#+latex_header: \newglossaryentry{Rel}{name={\texttt{Rel}},description={Homogeneous relation}}
-#+latex_header: \newglossaryentry{REL}{name={\texttt{REL}},description={Heterogeneous relation}}
-#+latex_header: \newglossaryentry{Pred}{name={\texttt{Pred}},description={A predicate or a subset}}
-
-#+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 #+latex_header: \newcommand{\prin}[1]{\text{$\mathsf{#1}$}}
 #+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
@@ -133,8 +109,8 @@ in Agda and we briefly comment on this formalisation.
 
     {{{begindef}}}
     <<def:ord-forcing>>
-    Given a model $M$, we define a forcing relation $\gls{forcing-ord}⊆W × Fm$. We write
-    $M,w⊩A$ instead of $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear by
+    Given a model $M$, we define a forcing relation $⊩^{ord}⊆W × Fm$. We write
+    $M,w⊩A$ instead of $⟨w,A⟩∈⊩^{ord}$ or simply $w⊩A$ when the model is clear by
     the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
     1. $w⊮⊥$;
     2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
@@ -155,7 +131,6 @@ in Agda and we briefly comment on this formalisation.
     4. if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
     {{{endcoro}}}
     {{{beginproof}}}
-    {{{agda}}}
     {{{endproof}}}
 
 *** Generalized Veltman semantics
@@ -197,7 +172,6 @@ in Agda and we briefly comment on this formalisation.
     Analogous results to Corollary [[def:coro-ord-sem]].
     {{{endcoro}}}
     {{{beginproof}}}
-    {{{agda}}}
     {{{endproof}}}
 
 ** Logic $IL$
@@ -268,7 +242,6 @@ in Agda and we briefly comment on this formalisation.
     {{{endtheorem}}}
 
     {{{beginproof}}}
-    {{{agda}}}
     - \boxed{⇒} Let's fix the model and let $w ∈ W$ be arbitrary. Suppose $w⊩ A
       ▷B$, and let $x$ be such that $wRx$ and $x⊩ ¬(A ▷ ¬C) ∧ (D ▷ ♢E)$. It
       follows from $x ⊩¬(A ▷¬C)$ that there exists $u$ such that $xRu$, such
@@ -372,7 +345,6 @@ in Agda and we briefly comment on this formalisation.
     5. for all $V$ we have that if $zS_yV$ then $V∩\{w:M,w⊩C\}≠∅$;
     6. $M,z⊩D₀$.
     {{{beginproof}}}
-    {{{agda}}}
 
     By induction on $i$.
     - For $i=0$ we have that $x⊩♢¬(D₀▷¬C)$. It follows that there exists some
@@ -395,7 +367,6 @@ in Agda and we briefly comment on this formalisation.
     {{{endtheorem}}}
 
     {{{beginproof}}}
-    {{{agda}}}
 
     If $n=0$ we refer to theorem $R^0$ (cite something). For $n+1$ proceed as follows.
     - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
