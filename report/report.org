@@ -162,7 +162,7 @@
        that $v⊩B$ and $uS_wv$.
     {{{enddef}}}
 
-    If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ do
+    If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ to
     denote that for every valuation we have $⟨F,V⟩⊩A$.
 
     {{{begincoro}}}
@@ -210,7 +210,7 @@
        have $y⊩B$;
     {{{enddef}}}
 
-    If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ do
+    If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ to
     denote that for every valuation we have $⟨F,V⟩⊩A$.
 
     {{{begincoro}}}
