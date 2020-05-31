@@ -5,6 +5,8 @@ stages:
 org2tex:
   image: janmasrovira/emacs-org:27.0
   stage: org
+  only:
+    - master
   script:
     - cd report
     - emacs report.org -batch -l ~/init.el -f org-latex-export-to-latex
