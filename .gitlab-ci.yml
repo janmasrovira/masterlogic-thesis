@@ -5,6 +5,8 @@ stages:
 org2tex:
   image: janmasrovira/emacs-org:27.0
   stage: org
+  only:
+    - master
   script:
     - cd report
     - emacs report.org -batch -l ~/init.el -f org-latex-export-to-latex
@@ -25,6 +27,8 @@ tex2pdf:
   stage: pdf
   # NOTE: need texlive 2020 to compile. Does not work with 2019 version.
   image: janmasrovira/texlive:2020-custom
+  only:
+    - master
   script:
     - mkdir -p ~/.fonts
     - cp fonts/*.otf ~/.fonts/
