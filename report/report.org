@@ -27,8 +27,7 @@
 #+latex_header: \newcommand{\ie}[0]{i.e.\ }
 #+latex_header: \newcommand{\todo}[0]{\textcolor{red}{pending}}
 #+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
-#+latex_header: \newcommand{\ok}[0]{\textcolor{DeepSkyBlue4}{solved }}
-#+macro: red @@latex:{\color{red}@@$1@@latex:}@@
+#+latex_header: \newcommand{\red}[1]{\textcolor{red}{#1 }}
 #+macro: jan @@latex:{\color{red}@@Jan: $1@@latex:}@@
 
 #+macro: begindef @@latex:\begin{definition}@@
@@ -1234,45 +1233,45 @@ AFTER
    \end{flalign*}
 
    \newpage
-* Generic generalized frame condition
-  In this section we present a method that given a formula $A$, builds a (second
-  order?) formula that is a generalized frame condition for $A$.
+** Generic generalized frame condition
+   In this section we present a method that given a formula $A$, builds a (second
+   order?) formula that is a generalized frame condition for $A$.
 
-  {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$ with
-  $Var(A)=x₁,…,xₙ$. Let $ℱ$ be defined by (we write $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$).
-\begin{flalign*}
-  ℱ&:\underbrace{𝒫(W)×⋯×𝒫(W)}_n×Fm→𝒫(W) \\
-  ℱ(𝕏_*,xᵢ) &≔  𝕏ᵢ\\
-  ℱ(𝕏_*,⊥) &≔ ∅ \\
-  ℱ(𝕏_*,A→B) &≔ \{w:w ∈ ℱ(𝕏_*,A) ⇒ w ∈ ℱ(𝕏_*,B)\} \\
-  ℱ(𝕏_*,A▷B) &≔ \{w:∀ u.(wRu,u∈ℱ(𝕏_*,A))⇒∃Y.uS_wY⊆ℱ(𝕏_*,B))\} \\
-\end{flalign*}
+   {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$ with
+   $Var(A)=x₁,…,xₙ$. Let $ℱ$ be defined by (we write $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$).
+ \begin{flalign*}
+   ℱ&:\underbrace{𝒫(W)×⋯×𝒫(W)}_n×Fm→𝒫(W) \\
+   ℱ(𝕏_*,xᵢ) &≔  𝕏ᵢ\\
+   ℱ(𝕏_*,⊥) &≔ ∅ \\
+   ℱ(𝕏_*,A→B) &≔ \{w:w ∈ ℱ(𝕏_*,A) ⇒ w ∈ ℱ(𝕏_*,B)\} \\
+   ℱ(𝕏_*,A▷B) &≔ \{w:∀ u.(wRu,u∈ℱ(𝕏_*,A))⇒∃Y.uS_wY⊆ℱ(𝕏_*,B))\} \\
+ \end{flalign*}
 
-  Then define
-  \[(A)^*_{gen}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A) \]
+   Then define
+   \[(A)^*_{gen}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A) \]
 
-  {{{jan(Is $(A)^*_{gen}$ acceptable as a frame condition?)}}}
-  {{{enddef}}}
+   {{{jan(Is $(A)^*_{gen}$ acceptable as a frame condition?)}}}
+   {{{enddef}}}
 
-  {{{begintheorem}}}
+   {{{begintheorem}}}
 
-  Let $A$ be a formula. For any generalized frame $F$, we have that $F$
-  satisfies the $(A)^*_{gen}$ condition iff any model based on $F$ forces $A$.
-  In symbols:
+   Let $A$ be a formula. For any generalized frame $F$, we have that $F$
+   satisfies the $(A)^*_{gen}$ condition iff any model based on $F$ forces $A$.
+   In symbols:
 
-    \[F⊨(A)^*_{gen}⇔F⊩A\]
-  {{{endtheorem}}}
+     \[F⊨(A)^*_{gen}⇔F⊩A\]
+   {{{endtheorem}}}
 
-  {{{beginproof}}}
-  {{{agda}}}
-  Proved in Agda.
-  {{{endproof}}}
+   {{{beginproof}}}
+   {{{agda}}}
+   Proved in Agda.
+   {{{endproof}}}
 
-  {{{beginremark}}}
-  For instance, if we want the frame condition for \prin{P₀} we look at
-   \[(a ▷ ♢ b → □ (a ▷ b))^*_{gen}\]
-   where $a,b$ are different variables.
-  {{{endremark}}}
+   {{{beginremark}}}
+   For instance, if we want the frame condition for \prin{P₀} we look at
+    \[(a ▷ ♢ b → □ (a ▷ b))^*_{gen}\]
+    where $a,b$ are different variables.
+   {{{endremark}}}
 * The logic of Agda
   Everything about agda in general.
   Look here cite:norell:thesis.
@@ -1890,52 +1889,111 @@ record Frame {ℓ} : Set (lsuc ℓ) where
    definition of the type =𝕎 : Set₁=
 
 * Verbrugge
-  Let $M≔⟨W, R, S, V⟩$ be a generalized Veltman that satisfies
-  quasi-transitivity Condition 4.
-  We define an ordinary Veltman frame $M'≔⟨W',R',S',V'⟩$.
+  In this section we proof that given a generalized Veltman model that satisfies
+  a certain property, we can build an ordinary Veltman model with the same
+  associated forcing relation. For the rest of this section we fix a generalized
+  Veltman model $M≔⟨W, R, S, V⟩$.
+
+  We define an ordinary Veltman model $M'≔⟨W',R',S',V'⟩$ where
   \begin{flalign*}
   W'≔&\{⟨x,A⟩:A⊆W^2, \\ &(W1)\ ∀⟨u,v⟩∈A\ ∃Y(xS_uY,v∈Y), \\
-  & \textcolor{red}{(W2')\ ∀uV(xS_uV⇒∃v∈V(⟨u,v⟩∈A),} \\
-  & (W2)\ ∀uV((xS_uV,v∈V)⇒⟨u,v⟩∈A\} \\
-  R'≔&\{⟨⟨x,A⟩,⟨y,B⟩⟩ : xRy,∀wz(wRx⇒⟨w,z⟩∈B⇒⟨w,z⟩∈A)\} \\
-  S'≔&\{⟨⟨w,C⟩,⟨x,A⟩,⟨y,B⟩⟩ : ⟨w,C⟩R'⟨x,A⟩,⟨w,C⟩R'⟨y,B⟩, (S1) ∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A) \} \\
-  V'≔&\{⟨⟨x, A⟩,var⟩: ⟨x,var⟩∈V, ⟨x,A⟩∈W'\}
+  & (W2)\ ∀uV(xS_uV⇒∃v∈V(⟨u,v⟩∈A)\}; \\
+  R'≔&\{⟨⟨x,A⟩,⟨y,B⟩⟩ : xRy,∀wz(wRx⇒⟨w,z⟩∈B⇒⟨w,z⟩∈A)\}; \\
+  S'≔&\{⟨⟨w,C⟩,⟨x,A⟩,⟨y,B⟩⟩ : ⟨w,C⟩R'⟨x,A⟩,⟨w,C⟩R'⟨y,B⟩, ∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A) \}; \\
+  V'≔&\{⟨⟨x, A⟩,var⟩: ⟨x,var⟩∈V, ⟨x,A⟩∈W'\}.
   \end{flalign*}
+
   {{{beginlemma}}}
   The structure $⟨W',R',S',V'⟩$ is an ordinary Veltman model.
   {{{endlemma}}}
   {{{beginproof}}}
   {{{agda}}}
   {{{endproof}}}
+
+  Let the conditions $(C_0)$ and $(C_1)$ be defined thus:
+  \begin{flalign*}
+  (C₀)&≔∀wxV.xS_wV⇒∃y∈V.∀bV'.SbyV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
+  (C₁)&≔∀wbxV.wRx⇒xS_bV⇒∃v∈V.(b=w ⇒ xS_b\{v\}),(bRw⇒wS_b\{v\}).
+  \end{flalign*}
   {{{begintheorem}}}
-  For any world $⟨w,C⟩∈W'$ and formula $D$:
+  If $M$ satisfies both conditions $(C_0)$ and $(C_1)$ then
+  for any world $⟨w,C⟩∈W'$ and formula $D$:
   \[w⊩D⇔⟨w,C⟩⊩D\]
   {{{endtheorem}}}
-  {{{beginproof}}} We proceed by induction on the formula. We only consider the
+  {{{beginproof}}} {{{agda}}}
+  We proceed by induction on the formula. We only consider the
   case $D▷E$ as the other cases are easy.
-  - \boxed{⇒} {{{agda}}} Assume $w⊩D▷E$ and pick some $A$ such that $⟨x,A⟩∈W'$. We want to
-    prove $⟨x,A⟩⊩D▷E$. Assume that for some $⟨x,B⟩∈W'$ we have $⟨w,C⟩R'⟨x,A⟩⊩D$.
-    By IH it follows that $x⊩D$ and hence there exists $V$ such that $xS_wV⊩E$.
-    By quasi-transitivity Condition (4) on $xS_wV$ we have that there exists
-    $y∈V$ such that
-    \[  (E1)\ \ ∀Z(yS_wZ⇒xS_wZ)   \]
-    Pick any $y∈V$ and any $B$ such that $⟨y,B⟩∈W'$. By IH we have $⟨y,B⟩⊩E$ so
-    it remains to show that $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$:
-    1. $⟨w,C⟩R'⟨x,A⟩$ is true by assumption.
-    2. For $⟨w,C⟩R'⟨y,B⟩$ we show that:
-       - $wRy$. Since $y∈V$ and $xS_wV$ we have $wRy$.
-       - $∀bz(bRw⇒⟨b,z⟩∈B⇒⟨b,z⟩∈C)$. Assume that for some $b,z$ we have
-         $⟨b,z⟩∈B$. By $(W2)$ for $C$ it suffices to show that there exists some
-         $Z$ such that $wS_bZ$ with $z∈Z$. By $(W1)$ for $B$ it follows that
-         there exists $Z$ such that $yS_bZ$ with $z∈Z$. Since $bRwRy$ we have
-         $wS_b\{y\}$ and by quasi-transitivity (4) we have that
-         $∀Y(yS_bY⇒wS_bY)$. Since $yS_bZ$ it follows that $wS_bZ$ and
-         hence $Z$ is the desired set.
-    3. $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$. Assume that for some $v$ we have $⟨w,v⟩∈B$. By
-       $(W2)$ for $A$ it suffices to show that there is some $Y$ such that
-       $xS_wZ$ and $v∈Z$. By $(W1)$ for $B$ it follows that there exists $Z$ with
-       $yS_wZ$ and $v∈Z$. Finally by $(E1)$ it follows that $xS_wZ$.
-  - \boxed{⇐}
+  - \boxed{⇒} Assume $w⊩D▷E$ and let $C$ be such that $⟨w,C⟩∈W'$. We
+    want to prove $⟨w,C⟩⊩D▷E$. Assume that for some $⟨x,A⟩∈W'$ we have
+    $⟨w,C⟩R'⟨x,A⟩⊩D$. By IH it follows that $x⊩D$ and hence there exists $V$
+    such that $xS_wV⊩E$. By $(C_0)$ there is some $y∈V$ such that
+
+    #+name: eq:verb-y-cond
+    \begin{equation}
+    ∀bV'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\})
+    \end{equation}
+
+    We proceed by showing that there is some $B$ such that
+    $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. Let $B$ be defined thus:
+    \[B≔\{⟨u,v⟩: ∃Y.yS_uY,v∈Y,(u=w⇒⟨w,v⟩∈A),(uRw⇒⟨u,v⟩∈C)\}\]
+
+    To show $⟨y,B⟩∈W'$ we need to prove that $(W1)$ and $(W2)$ hold. The
+    condition $(W1)$ follows immediately from the definition of $B$. To show
+    $(W2)$ assume that for some $b$ and $V$ we have $yS_bV$. We need to see that
+    there exists $v∈V$ such that $⟨b,v⟩∈B$. From $yS_bV$ and [[eq:verb-y-cond]] we
+    get that there exists $v∈V'$ such that
+    \begin{flalign}
+    b=w &⇒ xS_b\{v\} \label{eq:verb-b=w}, \\
+    bRw &⇒ wS_b\{v\} \label{eq:verb-2}
+    \end{flalign}
+    To show that $⟨b,v⟩∈B$ we first see that $b=w⇒⟨w,v⟩∈A$. Assume $b=w$, then
+    by \ref{eq:verb-b=w} it follows that $xS_b\{v\}$ and therefore by condition
+    $(W2)$ for $A$ it follows $⟨w,v⟩∈A$. We proceed likewise and use
+    \ref{eq:verb-2} to show $bRw⇒⟨b,v⟩∈C$. This concludes the proof that
+    $⟨y,B⟩∈W'$.
+
+    We now check the conditions for $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. We already have
+    $⟨w,C⟩R'⟨x,A⟩$ by assumption. To see that $⟨w,C⟩R'⟨y,B⟩$ we first observe
+    that $wRy$ holds since $xS_wV$ and $y∈V$. Then assume that for some $b,z$ we
+    have $bRw$ and $⟨b,z⟩∈B$. Then from the definition of $B$ it follows that
+    $⟨b,z⟩∈C$. The condition $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$ follows immediately from the
+    definition of $B$.
+
+    Finally, since $V⊩E$ and $y∈V$ we have $y⊩E$ and thus by IH it follows that
+    $⟨y,B⟩⊩E$.
+
+  # OLD
+    # By quasi-transitivity Condition (4) on $xS_wV$ we have
+    # that there exists $y∈V$ such that \[ (E1)\ \ ∀Z(yS_wZ⇒xS_wZ). \] Then let
+    # \begin{flalign*}
+    # B&≔\{⟨u,v⟩:∃Y(yS_uY,v∈Y), u=w⇒⟨w,v⟩∈A\}
+    # \end{flalign*}
+    # We show that $⟨y,B⟩∈W'$.
+    # such that ⟨y,B⟩∈W' and ⟨w,v⟩∈B⇒⟨w,v⟩∈A
+    # 1. (W1) By definition of $B$.
+    # 2. (W2) Assume that for some $u,V$ we have $yS_uV$. Then clearly
+    #    $∃Y(yS_uY,v∈Y)$. Now we show $⟨w,v⟩∈A$. Since we have that $yS_wV$ by
+    #    $(E1)$ it follows that $xS_wV$ and by $(W2)$ there is some $v'$ such that
+    #    $⟨w,v'⟩∈A$.
+    # Then by IH we have $⟨y,B⟩⊩E$ so
+    # it remains to show that $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$:
+    # 1. $⟨w,C⟩R'⟨x,A⟩$ is true by assumption.
+    # 2. For $⟨w,C⟩R'⟨y,B⟩$ we show that:
+    #    - $wRy$. Since $y∈V$ and $xS_wV$ we have $wRy$.
+    #    - $∀bz(bRw⇒⟨b,z⟩∈B⇒⟨b,z⟩∈C)$. Assume that for some $b,z$ we have
+    #      $⟨b,z⟩∈B$. By $(W2)$ for $C$ it suffices to show that there exists some
+    #      $Z$ such that $wS_bZ$ with $z∈Z$. By $(W1)$ for $B$ it follows that
+    #      there exists $Z$ such that $yS_bZ$ with $z∈Z$. Since $bRwRy$ we have
+    #      $wS_b\{y\}$ and by quasi-transitivity (4) we have that
+    #      $∀Y(yS_bY⇒wS_bY)$. Since $yS_bZ$ it follows that $wS_bZ$ and
+    #      hence $Z$ is the desired set.
+    # 3. $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$. Assume that for some $v$ we have $⟨w,v⟩∈B$. By
+    #    $(W2)$ for $A$ it suffices to show that there is some $Y$ such that
+    #    $xS_wZ$ and $v∈Z$. By $(W1)$ for $B$ it follows that there exists $Z$ with
+    #    $yS_wZ$ and $v∈Z$. Finally by $(E1)$ it follows that $xS_wZ$.
+    1. $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$. By definition of $B$.
+  - \boxed{⇐} We proceed by contraposition. Assume $w⊮D▷E$, then there exists
+    $x$ such that $wRx$ and $∀Y(vS_wY⇒∃y∈Y(y⊮E))$.
   {{{endproof}}}
 * other
 
