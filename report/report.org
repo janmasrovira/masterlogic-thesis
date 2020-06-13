@@ -1907,7 +1907,7 @@ record Frame {ℓ} : Set (lsuc ℓ) where
   The structure $⟨W',R',S',V'⟩$ is an ordinary Veltman model.
   {{{endlemma}}}
   {{{beginproof}}}
-  {{{agda}}}
+  {{{agda}}} It is routine to check that all the requirement are satisfied.
   {{{endproof}}}
 
   Let the conditions $(C_0)$ and $(C_1)$ be defined thus:
@@ -1948,7 +1948,7 @@ record Frame {ℓ} : Set (lsuc ℓ) where
     \end{flalign}
     To show that $⟨b,v⟩∈B$ we first see that $b=w⇒⟨w,v⟩∈A$. Assume $b=w$, then
     by \ref{eq:verb-b=w} it follows that $xS_b\{v\}$ and therefore by condition
-    $(W2)$ for $A$ it follows $⟨w,v⟩∈A$. We proceed likewise and use
+    $(W2)$ for $A$ it follows $⟨b,v⟩∈A$. We proceed likewise and use
     \ref{eq:verb-2} to show $bRw⇒⟨b,v⟩∈C$. This concludes the proof that
     $⟨y,B⟩∈W'$.
 
@@ -1962,38 +1962,45 @@ record Frame {ℓ} : Set (lsuc ℓ) where
     Finally, since $V⊩E$ and $y∈V$ we have $y⊩E$ and thus by IH it follows that
     $⟨y,B⟩⊩E$.
 
-  # OLD
-    # By quasi-transitivity Condition (4) on $xS_wV$ we have
-    # that there exists $y∈V$ such that \[ (E1)\ \ ∀Z(yS_wZ⇒xS_wZ). \] Then let
-    # \begin{flalign*}
-    # B&≔\{⟨u,v⟩:∃Y(yS_uY,v∈Y), u=w⇒⟨w,v⟩∈A\}
-    # \end{flalign*}
-    # We show that $⟨y,B⟩∈W'$.
-    # such that ⟨y,B⟩∈W' and ⟨w,v⟩∈B⇒⟨w,v⟩∈A
-    # 1. (W1) By definition of $B$.
-    # 2. (W2) Assume that for some $u,V$ we have $yS_uV$. Then clearly
-    #    $∃Y(yS_uY,v∈Y)$. Now we show $⟨w,v⟩∈A$. Since we have that $yS_wV$ by
-    #    $(E1)$ it follows that $xS_wV$ and by $(W2)$ there is some $v'$ such that
-    #    $⟨w,v'⟩∈A$.
-    # Then by IH we have $⟨y,B⟩⊩E$ so
-    # it remains to show that $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$:
-    # 1. $⟨w,C⟩R'⟨x,A⟩$ is true by assumption.
-    # 2. For $⟨w,C⟩R'⟨y,B⟩$ we show that:
-    #    - $wRy$. Since $y∈V$ and $xS_wV$ we have $wRy$.
-    #    - $∀bz(bRw⇒⟨b,z⟩∈B⇒⟨b,z⟩∈C)$. Assume that for some $b,z$ we have
-    #      $⟨b,z⟩∈B$. By $(W2)$ for $C$ it suffices to show that there exists some
-    #      $Z$ such that $wS_bZ$ with $z∈Z$. By $(W1)$ for $B$ it follows that
-    #      there exists $Z$ such that $yS_bZ$ with $z∈Z$. Since $bRwRy$ we have
-    #      $wS_b\{y\}$ and by quasi-transitivity (4) we have that
-    #      $∀Y(yS_bY⇒wS_bY)$. Since $yS_bZ$ it follows that $wS_bZ$ and
-    #      hence $Z$ is the desired set.
-    # 3. $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$. Assume that for some $v$ we have $⟨w,v⟩∈B$. By
-    #    $(W2)$ for $A$ it suffices to show that there is some $Y$ such that
-    #    $xS_wZ$ and $v∈Z$. By $(W1)$ for $B$ it follows that there exists $Z$ with
-    #    $yS_wZ$ and $v∈Z$. Finally by $(E1)$ it follows that $xS_wZ$.
-    1. $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$. By definition of $B$.
   - \boxed{⇐} We proceed by contraposition. Assume $w⊮D▷E$, then there exists
-    $x$ such that $wRx$ and $∀Y(vS_wY⇒∃y∈Y(y⊮E))$.
+    $x$ such that $wRx$ and
+    #+name: eq:verb-neg
+    \begin{equation}
+    ∀Y(vS_wY⇒∃y∈Y(y⊮E)).
+    \end{equation}
+
+    Let $A$ be defined thus:
+    \[A≔ \{⟨b,v⟩:(∃Y.xS_bY,v∈Y),(b=w⇒M,v⊮E),(bRw⇒⟨b,v⟩∈C)\}.\]
+
+    We first show that $⟨x,A⟩∈W'$. Condition $(W1)$ follows directly from the
+    definition of $A$. To show that $(W2)$ holds assume that for some $b$ and
+    $V$ we have $xS_bV$. We need to see that for some $v∈V$ we have $⟨b,v⟩∈A$.
+    Since $wRx$ and $xS_bV$ it follows from condition $(C_1)$ that there exists
+    $v∈V$ such that
+    \begin{flalign}
+    b=w&⇒xS_w\{v\}, \label{eq:verb-neg-b=w} \\
+    bRw&⇒wS_b\{v\}. \label{eq:verb-neg-bRw}
+    \end{flalign}
+    The first condition to show $⟨b,v⟩∈A$, namely that $∃Y.xS_bY,v∈Y$, is met
+    trivially. For the next condition assume $b=w$, then see that we have
+    $xS_w\{v\}$ by \ref{eq:verb-neg-b=w} and thus by [[eq:verb-neg]] it follows that
+    $v⊮E$. For the remaining condition assume $bRw$, then by \ref{eq:verb-neg-bRw} we
+    have $wS_b\{v\}$ and thus by $(W2)$ for $C$ we have $⟨b,v⟩∈C$. Therefore we
+    conclude $⟨b,v⟩∈A$ and thus $⟨x,A⟩∈W'$.
+
+    To see that $⟨w,C⟩R'⟨x,A⟩$ we already have $wRx$ by assumption. The
+    remaining condition, $∀bz(bRx⇒⟨b,z⟩∈A⇒⟨b,z⟩∈C)$, follows directly from the
+    definition of $A$.
+
+    Since $x⊩D$, it follows from the IH that $⟨x,A⟩⊩D$.
+
+    Lastly, assume that for some $⟨y,B⟩∈W'$ we have $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. By
+    definition of $S'$ we have $xS_wy$ and thus $wRy$. By quasi-reflexivity of
+    $S$ we then have $yS_w\{y\}$ and thus by $(W2)$ for $B$ we have $⟨w,y⟩∈B$.
+    By definition of $S'$ we also have that $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$, hence
+    $⟨w,y⟩∈A$. By definition of $A$ it follows that $y⊮E$ and by IH we have
+    $⟨y,B⟩⊮E$, which concludes the proof.
+
   {{{endproof}}}
 * other
 
