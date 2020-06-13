@@ -770,7 +770,7 @@ MCS with every world of a model, if we suppose e.g. that all propositional
 variables p_i for i > ... are evaluated as false and let mcs(w) = {A : w \vdash
 A}".
 
-YOUR CURRENT SECTION 1 SHOULD BE SPLIT INTO AN INTRODUCTION AND A SECTION(S) WHERE YOU DISCUSS THE NEEDED/DESIRED PRELIMINARIES. WHAT TO PUT INTO THE PRELIMINARIES. THE LOWER-BOUND IS WHAT IS NEEDED TO READ THE THESIS. TYPICALLY YOU INCLUDE MORE BASED ON YOUR PERSONAL CRITERION. PERSONALLY I WOULD INCLUDE THINGS ON THE BASIS OF TWO CRITERIA: 
+YOUR CURRENT SECTION 1 SHOULD BE SPLIT INTO AN INTRODUCTION AND A SECTION(S) WHERE YOU DISCUSS THE NEEDED/DESIRED PRELIMINARIES. WHAT TO PUT INTO THE PRELIMINARIES. THE LOWER-BOUND IS WHAT IS NEEDED TO READ THE THESIS. TYPICALLY YOU INCLUDE MORE BASED ON YOUR PERSONAL CRITERION. PERSONALLY I WOULD INCLUDE THINGS ON THE BASIS OF TWO CRITERIA:
 (1) THE THINGS THAT YOU GET EXCITED ABOUT AND YOU WISH TO SHARE THAT BEAUTY WITH THE WORLD/READING COMMITTEE.
 (2) THINGS YOU WANT TO SHOW OFF WITH AND SHOW THE COMMITTEE THAT YOU LEARNED AND UNDERSTOOD COOL AND DIFFICULT THINGS.
 
@@ -2000,7 +2000,13 @@ record Frame {ℓ} : Set (lsuc ℓ) where
     By definition of $S'$ we also have that $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$, hence
     $⟨w,y⟩∈A$. By definition of $A$ it follows that $y⊮E$ and by IH we have
     $⟨y,B⟩⊮E$, which concludes the proof.
+  {{{endproof}}}
 
+  {{{begintheorem}}} If a generalized Veltman frame that satisfies
+  quasi-transitivity Condition 3, 4, 5 or 6, then it satisfies conditions
+  $(C_0)$ and $(C_1)$. {{{endtheorem}}}
+
+  {{{beginproof}}} {{{agda}}}
   {{{endproof}}}
 * other
 
