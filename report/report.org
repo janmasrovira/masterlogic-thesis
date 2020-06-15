@@ -948,36 +948,36 @@ AFTER
     {{{endtheorem}}}
 
     {{{beginproof}}}
-    - \boxed{⇐} Let $a,b,c,d,e∈Var$ and assume $F⊩ a ▷ b → ((¬ (a ▷ ¬c) ∧(d▷♢e))
-      ▷ (b ∧ □ c ∧ (d▷e)))$. Consider some worlds $w,x,y,z,u,v,m$ and assume for
-      a contradiction that $wRxRyS_wzRu,yS_xu⇒(uS_xv,vRm,u\cancel{S}_zm)$. Now
-      consider a model based on $F$ that satisfies the following:
-      \begin{flalign*}
-      ⟦a⟧ &= \{y\} \\
-      ⟦b⟧ &= \{z\} \\
-      ⟦c⟧ &= \{w:yS_xw\} \\
-      ⟦d⟧ &= \{?\} \\
-      ⟦e⟧ &= \{?\} \\
-      \end{flalign*}
-      First observe that $w⊩a▷b$ since $a$ is only forced in $y$ and we have
-      $yS_wz⊩b$. Therefore $w⊩¬ (a ▷ ¬c) ∧(d▷♢e) ▷ (b ∧ □ c ∧ (d▷e))$. Now we
-      show that $x⊩¬ (a ▷ ¬c)$. Since $a$ is only forced in $y$ and $xRy$, we
-      need to show that $∀u(yS_xu⇒u⊩c)$, which clearly holds. We proceed by
-      showing $x⊩d▷♢e$ (????).
-    - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
-      that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)∧(D▷♢E)$. Then
-      there exists world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$. As
-      $wRy⊩A$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. It
-      remains to show that $z⊩□C∧(D▷E)$. We first see that $z⊩□C$. Consider
-      $v$ such that $zRv$, by $\kord{R_1}$ it follows that $yS_xv$ and by $(⋆)$
-      we get $v⊩C$. Now we show $z⊩D▷E$. Let $u$ be such that $zRu⊩D$, we need
-      to find some $m$ such that $uS_zm⊩E$. By $\kord{R_1}$ we get $yS_xu$ and
-      $(†)\ ∀v,m((uS_xv,vRm)⇒uS_zm)$. See that $yS_xu$ implies $xRu$ and since
-      $x⊩D▷♢E$ and $u⊩D$ we get that there is some $n$ such that $uS_xn⊩♢E$.
-      Hence there is a world $m$ such that $nRm⊩E$. Finally by $(†)$ and $uS_xn$
-      and $nRm$ we get $uS_zm$ and thus we have the desired $m$ and we conclude
-      $z⊩D▷E$.
-
+    The details of the proof can be found in cite:two-new-series.
+    # - \boxed{⇐} Let $a,b,c,d,e∈Var$ and assume $F⊩ a ▷ b → ((¬ (a ▷ ¬c) ∧(d▷♢e))
+    #   ▷ (b ∧ □ c ∧ (d▷e)))$. Consider some worlds $w,x,y,z,u,v,m$ and assume for
+    #   a contradiction that $wRxRyS_wzRu,yS_xu⇒(uS_xv,vRm,u\cancel{S}_zm)$. Now
+    #   consider a model based on $F$ that satisfies the following:
+    #   \begin{flalign*}
+    #   ⟦a⟧ &= \{y\} \\
+    #   ⟦b⟧ &= \{z\} \\
+    #   ⟦c⟧ &= \{w:yS_xw\} \\
+    #   ⟦d⟧ &= \{?\} \\
+    #   ⟦e⟧ &= \{?\} \\
+    #   \end{flalign*}
+    #   First observe that $w⊩a▷b$ since $a$ is only forced in $y$ and we have
+    #   $yS_wz⊩b$. Therefore $w⊩¬ (a ▷ ¬c) ∧(d▷♢e) ▷ (b ∧ □ c ∧ (d▷e))$. Now we
+    #   show that $x⊩¬ (a ▷ ¬c)$. Since $a$ is only forced in $y$ and $xRy$, we
+    #   need to show that $∀u(yS_xu⇒u⊩c)$, which clearly holds. We proceed by
+    #   showing $x⊩d▷♢e$ (????).
+    # - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
+    #   that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)∧(D▷♢E)$. Then
+    #   there exists world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$. As
+    #   $wRy⊩A$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. It
+    #   remains to show that $z⊩□C∧(D▷E)$. We first see that $z⊩□C$. Consider
+    #   $v$ such that $zRv$, by $\kord{R_1}$ it follows that $yS_xv$ and by $(⋆)$
+    #   we get $v⊩C$. Now we show $z⊩D▷E$. Let $u$ be such that $zRu⊩D$, we need
+    #   to find some $m$ such that $uS_zm⊩E$. By $\kord{R_1}$ we get $yS_xu$ and
+    #   $(†)\ ∀v,m((uS_xv,vRm)⇒uS_zm)$. See that $yS_xu$ implies $xRu$ and since
+    #   $x⊩D▷♢E$ and $u⊩D$ we get that there is some $n$ such that $uS_xn⊩♢E$.
+    #   Hence there is a world $m$ such that $nRm⊩E$. Finally by $(†)$ and $uS_xn$
+    #   and $nRm$ we get $uS_zm$ and thus we have the desired $m$ and we conclude
+    #   $z⊩D▷E$.
     {{{endproof}}}
 
 *** Generalized semantics
@@ -1298,7 +1298,6 @@ AFTER
    Then define
    \[(A)^*_{gen}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A) \]
 
-   {{{jan(Is $(A)^*_{gen}$ acceptable as a frame condition?)}}}
    {{{enddef}}}
 
    {{{begintheorem}}}
@@ -1488,7 +1487,7 @@ infix 60 ¬'_
      =≤-trans= we can build a proof of =a ≤ c=. Finally we can apply the
      constructor =s≤s= to obtain a proof of =suc a ≤ suc c=.
 ** Top and bottom
-   In Agda we call top (=⊤=) to the unit type, i.e. the type with only one
+   In Agda we call top (=⊤=) the unit type, i.e. the type with only one
    inhabitant.
    #+begin_src text
    data ⊤ : Set where
@@ -1590,26 +1589,49 @@ data Σ (A : Set) (B : A → Set) : Set where
 ** Noetherian relations
     We say that a relation is \gls*{noetherian} if it is conversely
     well-founded. We begin by formalizing the concept of infinite ascending
-    chain in Agda.
-    #+begin_src text
-InfAscChain : {W : Set} → (_∼_ : Rel W) → Set₁
-InfAscChain {W} _∼_ =
-  Σ ({a b : W} → R a b → Set) λ f
-  → Σ (W × W) λ {(a , b)
-  → (R a b) , (f a b) ,
-  (∀ a' b' → (Ra'b' : R a' b') → f Ra'b' → Σ W λ c → (Σ (R b' c) f))}
-    #+end_src
-    In words the previous type defines an infinite ascending chain on
-    some relation =R= with domain =W= as:
-    1. A label function =f= that for any =a,b=, maps a proof of =R a b= to a
-       type. This is used to carry additional information that may be necessary
-       to build the infinite chain.
-    2. A pair of starting values =a,b= of type =W=. A proof of =R a b= and a
-       proof of =f a b=.
-    3. A function that for any =a',b'= and a proof of =R a' b'= and =f a' b'=,
-       finds some =c= and builds a proof of =R b' c= and =f b' c=.
+    chain in Agda. In order to do that, we define a coinductive record data type
+    (cite:agda-doc) (cite:norell:thesis). A coinductive record is allowed to be
+    infinite.
 
-    To see an example refer to the proof of soundness for J5 (pending).
+    #+begin_src text
+record InfiniteChain {ℓW ℓR} {W : Set ℓW} (_<_ : Rel W ℓR) (a : W)
+  : Set (ℓR ⊔ ℓW)where
+  coinductive
+  field
+    b : W
+    a<b : a < b
+    tail : InfiniteChain _<_ b
+    #+end_src
+
+    We see that the previous record data type represents an infinite ascending
+    chain starting at =a= of some relation =<=. It has three fields. =b=: The
+    next element in the chain. =a<b=: A proof that $a < b$ and =tail=: an
+    infinite chain starting at =b=.
+
+    Then we can define being Noetherian as the negation of the existence of an
+    infinite chain:
+    #+begin_src text
+Noetherian : ∀ {ℓR ℓW} {W : Set ℓW} → Rel W ℓR → Set (ℓR ⊔ ℓW)
+Noetherian _<_ = ∀ {a} → ¬ (InfiniteChain _<_ a)
+    #+end_src
+
+    For instance, we can prove that a Noetherian relation is irreflexive. First
+    we show that from a proof that $xRx$ we can build an infinite chain:
+    #+begin_src text
+infiniteRefl : ∀ {ℓ} {R : Rel A ℓ} {x} → R x x → InfiniteChain R x
+InfiniteChain.b (infiniteRefl {x = x} Rxx) = x
+InfiniteChain.a<b (infiniteRefl {x = x} Rxx) = Rxx
+InfiniteChain.tail (infiniteRefl {x = x} Rxx) = infiniteRefl Rxx
+    #+end_src
+
+    And then we can apply the Noetherian definition.
+    #+begin_src text
+Noetherian⇒Irreflexive : ∀ {ℓR ℓW} {W : Set ℓW} {R : Rel W ℓR}
+     → Noetherian R → ∀ {x} → ¬ R x x
+Noetherian⇒Irreflexive noetherian Rxx = noetherian (infiniteRefl Rxx)
+    #+end_src
+
+    To see another example refer to the proof of soundness for J5 (pending).
 ** Ordinary semantics
    In this section we explain how we have represented ordinary Veltman semantics
    in Agda.
