@@ -452,12 +452,60 @@ SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
    {{{endproof}}}
 
   {{{begintheorem}}} *Local soundness for generalized semantics*. That is, if
-  $Π⊢_{IL}A$ and $M$ is a generalized model with a world $w$ such that
-  $w⊩Π$, then $w⊩A$.
-   {{{endtheorem}}}
-   {{{beginproof}}}
-   {{{agda}}}
-   {{{endproof}}}
+  $Π⊢_{IL}A$ and $M$ is a generalized model with a world $w$ such that $w⊩Π$,
+  then $w⊩A$. {{{endtheorem}}}
+
+  {{{beginproof}}} {{{agda}}} We have verified this for all the presented
+  quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
+
+  {{{begintheorem}}} *Weakening*. If
+  $Π⊢_{IL}A$ then $B,Π⊢_{IL}A$. {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Deduction*.
+  $Π⊢_{IL}A→B$ iff $A,Π⊢_{IL}B$. {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Cut*. If
+  $Π⊢_{IL}B$ and $B,Π⊢_{IL}A$ then $Π⊢_{IL}A$. {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Structurality*. If $Π⊢_{IL}B$ and $σ$ is a
+  substitution then $σ[Π]⊢_{IL}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
+  {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Conjunction*. $Π⊢_{IL}A∧B$ iff $Π⊢_{IL}A$ and $Π⊢_{IL}B$.
+  {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} The following holds:
+  1. $⊢_{IL} A → A$
+  2. $⊢_{IL} A ▷ A$
+  3. $⊢_{IL} (A → B) → (B → C) → A → C$
+  4. $⊢_{IL} A → ¬ ¬ A$
+  5. $⊢_{IL} (¬ ¬ A) → A$
+  6. $⊢_{IL} (A → B) → ¬ B → ¬ A$
+  7. $⊢_{IL} A → ⊤$
+  8. $⊢_{IL} ⊥ → A$
+  9. $⊢_{IL} ¬ A → A → B$
+  10. $⊢_{IL} A ∧ B → A$
+  11. $⊢_{IL} A ∧ B → B$
+  12. $⊢_{IL} (A → B → C) → B → A → C$
+  13. $⊢_{IL} A → B → A ∧ B$
+  14. $⊢_{IL} A → A ∨ B$
+  15. $⊢_{IL} B → A ∨ B$
+  16. $⊢_{IL} A ▷ (A ∨ ♢ A)$
+  17. $⊢_{IL} (A ∨ ♢ A) ▷ A$
+  18. $⊢_{IL} A → B ⇒ ⊢_{IL} □ A → □ B$
+  19. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} □ A ↔ □ B$
+  20. $⊢_{IL} □ (A ∧ B) ↔ (□ A ∧ □ B)$
+  21. $⊢_{IL} A → B ⇒ ⊢_{IL} ♢ A → ♢ B$
+  22. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} ♢ A ↔ ♢ B$
+  23. $⊢_{IL} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$
+  24. $⊢_{IL} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$
+  {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}}
+  {{{endproof}}}
+
 
 * Frame conditions
   A principle is a schema of formulas that carries some special significance.
@@ -1790,7 +1838,6 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    outside of Agda and that we accept the law of excluded middle as part of our
    metalogic, the mentioned assumption could be dropped.
 
-** IL and syntactic proofs
 ** Subsets (predicates revisited)
    \glsadd{Pred}
    In Agda, the keyword =Set= refers to an Agda type (insert ref to previous
@@ -1888,6 +1935,7 @@ record Frame {ℓ} : Set (lsuc ℓ) where
    Notice that just below the definition of the field =W : Set=, we have introduced a
    definition of the type =𝕎 : Set₁=
 
+** IL and syntactic proofs
 * Verbrugge
   In this section we proof that given a generalized Veltman model that satisfies
   a certain property, we can build an ordinary Veltman model with the same
@@ -1912,8 +1960,8 @@ record Frame {ℓ} : Set (lsuc ℓ) where
 
   Let the conditions $(C_0)$ and $(C_1)$ be defined thus:
   \begin{flalign*}
-  (C₀)&≔∀wxV.xS_wV⇒∃y∈V.∀bV'.SbyV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
-  (C₁)&≔∀wbxV.wRx⇒xS_bV⇒∃v∈V.(b=w ⇒ xS_b\{v\}),(bRw⇒wS_b\{v\}).
+  (C₀)&≔∀wxV.xS_wV⇒∃y∈V.∀bV'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
+  (C₁)&≔∀wbxV.wRx⇒xS_bV⇒∃v∈V.xS_b\{v\},(bRw⇒wS_b\{v\}).
   \end{flalign*}
   {{{begintheorem}}}
   If $M$ satisfies both conditions $(C_0)$ and $(C_1)$ then
@@ -1978,8 +2026,8 @@ record Frame {ℓ} : Set (lsuc ℓ) where
     Since $wRx$ and $xS_bV$ it follows from condition $(C_1)$ that there exists
     $v∈V$ such that
     \begin{flalign}
-    b=w&⇒xS_w\{v\}, \label{eq:verb-neg-b=w} \\
-    bRw&⇒wS_b\{v\}. \label{eq:verb-neg-bRw}
+    &xS_b\{v\}, \label{eq:verb-neg-b=w} \\
+    bRw⇒&wS_b\{v\}. \label{eq:verb-neg-bRw}
     \end{flalign}
     The first condition to show $⟨b,v⟩∈A$, namely that $∃Y.xS_bY,v∈Y$, is met
     trivially. For the next condition assume $b=w$, then see that we have
@@ -2002,11 +2050,62 @@ record Frame {ℓ} : Set (lsuc ℓ) where
     $⟨y,B⟩⊮E$, which concludes the proof.
   {{{endproof}}}
 
-  {{{begintheorem}}} If a generalized Veltman frame that satisfies
+  {{{begintheorem}}} If a generalized Veltman frame satisfies
   quasi-transitivity Condition 3, 4, 5 or 6, then it satisfies conditions
   $(C_0)$ and $(C_1)$. {{{endtheorem}}}
 
-  {{{beginproof}}} {{{agda}}}
+  {{{beginproof}}} {{{agda}}} Here we prove the property for a generalized
+  Veltman frame satisfying quasi-transitivity Condition 3. Conditions 4, 5 and 6
+  imply Condition 3 as shown in Theorem [[theorem:trans]].
+
+  Assume $F$ is a generalized Veltman frame satisfying quasi-transitivity
+  Condition 3.
+  It is easy to observe that the following property holds:
+  #+name: eq:verb-trans-prop
+  \begin{equation}
+  uS_xY ⇒ ∃\, y∈Y\, ∀ z(yS_x\{z\} ⇒ uS_x\{z\}).
+  \end{equation}
+  - \boxed{(C₀)} Assume that for some $w,x,V$ we have $xS_wV$. Then by
+    [[eq:verb-trans-prop]] there is some $y∈V$ such that
+    #+name: eq:verb-trans-y
+    \begin{equation}
+     ∀ z(yS_w\{z\} ⇒ xS_w\{z\}).
+    \end{equation}
+
+    Now assume that for some $b,V'$ we have $yS_bV'$. It follows by
+    [[eq:verb-trans-prop]] that there is some $v∈V'$ such that
+    #+name: eq:verb-trans-v
+    \begin{equation}
+     ∀ z(vS_b\{z\} ⇒ yS_b\{z\}).
+    \end{equation}
+    Assume that $b=w$, we need to see that $xS_b\{v\}$. From $xS_wV$ and $y∈V$
+    it follows that $wRy$. Then by quasi-reflexivity we have $yS_w\{y\}$ and by
+    [[eq:verb-trans-y]] we get $xS_w\{v\}$ which is the same as $xS_b\{v\}$. Assume
+    that $bRw$, we need to see that $wS_b\{v\}$. From $bRwRy$ we have
+    $wS_b\{y\}$ and from property [[eq:verb-trans-prop]] we get
+    #+name: eq:verb-trans-Sbyz
+    \begin{equation}
+    ∀z(yS_b\{z\}⇒wS_b\{z\}).
+    \end{equation}
+    Then since $yS_bV'$ and $v∈V'$ we have $bRv$ so by quasi-reflexivity we have
+    $vS_b\{v\}$. Finally by [[eq:verb-trans-v]] we get $yS_b\{v\}$ and by
+    [[eq:verb-trans-Sbyz]] we get $wS_b\{v\}$.
+  - \boxed{(C_1)} Assume that for some $w,b,x,V$ we have $wRxS_bV$.
+    By [[eq:verb-trans-prop]] it follows that there is some $v∈V$ such that
+    #+name: eq:verb-trans-SbxV
+    \begin{equation}
+     ∀z(vS_b\{z\} ⇒ xS_b\{z\}).
+    \end{equation}
+    We first see that $xS_b\{v\}$. From $xS_bV$ and $v∈V$ we get $bRv$ and by
+    quasi-reflexivity we get $vS_b\{v\}$. Then by [[eq:verb-trans-SbxV]] we have
+    $xS_b\{v\}$. Assume $bRw$, we need to see $wS_b\{v\}$. By quasi-reflexivity
+    we get $vS_b\{v\}$ and by [[eq:verb-trans-SbxV]] we get $xS_b\{v\}$. By $bRwRx$
+    we get $wS_b\{x\}$ and thus by [[eq:verb-trans-prop]] we have
+    #+name: eq:verb-Sbwx
+    \begin{equation}
+    ∀z(xS_b\{z\}⇒wS_b\{z\}).
+    \end{equation}
+    Finally by $xS_b\{v\}$ and [[eq:verb-Sbwx]] we get $wS_b\{v\}$.
   {{{endproof}}}
 * other
 
