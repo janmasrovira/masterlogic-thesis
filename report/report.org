@@ -106,8 +106,16 @@
    4. Every Agda proof.
 
 ** Language
-   <<sec:language>>
-   The language of interpretability logics is $⊥,→,▷$. We define $∧,□,♢,∨,→$.
+   <<sec:language>> The language of interpretability logics is $⟨⊥,→,▷⟩$. We
+   define the usual operators and constants in the following way:
+
+   1. $¬ A ≔ A → ⊥$.
+   2. $⊤ ≔ ¬ ⊥$.
+   3. $A ∨ B ≔ ¬ A → B$.
+   4. $A ∧ B ≔ ¬ (A → ¬ B)$.
+   5. $A ↔ B ≔ (A → B) ∧ (B → A)$.
+   6. $□ A ≔ ¬ A ▷ ⊥$.
+   7. $♢ A ≔ ¬ □ ¬ A$.
 
 ** Notation
    Some notation that we use throughout the report:
@@ -118,11 +126,22 @@
    5. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
    6. $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
    7. $⟦A⟧≔\{w:w⊩A\}$;
-   8. {{{agda}}} this is Agda's logo, and every proof that is formalized in Agda
+   8. {{{agda}}} this is Agda's logo. Each proof that is formalized in Agda
       has been tagged with it.
    9. When we write a dot after the quantification of some variables, the scope of
       the variables extends to the rightmost part of what follows. Hence the
       formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$
+
+
+   In Section [[sec:trans]] and [[sec:frame-condition]] we present some diagrams. We use
+   straight arrows to represent the $R$ relation and curvy arrows to represent
+   some $S_w$ relation. We sometimes use red ink when an arrow is in a positive
+   position in the formula to emphasize its role. We use discontinuous arrows
+   when it is quantified universally.
+
+   We believe that diagrams can help the reader have a better understanding of
+   the underlying formula, however, they are not meant to be a replacement as
+   they cannot unambiguously convey all the information in the formula.
 
 ** Semantics
    In this document we consider two variants of relational semantics for
@@ -234,26 +253,26 @@
 #+name: fig:table-trans
 #+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
-| Nr. | Semantic requirement for transitivity                                                  | Mentioned in                                                                  |
-|-----+----------------------------------------------------------------------------------------+-------------------------------------------------------------------------------|
-| (1) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | This paper                                                                    |
-| (2) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge                                                                     |
-| (3) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                                                    |
-| (4) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Joosten '98 \cite{joosten-master}                                             |
-| (5) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                                                    |
-| (6) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}                                                |
-| (7) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | This paper                                                                    |
-| (8) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle}, \cite{interpretability-formalized} |
+| Nr. | Semantic requirement for transitivity                                                  | Mentioned in                              |
+|-----+----------------------------------------------------------------------------------------+-------------------------------------------|
+| (1) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | This paper                                |
+| (2) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 \cite{Verbrugge}            |
+| (3) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
+| (4) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Joosten '98 \cite{joosten-master}         |
+| (5) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
+| (6) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}            |
+| (7) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | This paper                                |
+| (8) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle} |
 
    #+caption: Diagrams for conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
    #+attr_latex: :float t :width 0.9\textwidth :placement [H]
    [[file:img/trans-2-4-6.pdf]]
 
-I NOW SEE THAT THE TABLE IN YOUR SECTION 1.6 HAS BEEN UPDATED IN OUR PAPER
+# I NOW SEE THAT THE TABLE IN YOUR SECTION 1.6 HAS BEEN UPDATED IN OUR PAPER
 
-OF COURSE, YOU SHOULD ADAPT IT TO YOUR THESIS.
-SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
+# OF COURSE, YOU SHOULD ADAPT IT TO YOUR THESIS.
+# SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
 
 
 
@@ -340,18 +359,45 @@ SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
     if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
   #+end_center
 
-  {{{begintheorem}}} <<theorem:mono-1>> Let $M=⟨W,R,S,V⟩$ be a generalized
-  Veltman model with any of the quasi-transitivity conditions presented in
-  section [[sec:trans]]. Let $M'=⟨W,R,S',V⟩$ where $S'$ is the monotonic closure of
-  $S$. Note that $M'$ is not necessarily a Veltman model, for instance it may
-  not satisfy the quasi-transitivity condition.
+  {{{begintheorem}}} <<theorem:mono>> Let $F=⟨W,R,S⟩$ be a generalized Veltman
+  frame with quasi-transitivity $(i)∈{1…8}$ (see [[sec:trans]]).
+  Let $F'=⟨W,R,S'⟩$ where $S'$ is the monotone closure of $S$:
 
-  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
+  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}.\]
 
-  Then for any world $w$ and formula $A$ we have \[M,w⊩A⇔M',w⊩A\]
-  {{{endtheorem}}}
+  Then $F'$ is a generalized Veltman frame satisfying quasi-transitivity
+  Condition (2). Furthermore, for any valuation $V$ and formula $A$ with
+  $M≔⟨F,V⟩$ and $M'≔⟨F',V⟩$ we have that for every world $w$,
+  \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
 
-  {{{beginproof}}} By induction on $A$. The only interesting case is $A▷B$.
+
+  {{{beginproof}}} {{{agda}}}
+
+  We check conditions listed in definition [[def:gen-frame]].
+  - Conditions 1 and 2 are clear since $R$ is unchanged;
+  - condition 3 follows from the fact that in the definition of $S'$ we require
+    $Y'⊆\{u:wRu\}$;
+  - for conditions 4 and 5 observe that $S⊆S'$. Then, since these conditions hold for
+    $F$ they also hold for $F'$;
+  # - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
+  #   we have $y'S'_xY'_{y'}$. We need to show that $uS'_x⋃_{y'∈Y'}Y'_{y'}$. By
+  #   assumption it follows that for some $Y⊆Y'$ we have $uS_xY$ and for every
+  #   $y'∈Y'$ we there exists some $Y_{y'}⊆Y'_{y'}$ such that $y'S_xY_{y'}$. Since
+  #   $F$ satisfies (2) it follows that $uS_x⋃_{y'∈Y'}Y_{y'}$ and since $S⊆S'$ we get
+  #   $uS'_x⋃_{y'∈Y'}Y_{y'}$.
+  - for quasi-transitivity Condition (2) assume that $uS'_xY'$ and that for
+    every $y'∈Y'$ we have $y'S'_xΥ_{y'}$. We need to show that
+    $uS'_x⋃_{y'∈Y'}Υ_{y'}$. By definition of $S'$ it follows that there exists
+    $Y⊆Y'$ such that $uS_xY$, furthermore, for every $y'∈Y'$ we have that there
+    exists $f(Υ_{y'})⊆Υ_{y'}$ such that $y'S_xf(Υ_{y'})$. From $Y⊆Y'$ it follows
+    that for all $y∈Y$ there exists $f(Υ_{y})⊆Υ_{y}$ such that $yS_xf(Υ_{y})$.
+    Then by (2) for $F$ it follows that $uS_x⋃_{y∈Y}f(Υ_{y})$. Then see that
+    $⋃_{y∈Y}f(Υ_{y})⊆⋃_{y'∈Y'}Υ_{y'}$. It remains to show
+    $⋃_{y'∈Y'}Υ_{y'}⊆xR\{u:xRu\}$. Consider some $u$ such that there is some
+    $y'∈Y'$ with $u∈Υ_{y'}$. By assumption we have $y'S'_xΥ_{y'}$ and thus
+    $xRu$.
+  To show $M,w⊩A⇔M',w⊩A$ we proceed by induction on $A$. The only
+  interesting case is $A▷B$.
   - Assume that $M,w⊩A▷B$ and that there is some world $x$ such that $wRx$ and
     $M',x⊩A$. By IH we have $M,x⊩A$, so there exists some $Y$ such that $xS_wY$
     and $M,Y⊩B$. By IH we have $M',Y⊩B$ and by definition of $S'$ it follows
@@ -365,56 +411,21 @@ SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
     $Y'⊮B$, so $M',w⊩A▷B$.
   {{{endproof}}}
 
-  As a consequence of the previous theorem it is sometimes the case that
-  generalized Veltman frames are assumed to satisfy the monotonicity condition,
-  as it can make some proofs shorter.
+  As we see in Theorem [[theorem:mono]] taking the monotone closure of each $S_w$ does not
+  change the forcing relation and the resulting frame satisfies quasi-transitivity
+  Condition (2).
 
-  {{{begintheorem}}} <<theorem:mono-2>> Let $F=⟨W,R,S⟩$ be a generalized Veltman frame
-  with quasi-transitivity $(i)∈{1…6}$ (see [[sec:trans]]). Let $F'=⟨W,R,S'⟩$ where $S'$ is the
-  monotonic closure of $S$.
+  # The previous lemma allows us to safely assume that monotonicity is a condition
+  # for a Veltman frame with quasi-transitivity (2).
 
-  \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}\]
+  {{{beginremark}}} As Luka (or Mikec(?)) pointed out during online
+  correspondence, taking the monotone closure of each $S_w$ is essentially
+  different than assuming that each $S_w$ is monotone by definition of the
+  frame, as then the forcing relation may change. In the following example we
+  present a generalized Veltman model with Condition (8) that showcases such
+  behaviour.
 
-  Then for any valuation $V$, let $M≔⟨F,V⟩$, $M'≔⟨F',V⟩$. For any world $w$ and
-  formula $A$ we have \[M,w⊩A⇔M',w⊩A;\] additionally, $F'$ is a Veltman frame
-  with quasi-transitivity condition (2).
-  {{{endtheorem}}}
-
-
-  {{{beginproof}}} {{{agda}}}
-
-  The first part follows from theorem [[theorem:mono-1]]. For the
-  second part we check conditions listed in definition [[def:gen-frame]].
-  - Conditions 1 and 2 are clear since $R$ is unchanged;
-  - condition 3 follows from the fact that in the definition of $S'$ we require
-    $Y'⊆\{u:wRu\}$;
-  - for conditions 4 and 5 observe that $S⊆S'$. Since these conditions hold for
-    $F$ they also hold for $F'$;
-  # - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
-  #   we have $y'S'_xY'_{y'}$. We need to show that $uS'_x⋃_{y'∈Y'}Y'_{y'}$. By
-  #   assumption it follows that for some $Y⊆Y'$ we have $uS_xY$ and for every
-  #   $y'∈Y'$ we there exists some $Y_{y'}⊆Y'_{y'}$ such that $y'S_xY_{y'}$. Since
-  #   $F$ satisfies (2) it follows that $uS_x⋃_{y'∈Y'}Y_{y'}$ and since $S⊆S'$ we get
-  #   $uS'_x⋃_{y'∈Y'}Y_{y'}$.
-  - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
-    we have $y'S'_xΥ_{y'}$. We need to show that $uS'_x⋃_{y'∈Y'}Υ_{y'}$. By
-    definition of $S'$ it follows that there exists $Y⊆Y'$ such that $uS_xY$,
-    furthermore, for every $y'∈Y'$ we have that there exists $f(Υ_{y'})⊆Υ_{y'}$
-    such that $y'S_xf(Υ_{y'})$. From $Y⊆Y'$ it follows that for all $y∈Y$ there
-    exists $f(Υ_{y})⊆Υ_{y}$ such that $yS_xf(Υ_{y})$. Then by (2) for $F$ it follows
-    that $uS_x⋃_{y∈Y}f(Υ_{y})$. Then see that $⋃_{y∈Y}f(Υ_{y})⊆⋃_{y'∈Y'}Υ_{y'}$.
-    It remains to show $⋃_{y'∈Y'}Υ_{y'}⊆xR\_$.
-  {{{endproof}}}
-
-  The previous lemma allows us to safely assume that monotonicity is a condition
-  for a Veltman frame with quasi-transitivity (2).
-
-  {{{beginremark}}}
-  As Luka pointed out during online correspondence, theorem [[theorem:mono-2]] does
-  not hold in general for all quasi-transitivity conditions. For instance, here
-  we present a counterexample for condition (8).
-
-   #+caption: Example frame: $wRv_{0…3}$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
+   #+caption: Example frame: $wRv_0,wRv_1,wRv_2,wRv_3$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
    #+name: fig:example-trans
    #+attr_latex: :float t :width 0.28\textwidth :placement [H]
    [[file:img/example.pdf]]
@@ -508,6 +519,7 @@ SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
 
 
 * Frame conditions
+  <<sec:frame-condition>>
   A principle is a schema of formulas that carries some special significance.
 
   JOOST: OF COURSE, YOU WILL NEED SOME GENERAL BACKGROUND. WHAT DOES FRAME
