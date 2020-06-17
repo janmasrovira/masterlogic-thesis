@@ -88,6 +88,10 @@
 #+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
 
+#+latex_header: \newcommand{\joost}[1]{\textcolor{purple}{\bf Joost: #1}}
+#+latex_header: \newcommand{\jan}[1]{\textcolor{orange}{\bf Jan: #1}}
+#+latex_header: \newcommand{\luka}[1]{\textcolor{blue}{\bf Luka: #1}}
+
 # Missing monospaced characters
 #+latex_header: \setmathfont{XITS Math}
 #+latex_header: \newfontfamily{\myfont}{XITS Math}
@@ -123,6 +127,7 @@
    6. $□ A ≔ ¬ A ▷ ⊥$;
    7. $♢ A ≔ ¬ □ ¬ A$.
 
+   The precedence of the operators is in the following order: $∧,▷,∨,→$.
 ** Notation
    Some notation that we use throughout the report:
    1. If $A$ and $B$ are binary relations, then $wAuBv$ means $wAu$ and $uBv$.
@@ -158,73 +163,74 @@
    - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$;
    - J4: $A ▷ B → ♢ A → ♢ B$;
    - J5: $♢ A ▷ A$.
-   Additionally it has the following rules:
+   If $A$ is an instantiation of any of the previous axiom schemes, then
+   $⊢_{IL}A$. Additionally it has the following rules:
    - Necessitation: if $⊢_{IL}A$ then $⊢_{IL}□A$.
    - Modus ponens: if $Π⊢_{IL}A→B$ and $Π⊢_{IL}A$ then $Π⊢_{IL}B$.
    - Identity: If $A∈Π$ then $Π⊢_{IL}A$.
 
-  {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
-  $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that
-  $w⊩Π$, then $w⊩A$.
+   While it is acceptable to have infinite sets of assumptions, when verifying
+   properties in Agda we have restricted ourselves to finite sets. This
+   restriction is not meaningful in the context of this project.
+
+   {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
+   $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
+   then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+   {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
+   semantics*. That is, if $Π⊢_{IL}A$ and $M$ is a generalized model with a world
+   $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
+
+   {{{beginproof}}} {{{agda}}} We have verified this in Agda for all the presented
+   quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
+
+   {{{begintheorem}}} *Weakening*. If
+   $Π⊢_{IL}A$ then $B,Π⊢_{IL}A$. {{{endtheorem}}}
+   {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+   {{{begintheorem}}} *Deduction*.
+   $Π⊢_{IL}A→B$ iff $A,Π⊢_{IL}B$. {{{endtheorem}}}
+   {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+   {{{begintheorem}}} *Cut*. If
+   $Π⊢_{IL}B$ and $B,Π⊢_{IL}A$ then $Π⊢_{IL}A$. {{{endtheorem}}}
+   {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+   {{{begintheorem}}} *Structurality*. If $Π⊢_{IL}B$ and $σ$ is a
+   substitution then $σ[Π]⊢_{IL}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
+   {{{agda}}} {{{endproof}}}
+
+   {{{begintheorem}}} *Conjunction*. $Π⊢_{IL}A∧B$ iff $Π⊢_{IL}A$ and $Π⊢_{IL}B$.
+   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+   {{{begintheorem}}} The following holds:
+    1. $⊢_{IL} A → A$;
+    2. $⊢_{IL} A ▷ A$;
+    3. $⊢_{IL} (A → B) → (B → C) → A → C$;
+    4. $⊢_{IL} A → ¬ ¬ A$;
+    5. $⊢_{IL} (¬ ¬ A) → A$;
+    6. $⊢_{IL} (A → B) → ¬ B → ¬ A$;
+    7. $⊢_{IL} A → ⊤$;
+    8. $⊢_{IL} ⊥ → A$;
+    9. $⊢_{IL} ¬ A → A → B$;
+    10. $⊢_{IL} A ∧ B → A$;
+    11. $⊢_{IL} A ∧ B → B$;
+    12. $⊢_{IL} (A → B → C) → B → A → C$;
+    13. $⊢_{IL} A → B → A ∧ B$;
+    14. $⊢_{IL} A → A ∨ B$;
+    15. $⊢_{IL} B → A ∨ B$;
+    16. $⊢_{IL} A ▷ (A ∨ ♢ A)$;
+    17. $⊢_{IL} (A ∨ ♢ A) ▷ A$;
+    18. $⊢_{IL} A → B ⇒ ⊢_{IL} □ A → □ B$;
+    19. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} □ A ↔ □ B$;
+    20. $⊢_{IL} □ (A ∧ B) ↔ (□ A ∧ □ B)$;
+    21. $⊢_{IL} A → B ⇒ ⊢_{IL} ♢ A → ♢ B$;
+    22. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} ♢ A ↔ ♢ B$;
+    23. $⊢_{IL} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
+    24. $⊢_{IL} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
    {{{endtheorem}}}
-   {{{beginproof}}}
-   {{{agda}}}
+   {{{beginproof}}} {{{agda}}}
    {{{endproof}}}
-
-  {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
-  semantics*. That is, if $Π⊢_{IL}A$ and $M$ is a generalized model with a world
-  $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
-
-  {{{beginproof}}} {{{agda}}} We have verified this for all the presented
-  quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
-
-  {{{begintheorem}}} *Weakening*. If
-  $Π⊢_{IL}A$ then $B,Π⊢_{IL}A$. {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Deduction*.
-  $Π⊢_{IL}A→B$ iff $A,Π⊢_{IL}B$. {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Cut*. If
-  $Π⊢_{IL}B$ and $B,Π⊢_{IL}A$ then $Π⊢_{IL}A$. {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Structurality*. If $Π⊢_{IL}B$ and $σ$ is a
-  substitution then $σ[Π]⊢_{IL}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
-  {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Conjunction*. $Π⊢_{IL}A∧B$ iff $Π⊢_{IL}A$ and $Π⊢_{IL}B$.
-  {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} The following holds:
-  1. $⊢_{IL} A → A$;
-  2. $⊢_{IL} A ▷ A$;
-  3. $⊢_{IL} (A → B) → (B → C) → A → C$;
-  4. $⊢_{IL} A → ¬ ¬ A$;
-  5. $⊢_{IL} (¬ ¬ A) → A$;
-  6. $⊢_{IL} (A → B) → ¬ B → ¬ A$;
-  7. $⊢_{IL} A → ⊤$;
-  8. $⊢_{IL} ⊥ → A$;
-  9. $⊢_{IL} ¬ A → A → B$;
-  10. $⊢_{IL} A ∧ B → A$;
-  11. $⊢_{IL} A ∧ B → B$;
-  12. $⊢_{IL} (A → B → C) → B → A → C$;
-  13. $⊢_{IL} A → B → A ∧ B$;
-  14. $⊢_{IL} A → A ∨ B$;
-  15. $⊢_{IL} B → A ∨ B$;
-  16. $⊢_{IL} A ▷ (A ∨ ♢ A)$;
-  17. $⊢_{IL} (A ∨ ♢ A) ▷ A$;
-  18. $⊢_{IL} A → B ⇒ ⊢_{IL} □ A → □ B$;
-  19. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} □ A ↔ □ B$;
-  20. $⊢_{IL} □ (A ∧ B) ↔ (□ A ∧ □ B)$;
-  21. $⊢_{IL} A → B ⇒ ⊢_{IL} ♢ A → ♢ B$;
-  22. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} ♢ A ↔ ♢ B$;
-  23. $⊢_{IL} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
-  24. $⊢_{IL} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
-  {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}}
-  {{{endproof}}}
 
 ** Semantics
    In this document we consider two variants of relational semantics for
@@ -510,8 +516,8 @@
   {{{endremark}}}
 
 * Frame conditions
-  <<sec:frame-condition>>
-  A principle is a schema of formulas that carries some special significance.
+  <<sec:frame-condition>> An interpretability principle is a schema of modal
+  formulas that carries some special significance.
 
   JOOST: OF COURSE, YOU WILL NEED SOME GENERAL BACKGROUND. WHAT DOES FRAME
   VALIDITY MEAN, WHAT ARE FRAME CONDITIONS, ETC.
@@ -519,9 +525,9 @@
   In this section we present a series of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
   semantics.
-** \prin{M} principle
+** The principle \prin{M}
    The \prin{M} principle reads as follows:
-   \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C)\]
+   \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C).\]
 
    JOOST: AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE
    PRINCIPLE INTRODUCED AND BY WHOM. ALSO, WHY IS IT IMPORTANT, ETC.
@@ -529,9 +535,9 @@
 *** Ordinary semantics
    The frame condition for \prin{M} for ordinary semantics, we write $\kord{M}$,
    reads as follows:
-   \[∀w,x,y,z(xS_w yRz ⇒ xRz)\]
+   \[∀w,x,y,z(xS_w yRz ⇒ xRz).\]
 
-   #+caption: Ordinary frame condition for \prin{M}
+   #+caption: Ordinary frame condition for \prin{M}.
    #+name: fig:ord-M-condition
    #+attr_latex: :float t :width 0.20\textwidth :placement [H]
    [[file:img/M-ord.pdf]]
@@ -540,10 +546,7 @@
    $\kord{M}$ condition iff any model based on $F$ forces every instantiation of the \prin{M}
    principle. In symbols:
 
-   \[F ⊨ \kord{M} ⇔ F ⊩ M\] {{{endtheorem}}}
-
-   JOOST: NOTE THAT YOUR MODELS SYMBOLS IS A BIT OVERLOADEN. YOU NOW USE IT IN
-   THE SENSE WHERE F IS CONSIDERED A FIRST (OR HIGHER ORDER) STRUCTURE/MODEL.
+   \[F ⊨ \kord{M} ⇔ F ⊩ M.\] {{{endtheorem}}}
 
    {{{beginproof}}}
    {{{agda}}}
@@ -552,20 +555,20 @@
      Our aim is to find a world $z$ such that $xS_wz⊩B∧□C$. Since $wRx⊩A$ and
      $w⊩A▷B$ there is a world $z$ such that $xS_wz⊩B$. We now show that $z⊩□C$.
      Consider an arbitrary $u$ such that $zRu$. By the frame condition it
-     follows that $xRz$ and we know $x⊩□C$ hence $u⊩C$ and thus $z⊩□C$. Hence
+     follows that $xRu$ and we know $x⊩□C$ hence $u⊩C$ and thus $z⊩□C$. Hence
      $z$ is the desired world.
 
    - \boxed{⇐} Let $a,b,c∈Var$, assume $F⊩a▷b→(a∧□c)▷(b∧□c)$. Assume also that
      for some $x,w,u$ we have $xS_wzRu$. Our goal is to prove $xRu$. Consider a
      model such that the following holds.
      \begin{flalign*}
-     ⟦a⟧ &= \{x\} \\
-     ⟦b⟧ &= \{z\} \\
-     ⟦c⟧ &= \{v:xRv\}
+     ⟦a⟧ &= \{x\}; \\
+     ⟦b⟧ &= \{z\}; \\
+     ⟦c⟧ &= \{v:xRv\}.
      \end{flalign*}
      We observe that $w⊩a▷b$ because $a$ is only forced in $x$ and we have
      $xS_wz⊩b$. Then it follows that $w⊩(a∧□c)▷(b∧□c)$. It is easy to observe
-     that $x⊩a∧□c$, furthermore we have that by definition of ordinary frame
+     that $x⊩a∧□c$, furthermore we have that by the definition of an ordinary frame
      $xS_wz⇒wRx$, hence $wRx$ and thus there must exist some $v$ such that
      $xS_wv⊩b∧□c$. Since $b$ is only true in $z$ it must be $z⊩b∧□c$. Then,
      because $zRu$ we have $u⊩c$, therefore $xRu$.
@@ -575,10 +578,10 @@
    The frame condition for \prin{M} for generalized semantics, we write $\kgen{M}$,
    reads as follows:
 
-   \[ ∀w,x,V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz)))\]
+   \[ ∀w,x,V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz))).\]
 
 
-   #+caption: Generalized frame condition for \prin{M}
+   #+caption: Generalized frame condition for \prin{M}.
    #+name: fig:gen-M-condition
    #+attr_latex: :float t :width 0.20\textwidth :placement [H]
    [[file:img/wip.png]]
@@ -587,7 +590,7 @@
    $\kgen{M}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{M} principle. In symbols:
 
-   \[F ⊨ \kgen{M} ⇔ F ⊩ M\] {{{endtheorem}}}
+   \[F ⊨ \kgen{M} ⇔ F ⊩ M.\] {{{endtheorem}}}
 
    {{{beginproof}}}
    {{{agda}}}
@@ -595,16 +598,16 @@
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
      Our aim is to find a set $Z$ such that $xS_wZ⊩B∧□C$. Since $wRx⊩A$ and
      $w⊩A▷B$ there is set $Z$ such that $xS_wZ⊩B$. Then by the $\kgen{M}$
-     condition it follows that there is a world $Z'⊆Z$ such that $xS_wZ'$ and
+     condition it follows that there is a set $Z'⊆Z$ such that $xS_wZ'$ and
      $∀v∈Z'∀z(vRz⇒xRz)$. Now we show $Z'⊩□C$. Let $v∈Z'$ and $u$ such that
      $vRu$, by the condition above it follows $xRu$ and since $x⊩□C$ we have
      $u⊩C$. Hence $Z'$ is the desired set.
    - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (a ∧ □ c) ▷ (b ∧ □ c)$ and
      $uS_wV$. Consider a model satisfying the following
      \begin{flalign*}
-     ⟦a⟧ &= \{u\} \\
-     ⟦b⟧ &= V \\
-     ⟦c⟧ &= \{v:uRv\}
+     ⟦a⟧ &= \{u\}; \\
+     ⟦b⟧ &= V; \\
+     ⟦c⟧ &= \{v:uRv\}.
      \end{flalign*}
      We see that $w⊩a▷b$ since $a$ is only true in $u$ and we have $uS_wV⊩b$. It
      follows that ${w⊩(a ∧ □ c)▷(b∧□c)}$. It is easy to see that $u⊩a∧□c$, hence
@@ -612,15 +615,15 @@
      forced exactly in $V$. Now let $v',z$ such that $v'∈V'$ and $v'Rz$. Since
      $v'⊩□c$, then $z⊩c$ and thus $uRz$. Therefore $V'$ is the desired set.
    {{{endproof}}}
-** \prin{M₀} principle
+** The principle \prin{M₀}
    The \prin{M₀} principle reads as follows:
-   \[A ▷ B → (♢ A ∧ □ C) ▷ (B ∧ □ C)\]
+   \[A ▷ B → ♢ A ∧ □ C ▷ B ∧ □ C.\]
 
 *** Ordinary semantics
     The $\kord{M₀}$ condition reads as follows:
-    \[∀w,x,y,z(wRxRyS_wz⇒xS_wz,∀u(zRu⇒xRu))\]
+    \[∀w,x,y,z(wRxRyS_wz⇒xS_wz,∀u(zRu⇒xRu)).\]
 
-   #+caption: Ordinary frame condition for \prin{M₀}
+   #+caption: Ordinary frame condition for \prin{M₀}.
    #+name: fig:M_0-ord
    #+attr_latex: :float t :width 0.25\textwidth :placement [H]
    [[file:img/M_0-ord.pdf]]
@@ -629,7 +632,7 @@
     $\kord{M₀}$ condition iff any model based on $F$ forces every instantiation of
     the \prin{M₀} principle. In symbols:
 
-    \[F ⊨ \kord{M₀} ⇔ F ⊩ M₀\] {{{endtheorem}}}
+    \[F ⊨ \kord{M₀} ⇔ F ⊩ M₀.\] {{{endtheorem}}}
 
     {{{beginproof}}}
     {{{agda}}}
@@ -644,9 +647,9 @@
       assume that for some $w,x,y,z$ we have $wRxRyS_wz$. Consider a model based
       on $F$ such that the following holds:
       \begin{flalign*}
-      ⟦a⟧ &= \{y\} \\
-      ⟦b⟧ &= \{z\} \\
-      ⟦c⟧ &= \{w:xRw\}
+      ⟦a⟧ &= \{y\}; \\
+      ⟦b⟧ &= \{z\}; \\
+      ⟦c⟧ &= \{w:xRw\}.
       \end{flalign*}
       Observe that $w⊩a▷b$ since $a$ is forced only in $y$ and we have $yS_wz⊩b$.
       It follows that $w⊩(♢ a ∧ □ c) ▷ (b ∧ □ c)$. Clearly $x⊩♢a∧□c$, hence there
@@ -657,9 +660,9 @@
 
 *** Generalized semantics
     The $\kgen{M₀}$ condition reads as follows:
-    \[∀w,x,y,Y(wRxRyS_wY⇒∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz⇒xRz)))\]
+    \[∀w,x,y,Y(wRxRyS_wY⇒∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz⇒xRz))).\]
 
-   #+caption: Generalized frame condition for \prin{M₀}
+   #+caption: Generalized frame condition for \prin{M₀}.
    #+name: fig:M_0-gen
    #+attr_latex: :float t :width 0.30\textwidth :placement [H]
    [[file:img/M_0-gen.pdf]]
@@ -669,7 +672,7 @@
     $\kgen{M₀}$ condition iff any model based on $F$ forces every instantiation of
     the \prin{M₀} principle. In symbols:
 
-    \[F ⊨ \kgen{M₀} ⇔ F ⊩ M₀\] {{{endtheorem}}}
+    \[F ⊨ \kgen{M₀} ⇔ F ⊩ M₀.\] {{{endtheorem}}}
 
     {{{beginproof}}}
     {{{agda}}}
@@ -685,9 +688,9 @@
       and assume that for some $w,x,y,Y$ we have $wRxRyS_wY$. Then consider a
       model based on $F$ such that.
       \begin{flalign*}
-      ⟦a⟧ &= \{y\} \\
-      ⟦b⟧ &= Y \\
-      ⟦c⟧ &= \{w:xRw\}
+      ⟦a⟧ &= \{y\}; \\
+      ⟦b⟧ &= Y; \\
+      ⟦c⟧ &= \{v:xRv\}.
       \end{flalign*}
       Observe that $w⊩a▷b$ as $a$ is only forced in $y$ and we have $yS_wY⊩b$.
       Consequently it holds that $w⊩(♢ a ∧ □ c) ▷ (b ∧ □ c)$. See also that
@@ -697,15 +700,15 @@
       such that $y'Rz$. Since $Y'⊩□c$ then $z⊩c$ and thus $xRz$.
     {{{endproof}}}
 
-** \prin{P₀} principle
+** The principle \prin{P₀}
 
    The \prin{P₀} principle reads as follows:
-   \[A ▷ ♢ B → □ (A ▷ B)\]
+   \[A ▷ ♢ B → □ (A ▷ B).\]
 *** Ordinary semantics
     The $(P₀)_{ord}$ condition reads as follows:
-    \[∀w,x,y,z,u(wRxRyS_wzRu⇒yS_xu)\]
+    \[∀w,x,y,z,u(wRxRyS_wzRu⇒yS_xu).\]
 
-   #+caption: Ordinary frame condition for \prin{P₀}
+   #+caption: Ordinary frame condition for \prin{P₀}.
    #+name: fig:P_0-ord
    #+attr_latex: :float t :width 0.15\textwidth :placement [H]
    [[file:img/P_0-ord.pdf]]
@@ -714,7 +717,7 @@
    $(P₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{P₀} principle. In symbols:
 
-   \[F ⊨ (P₀)_{ord} ⇔ F ⊩ P₀\] {{{endtheorem}}}
+   \[F ⊨ (P₀)_{ord} ⇔ F ⊩ P₀.\] {{{endtheorem}}}
 
    {{{beginproof}}}
    {{{agda}}}
@@ -727,8 +730,8 @@
      $wRxRyS_wzRu$. We want to show $yS_xu$. Consider a model based on $F$ such
      that:
      \begin{flalign*}
-     ⟦a⟧ = \{y \} \\
-     ⟦b⟧ = \{u \}
+     ⟦a⟧ = \{y \}; \\
+     ⟦b⟧ = \{u \}.
      \end{flalign*}
      Observe that $w⊩a▷♢b$ as the only world that forces $a$ is $y$ and we have
      $yS_wz⊩♢b$, because $zRu⊩b$. Consequently we have $w⊩□(a▷b)$ and therefore
@@ -739,9 +742,9 @@
 
 *** Generalized semantics
     The $(P_0)_{gen}$ condition reads as follows:
-    \[∀w,x,y,Y,Z((wRxRyS_wY,∀y∈Y∃z∈Z(yRz))⇒∃Z'⊆Z(yS_xZ'))\]
+    \[∀w,x,y,Y,Z((wRxRyS_wY,∀y∈Y∃z∈Z(yRz))⇒∃Z'⊆Z(yS_xZ')).\]
 
-   #+caption: Generalized frame condition for \prin{P₀}
+   #+caption: Generalized frame condition for \prin{P₀}.
    #+name: fig:P_0-gen
    #+attr_latex: :float t :width 0.31\textwidth :placement [H]
    [[file:img/P_0-gen.pdf]]
@@ -751,7 +754,7 @@
    $(P₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{P₀} principle. In symbols:
 
-   \[F ⊨ (P₀)_{gen} ⇔ F ⊩ P₀\] {{{endtheorem}}}
+   \[F ⊨ (P₀)_{gen} ⇔ F ⊩ P₀.\] {{{endtheorem}}}
 
    {{{beginproof}}}
    {{{agda}}}
@@ -766,8 +769,8 @@
      that for some $w,x,y,Y,Z$ we have $wRxRyS_wY$ and $(⋆)\ ∀y∈Y∃z∈Z(yRz)$.
      Consider a model based on $F$ such that:
      \begin{flalign*}
-    ⟦a⟧ &= \{y\} \\
-    ⟦b⟧ &= Z
+    ⟦a⟧ &= \{y\}; \\
+    ⟦b⟧ &= Z.
      \end{flalign*}
      See that $w⊩a▷♢b$ as the only world that forces $a$ is $y$ and we have
      $yS_wY$ and by $(⋆)$ it follows that $Y⊩♢b$. Consequently it holds that
@@ -776,7 +779,7 @@
      done.
    {{{endproof}}}
 
-** \prin{R} principle
+** The principle \prin{R}
    The \prin{R} principle reads as follows:
 
    \[A ▷ B → ¬ (A ▷ ¬C) ▷ (B ∧ □ C)\ .\]
@@ -790,16 +793,16 @@
     The $\kord{R}$ condition reads as follows:
     \[∀w,x,y,z\left(wRxRyS_wz⇒∀v(zRv⇒yS_xv)\right)\ .\]
 
-   #+caption: Ordinary frame condition for \prin{R}
+   #+caption: Ordinary frame condition for \prin{R}.
    #+name: fig:ord-R-condition
    #+attr_latex: :float t :width 0.15\textwidth :placement [H]
    [[file:img/R-ord.pdf]]
 
-WHERE DO YOU EXPLAIN HOW TO READ YOUR DIAGRAMS?
-TO NOT OVERLOAD WRITING, SHALL WE SPEAK OF FRAMES WHEN SPEAKING OF REGULAR/ORDINARY FRAMES AND ONLY INDICATE GENERALISED WHERE NEEDED?
-LUKA, WHAT DO YOU THINK?
+\joost{TO NOT OVERLOAD WRITING, SHALL WE SPEAK OF FRAMES WHEN SPEAKING OF
+REGULAR/ORDINARY FRAMES AND ONLY INDICATE GENERALISED WHERE NEEDED? LUKA, WHAT
+DO YOU THINK?}
 
-LM: I agree, that's what Croatian authors do
+\luka{ I agree, that's what Croatian authors do}
 
 
    {{{begintheorem}}}
@@ -811,24 +814,19 @@ LM: I agree, that's what Croatian authors do
    {{{endtheorem}}}
 
    # LM: it would be good if you used \sf fonts when writing principles (\textsf{...}, \mathsf{...}, {\sf ...})
-HERE AND IN THE THESIS IN GENERAL, I MISS A DISCUSSION ABOUT ASSURINGNESS. THIS
+\joost{HERE AND IN THE THESIS IN GENERAL, I MISS A DISCUSSION ABOUT ASSURINGNESS. THIS
 SHOULD BE ADDED AND USED. AT THIS PARTICULAR POINT IN YOUR PROOF YOU SHOULD
-MENTION THAT y IS A C-assuring SUCCESSOR OF x SO THAT YOU OBTAIN (*).
+MENTION THAT y IS A C-assuring SUCCESSOR OF x SO THAT YOU OBTAIN (*).}
 
-LM: Joost, would you use assuringness/criticality even in semantic context? I
+\luka{LM: Joost, would you use assuringness/criticality even in semantic context? I
 would add a note, something along the lines of "of course, we can associate a
 MCS with every world of a model, if we suppose e.g. that all propositional
 variables p_i for i > ... are evaluated as false and let mcs(w) = {A : w \vdash
-A}".
-
-YOUR CURRENT SECTION 1 SHOULD BE SPLIT INTO AN INTRODUCTION AND A SECTION(S) WHERE YOU DISCUSS THE NEEDED/DESIRED PRELIMINARIES. WHAT TO PUT INTO THE PRELIMINARIES. THE LOWER-BOUND IS WHAT IS NEEDED TO READ THE THESIS. TYPICALLY YOU INCLUDE MORE BASED ON YOUR PERSONAL CRITERION. PERSONALLY I WOULD INCLUDE THINGS ON THE BASIS OF TWO CRITERIA:
-(1) THE THINGS THAT YOU GET EXCITED ABOUT AND YOU WISH TO SHARE THAT BEAUTY WITH THE WORLD/READING COMMITTEE.
-(2) THINGS YOU WANT TO SHOW OFF WITH AND SHOW THE COMMITTEE THAT YOU LEARNED AND UNDERSTOOD COOL AND DIFFICULT THINGS.
+A}".}
 
 a world \(y\) such that \(xRy⊩A\) and \((⋆)\ ∀v(yS_xv⇒v⊩C)\).
 
 MAKE THIS FORMULA DISPLAYED. MOREOVER, IT IS BETTER TO GENERATE A LABEL. FOR EXAMPLE:
-
 
 
    {{{beginproof}}}
@@ -928,7 +926,7 @@ AFTER
      from $Y'⊩□c$ we get $∀y'∈Y'(∀z(y'Rz→z∈K))$, hence $Y'$ is the desired set.
    {{{endproof}}}
 
-** \prin{R₁} principle
+** The principle \prin{R₁}
   The $R_1$ principle reads as follows:
   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E))\]
 
@@ -1077,7 +1075,7 @@ AFTER
     {{{endproof}}}
 
 # \newpage
-** \prin{R_2} principle                                            :noexport:
+** The principle \prin{R_2} :noexport:
   The \prin{R_2} principle reads as follows:
   \[A₀ ▷ (B₀ ∧ (A₁ ▷ B₁)) → ¬(A₀ ▷ ¬C₀)∧ (E₁▷¬(A₁▷¬C₁))▷ B₀∧(A₁▷B₁)∧□C₀∧(E₁▷A₁)∧(E₁▷B₁∧□C₁)\]
 
@@ -1108,7 +1106,7 @@ AFTER
 
 # \newpage
 
-** \prin{R¹} principle
+** The principle \prin{R¹}
 
    The \prin{R¹} principle reads as follows:
    \[A ▷ B → (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)\]
@@ -1157,7 +1155,7 @@ AFTER
       such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
     {{{endproof}}}
 
-** $R²$ principle                                                  :noexport:
+** The principle $\prin{R²}$ :noexport:
 
    The $R²$ principle reads as follows:
    \[A ▷ B → (♢ [(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)] ∧ (D ▷ A)) ▷ (B ∧ □ C) \]
@@ -1192,7 +1190,7 @@ AFTER
     - \boxed{⇐}
     {{{endproof}}}
 
-** \prin{Rⁿ} principle
+** The principle \prin{Rⁿ}
    The \prin{R^n} principle is defined thus cite:two-new-series:
    \begin{flalign*}
    U_0 &≔ ♢¬(D_0▷¬C) \\
@@ -1277,7 +1275,7 @@ AFTER
       and $R[U]⊆ℂ$.
     {{{endproof}}}
 
-** \prin{Rₙ} principle
+** The principle \prin{Rₙ}
    The $R_n$ principle is defined thus cite:two-new-series:
    \begin{flalign*}
    wip
@@ -1455,7 +1453,8 @@ infix 60 ¬'_
    done the same with the argument =a= of =z≤n= but we keep it explicit for
    illustrating the difference.
 
-   We can also build proofs recursively. Let us prove that =_≤_= is reflexive:
+   We can also build proofs recursively. Let us prove that =_≤_= is reflexive by
+   induction:
    #+begin_src text
    ≤-refl : (a : Nat) → a ≤ a
    ≤-refl zero = z≤n zero
