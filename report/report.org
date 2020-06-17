@@ -100,37 +100,42 @@
 ** Overview of interpretability logics
 ** Original contributions
    This work includes the following original contributions:
-   1. Generalized frame condition for $R₁$ (in collaboration with Luka). [[theorem:R₁][Link]].
-   2. Generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]].
-   3. Analysis of transitivity. [[theorem:trans][Link]].
-   4. Every Agda proof.
+   1. Generalized frame condition for $R₁$ (in collaboration with Luka). [[theorem:R₁][Link]];
+   2. generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]];
+   3. analysis of transitivity. [[theorem:trans][Link]];
+   4. every Agda proof.
 
 ** Language
-   <<sec:language>> The language of interpretability logics is $⟨⊥,→,▷⟩$. We
-   define the usual operators and constants in the following way:
+   <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
+   Formulas are defined recursively thus:
+   \[Fm≔Var\ |\ ⊥\ |\ Fm→Fm \ |\  Fm▷Fm.\]
 
-   1. $¬ A ≔ A → ⊥$.
-   2. $⊤ ≔ ¬ ⊥$.
-   3. $A ∨ B ≔ ¬ A → B$.
-   4. $A ∧ B ≔ ¬ (A → ¬ B)$.
-   5. $A ↔ B ≔ (A → B) ∧ (B → A)$.
-   6. $□ A ≔ ¬ A ▷ ⊥$.
+   We define $Var≔ℕ$. However, we use non-capital letters $a,b,c,x,y,z…$ to
+   refer to variables.
+
+   We define the usual operators and constants in the following way:
+
+   1. $¬ A ≔ A → ⊥$;
+   2. $⊤ ≔ ¬ ⊥$;
+   3. $A ∨ B ≔ ¬ A → B$;
+   4. $A ∧ B ≔ ¬ (A → ¬ B)$;
+   5. $A ↔ B ≔ (A → B) ∧ (B → A)$;
+   6. $□ A ≔ ¬ A ▷ ⊥$;
    7. $♢ A ≔ ¬ □ ¬ A$.
 
 ** Notation
    Some notation that we use throughout the report:
-   1. $wRuRv$ iff $wRu$ and $uRv$;
-   2. $wRuS_xv$ iff $wRu$ and $uS_xv$;
-   3. $wRu⊩A$ iff $wRu$ and $u⊩A$;
-   4. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
-   5. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
-   6. $xS_wY⊩A$ iff $xS_wY$ and $Y⊩A$;
-   7. $⟦A⟧≔\{w:w⊩A\}$;
-   8. {{{agda}}} this is Agda's logo. Each proof that is formalized in Agda
-      has been tagged with it.
-   9. When we write a dot after the quantification of some variables, the scope of
+   1. If $A$ and $B$ are binary relations, then $wAuBv$ means $wAu$ and $uBv$.
+      For instance $wRuS_xv$ means $wRu$ and $uS_xv$. Another example: $wRu⊩A$
+      means $wRu$ and $u⊩A$;
+   2. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
+   3. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
+   4. $⟦A⟧≔\{w:w⊩A\}$;
+   5. {{{agda}}} this is Agda's logo. Each proof that is formalized in Agda
+      has been tagged with it;
+   6. When we write a dot after the quantification of some variables, the scope of
       the variables extends to the rightmost part of what follows. Hence the
-      formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$
+      formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$.
 
 
    In Section [[sec:trans]] and [[sec:frame-condition]] we present some diagrams. We use
@@ -143,16 +148,94 @@
    the underlying formula, however, they are not meant to be a replacement as
    they cannot unambiguously convey all the information in the formula.
 
+** Logic $IL$
+   The logic $IL$ encompasses all classical tautologies in the new language plus
+   the following axiom schemes:
+   - K: $□ (A → B) → □ A → □ B$;
+   - L: $□ (□ A → A) → □ A$;
+   - J1: $□ (A → B) → A ▷ B$;
+   - J2: $A ▷ B ∧ B ▷ C → A ▷ C$;
+   - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$;
+   - J4: $A ▷ B → ♢ A → ♢ B$;
+   - J5: $♢ A ▷ A$.
+   Additionally it has the following rules:
+   - Necessitation: if $⊢_{IL}A$ then $⊢_{IL}□A$.
+   - Modus ponens: if $Π⊢_{IL}A→B$ and $Π⊢_{IL}A$ then $Π⊢_{IL}B$.
+   - Identity: If $A∈Π$ then $Π⊢_{IL}A$.
+
+  {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
+  $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that
+  $w⊩Π$, then $w⊩A$.
+   {{{endtheorem}}}
+   {{{beginproof}}}
+   {{{agda}}}
+   {{{endproof}}}
+
+  {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
+  semantics*. That is, if $Π⊢_{IL}A$ and $M$ is a generalized model with a world
+  $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
+
+  {{{beginproof}}} {{{agda}}} We have verified this for all the presented
+  quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
+
+  {{{begintheorem}}} *Weakening*. If
+  $Π⊢_{IL}A$ then $B,Π⊢_{IL}A$. {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Deduction*.
+  $Π⊢_{IL}A→B$ iff $A,Π⊢_{IL}B$. {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Cut*. If
+  $Π⊢_{IL}B$ and $B,Π⊢_{IL}A$ then $Π⊢_{IL}A$. {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Structurality*. If $Π⊢_{IL}B$ and $σ$ is a
+  substitution then $σ[Π]⊢_{IL}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
+  {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} *Conjunction*. $Π⊢_{IL}A∧B$ iff $Π⊢_{IL}A$ and $Π⊢_{IL}B$.
+  {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
+
+  {{{begintheorem}}} The following holds:
+  1. $⊢_{IL} A → A$;
+  2. $⊢_{IL} A ▷ A$;
+  3. $⊢_{IL} (A → B) → (B → C) → A → C$;
+  4. $⊢_{IL} A → ¬ ¬ A$;
+  5. $⊢_{IL} (¬ ¬ A) → A$;
+  6. $⊢_{IL} (A → B) → ¬ B → ¬ A$;
+  7. $⊢_{IL} A → ⊤$;
+  8. $⊢_{IL} ⊥ → A$;
+  9. $⊢_{IL} ¬ A → A → B$;
+  10. $⊢_{IL} A ∧ B → A$;
+  11. $⊢_{IL} A ∧ B → B$;
+  12. $⊢_{IL} (A → B → C) → B → A → C$;
+  13. $⊢_{IL} A → B → A ∧ B$;
+  14. $⊢_{IL} A → A ∨ B$;
+  15. $⊢_{IL} B → A ∨ B$;
+  16. $⊢_{IL} A ▷ (A ∨ ♢ A)$;
+  17. $⊢_{IL} (A ∨ ♢ A) ▷ A$;
+  18. $⊢_{IL} A → B ⇒ ⊢_{IL} □ A → □ B$;
+  19. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} □ A ↔ □ B$;
+  20. $⊢_{IL} □ (A ∧ B) ↔ (□ A ∧ □ B)$;
+  21. $⊢_{IL} A → B ⇒ ⊢_{IL} ♢ A → ♢ B$;
+  22. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} ♢ A ↔ ♢ B$;
+  23. $⊢_{IL} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
+  24. $⊢_{IL} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
+  {{{endtheorem}}}
+  {{{beginproof}}} {{{agda}}}
+  {{{endproof}}}
+
 ** Semantics
    In this document we consider two variants of relational semantics for
-   interpretability logic similar to Kripke semantics for other modal logics.
+   interpretability logics similar to Kripke semantics for other modal logics.
 
 *** Ordinary Veltman semantics
-    {{{begindef}}} <<def:ordinary-frames>>
-    cite:modal-matters An ordinary Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a
-    structure constituted by a set of worlds $W$, a binary relation $R⊆W²$ and a
-    ternary relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$
-    instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following conditions:
+    {{{begindef}}} <<def:ordinary-frames>> cite:modal-matters An ordinary
+    Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a structure constituted by a non-empty set
+    of worlds $W$, a binary relation $R⊆W²$ and a ternary relation $S⊆W×W×W$. We
+    write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$ instead of $⟨w,u,v⟩∈S$. The
+    structure must satisfy the following conditions:
 
     1. $R$ is a transitive;
     2. $R$ is conversely well-founded. That is, there is no infinite ascending
@@ -168,13 +251,12 @@
     constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$. If
     $F=⟨W,R,S⟩$ we will write $M=⟨W,R,S,V⟩$ instead of $M=⟨⟨W,R,S⟩,V⟩$. {{{enddef}}}
 
-    {{{begindef}}}
-    <<def:ord-forcing>>
-    Given a model $M$, we define a forcing relation $\gls{forcing-ord}⊆W × Fm$. We write
-    $M,w⊩A$ instead of $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear by
-    the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
+    {{{begindef}}} <<def:ord-forcing>> Given a model $M$, we define a forcing
+    relation $\gls{forcing-ord}⊆W × Fm$. We write $M,w⊩A$ instead of
+    $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear from the
+    context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
     1. $w⊮⊥$;
-    2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+    2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
     4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
        that $v⊩B$ and $uS_wv$.
@@ -184,8 +266,10 @@
     denote that for every valuation we have $⟨F,V⟩⊩A$.
 
     {{{begincoro}}}
-    It immediately follows that:
-    1. If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$;
+    <<coro:ord-semantics>>
+    It can be shown that:
+    1. If $A,B∈Fm$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
+    1. If $A,B∈Fm$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
     2. if $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
     3. if $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
     4. if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
@@ -196,18 +280,21 @@
 
 *** Generalized Veltman semantics
     {{{begindef}}} cite:mikec2019interpretability A generalized Veltman \gls{gvf}
-    $F=⟨W,R,S⟩$ is a structure constituted by a set of worlds $W$, a binary
+    $F=⟨W,R,S⟩$ is a structure constituted by a non-empty set of worlds $W$, a binary
     relation $R⊆W²$ and a ternary relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$
     instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
     satisfy the following conditions :
 
-    1. $R$ is a transitive; <<R-trans>>
+    1. $R$ is transitive; <<R-trans>>
     2. $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
     3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
-    4. if $wRu$ then $uS_w\{u\}$;
+    4. /quasi-reflexivity/: if $wRu$ then $uS_w\{u\}$;
     5. if $wRu$ and $uRv$ then $uS_w\{v\}$;
-    6. if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
+    6. /quasi-transitivity/: if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then
+       $uS_w\left(⋃_{y∈Y}Z_y\right)$. This is a particular notion of
+       quasi-transitivity, throughout this document we explore a total of eight
+       notions, see Section [[sec:trans]].
     # 7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
     #    $uS_wZ$.
     {{{enddef}}}
@@ -218,10 +305,10 @@
     constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×Var$.
     {{{enddef}}}
     {{{begindef}}}
-    Given a model $M$, we define a forcing relation $\gls{forcing-gen}_M⊆W ×
-    Fm$. We use the same notation conventions as in the ordinary semantics.
+    Given a model $M$, we define a forcing relation $\gls{forcing-gen}⊆W ×
+    Fm$. We use the same notational conventions as in the ordinary semantics.
     1. $w⊮⊥$;
-    2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+    2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
     4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
        that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
@@ -231,11 +318,12 @@
     If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ to
     denote that for every valuation we have $⟨F,V⟩⊩A$.
 
-    {{{begincoro}}}
-    It immediately follows that:
-    1. If $A,B∈Fm$, then $w⊩A∧(∨)B$ iff $w⊩A$ and (or) $w⊩B$.
-    2. If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$.
-    3. If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
+    {{{begincoro}}} We can show the same results in Corollary [[coro:ord-semantics]]
+    for generalized semantics:
+    1. If $A,B∈Fm$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
+    1. If $A,B∈Fm$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
+    2. If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
+    3. If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
     4. If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
     {{{endcoro}}}
     {{{beginproof}}}
@@ -244,8 +332,8 @@
 
 ** Transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
-   for the quasi transitivity condition. Theorem [[theorem:trans]] presents the
-   direct implications between them. Theorems [[theorem:trans-sound]] and
+   for the quasi-transitivity condition. Theorem [[theorem:trans]] presents the
+   some direct implications between them. Theorems [[theorem:il-sound]] and
    [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
    for proving completeness of IL.
 
@@ -255,14 +343,14 @@
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
 | Nr. | Semantic requirement for transitivity                                                  | Mentioned in                              |
 |-----+----------------------------------------------------------------------------------------+-------------------------------------------|
-| (1) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | This paper                                |
-| (2) | $uS_xY → ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) → uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 \cite{Verbrugge}            |
-| (3) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
-| (4) | $uS_xY → ∃\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Joosten '98 \cite{joosten-master}         |
-| (5) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
-| (6) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY' → uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}            |
-| (7) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | This paper                                |
-| (8) | $uS_xY → ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' → uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle} |
+| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | This paper                                |
+| (2) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 \cite{Verbrugge}            |
+| (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
+| (4) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}         |
+| (5) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
+| (6) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}            |
+| (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | This paper                                |
+| (8) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle} |
 
    #+caption: Diagrams for conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
@@ -282,18 +370,6 @@
  # any ordinary Veltman model $M=⟨W,R,S,V⟩$ can be transformed into a generalized
  # Veltman model $M'=⟨W,R,S',V⟩$ where $S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}$ and see that
  # $M'$ has the same truth value as $M$. This has been verified in Agda.
-
- {{{begintheorem}}} <<theorem:trans-sound>> Let $(i)∈\{1…8\}$ and
- $F$ a generalized Veltman frame with quasi-transitivity condition $(i)$.
-
- IL soundness for (1)-(8)
- {{{endtheorem}}}
-
- {{{beginproof}}}
- {{{agda}}}
- We only need to check for J5.
- {{{endproof}}}
-
 
  {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
  $M≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)$ represent the monotonicity condition. The
@@ -334,41 +410,41 @@
  <<theorem:trans-extend>>
  Given an ordinary Veltman model $M=⟨W,R,S,V⟩$ we can find some
  generalized Veltman model $M'=⟨W,R,S',V⟩$ satisfying transitivity
- $(i)∈\{1…8\}$ such that for every world $w$ and formula $A$ \[M,w⊩A⇔M',w⊩A\]
+ $(i)∈\{1…8\}$ such that for every world $w$ and formula $A$: \[M,w⊩A⇔M',w⊩A.\]
  {{{endtheorem}}}
 
- {{{beginproof}}} We prove it for the transitivity condition 2 (the rest can be
- proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
- $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}\] It is easy to
- observe that $M'$ satisfies conditions $1…5$ from definition [[def:gen-frame]]. It
- is also easy to see that it satisfies transitivity 2. We show that they force
- the same formulas by induction on the formula. The only interesting case is
- $A▷B$.
-   - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$, it follows that
+ {{{beginproof}}} We prove it for the transitivity condition (2) (the rest can
+ be proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
+ $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus: \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}.\] It is
+ easy to observe that $M'$ satisfies conditions $1,…,5$ from definition
+ [[def:gen-frame]]. It is also easy to see that it satisfies transitivity 2. We show
+ that they force the same formulas by induction on the complexity of the
+ formula. The only interesting case is $A▷B$.
+   - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$. It follows that
      there exists some $y$ such that $xS_wy⊩B$. By definition of $M'$ we have
-     $xS_w\{y\}$ and also $\{y\}⊩B$, therefore $M',w⊩A▷B$.
+     $xS'_w\{y\}$ and also $\{y\}⊩B$, therefore $M',w⊩A▷B$.
    - Assume $M,w⊮A▷B$, then there exists some $x$ such that $wRx⊩A$ and
-     $∀y(xS_wy⇒y⊮B)$. It is obvious that for $M'$ we have $∀y(xS_w\{y\}⇒y⊮B)$
-     and also $∀Y(xS_wY⇒Y⊮B)$, which is the required property.
+     $∀y(xS_wy⇒y⊮B)$. It is obvious that for $M'$ we have $∀y(xS'_w\{y\}⇒y⊮B)$
+     and also $∀Y(xS'_wY⇒Y⊮B)$, which is the required property.
  {{{endproof}}}
 
 ** Monotonicity
    Consider the following monotonicity condition:
 
   #+begin_center
-    if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
+    if $uS_wV⊆Z⊆\{v:wRv\}$ then $uS_wZ$.
   #+end_center
 
   {{{begintheorem}}} <<theorem:mono>> Let $F=⟨W,R,S⟩$ be a generalized Veltman
-  frame with quasi-transitivity $(i)∈{1…8}$ (see [[sec:trans]]).
+  frame with quasi-transitivity $(i)∈\{1,…,8\}$.
   Let $F'=⟨W,R,S'⟩$ where $S'$ is the monotone closure of $S$:
 
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}.\]
 
   Then $F'$ is a generalized Veltman frame satisfying quasi-transitivity
-  Condition (2). Furthermore, for any valuation $V$ and formula $A$ with
-  $M≔⟨F,V⟩$ and $M'≔⟨F',V⟩$ we have that for every world $w$,
-  \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
+  Condition (2). Furthermore, let $V$ be an arbitrary valuation and $A$ an
+  arbitrary formula. Let $M≔⟨F,V⟩$ and $M'≔⟨F',V⟩$. We have that for every world
+  $w$: \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
 
 
   {{{beginproof}}} {{{agda}}}
@@ -379,12 +455,6 @@
     $Y'⊆\{u:wRu\}$;
   - for conditions 4 and 5 observe that $S⊆S'$. Then, since these conditions hold for
     $F$ they also hold for $F'$;
-  # - for quasi-transitivity (2) assume that $uS'_xY'$ and that for every $y'∈Y'$
-  #   we have $y'S'_xY'_{y'}$. We need to show that $uS'_x⋃_{y'∈Y'}Y'_{y'}$. By
-  #   assumption it follows that for some $Y⊆Y'$ we have $uS_xY$ and for every
-  #   $y'∈Y'$ we there exists some $Y_{y'}⊆Y'_{y'}$ such that $y'S_xY_{y'}$. Since
-  #   $F$ satisfies (2) it follows that $uS_x⋃_{y'∈Y'}Y_{y'}$ and since $S⊆S'$ we get
-  #   $uS'_x⋃_{y'∈Y'}Y_{y'}$.
   - for quasi-transitivity Condition (2) assume that $uS'_xY'$ and that for
     every $y'∈Y'$ we have $y'S'_xΥ_{y'}$. We need to show that
     $uS'_x⋃_{y'∈Y'}Υ_{y'}$. By definition of $S'$ it follows that there exists
@@ -404,11 +474,11 @@
     that $xS'_wY$, therefore $M',w⊩A▷B$.
   - Assume that $M,w⊮A▷B$. It follows that there is some $x$ such that $wRx$,
     $M,x⊩A$ and $(⋆)\ ∀Y(xS_wY⇒M,Y⊮B)$. We want to prove that
-    $∀Y'(xS'_wY'⇒M',Y'⊮B)$. Assume that for some $Y'$ we have $xS'_wY'$, by
+    $∀Y'(xS'_wY'⇒M',Y'⊮B)$. Assume that for some $Y'$ we have $xS'_wY'$. By
     definition of $S'$ it follows there exists some $Y$ such that $Y⊆Y'$ and
     $xS_wY$. Hence by $(⋆)$ we have that $M,Y⊮B$ and thus there exists $y∈Y$
     such that $M,y⊮B$. By IH we get that $M',y⊮B$ and since $y∈Y⊆Y'$ we have
-    $Y'⊮B$, so $M',w⊩A▷B$.
+    $Y'⊮B$, so $M',w⊮A▷B$.
   {{{endproof}}}
 
   As we see in Theorem [[theorem:mono]] taking the monotone closure of each $S_w$ does not
@@ -418,8 +488,7 @@
   # The previous lemma allows us to safely assume that monotonicity is a condition
   # for a Veltman frame with quasi-transitivity (2).
 
-  {{{beginremark}}} As Luka (or Mikec(?)) pointed out during online
-  correspondence, taking the monotone closure of each $S_w$ is essentially
+  {{{beginremark}}} Taking the monotone closure of each $S_w$ is essentially
   different than assuming that each $S_w$ is monotone by definition of the
   frame, as then the forcing relation may change. In the following example we
   present a generalized Veltman model with Condition (8) that showcases such
@@ -430,93 +499,15 @@
    #+attr_latex: :float t :width 0.28\textwidth :placement [H]
    [[file:img/example.pdf]]
 
-  Let $M$ be a model based on the frame displayed in figure [[fig:example-trans]]
-  such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that $w⊩¬(p ▷ q)$ as
-  $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ with $v_1⊮q$. If we
-  take the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
-  quasi-transitivity (8) we get $v_0S_w \{v_3\}$ and consequently
-  $w⊩¬(p ▷ q)$ is no longer true.
+  Let $M$ be a model based on the frame displayed[fn::In the figure we do not
+  show the $S_w$ relations required by quasi-reflexivity for clarity.] in figure
+  [[fig:example-trans]] such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that
+  $w⊩¬(p ▷ q)$ as $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ and
+  $v_0S_w\{v_0\}$ with $v_0⊮q$ and $v_1⊮q$. If we take the monotonic closure of
+  $S$ we have $v_0S_w \{v_1, v_2\}$ and by quasi-transitivity (8) we get $v_0S_w
+  \{v_3\}$ and consequently $w⊩¬(p ▷ q)$ is no longer true.
 
   {{{endremark}}}
-
-** Logic $IL$
-   The logic $IL$ encompasses all classical tautologies in the new language plus
-   the following axiom schemes:
-   - K: $□ (A → B) → □ A → □ B$
-   - L: $□ (□ A → A) → □ A$
-   - J1: $□ (A → B) → A ▷ B$
-   - J2: $A ▷ B ∧ B ▷ C → A ▷ C$
-   - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$
-   - J4: $A ▷ B → ♢ A → ♢ B$
-   - J5: $♢ A ▷ A$
-   Additionally it has the following rules:
-   - Necessitation: if $⊢_{IL}A$ then $⊢_{IL}□A$.
-   - Modus ponens: if $Π⊢_{IL}A→B$ and $Π⊢_{IL}A$ then $Π⊢_{IL}B$.
-   - Identity: If $A∈Π$ then $Π⊢_{IL}A$.
-
-  {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
-  $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that
-  $w⊩Π$, then $w⊩A$.
-   {{{endtheorem}}}
-   {{{beginproof}}}
-   {{{agda}}}
-   {{{endproof}}}
-
-  {{{begintheorem}}} *Local soundness for generalized semantics*. That is, if
-  $Π⊢_{IL}A$ and $M$ is a generalized model with a world $w$ such that $w⊩Π$,
-  then $w⊩A$. {{{endtheorem}}}
-
-  {{{beginproof}}} {{{agda}}} We have verified this for all the presented
-  quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
-
-  {{{begintheorem}}} *Weakening*. If
-  $Π⊢_{IL}A$ then $B,Π⊢_{IL}A$. {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Deduction*.
-  $Π⊢_{IL}A→B$ iff $A,Π⊢_{IL}B$. {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Cut*. If
-  $Π⊢_{IL}B$ and $B,Π⊢_{IL}A$ then $Π⊢_{IL}A$. {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Structurality*. If $Π⊢_{IL}B$ and $σ$ is a
-  substitution then $σ[Π]⊢_{IL}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
-  {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} *Conjunction*. $Π⊢_{IL}A∧B$ iff $Π⊢_{IL}A$ and $Π⊢_{IL}B$.
-  {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
-
-  {{{begintheorem}}} The following holds:
-  1. $⊢_{IL} A → A$
-  2. $⊢_{IL} A ▷ A$
-  3. $⊢_{IL} (A → B) → (B → C) → A → C$
-  4. $⊢_{IL} A → ¬ ¬ A$
-  5. $⊢_{IL} (¬ ¬ A) → A$
-  6. $⊢_{IL} (A → B) → ¬ B → ¬ A$
-  7. $⊢_{IL} A → ⊤$
-  8. $⊢_{IL} ⊥ → A$
-  9. $⊢_{IL} ¬ A → A → B$
-  10. $⊢_{IL} A ∧ B → A$
-  11. $⊢_{IL} A ∧ B → B$
-  12. $⊢_{IL} (A → B → C) → B → A → C$
-  13. $⊢_{IL} A → B → A ∧ B$
-  14. $⊢_{IL} A → A ∨ B$
-  15. $⊢_{IL} B → A ∨ B$
-  16. $⊢_{IL} A ▷ (A ∨ ♢ A)$
-  17. $⊢_{IL} (A ∨ ♢ A) ▷ A$
-  18. $⊢_{IL} A → B ⇒ ⊢_{IL} □ A → □ B$
-  19. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} □ A ↔ □ B$
-  20. $⊢_{IL} □ (A ∧ B) ↔ (□ A ∧ □ B)$
-  21. $⊢_{IL} A → B ⇒ ⊢_{IL} ♢ A → ♢ B$
-  22. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} ♢ A ↔ ♢ B$
-  23. $⊢_{IL} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$
-  24. $⊢_{IL} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$
-  {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}}
-  {{{endproof}}}
-
 
 * Frame conditions
   <<sec:frame-condition>>
@@ -884,7 +875,7 @@ AFTER
    {{{begindef}}} If $xRy$ we say that a set of worlds $K$ is a \gls{choice-set} for
    $⟨x,y⟩$ iff for any $V$ such that $yS_xV$ we have $V∩K≠∅$. We denote the
    family of choice sets for $⟨x,y⟩$ by $𝒞(x,y)$. Note that this definition
-   depends on the frame, but it should always be clear by context.
+   depends on the frame, but it should always be clear from context.
    {{{enddef}}}
 
     The $R_{gen}$ condition reads as follows:
