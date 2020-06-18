@@ -1326,7 +1326,23 @@ LABEL. FOR EXAMPLE:)}}}
    {{{endremark}}}
 * The logic of Agda
   Everything about agda in general.
-  Look here cite:norell:thesis.
+  Adapted from cite:norell:thesis (Section 1.3).
+
+#+name: fig:agda-syntax
+#+caption: The syntax of $\sf{UTT}_Σ$.
+#+attr_latex: :align llll :float t :center t :placement [H]
+| $s,t,A,B$ | $≔$   | $x$                   | variable                     |
+|           | \vert | $(x:A)→B$             | dependent function type      |
+|           | \vert | $λx.t$                | lambda abstraction           |
+|           | \vert | $s\ t$                | function application         |
+|           | \vert | $(x:A)×B$             | dependent pair  type         |
+|           | \vert | $⟨s,t⟩$               | dependent pairs              |
+|           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
+|           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
+|           | \vert | $𝟏$                   | the unit type                |
+|           | \vert | $⟨⟩$                  | the element of the unit type |
+| $Γ,Δ$     | $≔$   | $ε$                   |                              |
+|           | \vert | $(x:A)Γ$              | telescopes                   |
 
 ** Universe hierarchy
    <<sec:universe-hierarchy>>
