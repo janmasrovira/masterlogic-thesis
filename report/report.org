@@ -1325,32 +1325,108 @@ LABEL. FOR EXAMPLE:)}}}
     where $a,b$ are different variables.
    {{{endremark}}}
 * The logic of Agda
-  Everything about agda in general.
-  Adapted from cite:norell:thesis (Section 1.3).
+  # Adapted from cite:norell:thesis (Section 1.3).
 
-#+name: fig:agda-syntax
-#+caption: The syntax of $\sf{UTT}_Σ$.
-#+attr_latex: :align llll :float t :center t :placement [H]
-| $s,t,A,B$ | $≔$   | $x$                   | variable                     |
-|           | \vert | $(x:A)→B$             | dependent function type      |
-|           | \vert | $λx.t$                | lambda abstraction           |
-|           | \vert | $s\ t$                | function application         |
-|           | \vert | $(x:A)×B$             | dependent pair  type         |
-|           | \vert | $⟨s,t⟩$               | dependent pairs              |
-|           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
-|           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
-|           | \vert | $𝟏$                   | the unit type                |
-|           | \vert | $⟨⟩$                  | the element of the unit type |
-| $Γ,Δ$     | $≔$   | $ε$                   |                              |
-|           | \vert | $(x:A)Γ$              | telescopes                   |
+  In this section we give an informal overview of the basic constructions on
+  Agda that will hopefully help the reader get an intuition of how dependent
+  types can be used to proof mathematical properties. We will also highlight
+  some intricacies of the language that are relevant to our project. This is not
+  meant to be an exhaustive analysis on the inner workings of Agda, as this
+  falls out of the scope of this project. The original author of Agda, Ulf
+  Norell, has suggested cite:cockx2018elaborating as a good reference for that
+  matter.
+
+  
+
+#   What sets dependent type theory apart from other type theories is that types
+#   can depend on terms. In a non-dependent theory types and terms live in
+#   separate worlds and they only meet to decide what terms have which types. In a
+#   dependent theory, on the other hand, types can talk about terms and so it is
+#   possible to express things like the precise characterisation of the sorting
+#   function mentioned above.
+
+#   In this section we present a dependent type theory
+#   which can serve as basis for the extensions discussed in later chapters. The
+#   particular choice of type theory is not crucial and the theory we choose is
+#   roughly Luo’s UTT [Luo94] extended with Σ-types and η-laws. In the following
+#   we will refer to this theory as UTT Σ . The syntax of UTT Σ is presented in
+#   Figure 1.1. A telescope [dB91b] ∆ = (x 1 : A 1 ) . . . (x n : A n ) is a
+#   sequence of types where later types may depend on elements of previous types.
+#   W
+
+# #+name: fig:agda-syntax
+# #+caption: The syntax of $\sf{UTT}_Σ$.
+# #+attr_latex: :align llll :float t :center t :placement [H]
+# | $s,t,A,B$ | $≔$   | $x$                   | variable                     |
+# |           | \vert | $(x:A)→B$             | dependent function type      |
+# |           | \vert | $λx.t$                | lambda abstraction           |
+# |           | \vert | $s\ t$                | function application         |
+# |           | \vert | $(x:A)×B$             | dependent pair  type         |
+# |           | \vert | $⟨s,t⟩$               | dependent pairs              |
+# |           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
+# |           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
+# |           | \vert | $𝟏$                   | the unit type                |
+# |           | \vert | $⟨⟩$                  | the element of the unit type |
+# | $Γ,Δ$     | $≔$   | $ε$                   |                              |
+# |           | \vert | $(x:A)Γ$              | telescopes                   |
 
 ** Universe hierarchy
-   <<sec:universe-hierarchy>>
-   In Agda we have $Setᵢ : Set_{i+1}$ for $i∈ℕ$.
+   <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
+   For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
+   we have mentioned before, in a dependent type theory we are allowed to mix
+   types and terms, hence =Nat= is a term in itself and must be assigned a type.
+   Agda calls the type of (small) types =Set=, hence we have that =Nat= has type
+   =Set=. But then =Set= is also a term an must be assigned a type as well. The
+   first version of Martin-Löf’s first version of type theory
+   (cite:martin-lof-1971a) had an axiom stating that there is a type of all
+   types and thus we would have that the type of =Set= is =Set=. However Girard
+   showed (cite:sep-type-theory-intuitionistic) that having =Set : Set= allowed
+   the Burali-Forti paradox[fn::The assumption that there is a set of all
+   ordinal numbers leads to a contradiction.] to be encoded in the theory. In
+   order to avoid such inconsistency Agda builds a hierarchy of universes where
+   small types such as =Nat= and =Bool= are assigned the type =Set 0= and then
+   for every $i∈ω$ we have that =Set i : Set i+1=. Notice however, that =Set i :
+   Set i+1= is true while =Set i : Set i+n= it is not for $n>1$. In Agda we
+   write =Set= instead of =Set 0=. When the level is a constant natural number
+   we can also write =Set₁=, =Set₂=, etc. instead of =Set 1=, =Set 2=, etc.
+
+   It is possible to combine types of different universe levels. The bigger type
+   is the one that counts. For instance
+   #+begin_src text
+   to : Set₃ → Set₁ → Set₃
+   to A B = A → B
+   #+end_src
+   The typing rule is analogous for product and sum types.
+
+   Agda provides a primitive[fn::/primitive/ means that it is built in the
+   language and it cannot be user defined.] type for universe levels called
+   =Level=. Essentially it is the same as =Nat=, but it only works as a universe
+   index. Having the =Level= type allows us to write universe polymorphic functions.
+   See the same function as before, but now with universe polymorphism.
+   #+begin_src text
+   to' : {a b : Level} → Set a → Set b → Set (a ⊔ b)
+   to' A B = A → B
+   #+end_src
+   The =_⊔_= operator takes the maximum of its two operands.
+
+   In the most recent version of Agda (2.6.1) there is an option to enable
+   /universe cumulativity/ (cite:agda-doc). This extension adds the typing rule
+   $Setᵢ:Setⱼ$ for $i<j$. Hence it allows us to write the following:
+   #+begin_src text
+   a : Set              -- always allowed
+   a = Nat
+   b : Set₁             -- only with cumulativity
+   b = Nat
+   c : {i : Level} → Set i    -- only with cumulativity
+   c = Nat
+   #+end_src
+
+   In our project we have not used this extension.
 ** Positivity
    <<sec:positivity>>
 
    See cite:agda-doc.
+
 * Agda in the project
   The goal of this section is to guide the reader through a brief practical
   introduction to the language while explaining some key parts of code that we
