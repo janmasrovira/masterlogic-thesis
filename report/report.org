@@ -98,6 +98,9 @@
 #+latex_header: \setmathfont{XITS Math}
 #+latex_header: \newfontfamily{\myfont}{XITS Math}
 #+latex_header: \newunicodechar{𝕎}{\makebox[1em]{\myfont𝕎}}
+#+latex_header: \newunicodechar{ₖ}{\makebox[0.7em]{\textsubscript{k}}}
+#+latex_header: \newunicodechar{ₙ}{\makebox[0.7em]{\textsubscript{n}}}
+#+latex_header: \newunicodechar{ₗ}{\makebox[0.7em]{\textsubscript{l}}}
 #+latex_header: \newunicodechar{｛}{\ensuremath{\{}}
 #+latex_header: \newunicodechar{｝}{\ensuremath{\}}}
 #+latex_header: \setmathfont{Latin Modern Math}
@@ -1336,39 +1339,156 @@ LABEL. FOR EXAMPLE:)}}}
   Norell, has suggested cite:cockx2018elaborating as a good reference for that
   matter.
 
-  
+** Introduction through the BHK interpretation
+  As Agda is based on an intuitionistic type theory we believe that a good way
+  to start the introduction is through the BHK interpretation
+  (cite:sep-intuitionistic-logic-development) of intuitionistic logic. This
+  first part will not use dependent types yet.
 
-#   What sets dependent type theory apart from other type theories is that types
-#   can depend on terms. In a non-dependent theory types and terms live in
-#   separate worlds and they only meet to decide what terms have which types. In a
-#   dependent theory, on the other hand, types can talk about terms and so it is
-#   possible to express things like the precise characterisation of the sorting
-#   function mentioned above.
+  The BHK interpretation states that:
+  1. A proof of $A→B$ is an algorithm that transforms a proof of $A$ into a proof
+     of $B$;
+  2. A proof of $A∧B$ is a proof of $A$ and a proof of $B$;
+  3. A proof of $A∨B$ is a proof of $A$ or a proof of $B$;
+  4. Nothing is a proof of $⊥$.
 
-#   In this section we present a dependent type theory
-#   which can serve as basis for the extensions discussed in later chapters. The
-#   particular choice of type theory is not crucial and the theory we choose is
-#   roughly Luo’s UTT [Luo94] extended with Σ-types and η-laws. In the following
-#   we will refer to this theory as UTT Σ . The syntax of UTT Σ is presented in
-#   Figure 1.1. A telescope [dB91b] ∆ = (x 1 : A 1 ) . . . (x n : A n ) is a
-#   sequence of types where later types may depend on elements of previous types.
-#   W
+  According to the interpretation a proof of $A→A$ is just the identity
+  function. We can express this in Agda by writing the identity lambda term:
+  #+begin_src text
+  (λ a → a)
+  #+end_src
+  The previous term is valid. However, in Agda we must give a name to all the
+  terms that we define so we can refer to them in other parts of our code.
+  We will name our term =id=:
+  #+begin_src text
+  id = λ a → a
+  #+end_src
+  When the term that we are defining is a function, we are allowed to move the
+  arguments to the left of the === sign. Furthermore, we should write the type of
+  the function using the =:= symbol as displayed below:
+  #+begin_src text
+  id : A → A
+  id a = a
+  #+end_src
+  The previous function is only valid if the type =A= has been defined. Since
+  our intention is that it should work for any type, we should rewrite it to be
+  polymorphic. We can do that by declaring a type variable =A=.
+  #+begin_src text
+  id : (A : Set) → A → A
+  id A a = a
+  #+end_src
+  Since the value of =A= will always be the type of the second argument, we can
+  infer its value and thus it is recommended to use an implicit argument (see
+  Section [[sec:agda-implicit-args]]).
+  #+begin_src text
+  id : {A : Set} → A → A
+  id a = a
+  #+end_src
+  With the technicalities out of the way, we can finally say that we have completed
+  our first Agda proof according to the BHK interpretation.
 
-# #+name: fig:agda-syntax
-# #+caption: The syntax of $\sf{UTT}_Σ$.
-# #+attr_latex: :align llll :float t :center t :placement [H]
-# | $s,t,A,B$ | $≔$   | $x$                   | variable                     |
-# |           | \vert | $(x:A)→B$             | dependent function type      |
-# |           | \vert | $λx.t$                | lambda abstraction           |
-# |           | \vert | $s\ t$                | function application         |
-# |           | \vert | $(x:A)×B$             | dependent pair  type         |
-# |           | \vert | $⟨s,t⟩$               | dependent pairs              |
-# |           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
-# |           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
-# |           | \vert | $𝟏$                   | the unit type                |
-# |           | \vert | $⟨⟩$                  | the element of the unit type |
-# | $Γ,Δ$     | $≔$   | $ε$                   |                              |
-# |           | \vert | $(x:A)Γ$              | telescopes                   |
+  Let us now put our attention on proofs that revolve around conjunction. For
+  instance, let us prove that $A∧ B → B ∧ A$. In order to represent $A∧B$ in
+  Agda we need to define a so called /product type/. A product type is in rough
+  terms a tuple. Consider the following pair definition:
+  #+begin_src text
+data _×_ (A B : Set) : Set where
+  _,_ : A → B → A × B
+  #+end_src
+  This definition defines a new type called =_×_= with parameters =(A B :
+  Set)=. It has a single constructor named =_,_=. Underscores are used to denote
+  infix operators.
+
+  Let us give a proof of the theorem $A∧ B → B ∧ A$:
+  #+begin_src text
+  swap : {A B : Set} → A × B → B × A
+  swap (a , b) = b , a
+  #+end_src
+  Note that we used /pattern matching/ to access the components of the pair.
+  Refer to Section [[sec:agda-datatype]] for more details on data type definition
+  and pattern matching.
+
+  Let us show some more examples[fn::The =_= characters means that these
+  definitions are not named and thus cannot be referred to from other parts of
+  the code. This is not relevant here as they are just examples.]:
+  #+begin_src text
+  _ : {A B : Set} → A → B → A × B
+  _ a b = a , b
+
+  _ : {A B : Set} → A × B → A
+  _ (a , b) = a
+
+  _ : {A B C : Set} → (A → B → C) → A × B → C
+  _ f (a , b) = f a b
+  #+end_src
+  Now that we are familiarized with product types we can proceed by exploring
+  sum types.
+
+*** Sum types
+    We say that a type is a \gls*{sum type} if it is the disjunction of two (or
+    more) types.
+
+    In Agda we can define a two options sum type in the following way:
+    #+begin_src text
+    data _⊎_ (A B : Set) : Set where
+      inj₁ : A → A ⊎ B
+      inj₂ : B → A ⊎ B
+    #+end_src
+
+    For instance, let us prove that every natural is either even or odd:
+    #+begin_src text
+    even odd : Pred Nat
+    even zero = ⊤
+    even (suc n) =
+    #+end_src
+** Agda syntax
+    2. implicit arguments
+    3. named arguments
+    4. inference
+    5. pattern matching
+
+*** Implicit arguments
+   <<sec:agda-implicit-args>>
+*** data type definitions and constructors
+    <<sec:agda-datatype>>
+        #+begin_src text
+  data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
+    c₁ : A₁
+    ...
+    cₙ : Aₙ
+        #+end_src
+** old
+  #   What sets dependent type theory apart from other type theories is that types
+  #   can depend on terms. In a non-dependent theory types and terms live in
+  #   separate worlds and they only meet to decide what terms have which types. In a
+  #   dependent theory, on the other hand, types can talk about terms and so it is
+  #   possible to express things like the precise characterisation of the sorting
+  #   function mentioned above.
+
+  #   In this section we present a dependent type theory
+  #   which can serve as basis for the extensions discussed in later chapters. The
+  #   particular choice of type theory is not crucial and the theory we choose is
+  #   roughly Luo’s UTT [Luo94] extended with Σ-types and η-laws. In the following
+  #   we will refer to this theory as UTT Σ . The syntax of UTT Σ is presented in
+  #   Figure 1.1. A telescope [dB91b] ∆ = (x 1 : A 1 ) . . . (x n : A n ) is a
+  #   sequence of types where later types may depend on elements of previous types.
+  #   W
+
+  # #+name: fig:agda-syntax
+  # #+caption: The syntax of $\sf{UTT}_Σ$.
+  # #+attr_latex: :align llll :float t :center t :placement [H]
+  # | $s,t,A,B$ | $≔$   | $x$                   | variable                     |
+  # |           | \vert | $(x:A)→B$             | dependent function type      |
+  # |           | \vert | $λx.t$                | lambda abstraction           |
+  # |           | \vert | $s\ t$                | function application         |
+  # |           | \vert | $(x:A)×B$             | dependent pair  type         |
+  # |           | \vert | $⟨s,t⟩$               | dependent pairs              |
+  # |           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
+  # |           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
+  # |           | \vert | $𝟏$                   | the unit type                |
+  # |           | \vert | $⟨⟩$                  | the element of the unit type |
+  # | $Γ,Δ$     | $≔$   | $ε$                   |                              |
+  # |           | \vert | $(x:A)Γ$              | telescopes                   |
 
 ** Universe hierarchy
    <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
@@ -1407,7 +1527,16 @@ LABEL. FOR EXAMPLE:)}}}
    to' : {a b : Level} → Set a → Set b → Set (a ⊔ b)
    to' A B = A → B
    #+end_src
-   The =_⊔_= operator takes the maximum of its two operands.
+   The =_⊔_= operator is a primitive operator of type =Level → Level → Level=
+   that returns the maximum of its two operands.
+
+   Most of the functions that we have defined before should be rewritten to be
+   universe polymorphic if possible. For instance, we can now rewrite the
+   identity function thus:
+   #+begin_src text
+   id : {a : Level} {A : Set a} → A → A
+   id a = a
+   #+end_src
 
    In the most recent version of Agda (2.6.1) there is an option to enable
    /universe cumulativity/ (cite:agda-doc). This extension adds the typing rule
@@ -1621,23 +1750,6 @@ infix 60 ¬'_
    Since the type =⊥= has no constructors when we pattern match against the
    argument we get an empty case (denoted by =()=) and thus there is no need to
    provide a term of type =A=.
-** Sum types
-   We say that a type is a \gls*{sum type} if it is the disjunction of two (or
-   more) types.
-
-   In Agda we can define a two options sum type in the following way:
-   #+begin_src text
-   data _⊎_ (A B : Set) : Set where
-     inj₁ : A → A ⊎ B
-     inj₂ : B → A ⊎ B
-   #+end_src
-
-   For instance, let us prove that every natural is either even or odd:
-   #+begin_src text
-   even odd : Pred Nat
-   even zero = ⊤
-   even (suc n) =
-   #+end_src
 ** Dependent pairs
     Consider the following non-dependent pair definition (again, we present a non universe
     polymorphic version for simplicity):
@@ -1659,7 +1771,7 @@ data _×_ (A B : Set) : Set where
     We now introduce the notion of \glspl*{dependent-pair}, also called
     \(Σ\)-pairs. Consider the following definition.
     #+begin_src text
-data Σ (A : Set) (B : A → Set) : Set where
+data Σ {a b : Level} (A : Seta a) (B : A → Set b) : Set (a ⊔ b) where
   _,_ : (a : A) → (b : B a) → Σ A B
     #+end_src
     The only, although essential, difference, is that the type of the second
