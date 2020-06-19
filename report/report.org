@@ -98,9 +98,9 @@
 #+latex_header: \setmathfont{XITS Math}
 #+latex_header: \newfontfamily{\myfont}{XITS Math}
 #+latex_header: \newunicodechar{𝕎}{\makebox[1em]{\myfont𝕎}}
-#+latex_header: \newunicodechar{ₖ}{\makebox[0.7em]{\textsubscript{k}}}
-#+latex_header: \newunicodechar{ₙ}{\makebox[0.7em]{\textsubscript{n}}}
-#+latex_header: \newunicodechar{ₗ}{\makebox[0.7em]{\textsubscript{l}}}
+#+latex_header: \newunicodechar{ₖ}{\makebox[0.5em]{\textsubscript{k}}}
+#+latex_header: \newunicodechar{ₙ}{\makebox[0.5em]{\textsubscript{n}}}
+#+latex_header: \newunicodechar{ₗ}{\makebox[0.5em]{\textsubscript{l}}}
 #+latex_header: \newunicodechar{｛}{\ensuremath{\{}}
 #+latex_header: \newunicodechar{｝}{\ensuremath{\}}}
 #+latex_header: \setmathfont{Latin Modern Math}
@@ -288,6 +288,12 @@
     {{{beginproof}}}
     {{{agda}}}
     {{{endproof}}}
+
+    {{{begintheorem}}} *Decidability* If $W$ is finite and $R,S,V$ are decidable relations,
+    then the forcing relation associated to the model $M≔⟨W,R,S,V⟩$ is decidable.
+    {{{endtheorem}}} {{{beginproof}}} {{{agda}}} We have implemented a verified
+    algorithm that given the mentioned conditions, a world $w$ and a formula
+    $A$, constructs either a proof of $M,w⊩A$ or a proof of $M,w⊮A$. {{{endproof}}}
 
 *** Generalized Veltman semantics
     {{{begindef}}} cite:mikec2019interpretability A generalized Veltman \gls{gvf}
@@ -1339,11 +1345,12 @@ LABEL. FOR EXAMPLE:)}}}
   Norell, has suggested cite:cockx2018elaborating as a good reference for that
   matter.
 
-** Introduction through the BHK interpretation
+** BHK interpretation of propositional logic
   As Agda is based on an intuitionistic type theory we believe that a good way
   to start the introduction is through the BHK interpretation
-  (cite:sep-intuitionistic-logic-development) of intuitionistic logic. This
-  first part will not use dependent types yet.
+  (cite:sep-intuitionistic-logic-development) of intuitionistic logic. We start
+  with propositional logic and later on (Section [[sec:bhk-fol]]) we introduce first
+  order logic.
 
   The BHK interpretation states that:
   1. A proof of $A→B$ is an algorithm that transforms a proof of $A$ into a proof
@@ -1351,6 +1358,7 @@ LABEL. FOR EXAMPLE:)}}}
   2. A proof of $A∧B$ is a proof of $A$ and a proof of $B$;
   3. A proof of $A∨B$ is a proof of $A$ or a proof of $B$;
   4. Nothing is a proof of $⊥$.
+  5. $⊤$ is always true.
 
   According to the interpretation a proof of $A→A$ is just the identity
   function. We can express this in Agda by writing the identity lambda term:
@@ -1365,7 +1373,7 @@ LABEL. FOR EXAMPLE:)}}}
   #+end_src
   When the term that we are defining is a function, we are allowed to move the
   arguments to the left of the === sign. Furthermore, we should write the type of
-  the function using the =:= symbol as displayed below:
+  the function using the =:= symbol. We use the symbol =→= for functions.
   #+begin_src text
   id : A → A
   id a = a
@@ -1384,8 +1392,14 @@ LABEL. FOR EXAMPLE:)}}}
   id : {A : Set} → A → A
   id a = a
   #+end_src
-  With the technicalities out of the way, we can finally say that we have completed
-  our first Agda proof according to the BHK interpretation.
+  With the technicalities out of the way, we can finally say that we have
+  completed our first Agda proof according to the BHK interpretation. Let us see
+  another example involving functions[fn::The =→= function symbol has right
+  associativity.].
+  #+begin_src text
+  commute : {A B C : Set} → (A → B → C) → B → A → C
+  commute f b a = f a b
+  #+end_src
 
   Let us now put our attention on proofs that revolve around conjunction. For
   instance, let us prove that $A∧ B → B ∧ A$. In order to represent $A∧B$ in
@@ -1395,22 +1409,32 @@ LABEL. FOR EXAMPLE:)}}}
 data _×_ (A B : Set) : Set where
   _,_ : A → B → A × B
   #+end_src
-  This definition defines a new type called =_×_= with parameters =(A B :
-  Set)=. It has a single constructor named =_,_=. Underscores are used to denote
-  infix operators.
+  This definition defines a new type called =_×_= with parameters =(A B : Set)=.
+  Datatypes with parameters are called parameterized datatypes. Parameters are
+  shared among all constructors. It has a single constructor named =_,_=.
+  Underscores are used to denote infix operators. We see that the type of the
+  constructor =_,_= is =A → B → A × B=. This tells us that =_,_= is a function
+  that takes an argument of type =A= (or a proof of =A=), an argument of type
+  =B= and then returns a term of type =A × B=. Constructors are a special kind
+  of functions that are used to build terms of their corresponding datatype.
+  When we /pattern match/ (or deconstruct) a term we will have a case for each
+  possible constructor of the type of that term.
 
   Let us give a proof of the theorem $A∧ B → B ∧ A$:
   #+begin_src text
   swap : {A B : Set} → A × B → B × A
   swap (a , b) = b , a
   #+end_src
-  Note that we used /pattern matching/ to access the components of the pair.
-  Refer to Section [[sec:agda-datatype]] for more details on data type definition
-  and pattern matching.
+  Note that we used pattern matching deconstruct the term and access the
+  components of the pair. For the =_×_= type we only have one constructor so we
+  only need one case.
+  # Refer to Section [[sec:agda-datatype]] for more details on data type definition
+  # and pattern matching.
 
   Let us show some more examples[fn::The =_= characters means that these
   definitions are not named and thus cannot be referred to from other parts of
-  the code. This is not relevant here as they are just examples.]:
+  the code. This is not relevant here as they are just examples.][fn::Notice
+  that for function application in Agda we write =f a b=.]:
   #+begin_src text
   _ : {A B : Set} → A → B → A × B
   _ a b = a , b
@@ -1421,75 +1445,150 @@ data _×_ (A B : Set) : Set where
   _ : {A B C : Set} → (A → B → C) → A × B → C
   _ f (a , b) = f a b
   #+end_src
-  Now that we are familiarized with product types we can proceed by exploring
-  sum types.
+  Now that we are familiarized with conjunction and product types we can proceed
+  by exploring disjunction. In order to express options we can define a new data
+  type called sum type/ thus:
+  #+begin_src text
+data _⊎_ (A B : Set) : Set where
+  inj₁ : A → A ⊎ B
+  inj₂ : B → A ⊎ B
+  #+end_src
+  We see that the main difference with respect to the pair type is that now we
+  have two constructors named =inj₁= and =inj₂=. The constructor =inj₁= is used
+  to build a proof of =A ⊎ B= by providing a proof of =A=. The constructor
+  =inj₂= has the analogous functionality for =B=.
 
-*** Sum types
-    We say that a type is a \gls*{sum type} if it is the disjunction of two (or
-    more) types.
+  Since we have two constructors, when pattern matching against an argument of
+  this type we will need to define two cases (if we want to access its
+  contents). See as an example the following theorems:
+  #+begin_src text
+  _ : {A B : Set} → A ⊎ B → B ⊎ A
+  _ (inj₁ a) = inj₂ a
+  _ (inj₂ b) = inj₁ b
 
-    In Agda we can define a two options sum type in the following way:
-    #+begin_src text
-    data _⊎_ (A B : Set) : Set where
-      inj₁ : A → A ⊎ B
-      inj₂ : B → A ⊎ B
-    #+end_src
+  _ : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
+  _ (inj₁ a) f g = f a
+  _ (inj₂ b) f g = g b
+  #+end_src
 
-    For instance, let us prove that every natural is either even or odd:
-    #+begin_src text
-    even odd : Pred Nat
-    even zero = ⊤
-    even (suc n) =
-    #+end_src
-** Agda syntax
-    2. implicit arguments
-    3. named arguments
-    4. inference
-    5. pattern matching
+  The reader may have raised the following question in their mind: what if we
+  leave out a case for the sum type? In other words, is the following
+  definition acceptable?
+  #+begin_src text
+  _ : {A B : Set} → A ⊎ B → A
+  _ : (inj₁ a) = a
+  #+end_src
+  The answer is no. Agda rejects it as it requires all of the definitions to be
+  exhaustive, otherwise it would not be a sound system.
 
-*** Implicit arguments
-   <<sec:agda-implicit-args>>
-*** data type definitions and constructors
-    <<sec:agda-datatype>>
-        #+begin_src text
-  data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
-    c₁ : A₁
-    ...
-    cₙ : Aₙ
-        #+end_src
-** old
-  #   What sets dependent type theory apart from other type theories is that types
-  #   can depend on terms. In a non-dependent theory types and terms live in
-  #   separate worlds and they only meet to decide what terms have which types. In a
-  #   dependent theory, on the other hand, types can talk about terms and so it is
-  #   possible to express things like the precise characterisation of the sorting
-  #   function mentioned above.
+  We proceed with $⊥$. We can define a datatype which we call /bottom type/ or
+  /empty type/.
+  #+begin_src text
+  data ⊥ : Set where
+  #+end_src
+  Notice that =⊥= has no constructors and hence it is impossible to construct a term
+  with type =⊥=. The bottom type is specially useful to define negation:
+  #+begin_src text
+  ¬ : Set → Set
+  ¬ A = A → ⊥
+  #+end_src
+  The principle of explosion can be trivially proved as shown below. Agda uses
+  =()= to denote the empty or impossible pattern.
+  #+begin_src text
+  explosion : {A : Set} → ⊥ → A
+  explosion ()
+  #+end_src
+  As we are in an intuitionistic logic the following properties are not provable:
+  #+begin_src text
+  ¬¬elim : {A : Set} → ¬ (¬ A) → A
+  ¬¬elim = ?             -- not provable
 
-  #   In this section we present a dependent type theory
-  #   which can serve as basis for the extensions discussed in later chapters. The
-  #   particular choice of type theory is not crucial and the theory we choose is
-  #   roughly Luo’s UTT [Luo94] extended with Σ-types and η-laws. In the following
-  #   we will refer to this theory as UTT Σ . The syntax of UTT Σ is presented in
-  #   Figure 1.1. A telescope [dB91b] ∆ = (x 1 : A 1 ) . . . (x n : A n ) is a
-  #   sequence of types where later types may depend on elements of previous types.
-  #   W
+  excluded-middle : {A : Set} → A ⊎ (¬ A)
+  excluded-middle = ?    -- not provable
+  #+end_src
+  However, we can show the following:
+  #+begin_src text
+  ¬¬¬elim : {A : Set} → ¬ (¬ (¬ A)) → ¬ A
+  ¬¬¬elim ¬¬¬a a = ¬¬¬a (λ ¬a → ¬a a)
+  #+end_src
+  It might help the reader to see that =¬ (¬ (¬ A)) → ¬ A = (((A → ⊥) → ⊥) → ⊥)
+  → A → ⊥=.
 
-  # #+name: fig:agda-syntax
-  # #+caption: The syntax of $\sf{UTT}_Σ$.
-  # #+attr_latex: :align llll :float t :center t :placement [H]
-  # | $s,t,A,B$ | $≔$   | $x$                   | variable                     |
-  # |           | \vert | $(x:A)→B$             | dependent function type      |
-  # |           | \vert | $λx.t$                | lambda abstraction           |
-  # |           | \vert | $s\ t$                | function application         |
-  # |           | \vert | $(x:A)×B$             | dependent pair  type         |
-  # |           | \vert | $⟨s,t⟩$               | dependent pairs              |
-  # |           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
-  # |           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
-  # |           | \vert | $𝟏$                   | the unit type                |
-  # |           | \vert | $⟨⟩$                  | the element of the unit type |
-  # | $Γ,Δ$     | $≔$   | $ε$                   |                              |
-  # |           | \vert | $(x:A)Γ$              | telescopes                   |
+  Some more examples:
+  #+begin_src text
+  _ : {A B : Set} A → ¬ A → B
+  _ a ¬a = explosion (¬a a)
+  #+end_src
 
+  We finally climb to the $⊤$. We shall define a datatype which we call the
+  /unit type/ or /singleton type/.
+  #+begin_src text
+  data ⊤ : Set where
+    tt : ⊤
+  #+end_src
+  We see that this type has a single constructor with no parameters, hence there
+  only exists one term with this type, namely =tt=. An example:
+  #+begin_src text
+  _ : ⊤ × ⊤
+  _ = tt , tt
+  #+end_src
+  This concludes the first part of the introduction.
+
+** Booleans and equality
+   The /true or false/ concept is ubiquitous in computer science and in logic.
+   In Agda we can define the =Bool= type in a similar fashion to the disjunction
+   type we defined before.
+   #+begin_src text
+   data Bool : Set where
+     true : Bool
+     false : Bool
+   #+end_src
+   Let us define the usual operators on booleans using pattern matching:
+   #+begin_src text
+   not : Bool → Bool
+   not false = true
+   not true = false
+
+   and : Bool → Bool → Bool
+   and false b = false
+   and true b = b
+
+   or : Bool → Bool → Bool
+   or true b = true
+   or false b = b
+   #+end_src
+   We proceed by defining equality for the =Bool= type[fn::This definition is
+   just for illustrative purposes. It is possible to define polymorphic equality
+   but it falls out of the scope of this short introduction.]. We use the symbol
+   =≡= because === is reserved for Agda.
+   #+begin_src text
+data _≡_ : Bool → Bool → Set where
+  t≡t : true ≡ true
+  f≡f : false ≡ false
+   #+end_src
+   We see that the type of =_≡_= is =Bool → Bool → Set=. We say that =_≡_= is an
+   /indexed datatype/, in this case with two =Bool= indices. In contrast to
+   parameters (recall the definitions of =_×_= and =_⊎_=) which are shared among
+   all constructors, indices are specified on a constructor basis.
+
+   Let us prove the following property:
+   #+begin_src text
+   _ : (b : Bool) → not (not b) ≡ b
+   _ true = t≡t
+   _ false = f≡f
+   #+end_src
+   There are many things that are worth mentioning. First, we see that we refer
+   to =b= on the returning result =not (not b) ≡ b=, which is possible in virtue
+   of dependent types. Then we see that we pattern match on =b=. This is
+   equivalent to do hand written proof by cases. When we do a case split then
+   Agda knows via /normalization/ that in the =true= case we must provide a term
+   (proof) of type =true ≡ true=, which we can provide using the =t≡t=
+   constructor. Agda normalizes the terms when possible, for instance the term
+   =not (not b)= is already normalized because we cannot apply any rule. On the
+   other hand the term =not (not true)= can be normalized to =not false= and
+   further normalized to =true= by using the definition of =not=. For further
+   information on normalization refer to cite:norell:thesis.
+** Naturals and recursion
 ** Universe hierarchy
    <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
    For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
@@ -1511,7 +1610,7 @@ data _×_ (A B : Set) : Set where
    we can also write =Set₁=, =Set₂=, etc. instead of =Set 1=, =Set 2=, etc.
 
    It is possible to combine types of different universe levels. The bigger type
-   is the one that counts. For instance
+   is the one that counts. For instance:
    #+begin_src text
    to : Set₃ → Set₁ → Set₃
    to A B = A → B
@@ -1551,6 +1650,57 @@ data _×_ (A B : Set) : Set where
    #+end_src
 
    In our project we have not used this extension.
+** BHK interpretation of first order logic
+   <<sec:bhk-fol>>
+** Agda syntax
+   This section is meant to be a summary of some of the important parts of the
+   language reference. I am not sure if this section should be in the report or
+   should just link to the online doc.
+
+*** Pattern matching
+*** Implicit arguments and ifnerence
+   <<sec:agda-implicit-args>>
+*** datatype definitions and constructors
+    <<sec:agda-datatype>>
+        #+begin_src text
+  data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
+    c₁ : A₁
+    ...
+    cₙ : Aₙ
+        #+end_src
+** old :noexport:
+  #   What sets dependent type theory apart from other type theories is that types
+  #   can depend on terms. In a non-dependent theory types and terms live in
+  #   separate worlds and they only meet to decide what terms have which types. In a
+  #   dependent theory, on the other hand, types can talk about terms and so it is
+  #   possible to express things like the precise characterisation of the sorting
+  #   function mentioned above.
+
+  #   In this section we present a dependent type theory
+  #   which can serve as basis for the extensions discussed in later chapters. The
+  #   particular choice of type theory is not crucial and the theory we choose is
+  #   roughly Luo’s UTT [Luo94] extended with Σ-types and η-laws. In the following
+  #   we will refer to this theory as UTT Σ . The syntax of UTT Σ is presented in
+  #   Figure 1.1. A telescope [dB91b] ∆ = (x 1 : A 1 ) . . . (x n : A n ) is a
+  #   sequence of types where later types may depend on elements of previous types.
+  #   W
+
+  # #+name: fig:agda-syntax
+  # #+caption: The syntax of $\sf{UTT}_Σ$.
+  # #+attr_latex: :align llll :float t :center t :placement [H]
+  # | $s,t,A,B$ | $≔$   | $x$                   | variable                     |
+  # |           | \vert | $(x:A)→B$             | dependent function type      |
+  # |           | \vert | $λx.t$                | lambda abstraction           |
+  # |           | \vert | $s\ t$                | function application         |
+  # |           | \vert | $(x:A)×B$             | dependent pair  type         |
+  # |           | \vert | $⟨s,t⟩$               | dependent pairs              |
+  # |           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
+  # |           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
+  # |           | \vert | $𝟏$                   | the unit type                |
+  # |           | \vert | $⟨⟩$                  | the element of the unit type |
+  # | $Γ,Δ$     | $≔$   | $ε$                   |                              |
+  # |           | \vert | $(x:A)Γ$              | telescopes                   |
+
 ** Positivity
    <<sec:positivity>>
 
@@ -1713,43 +1863,6 @@ infix 60 ¬'_
      =b≤c : b ≤ c=. By using a recursive call (induction hypothesis) to
      =≤-trans= we can build a proof of =a ≤ c=. Finally we can apply the
      constructor =s≤s= to obtain a proof of =suc a ≤ suc c=.
-** Top and bottom
-   In Agda we call top (=⊤=) the unit type, i.e. the type with only one
-   inhabitant.
-   #+begin_src text
-   data ⊤ : Set where
-     tt : ⊤
-   #+end_src
-   For instance, we can define a predicate that is always satisfied thus:
-   #+begin_src text
-   Trivial : Pred Nat
-   Trivial n = ⊤
-   #+end_src
-   It is always satisfied as we can build a proof of =Trivial= for any =n= using
-   the =tt= constructor:
-   #+begin_src text
-   Trivial-n : (n : Nat) → Trivial n
-   Trivial-n n = tt
-   #+end_src
-
-   We call bottom (=⊥=) the empty type.
-   #+begin_src text
-   data ⊥ : Set where
-   #+end_src
-   Notice that it has no constructors hence it is impossible to construct a term
-   with type =⊥=. The bottom type is specially useful to define negation in Agda:
-   #+begin_src text
-   ¬ : Set → Set
-   ¬ A = A → ⊥
-   #+end_src
-   The principle of explosion can be trivially proved thus:
-   #+begin_src text
-   explosion : {A : Set} → ⊥ → A
-   explosion ()
-   #+end_src
-   Since the type =⊥= has no constructors when we pattern match against the
-   argument we get an empty case (denoted by =()=) and thus there is no need to
-   provide a term of type =A=.
 ** Dependent pairs
     Consider the following non-dependent pair definition (again, we present a non universe
     polymorphic version for simplicity):
@@ -1799,7 +1912,7 @@ data Σ {a b : Level} (A : Seta a) (B : A → Set b) : Set (a ⊔ b) where
 ** Noetherian relations
     We say that a relation is \gls*{noetherian} if it is conversely
     well-founded. We begin by formalizing the concept of infinite ascending
-    chain in Agda. In order to do that, we define a coinductive record data type
+    chain in Agda. In order to do that, we define a coinductive record datatype
     (cite:agda-doc) (cite:norell:thesis). A coinductive record is allowed to be
     infinite.
 
@@ -1813,7 +1926,7 @@ record InfiniteChain {ℓW ℓR} {W : Set ℓW} (_<_ : Rel W ℓR) (a : W)
     tail : InfiniteChain _<_ b
     #+end_src
 
-    We see that the previous record data type represents an infinite ascending
+    We see that the previous record datatype represents an infinite ascending
     chain starting at =a= of some relation =<=. It has three fields. =b=: The
     next element in the chain. =a<b=: A proof that $a < b$ and =tail=: an
     infinite chain starting at =b=.
