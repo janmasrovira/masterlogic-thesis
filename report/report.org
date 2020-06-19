@@ -1534,7 +1534,7 @@ data _⊎_ (A B : Set) : Set where
   #+end_src
   This concludes the first part of the introduction.
 
-** Booleans and equality
+** Booleans and case analysis
    The /true or false/ concept is ubiquitous in computer science and in logic.
    In Agda we can define the =Bool= type in a similar fashion to the disjunction
    type we defined before.
@@ -1543,7 +1543,7 @@ data _⊎_ (A B : Set) : Set where
      true : Bool
      false : Bool
    #+end_src
-   Let us define the usual operators on booleans using pattern matching:
+   Let us define the =not= and =and= Boolean operators using pattern matching:
    #+begin_src text
    not : Bool → Bool
    not false = true
@@ -1552,10 +1552,6 @@ data _⊎_ (A B : Set) : Set where
    and : Bool → Bool → Bool
    and false b = false
    and true b = b
-
-   or : Bool → Bool → Bool
-   or true b = true
-   or false b = b
    #+end_src
    We proceed by defining equality for the =Bool= type[fn::This definition is
    just for illustrative purposes. It is possible to define polymorphic equality
@@ -1573,22 +1569,88 @@ data _≡_ : Bool → Bool → Set where
 
    Let us prove the following property:
    #+begin_src text
-   _ : (b : Bool) → not (not b) ≡ b
-   _ true = t≡t
+   notnot : (b : Bool) → not (not b) ≡ b
+   notnot true = t≡t
+   notnot false = f≡f
+   #+end_src
+   There are a number of things that are worth mentioning. First, we see that we
+   refer to =b= on the returning result =not (not b) ≡ b=, which is possible in
+   virtue of dependent types. Then we see that we pattern match on =b= and thus
+   we need to fill out two cases. We could make an analogy with a hand written
+   proof by cases. The case split with pattern matching allows Agda to know via
+   /normalization/ that in the =true= case we must provide a term (proof) of
+   type =true ≡ true=, which we can provide using the =t≡t= constructor. We
+   proceed analogously in the =false= case. Agda normalizes the terms when
+   possible, for instance the term =not (not b)= is already normalized because
+   we cannot apply any rule. On the other hand the term =not (not true)= can be
+   normalized to =not false= and further normalized to =true= by using the
+   definition of =not=. For further information on normalization refer to
+   cite:norell:thesis. Another thing to notice is that we use the same
+   construction (i.e. an Agda function definition) to provide function definitions,
+   like =not=, and theorems, like =notnot=.
+
+   Pattern matching (case analysis) is ubiquitous is Agda, be it in definitions
+   or in proofs. We show some more examples below:
+   #+begin_src text
+   _ : (b : Bool) → and false b ≡ false
+   _ b = f≡f
+
+   _ : (b : Bool) → and b false ≡ false
+   _ true = f≡f
    _ false = f≡f
    #+end_src
-   There are many things that are worth mentioning. First, we see that we refer
-   to =b= on the returning result =not (not b) ≡ b=, which is possible in virtue
-   of dependent types. Then we see that we pattern match on =b=. This is
-   equivalent to do hand written proof by cases. When we do a case split then
-   Agda knows via /normalization/ that in the =true= case we must provide a term
-   (proof) of type =true ≡ true=, which we can provide using the =t≡t=
-   constructor. Agda normalizes the terms when possible, for instance the term
-   =not (not b)= is already normalized because we cannot apply any rule. On the
-   other hand the term =not (not true)= can be normalized to =not false= and
-   further normalized to =true= by using the definition of =not=. For further
-   information on normalization refer to cite:norell:thesis.
+   See that in the first case we did not need to do pattern matching while in
+   the second we had to. This is due to how the definition of =and= is written
+   which in our case performs pattern matching on the first argument.
 ** Naturals and recursion
+   In this section we will have a look at the simplest possible recursive
+   structure, the natural numbers. In Agda natural numbers can be defined in the
+   following way:
+   #+begin_src
+   data Nat : Set where
+     zero : Nat
+     suc : Nat → Nat
+   #+end_src
+   The definition should be intuitive enough for the reader at this point. We
+   can represent the number $1$ with the term =suc zero=, the number $2$ with
+   =suc (suc zero)= and so on.
+
+   Let us continue by defining the equality relation for natural
+   numbers[fn::Agda does not allow overloading of symbols so we would need to
+   use a different name other than =_≡_= to avoid the clash with the equality relation
+   of Booleans that we defined before.].
+   #+begin_src text
+   data _≡_ : Nat → Nat → Set where
+     z≡z : zero ≡ zero
+     s≡s : {n : Nat} → n ≡ n → suc n ≡ suc n
+   #+end_src
+   We see that it has a similar structure to the datatype for Boolean equality.
+   The only difference is that the =s≡s= constructor requires a proof of =n ≡ n=
+   as an argument. Let us show that every natural number is equal to itself.
+   #+begin_src agda
+   refl : (n : Nat) → n ≡ n
+   refl zero = z≡z
+   refl (suc n) = s≡s (refl n)
+   #+end_src
+   We see that we pattern match on =n=, for the =zero= case we give the =z≡z=
+   constructor. For the =suc= case we need to provide a proof of =suc n ≡ suc
+   n=. By performing a recursive call with =n= as argument we get a proof of =n
+   ≡ n=, then we can use the constructor =s≡s= to build a term of type =suc n ≡
+   suc n=. It can be enlightening to observe that in a proof by induction, such
+   as the previous one, a recursive call plays the role of the induction
+   hypothesis.
+
+   An inexperienced Agda user might try the following:
+   #+begin_src agda
+   refl' : (n : Nat) → n ≡ n
+   refl' zero = z≡z
+   refl' (suc n) = refl (suc n)
+   #+end_src
+   While the types match we see that we perform a recursive call on the same
+   argument and thus we get an infinite loop. Agda has a termination checker
+   that rejects proofs where termination cannot be assured and thus rejects the
+   previous definition.
+
 ** Universe hierarchy
    <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
    For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
