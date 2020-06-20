@@ -1724,19 +1724,20 @@ suc-r (suc a) b = s≡s (suc-r a  b)
    we have mentioned before, in a dependent type theory we are allowed to mix
    types and terms, hence =Nat= is a term in itself and must be assigned a type.
    Agda calls the type of (small) types =Set=, hence we have that =Nat= has type
-   =Set=. But then =Set= is also a term an must be assigned a type as well. The
-   first version of Martin-Löf’s first version of type theory
-   (cite:martin-lof-1971a) had an axiom stating that there is a type of all
-   types and thus we would have that the type of =Set= is =Set=. However Girard
-   showed (cite:sep-type-theory-intuitionistic) that having =Set : Set= allowed
-   the Burali-Forti paradox[fn::The assumption that there is a set of all
-   ordinal numbers leads to a contradiction.] to be encoded in the theory. In
-   order to avoid such inconsistency Agda builds a hierarchy of universes where
-   small types such as =Nat= and =Bool= are assigned the type =Set 0= and then
-   for every $i∈ω$ we have that =Set i : Set i+1=. Notice however, that =Set i :
-   Set i+1= is true while =Set i : Set i+n= it is not for $n>1$. In Agda we
-   write =Set= instead of =Set 0=. When the level is a constant natural number
-   we can also write =Set₁=, =Set₂=, etc. instead of =Set 1=, =Set 2=, etc.
+   =Set=. But then =Set= is also a term an must be assigned a type as well.
+   Could we have that the type of =Set= is =Set=? The first version of
+   Martin-Löf’s type theory (cite:martin-lof-1971a) had an
+   axiom stating that there is a type of all types and thus we would have that
+   the type of =Set= is =Set=. However Girard showed
+   (cite:sep-type-theory-intuitionistic) that having =Set : Set= allowed the
+   Burali-Forti paradox[fn::The assumption that there is a set of all ordinal
+   numbers leads to a contradiction.] to be encoded in the theory. In order to
+   avoid such inconsistency Agda builds a hierarchy of universes where small
+   types such as =Nat= and =Bool= are assigned the type =Set 0= and then for
+   every $i∈ω$ we have that =Set i : Set i+1=. Notice however, that =Set i : Set
+   i+1= is true while =Set i : Set i+n= it is not for $n>1$. In Agda we write
+   =Set= instead of =Set 0=. When the level is a constant natural number we can
+   also write =Set₁=, =Set₂=, etc. instead of =Set 1=, =Set 2=, etc.
 
    It is possible to combine types of different universe levels. The bigger type
    is the one that counts. For instance:
