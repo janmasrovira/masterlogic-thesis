@@ -98,6 +98,7 @@
 #+latex_header: \setmathfont{XITS Math}
 #+latex_header: \newfontfamily{\myfont}{XITS Math}
 #+latex_header: \newunicodechar{𝕎}{\makebox[1em]{\myfont𝕎}}
+#+latex_header: \newunicodechar{ᵢ}{\makebox[0.5em]{\textsubscript{i}}}
 #+latex_header: \newunicodechar{ₖ}{\makebox[0.5em]{\textsubscript{k}}}
 #+latex_header: \newunicodechar{ₙ}{\makebox[0.5em]{\textsubscript{n}}}
 #+latex_header: \newunicodechar{ₗ}{\makebox[0.5em]{\textsubscript{l}}}
@@ -1801,10 +1802,10 @@ suc-r (suc a) b = s≡s (suc-r a  b)
 
    We extend the interpretation that we gave before to include the universal and
    existential quantifiers (cite:sep-intuitionistic-logic-development):
-   1. A proof of $∀x.F(x)$ is a function that given an arbitrary element $c$ in
-      the domain, builds a proof that $c$ satisfies $F$.
-   2. A proof of $∃x.F(x)$ is a witness $c$ in the domain and a proof that $c$
-     satisfies $F$.
+   1. A proof of $∀x.P(x)$ is a function that given an arbitrary element $c$ in
+      the domain, builds a proof that $c$ satisfies $P$.
+   2. A proof of $∃x.P(x)$ is a witness $c$ in the domain and a proof that $c$
+     satisfies $P$.
    Before diving into quantifiers we first discuss how to represent relations in
    Agda. Recall the equality relation for natural numbers =_≡_= that we defined
    before. Its type is =Nat → Nat → Set=. Let us say that we want to define a
@@ -1839,6 +1840,7 @@ Rel A ℓ = REL A A ℓ
      ... -- same as before
    #+end_src
 
+   \glsadd{Pred}
    In a similar way we can define predicates:
    #+begin_src text
    Pred : {a : Level} → Set a → (ℓ : Level) → Set (a ⊔ lsuc ℓ)
@@ -1861,16 +1863,173 @@ aux n ()
 
 s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
 s≠z = proof∀ aux
-
--- Alternatively we could have written this:
+   #+end_src
+   Alternatively we could have written a shorter version that does not use an
+   auxiliary lemma.
+   #+begin_src text
 s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
 s≠z = proof∀ λ {n ()}
    #+end_src
-   Implementing $∀$ elimination (if $∀x.Px$ and $c$ is in the domain then
+   Proving \text{$∀$-elimination} (if $∀x.P(x)$ and $c$ is in the domain then
    $P(c)$) is straightforward:
    #+begin_src text
    ∀-elim : {a ℓ : Level} {A : Set a} {P : Pred A ℓ} → ∀[ A ] P → (a : A) → P a
    ∀-elim (proof∀ f) a = f a
+   #+end_src
+
+   We now move on to the existential quantifier. Recall that according to the
+   BHK interpretation a proof $∃x.P(x)$ is an element $c$ of the domain and a
+   proof that $P(c)$. The first plan could be to use the pair type we defined
+   before to contain the needed elements. We repeat the definition here:
+   #+begin_src text
+data _×_ (A B : Set) : Set where
+  _,_ : A → B → A × B
+   #+end_src
+   The problem is that the type of the second component, =B=, is independent of
+   the first component and thus we cannot express what we need. Here is where
+   the $Σ$ type (or dependent pair\glspl*{dependent-pair}) comes into play. A
+   dependent pair is a structure where the type of the second component depends
+   on the value of the first component. This concept is defined by the following
+   datatype.
+   #+begin_src text
+data Σ {ℓ ℓ' : Level} (A : Set ℓ) (B : A → Set ℓ') : Set (ℓ ⊔ ℓ') where
+  _,_ : (a : A) → B a → Σ A B
+   #+end_src
+   Proving \text{$∃$-introduction} is trivial:
+   #+begin_src
+   ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
+     → (a : A) → P a → Σ A P
+   ∃-intro a p = a , p
+   #+end_src
+   We now show that $∀x(P(x))⇒¬∃x(¬P(x))$.
+   #+begin_src text
+   p1 : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
+     → ∀[ A ] P → ¬ (Σ A (λ x → ¬ (P x)))
+   p1 (proof∀ f) (c , b) = b (f c)
+   #+end_src
+   Our goal is to give a term of type =⊥=. We have that =f= has type =(a : A) →
+   P a= so =f c= has type =P c=, then =b= has type =¬ (P c)= which is the same
+   as =P c → ⊥=, thus by applying =b= to =(f c)= we get a term of type =⊥=.
+
+   Of course, as we are in an intuitionistic logic we cannot show
+   the other direction, namely $¬∃x(¬P(x))⇒∀x(P(x))$.
+
+   *A note on syntax*. The reader may find the $Σ$ syntax a bit too different
+   from what we use in paper. We can fix that thanks to Agda's syntax
+   versatility. Agda provides a tool to define custom syntax. Below we show how
+   we can use that tool to improve the syntax of $Σ$. We will not go into more
+   detail since this is feature is of shallow mathematical interest.
+   #+begin_src text
+Σ-syntax : {ℓ ℓ' : Level} → (A : Set ℓ) → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
+Σ-syntax = Σ
+syntax Σ-syntax A (λ x → B) = ∃[ x ∈ A ] B
+   #+end_src
+   With this syntax enhancement we can replace =Σ A P= by =∃[ c ∈ A ] (P c)=.
+   The previous theorem becomes:
+   #+begin_src text
+   ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
+     → (a : A) → P a → ∃[ c ∈ A ] (P c)
+   ∃-intro a p = a , p
+   #+end_src
+
+** Predicates as mathematical sets
+   In this section when we say /set/ we refer to a subset of an Agda type. The
+   most natural way to represent subsets in Agda is to use predicates. See
+   [[sec:predicates]] for an introduction. A predicate represents the characteristic
+   function of the associated subset. For instance consider the predicate:
+   #+begin_src text
+   Pos : Pred Nat lzero
+   Pos n = ¬ (n ≡ 0)
+   #+end_src
+   It represents the subset of strictly positive natural numbers.
+
+   We proceed by defining the usual concepts related to mathematical sets. In
+   order to make the types less verbose we assume that we already have =A : Set
+   ℓ= in scope.
+    1. \boxed{∈} A proof of membership is a simple function application.
+       #+begin_src text
+       _∈_ : REL A (Pred A)
+       a ∈ X = X a
+       #+end_src
+       This definition is mostly superfluous but it helps to have a syntax closer
+       to regular mathematics.
+    2. \boxed{∉} A proof of non membership is function from a proof of membership to =⊥=.
+       #+begin_src text
+       _∉_ : REL A (Pred A)
+       a ∉ X = ¬ (a ∈ X)
+       #+end_src
+    3. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
+       membership to =X= to a proof of membership to =Y=.
+       #+begin_example
+       _⊆_ : Rel (Pred A)
+       X ⊆ Y = ∀ {x} → x ∈ X → x ∈ Y
+       #+end_example
+    4. \boxed{∩} We use pairs to represent the intersection. Each component is a
+       proof of membership to =X= and =Y= respectively.
+       #+begin_src text
+       _∩_ : Pred A → Pred A → Pred A
+       X ∩ Y = λ x → x ∈ X × x ∈ Y
+       #+end_src
+    5. \boxed{∪} We use a sum type to represent the union.
+       #+begin_src text
+       _∪_ : Pred A → Pred A → Pred A
+       X ∪ Y = λ x → x ∈ X ⊎ x ∈ Y
+       #+end_src
+    6. \boxed{∅}
+       The empty set is represented by a characteristic constant function to =⊥=.
+       #+begin_src text
+       ∅ : Pred A
+       ∅ = λ x → ⊥
+       #+end_src
+    7. \boxed{𝟏}
+       Similarly, the universe set is represented by a characteristic constant function to =⊤=.
+       #+begin_src text
+       U : Pred A
+       U = λ x → ⊤
+       #+end_src
+    8. \(\boxed{\{x\}}\) A singleton set is defined using equality (assuming we
+       have equality defined for that type).
+       #+begin_example
+       ｛_｝ : A → Pred A
+       ｛ x ｝ = λ y → x ≡ y
+       #+end_example
+
+
+** Positivity
+   <<sec:positivity>>
+
+   In this section we present a technicality as described in the Agda
+   documentation (cite:agda-doc) regarding datatype definitions that will become
+   relevant in Section [[sec:agda-ord-semantics]] where we define ordinary Veltman
+   semantics.
+
+   When defining a datatype =D=, Agda poses an additional requirement on the types
+   of the constructors of =D=, namely that =D= may only occur strictly positively in
+   the types of their arguments. Concretely, for a datatype with constructors
+   =c₁ : A₁, …, cₙ : Aₙ=, Agda checks that each =Aᵢ= has the form
+   #+begin_src text
+   (y₁ : B₁) → ... → (yₗ : Bₗ) → D
+   #+end_src
+   where an argument of type =Bᵢ= of the constructors does not mention =D= or has
+   the form
+   #+begin_example
+   (z₁ : C₁) → ... → (zₖ : Cₖ) → D
+   #+end_example
+
+   The following example showcases the possibility to build a term of type =⊥=
+   by defining a non strictly positive type =Bad=. As mentioned above, Agda
+   rejects the definition of =Bad=.
+   #+begin_src text
+data ⊥ : Set where
+
+data Bad : Set where
+  bad : (Bad → ⊥) → Bad
+
+self-app : Bad → ⊥
+self-app (bad f) = f (bad f)
+
+absurd : ⊥
+absurd = self-app (bad self-app)
    #+end_src
 ** Agda syntax
    This section is meant to be a summary of some of the important parts of the
@@ -1921,28 +2080,21 @@ s≠z = proof∀ λ {n ()}
   # | $Γ,Δ$     | $≔$   | $ε$                   |                              |
   # |           | \vert | $(x:A)Γ$              | telescopes                   |
 
-** Positivity
-   <<sec:positivity>>
-
-   See cite:agda-doc.
-
 * Agda in the project
-  The goal of this section is to guide the reader through a brief practical
-  introduction to the language while explaining some key parts of code that we
-  have implemented.
-
-  It is worth noting that we have started from scratch as we believe that no
-  other previous work in interpretability logics has been done in Agda.
+  The goal of this section is to guide the reader through some key parts of the
+  code that we have implemented. It is worth noting that we have started from
+  scratch as we believe that no other previous work in interpretability logics
+  has been done in Agda.
 
   The implementation relies on the Agda standard library cite:agda-stdlib.
 
-** Naming conventions
+** Naming conventions :noexport:
    1. If we have =f : T= we say that =f= has type =T= or that =f= is a proof of =T=.
    2. If we have =f : A → B → C= we say =f= has arguments =A= and =B= and it has
       return type =C=.
 ** Modal formulas
    Here we present the Agda type that represents a formula as defined in section
-   [[sec:language]]. It is a very simple type yet an insightful introductory example.
+   [[sec:language]].
 
    First we define variables to be natural numbers:
    #+begin_src text
@@ -1959,39 +2111,34 @@ data Fm : Set where
   _↝_ : Fm → Fm → Fm
   _▷_ : Fm → Fm → Fm
    #+end_src
-   There are a number of things to take notice:
-   1. The =data= keyword is used to introduce the definition of a new type;
-   2. the newly introduced =Fm= type is not indexed by any other type, hence it
-      has type =Set= as indicated by =Fm : Set=;
-   3. take the constructor =var=, which has type =Var → Fm=. This means that if
-      we apply =var= to a variable (i.e. a natural number) we get a term of type
-      =Fm=. For instance, =var 3= has type =Fm=.
-   4. we have named the bottom constructor =⊥'= since the symbol =⊥= is commonly
-      used in Agda. We have used the =↝= to denote an implication since =→= is a
-      reserved symbol;
-   5. the underscores in =_↝_= and =_▷_= mean that these constructors are infix
-      operators. Thus, the following formula is syntactically valid: =(var 1 ▷
-      var 0) ↝ ⊥'=.
-
-      It is often the case that we define priority for our infix operators. The
-      following code defines the /infixity/ of =_↝_= and =_▷_=
-        #+begin_src text
-      infixr 20 _↝_
-      infixr 50 _▷_
-        #+end_src
-      The higher the number the more priority, hence we can drop the parentheses
-      from the previous formula =var 1 ▷ var 0 ↝ ⊥'=. The $r$ in =infixr= stands
-      for right associativity.
+   We have named the bottom constructor =⊥'= since the symbol =⊥= is commonly
+   used in Agda as the empty type. We have used the =↝= to denote a implication
+   since =→= is a reserved symbol for the Agda function type.
 
    We finally add definable operators as Agda functions. For instance, we define
-   negation thus:
+   $¬$ and $□$ thus:
   #+begin_src text
 infix 60 ¬'_
 ¬'_ : Fm → Fm
 ¬' a = a ↝ ⊥'
+
+infix 70 □_
+□_ : Fm → Fm
+□_ a = ¬' a ▷ ⊥'
   #+end_src
   We use the symbol =¬'= instead of =¬= for the same reason we used =⊥'= instead
   of =⊥=.
+
+  It is often the case that we define priority and associativity for our infix
+  operators in order to minimize the amount of needed parentheses. The following
+  code defines the /infixity/ of =_↝_= and =_▷_=
+    #+begin_src text
+  infixr 20 _↝_
+  infixr 50 _▷_
+    #+end_src
+  A greater number means higher priority. Then we can drop the parentheses
+  from the previous formula =var 1 ▷ var 0 ↝ ⊥'=. The $r$ in =infixr= stands
+  for right associativity.
 
 ** Predicates and relations :noexport:
    In this section we give a short description on how to represent predicates
@@ -2082,7 +2229,7 @@ infix 60 ¬'_
      =b≤c : b ≤ c=. By using a recursive call (induction hypothesis) to
      =≤-trans= we can build a proof of =a ≤ c=. Finally we can apply the
      constructor =s≤s= to obtain a proof of =suc a ≤ suc c=.
-** Dependent pairs
+** Dependent pairs :noexport:
     Consider the following non-dependent pair definition (again, we present a non universe
     polymorphic version for simplicity):
     #+begin_src text
@@ -2175,6 +2322,7 @@ Noetherian⇒Irreflexive noetherian Rxx = noetherian (infiniteRefl Rxx)
 
     To see another example refer to the proof of soundness for J5 (pending).
 ** Ordinary semantics
+   <<sec:agda-ord-semantics>>
    In this section we explain how we have represented ordinary Veltman semantics
    in Agda.
 
@@ -2402,8 +2550,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    outside of Agda and that we accept the law of excluded middle as part of our
    metalogic, the mentioned assumption could be dropped.
 
-** Subsets (predicates revisited)
-   \glsadd{Pred}
+** Subsets (predicates revisited) :noexport:
    In Agda, the keyword =Set= refers to an Agda type (insert ref to previous
    section), which is the closest concept to regular mathematics /set/. In this
    section when we say /set/ we refer to a subset of an Agda type. The most
@@ -2420,53 +2567,6 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
 
    Next we present how we represent in Agda common operations on sets.
    Assume for the below definitions that we have some =A : Set= in scope.
-   1. \boxed{∈} A proof of membership is a simple function application.
-      #+begin_src text
-      _∈_ : REL A (Pred A)
-      a ∈ X = X a
-      #+end_src
-      This definition is mostly superfluous but it helps to have a syntax closer
-      to regular mathematics.
-   2. \boxed{∉} A proof of non membership is function from a proof of membership to =⊥=.
-      #+begin_src text
-      _∉_ : REL A (Pred A)
-      a ∉ X = ¬ (a ∈ X)
-      #+end_src
-   3. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
-      membership to =X= to a proof of membership to =Y=.
-      #+begin_example
-      _⊆_ : Rel (Pred A)
-      X ⊆ Y = ∀ {x} → x ∈ X → x ∈ Y
-      #+end_example
-   4. \boxed{∩} We use pairs to represent the intersection. Each component is a
-      proof of membership to =X= and =Y= respectively.
-      #+begin_src text
-      _∩_ : Pred A → Pred A → Pred A
-      X ∩ Y = λ x → x ∈ X × x ∈ Y
-      #+end_src
-   5. \boxed{∪} We use a sum type to represent the union.
-      #+begin_src text
-      _∪_ : Pred A → Pred A → Pred A
-      X ∪ Y = λ x → x ∈ X ⊎ x ∈ Y
-      #+end_src
-   6. \boxed{∅}
-      The empty set is represented by a characteristic constant function to =⊥=.
-      #+begin_src text
-      ∅ : Pred A
-      ∅ = λ x → ⊥
-      #+end_src
-   7. \boxed{𝟏}
-      Similarly, the universe set is represented by a characteristic constant function to =⊤=.
-      #+begin_src text
-      U : Pred A
-      U = λ x → ⊤
-      #+end_src
-   8. \(\boxed{\{x\}}\) A singleton set is defined using equality (TODO: define
-      equality in Agda).
-      #+begin_example
-      ｛_｝ : A → Pred A
-      ｛ x ｝ = λ y → x ≡ y
-      #+end_example
 ** Generalized semantics
    In this section we explain how we have represented generalized Veltman
    semantics in Agda.
