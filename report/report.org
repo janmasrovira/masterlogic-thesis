@@ -1436,14 +1436,14 @@ data _×_ (A B : Set) : Set where
   the code. This is not relevant here as they are just examples.][fn::Notice
   that for function application in Agda we write =f a b=.]:
   #+begin_src text
-  _ : {A B : Set} → A → B → A × B
-  _ a b = a , b
+  p1 : {A B : Set} → A → B → A × B
+  p1 a b = a , b
 
-  _ : {A B : Set} → A × B → A
-  _ (a , b) = a
+  p2 : {A B : Set} → A × B → A
+  p2 (a , b) = a
 
-  _ : {A B C : Set} → (A → B → C) → A × B → C
-  _ f (a , b) = f a b
+  p3 : {A B C : Set} → (A → B → C) → A × B → C
+  p3 f (a , b) = f a b
   #+end_src
   Now that we are familiarized with conjunction and product types we can proceed
   by exploring disjunction. In order to express options we can define a new data
@@ -1462,21 +1462,21 @@ data _⊎_ (A B : Set) : Set where
   this type we will need to define two cases (if we want to access its
   contents). See as an example the following theorems:
   #+begin_src text
-  _ : {A B : Set} → A ⊎ B → B ⊎ A
-  _ (inj₁ a) = inj₂ a
-  _ (inj₂ b) = inj₁ b
+  p1: {A B : Set} → A ⊎ B → B ⊎ A
+  p1 (inj₁ a) = inj₂ a
+  p1 (inj₂ b) = inj₁ b
 
-  _ : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
-  _ (inj₁ a) f g = f a
-  _ (inj₂ b) f g = g b
+  p2 : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
+  p2 (inj₁ a) f g = f a
+  p2 (inj₂ b) f g = g b
   #+end_src
 
   The reader may have raised the following question in their mind: what if we
   leave out a case for the sum type? In other words, is the following
   definition acceptable?
   #+begin_src text
-  _ : {A B : Set} → A ⊎ B → A
-  _ : (inj₁ a) = a
+  wrong : {A B : Set} → A ⊎ B → A
+  wrong : (inj₁ a) = a
   #+end_src
   The answer is no. Agda rejects it as it requires all of the definitions to be
   exhaustive, otherwise it would not be a sound system.
@@ -1516,8 +1516,8 @@ data _⊎_ (A B : Set) : Set where
 
   Some more examples:
   #+begin_src text
-  _ : {A B : Set} A → ¬ A → B
-  _ a ¬a = explosion (¬a a)
+  p1 : {A B : Set} A → ¬ A → B
+  p1 a ¬a = explosion (¬a a)
   #+end_src
 
   We finally climb to the $⊤$. We shall define a datatype which we call the
@@ -1529,8 +1529,8 @@ data _⊎_ (A B : Set) : Set where
   We see that this type has a single constructor with no parameters, hence there
   only exists one term with this type, namely =tt=. An example:
   #+begin_src text
-  _ : ⊤ × ⊤
-  _ = tt , tt
+  ⊤⊤ : ⊤ × ⊤
+  ⊤⊤ = tt , tt
   #+end_src
   This concludes the first part of the introduction.
 
@@ -1592,17 +1592,17 @@ data _≡_ : Bool → Bool → Set where
    Pattern matching (case analysis) is ubiquitous is Agda, be it in definitions
    or in proofs. We show some more examples below:
    #+begin_src text
-   _ : (b : Bool) → and false b ≡ false
-   _ b = f≡f
+   p1 : (b : Bool) → and false b ≡ false
+   p1 b = f≡f
 
-   _ : (b : Bool) → and b false ≡ false
-   _ true = f≡f
-   _ false = f≡f
+   p2 : (b : Bool) → and b false ≡ false
+   p2 true = f≡f
+   p2 false = f≡f
    #+end_src
    See that in the first case we did not need to do pattern matching while in
    the second we had to. This is due to how the definition of =and= is written
    which in our case performs pattern matching on the first argument.
-** Naturals and recursion
+** Naturals and induction
    In this section we will have a look at the simplest possible recursive
    structure, the natural numbers. In Agda natural numbers can be defined in the
    following way:
@@ -1622,12 +1622,12 @@ data _≡_ : Bool → Bool → Set where
    #+begin_src text
    data _≡_ : Nat → Nat → Set where
      z≡z : zero ≡ zero
-     s≡s : {n : Nat} → n ≡ n → suc n ≡ suc n
+     s≡s : {a b : Nat} → a ≡ b → suc a ≡ suc b
    #+end_src
    We see that it has a similar structure to the datatype for Boolean equality.
-   The only difference is that the =s≡s= constructor requires a proof of =n ≡ n=
+   The only difference is that the =s≡s= constructor requires a proof of =a ≡ b=
    as an argument. Let us show that every natural number is equal to itself.
-   #+begin_src agda
+   #+begin_src text
    refl : (n : Nat) → n ≡ n
    refl zero = z≡z
    refl (suc n) = s≡s (refl n)
@@ -1641,16 +1641,83 @@ data _≡_ : Bool → Bool → Set where
    hypothesis.
 
    An inexperienced Agda user might try the following:
-   #+begin_src agda
+   #+begin_src text
    refl' : (n : Nat) → n ≡ n
    refl' zero = z≡z
    refl' (suc n) = refl (suc n)
    #+end_src
-   While the types match we see that we perform a recursive call on the same
-   argument and thus we get an infinite loop. Agda has a termination checker
-   that rejects proofs where termination cannot be assured and thus rejects the
-   previous definition.
+   While the types match we see that in the inductive case we perform a
+   recursive call on the same argument and thus we get an infinite loop. Agda
+   has a termination checker that rejects proofs where termination cannot be
+   assured and thus rejects the previous definition. We know that termination is
+   an undecidable problem hence it is inevitable that Agda will reject some
+   programs that in fact would always terminate. For more information on Agda's
+   termination checker refer to cite:norell:thesis,agda-doc.
 
+   We now define addition on natural numbers:
+   #+begin_src text
+   _+_ : Nat → Nat → Nat
+   zero + b = b
+   (suc a) + b = suc (a + b)
+   #+end_src
+
+   Proving associativity can be achieved by means of an inductive proof
+   following a similar structure as before. For the base case we use the =refl=
+   property proved above.
+   #+begin_src text
+assoc : (a b c : Nat) → (a + b) + c ≡ a + (b + c)
+assoc zero b c = refl (b + c)
+assoc (suc a) b c = s≡s (assoc a b c)
+   #+end_src
+
+   Consider the following example involving negation. Keep in mind that =¬ (n ≡
+   suc n) = n ≡ suc n → ⊥=.
+   #+begin_src text
+   p1 : (n : Nat) → ¬ (n ≡ suc n)
+   p1 zero ()
+   p1 (suc n) (s≡s x) = p1 n x
+   #+end_src
+   For the base case we have the impossible pattern because when =n = zero= the
+   second argument is supposed to have the type =zero ≡ suc zero= which is not
+   unifiable with any type of a constructor and thus we get the empty pattern.
+   For more information on Agda unification refer to cite:norell:thesis.
+
+   Finally, let us focus on proving commutativity of addition, which is a more
+   involved example. We first prove transitivity of equality, which is proved by
+   an easy induction.
+   #+begin_src text
+trans : {a b c : Nat} → a ≡ b → b ≡ c → a ≡ c
+trans z≡z z≡z = z≡z
+trans (s≡s x) (s≡s y) = s≡s (trans x y)
+   #+end_src
+   Notice how there are two missing cases, that is, =z≡z= with =s≡s= and vice
+   versa. We are allowed to do that because Agda was able to
+   detect the empty pattern. We could have also omitted the =p1 zero ()= case in
+   the theorem above.
+
+   We proceed by proving two lemmas by an easy induction:
+   #+begin_src text
+zero-r : (a : Nat) → a ≡ (a + zero)
+zero-r zero = z≡z
+zero-r (suc a) = s≡s (zero-r a)
+
+suc-r : (a b : Nat) → suc (a + b) ≡ (a + suc b)
+suc-r zero b = refl (suc b)
+suc-r (suc a) b = s≡s (suc-r a  b)
+   #+end_src
+
+   At last, we put all the pieces together to prove our theorem:
+   #+begin_src text
++commut : (a b : Nat) → (a + b) ≡ (b + a)
++commut zero b = zero-r b
++commut (suc a) b = trans (s≡s (+commut a b)) (suc-r b a)
+   #+end_src
+   For the base case we must prove =0 + b ≡ b + 0= which normalizes to =b ≡ b +
+   0= and then we can use our =zero-r= lemma. For the inductive case we must
+   prove =suc a + b ≡ b + suc a= which normalizes to =suc (a + b) ≡ b + suc a=.
+   By IH we know that =a + b ≡ b + a= so by =s≡s= we get =suc (a + b) ≡ suc (b +
+   a)=. Then by our lemma =suc-r= we get =suc (b + a) ≡ b + suc a=. Finally by
+   transitivity we get the desired =suc (a + b) ≡ b + suc a=.
 ** Universe hierarchy
    <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
    For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
