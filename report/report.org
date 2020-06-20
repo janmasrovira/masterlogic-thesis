@@ -1360,7 +1360,7 @@ LABEL. FOR EXAMPLE:)}}}
   4. Nothing is a proof of $⊥$.
   5. $⊤$ is always true.
 
-  According to the interpretation a proof of $A→A$ is just the identity
+  According to the BHK interpretation a proof of $A→A$ is just the identity
   function. We can express this in Agda by writing the identity lambda term:
   #+begin_src text
   (λ a → a)
@@ -1718,6 +1718,19 @@ suc-r (suc a) b = s≡s (suc-r a  b)
    By IH we know that =a + b ≡ b + a= so by =s≡s= we get =suc (a + b) ≡ suc (b +
    a)=. Then by our lemma =suc-r= we get =suc (b + a) ≡ b + suc a=. Finally by
    transitivity we get the desired =suc (a + b) ≡ b + suc a=.
+
+   We hope that at this point the user has a grasp of how properties can be
+   proved in Agda.
+
+   # To summarize, we outline the usual course of action when we
+   # want to prove a theorem.
+   # 1. We define the datatypes and functions that represent our relations,
+   #    operators, assumptions and so on. Usually there are multiple
+   #    routes that we can take, and it is important to implement definitions in a
+   #    way that they are easy to work with.
+   # 2. We prove intermediary lemmas...
+   # 3. The type of a function can represent a mathematical proposition.
+   # 4. The term
 ** Universe hierarchy
    <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
    For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
@@ -1735,11 +1748,11 @@ suc-r (suc a) b = s≡s (suc-r a  b)
    avoid such inconsistency Agda builds a hierarchy of universes where small
    types such as =Nat= and =Bool= are assigned the type =Set 0= and then for
    every $i∈ω$ we have that =Set i : Set i+1=. Notice however, that =Set i : Set
-   i+1= is true while =Set i : Set i+n= it is not for $n>1$. In Agda we write
+   i+1= is true while =Set i : Set i+n= does not hold for $n>1$. In Agda we write
    =Set= instead of =Set 0=. When the level is a constant natural number we can
    also write =Set₁=, =Set₂=, etc. instead of =Set 1=, =Set 2=, etc.
 
-   It is possible to combine types of different universe levels. The bigger type
+   It is possible to combine types of different universe levels. The biggest type
    is the one that counts. For instance:
    #+begin_src text
    to : Set₃ → Set₁ → Set₃
@@ -1749,9 +1762,11 @@ suc-r (suc a) b = s≡s (suc-r a  b)
 
    Agda provides a primitive[fn::/primitive/ means that it is built in the
    language and it cannot be user defined.] type for universe levels called
-   =Level=. Essentially it is the same as =Nat=, but it only works as a universe
-   index. Having the =Level= type allows us to write universe polymorphic functions.
-   See the same function as before, but now with universe polymorphism.
+   =Level=. Essentially it is the same as =Nat= (we have =lzero= for the base
+   level and =lsuc= for the successor level), but it only works as a universe
+   index. Having the =Level= type allows us to write universe polymorphic
+   functions. See the same function as before, but now with universe
+   polymorphism.
    #+begin_src text
    to' : {a b : Level} → Set a → Set b → Set (a ⊔ b)
    to' A B = A → B
@@ -1782,6 +1797,81 @@ suc-r (suc a) b = s≡s (suc-r a  b)
    In our project we have not used this extension.
 ** BHK interpretation of first order logic
    <<sec:bhk-fol>>
+   <<sec:predicates>>
+
+   We extend the interpretation that we gave before to include the universal and
+   existential quantifiers (cite:sep-intuitionistic-logic-development):
+   1. A proof of $∀x.F(x)$ is a function that given an arbitrary element $c$ in
+      the domain, builds a proof that $c$ satisfies $F$.
+   2. A proof of $∃x.F(x)$ is a witness $c$ in the domain and a proof that $c$
+     satisfies $F$.
+   Before diving into quantifiers we first discuss how to represent relations in
+   Agda. Recall the equality relation for natural numbers =_≡_= that we defined
+   before. Its type is =Nat → Nat → Set=. Let us say that we want to define a
+   generic type =REL= for relations on any type. A first attempt could be:
+
+   #+begin_src text
+REL : Set → Set → Set₁
+REL A B = A → B → Set
+   #+end_src
+
+   This first definition is somewhat limited. Recall that =Set = Set 0=, thus we
+   restrict =A= and =B= to be small types, furthermore, we require the relation
+   to be a small type as well. If we make our =REL= definition universe
+   polymorphic it turns out like this.\glsadd{REL}
+   #+begin_src text
+REL : {a b : Level} → Set a → Set b → (ℓ : Level) → Set (a ⊔ b ⊔ lsuc ℓ)
+REL A B ℓ = A → B → Set ℓ
+   #+end_src
+   This is the definition used in the Agda standard library (cite:agda-stdlib)
+   and is the one that we use in our project.
+
+   For homogeneous relations we use the name =Rel=:\glsadd{Rel}
+   #+begin_src text
+Rel : {a : Level} → Set a → (ℓ : Level) → Set (a ⊔ lsuc ℓ)
+Rel A ℓ = REL A A ℓ
+   #+end_src
+
+   By using these new definitions we could have defined the type of =_≡_= thus
+   (observe that =Rel Nat lzero= normalizes to =Nat → Nat → Set=):
+   #+begin_src text
+   data _≡_ : Rel Nat lzero where
+     ... -- same as before
+   #+end_src
+
+   In a similar way we can define predicates:
+   #+begin_src text
+   Pred : {a : Level} → Set a → (ℓ : Level) → Set (a ⊔ lsuc ℓ)
+   Pred A ℓ = A → Set ℓ
+   #+end_src
+
+   We proceed by giving a representation of the universal quantifier:
+   #+begin_src text
+data ∀[_] {a ℓ : Level} (A : Set a) (P : Pred A ℓ) : Set (a ⊔ ℓ) where
+  proof∀ : ((a : A) → P a) → ∀[ A ] P
+   #+end_src
+   The definition is straightforward. In fact this datatype is just a wrapper
+   for a function of type =(a : A) → P a=.
+
+   For instance, let us prove that every successor of a natural number is
+   different than zero:
+   #+begin_src text
+aux : (n : Nat) → ¬ (suc n ≡ zero)
+aux n ()
+
+s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
+s≠z = proof∀ aux
+
+-- Alternatively we could have written this:
+s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
+s≠z = proof∀ λ {n ()}
+   #+end_src
+   Implementing $∀$ elimination (if $∀x.Px$ and $c$ is in the domain then
+   $P(c)$) is straightforward:
+   #+begin_src text
+   ∀-elim : {a ℓ : Level} {A : Set a} {P : Pred A ℓ} → ∀[ A ] P → (a : A) → P a
+   ∀-elim (proof∀ f) a = f a
+   #+end_src
 ** Agda syntax
    This section is meant to be a summary of some of the important parts of the
    language reference. I am not sure if this section should be in the report or
@@ -1903,8 +1993,7 @@ infix 60 ¬'_
   We use the symbol =¬'= instead of =¬= for the same reason we used =⊥'= instead
   of =⊥=.
 
-** Predicates and relations
-   <<sec:predicates>>
+** Predicates and relations :noexport:
    In this section we give a short description on how to represent predicates
    and relations in Agda.
 
