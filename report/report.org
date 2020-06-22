@@ -160,6 +160,7 @@
    they cannot unambiguously convey all the information in the formula.
 
 ** Logic $IL$
+   <<sec:il>>
    The logic $IL$ encompasses all classical tautologies in the new language plus
    the following axiom schemes:
    - K: $□ (A → B) → □ A → □ B$;
@@ -2605,24 +2606,27 @@ record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW
    definition of the type =𝕎 : Set₁=
 
 ** IL and syntactic proofs
-   Here we present
+   Here we present our efforts on formalizing syntactic IL proofs in Agda. We
+   restrict ourselves to finite sets of assumptions.
 
-   A (finite) list is defined thus:
+   We begin by defining the necessary type to represent a finite list:
    #+begin_src text
-data List {a} (A : Set a) : Set a where
+data List {a : Level} (A : Set a) : Set a where
   []  : List A
-  _∷_ : (x : A) (xs : List A) → List A
+  _∷_ : A → List A → List A
    #+end_src
    Then we can define a proof of membership inductively in the following way:
    #+begin_src text
-data _∈_ {A : Set a} (a : A) : Pred (List A) a where
-  here  : ∀ {x xs} → a ≡ x → a ∈ (x ∷ xs)
-  there : ∀ {x xs} → a ∈ xs → a ∈ (x ∷ xs)
+data _∈_ {a : Level} {A : Set a} (a : A) : Pred (List A) a where
+  here  : {x : A} {xs : List A} → a ≡ x → a ∈ (x ∷ xs)
+  there : {x : A} {xs : List A} → a ∈ xs → a ∈ (x ∷ xs)
    #+end_src
 
-   Then we can define the logic $IL$ in Agda.
+   Now that we have all the necessary tools, we proceed to define the relation
+   =_⊢_=, which represents the IL logic in Agda.
    #+begin_src text
 data _⊢_ (Π : List Fm) : Fm → Set where
+  -- identity rule
   Ax : ∀ {A} → A ∈ Π → Π ⊢ A
   -- classical axioms
   C1 : ∀ {A B} → Π ⊢ A ↝ (B ↝ A)
@@ -2640,8 +2644,37 @@ data _⊢_ (Π : List Fm) : Fm → Set where
   MP : ∀ {A B} → Π ⊢ A ↝ B → Π ⊢ A → Π ⊢ B
   nec : ∀ {A} → [] ⊢ A → Π ⊢ □ A
    #+end_src
+   We include constructor =Ax= so we can use assumptions. We include
+   constructors =C1=, =C2= and =C3= so that every classical tautology in the
+   language of IL can be proved. Then we add the axioms of IL and finally we add
+   =MP= for modus ponens and =nec= for necessitation. Note that the
+   necessitation rule only accepts IL theorems (empty set of assumptions) and
+   thus this definition is fitting for local semantics.
+   We have proven several results about IL, which are presented in Section
 
+   Consider the syntactic proof of $A→A$.
+   #+begin_src text
+⊢A↝A : ∀ {A Π} → Π ⊢ A ↝ A
+⊢A↝A {A} = MP (MP (C2 {Π} {A} {A ↝ A} {A}) (C1 {Π} {A} {A ↝ A})) (C1 {Π} {A} {A})
+   #+end_src
+   We see that it is extremely verbose and hard to read. We can substantially
+   improve it by relying on Agda's type inference to automatically infer the
+   instantiation of almost all of the axiom schemes used.
+   #+begin_src text
+⊢A↝A : ∀ {A Π} → Π ⊢ A ↝ A
+⊢A↝A {A} = MP (MP C2 C1) (C1 {B = A})
+   #+end_src
+   From the previous result it is easy to show that $A▷A$ is an IL theorem.
+   #+begin_src text
+⊢A▷A : ∀ {A Π} → Π ⊢ A ▷ A
+⊢A▷A {A} = MP J1 (nec ⊢A↝A)
+   #+end_src
+   Although the Agda proofs of $A→A$ and $A▷A$ are short, it is very hard for a
+   human to understand them with the syntax used above. This motivates our next
+   section, in which we present a way to express syntactic proofs in Agda using
+   paper-like syntax.
 
+   [[sec:il]].
 *** An eDSL
      In this section we present a language for writing Hilbert style proofs for
      logic $IL$. This language was first presented by the author of this paper in
