@@ -2671,11 +2671,11 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 ⊢A▷A {A} = MP J1 (nec ⊢A↝A)
    #+end_src
    Although the Agda proofs of $A→A$ and $A▷A$ are short, it is very hard for a
-   human to understand them with the syntax used above. This motivates our next
-   section, in which we present a way to express syntactic proofs in Agda using
-   paper-like syntax.
+   human to fully understand them with the syntax used above. This problem
+   motivates our next section, in which we present a way to express syntactic
+   proofs in Agda using paper-like syntax.
 
-*** An eDSL
+*** An eDSL for syntactic proofs
      In this section we present a language for writing Hilbert style proofs for
      logic $IL$. This language was first presented by the author of this paper in
      cite:slug for logic $K$ and what follows is an adaptation of that.
@@ -2685,6 +2685,31 @@ data _⊢_ (Π : List Fm) : Fm → Set where
      functions and datatypes) embedded in another language (in this case Agda)
      that has been designed to solve a problem in a very specific domain, in this
      case, Hilbert style proofs.
+
+     First example:
+   #+begin_src text
+⊢A↝A : ∀ {Π A} → Π ⊢ A ↝ A
+⊢A↝A {A} =
+  begin[ 0 ] (A ↝ ((A ↝ A) ↝ A)) ↝ ((A ↝ (A ↝ A)) ↝ (A ↝ A)) By C2
+       [ 1 ] A ↝ ((A ↝ A) ↝ A)                               By C1
+       [ 2 ] A ↝ (A ↝ A)                                     By C1
+       [ 3 ] (A ↝ (A ↝ A)) ↝ A ↝ A                           ByMP 0 , 1
+       [ 4 ] A ↝ A                                           ByMP 3 , 2
+       ■
+   #+end_src
+
+   And the other example:
+   #+begin_src text
+⊢A▷A : ∀ {A} → [] ⊢ A ▷ A
+⊢A▷A {A} =
+  begin[ 0 ] A ↝ A                        By ⊢A↝A
+       [ 1 ] □ (A ↝ A)                    ByNec 0
+       [ 2 ] □ (A ↝ A) ↝ (A ▷ A)          By J1
+       [ 3 ] A ▷ A                        ByMP 2 , 1
+       ■
+   #+end_src
+
+
 
 * Verbrugge
   In this section we proof that given a generalized Veltman model that satisfies
