@@ -1922,17 +1922,22 @@ data Σ {ℓ ℓ' : Level} (A : Set ℓ) (B : A → Set ℓ') : Set (ℓ ⊔ ℓ
    #+begin_src text
 Σ-syntax : {ℓ ℓ' : Level} → (A : Set ℓ) → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
 Σ-syntax = Σ
-syntax Σ-syntax A (λ x → B) = ∃[ x ∈ A ] B
+syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
    #+end_src
-   With this syntax enhancement we can replace =Σ A P= by =∃[ c ∈ A ] (P c)=.
+   With this syntax enhancement we can replace =Σ A P= by =Σ[ c ∈ A ] (P c)=.
    The previous theorem becomes:
    #+begin_src text
    ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
-     → (a : A) → P a → ∃[ c ∈ A ] (P c)
+     → (a : A) → P a → Σ[ c ∈ A ] (P c)
    ∃-intro a p = a , p
    #+end_src
+   There is a variation of this notation which omits the type of the variable as
+   it can be inferred in many cases. That is, instead of =Σ[ c ∈ A ] (P c)= we
+   would have =∃[ c ] (P c)=. We use this notation, for instance, in the
+   definition of Veltman semantics in Section [[sec:agda-ord-semantics]].
 
 ** Predicates as mathematical sets
+   <<sec:sets>>
    In this section when we say /set/ we refer to a subset of an Agda type. The
    most natural way to represent subsets in Agda is to use predicates. See
    [[sec:predicates]] for an introduction. A predicate represents the characteristic
@@ -2279,7 +2284,7 @@ data Σ {a b : Level} (A : Seta a) (B : A → Set b) : Set (a ⊔ b) where
     We say that a relation is \gls*{noetherian} if it is conversely
     well-founded. We begin by formalizing the concept of infinite ascending
     chain in Agda. In order to do that, we define a coinductive record datatype
-    (cite:agda-doc) (cite:norell:thesis). A coinductive record is allowed to be
+    (cite:agda-doc,norell:thesis). A coinductive record is allowed to be
     infinite.
 
     #+begin_src text
@@ -2293,7 +2298,7 @@ record InfiniteChain {ℓW ℓR} {W : Set ℓW} (_<_ : Rel W ℓR) (a : W)
     #+end_src
 
     We see that the previous record datatype represents an infinite ascending
-    chain starting at =a= of some relation =<=. It has three fields. =b=: The
+    chain starting at =a= of some relation =_<_=. It has three fields. =b=: The
     next element in the chain. =a<b=: A proof that $a < b$ and =tail=: an
     infinite chain starting at =b=.
 
@@ -2329,13 +2334,11 @@ Noetherian⇒Irreflexive noetherian Rxx = noetherian (infiniteRefl Rxx)
    To represent ordinary Veltman semantics in Agda, the first step is to
    define the type of an ordinary Veltman frame:
    #+begin_src text
-record Frame : Set₁ where
+record Frame {ℓW ℓR ℓS : Level} (W : Set ℓW) (R : Rel W ℓR) (S : Rel₃ W ℓS)
+  : Set (ℓW ⊔ ℓR ⊔ ℓS) where
   constructor frame
   field
-    W : Set
     witness : W
-    R : Rel W lzero
-    S : Rel₃ W lzero
     R-trans : Transitive R
     R-noetherian : Noetherian R
     Sw⊆R[w]² : ∀ {w u v} → S w u v → R w u × R w v
@@ -2344,50 +2347,45 @@ record Frame : Set₁ where
     R-Sw-trans : ∀ {w u v} → R w u → R u v → S w u v
    #+end_src
    The keyword =record= is used to define a new product type (a tuple) in which
-   each component (or field) has a name.
+   each component (or field) has a name that we can use to access it.
 
-   The first component, =W=, corresponds to the type of the worlds in the frame.
-   The second component, =witness= is required to make sure that the set of
-   worlds is not empty. The =R= and =S= components are the relations. The
-   remaining components are the properties that must be satisfied according to
-   definition [[def:ordinary-frames]]. Notice the =lzero= in the type of =R= and =S=
-   which restricts this relations to be in the 0 level of the universe hierarchy
-   (i.e. =R= has type =W → W → Set₀=, see [[sec:universe-hierarchy]]) as making them
-   universe polymorphic has no gains for the purposes of this work and it would
-   make code harder to read.
+   We see that the datatype is parameterized by the universe =W=, the =R=
+   relation, the =S= relation and their respective universe levels =ℓW, ℓR, ℓS=.
+
+   The first component, =witness=, is required to make sure that the set of worlds is
+   not empty. The remaining components are the properties that must be satisfied
+   according to definition [[def:ordinary-frames]].
 
    We define a valuation on a frame thus:
    #+begin_src text
-Valuation : Frame → Set₁
-Valuation F = REL W Var lzero
-  where open Frame F
+Valuation : Frame {ℓW} {ℓR} {ℓS} W R S → Set (lsuc lzero ⊔ ℓW)
+Valuation {W = W} F = REL W Var lzero
    #+end_src
 
-   And then we define a model to be a tuple of a frame and a valuation on that
+   And then we define a model to be a frame parameterized with a valuation on that
    frame.
    #+begin_src text
-record Model : Set₁ where
+record Model (W : Set ℓW) (R : Rel W ℓR) (S : Rel₃ W ℓS) (V : REL W Var lzero)
+  : Set (ℓW ⊔ ℓR ⊔ ℓS) where
   constructor model
   field
-    F : Frame
-    V : Valuation F
+    F : Frame {ℓW} {ℓR} {ℓS} W R S
    #+end_src
 
    Our next step is to define the forcing relation.
    #+begin_src text
-data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
-   ...
+data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+  : Fm → Set (ℓW ⊔ ℓR ⊔ ℓS)
    #+end_src
    We set a model and a world of that model as parameters as they should be
    shared by all constructors. We leave the formula as an index as it may vary
    depending on the constructor. We should introduce a constructor for each case
-   in definition [[def:ord-forcing]]:[fn::we have slightly
-   simplified the types of the constructors below to make them more readable.]
+   in definition [[def:ord-forcing]]:
    1. We do not need a constructor for =⊥'= as its absence implicitly implies that
       we can never build an instance of =M , w ⊩ ⊥'= regardless of =M= and =w=.
    2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
       #+begin_src text
-  var : {x : Var} → V w x → M , w ⊩ var x
+  var : {p : Var} → p ∈ V w → M , w ⊩ var p
       #+end_src
    3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
       #+begin_src text
@@ -2397,22 +2395,29 @@ data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
       that $v⊩B$ and $uS_wv$.
       #+begin_src text
    rhd : {A B : Fm} →
-     ({u : W} → R w u → M , u ⊩ A → (Σ W λ v → S w u v × (M , v ⊩ B)))
+     ({u : W} → R w u → M , u ⊩ A → (∃[ v ] (S w u v × (M , v ⊩ B))))
      → M , w ⊩ A ▷ B
       #+end_src
 
    Unfortunately the definition above is not valid in Agda. The reason is that
    constructors =rhd= and =impl= both fail the positivity check (see
-   [[sec:positivity]]). For instance, see that in the =impl= constructor we have
+   [[sec:positivity]]). For instance, see that in the =impl= constructor type we have
    =(M , w ⊩ A)= on the left of an arrow =→=.
 
    We have circumvented this problem by providing mutually recursive definitions
-   for /forcing/ (=_,_⊩_=) and /not forcing/ (=_,_⊮_=).
+   for /forcing/ (=_,_⊩_=) and /not forcing/ (=_,_⊮_=). Agda allows the
+   definition of mutually recursive datatypes (and functions) by first providing
+   the type of both[fn::Or more if it is the case.] definitions and after those
+   giving the rest of the definition, that is, the constructors for datatypes
+   and the equations for functions.
 
-   The type definition without the constructors is as follows.
+   The type of the two datatypes that we want to define are as follows.
    #+begin_src text
-   data _,_⊮_ (M : Model) (w : MW M) : Fm → Set
-   data _,_⊩_ (M : Model) (w : MW M) : Fm → Set
+data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+  : Fm → Set (ℓW ⊔ ℓR ⊔ ℓS) -- forcing relation
+
+data _,_⊮_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+  : Fm → Set (ℓW ⊔ ℓR ⊔ ℓS) -- not forcing relation
    #+end_src
 
    Next we provide the strictly positive types of each constructor of the
@@ -2426,11 +2431,11 @@ data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
    2. For variables.
     1. Forcing (=_,_⊩_=).
        #+begin_src text
-  var : {x : Var} → V w x → M , w ⊩ var x
+  var : {p : Var} → p ∈ V w → M , w ⊩ var p
        #+end_src
     2. Not forcing (=_,_⊮_=).
        #+begin_example
-  var : {x : Var} → ¬ (V w x) → M , w ⊮ var x
+  var : {p : Var} → p ∉ V w → M , w ⊮ var p
        #+end_example
 
    3. For implication (=↝=).
@@ -2446,13 +2451,13 @@ data _,_⊩_ (M : Model) (w : MW M) : Fm → Set where
     1. Forcing (=_,_⊩_=).
        #+begin_src text
   rhd : {A B : Fm} →
-    (∀ {u} → R w u → M , u ⊮ A ⊎ (Σ W λ v → S w u v × M , v ⊩ B))
+    (∀ {u} → R w u → M , u ⊮ A ⊎ (∃[ v ] (S w u v × M , v ⊩ B)))
     → M , w ⊩ A ▷ B
        #+end_src
     2. Not forcing (=_,_⊮_=).
        #+begin_src text
   rhd : {A B : Fm} →
-    Σ W (λ u → R w u × M , u ⊩ A × ((v : W) → (¬ S w u v) ⊎ M , v ⊮ B))
+    ∃[ u ] (R w u × M , u ⊩ A × ((v : W) → (¬ S w u v) ⊎ M , v ⊮ B))
     → M , w ⊮ A ▷ B
        #+end_src
 
@@ -2462,7 +2467,7 @@ data _,_⊩_ M w where
   var : {x : Var} → V w x → M , w ⊩ var x
   impl : {A B : Fm} → M , w ⊮ A ⊎ M , w ⊩ B → M , w ⊩ A ↝ B
   rhd : {A B : Fm} →
-    (∀ {u} → R w u → M , u ⊮ A ⊎ (Σ W λ v → S w u v × M , v ⊩ B))
+    (∀ {u} → R w u → M , u ⊮ A ⊎ (∃[ v ] (S w u v × M , v ⊩ B)))
     → M , w ⊩ A ▷ B
    #+end_src
    #+begin_src text
@@ -2470,19 +2475,20 @@ data _,_⊮_ M w where
   var : {x : Var} → ¬ (V w x) → M , w ⊮ var a
   impl : {A B : Fm} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
   rhd : {A B : Fm} →
-    Σ W (λ u → R w u × M , u ⊩ A × ((v : W) → (¬ S w u v) ⊎ M , v ⊮ B))
+    ∃[ u ] (R w u × M , u ⊩ A × ((v : W) → (¬ S w u v) ⊎ M , v ⊮ B))
     → M , w ⊮ A ▷ B
   bot : M , w ⊮ ⊥'
    #+end_src
 
    To prove that =_,_⊩= and =_,_⊮= are indeed the negation of each other
-   we should prove two lemmas; in Agda types[fn::=A ⇔ B ≔ A → B × B → A=]:
+   we should prove two lemmas. We define =A ⇔ B ≔ A → B × B → A=. Then the lemma in
+   Agda types is as follows:
    {{{beginlemma}}}
    <<lemma:forcing-neg>>
    \hfill
    1. =∀ {M w A} → M , w ⊩ A ⇔ ¬ (M , w ⊮ A)=.
    2. =∀ {M w A} → ¬ (M , w ⊩ A) ⇔ M , w ⊮ A=.
-   {{{endlemma}}} For lemma 1 we can prove $⇒$ and for lemma 2 we can prove $⇐$
+   {{{endlemma}}} For part 1 we can prove $⇒$ and for part 2 we can prove $⇐$
    (see lemma [[lemma:equiv]]). However, it is not possible to prove the remaining
    directions. In general terms, this is due to the fact that in Agda (and in
    intuitionistic logic in general) we can prove that =(¬ A ⊎ B) → A → B= but we
@@ -2508,9 +2514,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    prove lemma [[lemma:forcing-neg]].
    {{{endproof}}}
 
-   {{{beginlemma}}} <<lemma:equiv>> The following is true[fn::Note that =MR M=
-   is the =R= of the frame on which the model =M= is based. We give analogous
-   definitions to =MW= and =MS=.]:
+   {{{beginlemma}}} <<lemma:equiv>> The following is true:
 
    1. =⊩⊥ : ∀ {M w} → ¬ (M , w ⊩ ⊥')=;
    2. =⊮→¬⊩ : ∀ {M w A} → M , w ⊮ A → ¬ (M , w ⊩ A)=;
@@ -2523,23 +2527,23 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    9. =⊩∧ : ∀ {M w A B} → M , w ⊩ A ∧ B ⇔ (M , w ⊩ A × M , w ⊩ B)=;
    10. =⊮∧ : ∀ {M w A B} → M , w ⊮ A ∧ B ⇔ (M , w ⊮ A ⊎ M , w ⊮ B)=;
    11. =⊩∨ : ∀ {M w A B} → M , w ⊩ A ∨ B ⇔ (M , w ⊩ A ⊎ M , w ⊩ B)=;
-   12. =⊩□ : ∀ {M w A} → M , w ⊩ □ A ⇔ (∀ {v} → MR M w v → M , v ⊩ A)=;
-   13. =⊮□ : ∀ {M w A} → M , w ⊮ □ A ⇔ (Σ (MW M) λ u → MR M w u × M , u ⊮ A)=;
-   14. =⊩♢ : ∀ {M w A} → M , w ⊩ ♢ A ⇔ (Σ (MW M) λ u → MR M w u × M , u ⊩ A)=;
-   15. =⊮♢ : ∀ {M w A} → M , w ⊮ ♢ A ⇔ (∀ {u} → MR M w u → M , u ⊮ A)=;
+   12. =⊩□ : ∀ {M w A} → M , w ⊩ □ A ⇔ (∀ {v} → R w v → M , v ⊩ A)=;
+   13. =⊮□ : ∀ {M w A} → M , w ⊮ □ A ⇔ (∃[ u ] (R w u × M , u ⊮ A))=;
+   14. =⊩♢ : ∀ {M w A} → M , w ⊩ ♢ A ⇔ (∃[ u ] (R w u × M , u ⊩ A))=;
+   15. =⊮♢ : ∀ {M w A} → M , w ⊮ ♢ A ⇔ (∀ {u} → R w u → M , u ⊮ A)=;
    16. =⊩↝⇨ : ∀ {M w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B=;
-   17. =⊩▷⇨ : ∀ {M w A B} → M , w ⊩ A ▷ B → (∀ {u} → MR M w u → M , u ⊩ A → Σ (MW M) λ v → (MS M) w u v × M , v ⊩ B)=.
+   17. =⊩▷⇨ : ∀ {M w A B} → M , w ⊩ A ▷ B → (∀ {u} → R w u → M , u ⊩ A → ∃[ v ] (S w u v × M , v ⊩ B)=.
    {{{endlemma}}}
    {{{beginproof}}} {{{agda}}} All of the above has been proven
    in Agda without assuming that the model is decidable. {{{endproof}}}
 
 
-   {{{beginlemma}}} <<lemma:ord-equiv-dec>> A series of equivalences that can be proven for decidable
-   models.
+   {{{beginlemma}}} <<lemma:ord-equiv-dec>> The following series of equivalences
+   can be proven for decidable models.
 
    1. =⊩↝ : ∀ {w A B} → M , w ⊩ A ↝ B ⇔ (M , w ⊩ A → M , w ⊩ B)=;
    2. =⊩▷ : ∀ {w A B} → M , w ⊩ A ▷ B ⇔
-      (∀ {u} → MR M w u → M , u ⊩ A → Σ (MW M) λ v → (MS M) w u v × M , v ⊩ B)=;
+      (∀ {u} → R w u → M , u ⊩ A → ∃[ v ] (S w u v × M , v ⊩ B))=;
    3. =⊩⇔¬⊮ : ∀ {w A} → M , w ⊩ A ⇔ (¬ M , w ⊮ A)=;
    4. =⊮⇔¬⊩ : ∀ {w A} → M , w ⊮ A ⇔ (¬ M , w ⊩ A)=.
    {{{endlemma}}} {{{beginproof}}} {{{agda}}} Note that we only need the
@@ -2569,37 +2573,86 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    Assume for the below definitions that we have some =A : Set= in scope.
 ** Generalized semantics
    In this section we explain how we have represented generalized Veltman
-   semantics in Agda.
+   semantics in Agda. As explained in Section [[sec:trans]] we consider eight
+   different quasi-transitivity properties, thus, we need to define everything
+   related to generalized Veltman semantics to be generic with respect to the
+   quasi-transitivity condition used, which was certainly a challenge.
 
-   Analogously to ordinary semantics we start by defining a frame:
-
+   Analogously to ordinary semantics we start by defining a frame. We begin by
+   defining a datatype without a quasi-transitivity condition. See that we
+   define the type =𝕎 ≔ Pred W ℓW=, which means that a term of type =𝕎= is a
+   subset of =W= (see section [[sec:sets]] for details on how to represent
+   mathematical sets in Agda).
    #+begin_src text
-record Frame {ℓ} : Set (lsuc ℓ) where
+record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS)
+  : Set (lsuc lzero ⊔ ℓR ⊔ ℓS ⊔ lsuc ℓW) where
   constructor frame
-  field
-    W : Set
-  𝕎 : Set₁
-  𝕎 = Pred W lzero
+  𝕎 : Set (lsuc ℓW)
+  𝕎 = Pred W ℓW
   field
     witness : W
-    R : Rel W lzero
-    S : REL₃ W W 𝕎 lzero
     Swu-sat : ∀ {w u Y} → S w u Y → Satisfiable Y
     R-trans : Transitive R
-    R-noetherian : Noetherian {ℓ} R
+    R-noetherian : Noetherian R
     Sw⊆R[w] : ∀ {w u Y} → S w u Y → R w u
-    SwuY⊆R[w] : ∀ {w u Y} → S w u Y → ∀ {y} → y ∈ Y → R w y
+    SwuY⊆Rw : ∀ {w u Y} → S w u Y → ∀ {y} → y ∈ Y → R w y
     S-quasirefl : ∀ {w u} → R w u → S w u ｛ u ｝
-    S-quasitrans : ∀ {w u V} → S w u V → (f : ∀ {v} → v ∈ V → Σ 𝕎 λ Z → S w v Z)
-      → S w u λ {x → Σ W λ v → Σ (v ∈ V) λ v∈V → x ∈ proj₁ (f v∈V)}
     R-Sw-trans : ∀ {w u v} → R w u → R u v → S w u ｛ v ｝
-    S-monotone : ∀ {w u} {V Z : 𝕎} → S w u V → V ⊆ Z → Z ⊆ R w → S w u Z
+    S-ext : ∀ {w x V V'} → S w x V → V ⊆ V' → V' ⊆ V → S w x V'
    #+end_src
 
    Notice that just below the definition of the field =W : Set=, we have introduced a
    definition of the type =𝕎 : Set₁=
 
 ** IL and syntactic proofs
+   Here we present
+
+   A (finite) list is defined thus:
+   #+begin_src text
+data List {a} (A : Set a) : Set a where
+  []  : List A
+  _∷_ : (x : A) (xs : List A) → List A
+   #+end_src
+   Then we can define a proof of membership inductively in the following way:
+   #+begin_src text
+data _∈_ {A : Set a} (a : A) : Pred (List A) a where
+  here  : ∀ {x xs} → a ≡ x → a ∈ (x ∷ xs)
+  there : ∀ {x xs} → a ∈ xs → a ∈ (x ∷ xs)
+   #+end_src
+
+   Then we can define the logic $IL$ in Agda.
+   #+begin_src text
+data _⊢_ (Π : List Fm) : Fm → Set where
+  Ax : ∀ {A} → A ∈ Π → Π ⊢ A
+  -- classical axioms
+  C1 : ∀ {A B} → Π ⊢ A ↝ (B ↝ A)
+  C2 : ∀ {A B C} → Π ⊢ (A ↝ (B ↝ C)) ↝ ((A ↝ B) ↝ (A ↝ C))
+  C3 : ∀ {A B} → Π ⊢ (¬' A ↝ ¬' B) ↝ (B ↝ A)
+  -- IL axioms
+  K : ∀ {A B} → Π ⊢ (□ (A ↝ B)) ↝ (□ A ↝ □ B)
+  L : ∀ {A} → Π ⊢ □ (□ A ↝ A) ↝ □ A
+  J1 : ∀ {A B} → Π ⊢ □ (A ↝ B) ↝ A ▷ B
+  J2 : ∀ {A B C} → Π ⊢ A ▷ B ∧ B ▷ C ↝ A ▷ C
+  J3 : ∀ {A B C} → Π ⊢ (A ▷ C ∧ B ▷ C) ↝ (A ∨ B) ▷ C
+  J4 : ∀ {A B} → Π ⊢ A ▷ B ↝ ♢ A ↝ ♢ B
+  J5 : ∀ {A} → Π ⊢ ♢ A ▷ A
+  -- rules
+  MP : ∀ {A B} → Π ⊢ A ↝ B → Π ⊢ A → Π ⊢ B
+  nec : ∀ {A} → [] ⊢ A → Π ⊢ □ A
+   #+end_src
+
+
+*** An eDSL
+     In this section we present a language for writing Hilbert style proofs for
+     logic $IL$. This language was first presented by the author of this paper in
+     cite:slug for logic $K$ and what follows is an adaptation of that.
+
+     We begin by introducing the concept of /eDSL/. The acronym eDSL stands for
+     Embedded Domain Specific Language. It refers to a small language (a set of
+     functions and datatypes) embedded in another language (in this case Agda)
+     that has been designed to solve a problem in a very specific domain, in this
+     case, Hilbert style proofs.
+
 * Verbrugge
   In this section we proof that given a generalized Veltman model that satisfies
   a certain property, we can build an ordinary Veltman model with the same
@@ -2782,6 +2835,8 @@ title=Bibliography
 
 
 * Appendix
-  :PROPERTIES:
-  :END:
   All the Agda code goes here.
+
+  # #+INCLUDE: "./all.org" example
+  # #+INCLUDE: "./latex/Base.tex" export latex
+
