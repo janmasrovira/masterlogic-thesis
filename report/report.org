@@ -2651,6 +2651,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    necessitation rule only accepts IL theorems (empty set of assumptions) and
    thus this definition is fitting for local semantics.
    We have proven several results about IL, which are presented in Section
+   [[sec:il]].
 
    Consider the syntactic proof of $A→A$.
    #+begin_src text
@@ -2674,7 +2675,6 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    section, in which we present a way to express syntactic proofs in Agda using
    paper-like syntax.
 
-   [[sec:il]].
 *** An eDSL
      In this section we present a language for writing Hilbert style proofs for
      logic $IL$. This language was first presented by the author of this paper in
