@@ -2688,7 +2688,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 
      First example:
    #+begin_src text
-⊢A↝A : ∀ {Π A} → Π ⊢ A ↝ A
+⊢A↝A : ∀ {A} → [] ⊢ A ↝ A
 ⊢A↝A {A} =
   begin[ 0 ] (A ↝ ((A ↝ A) ↝ A)) ↝ ((A ↝ (A ↝ A)) ↝ (A ↝ A)) By C2
        [ 1 ] A ↝ ((A ↝ A) ↝ A)                               By C1
