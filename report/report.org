@@ -2820,11 +2820,11 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    We strongly believe in the practical utility of this language as it can be
    used by logicians that are not Agda experts due to its simple and familiar
    syntax. We also know that long syntactic proofs are error prone. This
-   language completely removes such problem. Despite all the positives, there is
-   some room for improvement. For instance, the language does not include the
-   deduction theorem rule, which is frequently used in practice. Note that this
-   limitation can be ameliorated as we can use the deduction theorem outside of
-   the eDSL and then include the result by using a =[_]_By_= instruction.
+   language completely removes such problem. Of course, there is some room for
+   improvement, for instance, the language does not include the deduction
+   theorem rule, which is frequently used in practice. Note that this limitation
+   can be ameliorated as we can use the deduction theorem outside of the eDSL
+   and then include the result by using a =[_]_By_= instruction.
 * Verbrugge
   In this section we proof that given a generalized Veltman model that satisfies
   a certain property, we can build an ordinary Veltman model with the same
