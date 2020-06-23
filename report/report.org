@@ -2653,7 +2653,16 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    We have proven several results about IL, which are presented in Section
    [[sec:il]].
 
-   Consider the syntactic proof of $A→A$.
+   Consider the pen and paper syntactic proof of $A→A$.
+   \begin{flalign*}
+   0.\ &(A → ((A → A) → A)) → ((A → (A → A)) → (A → A)) & \text{By } C2 \\
+   1.\ &A → ((A → A) → A) & \text{By } C1 \\
+   2.\ &A → (A → A) & \text{By } C1 \\
+   3.\ & (A → (A → A)) → A → A   &\text{By MP 0, 1} \\
+   4.\ & A → A   &\text{By MP 3, 2} \\
+   ■&
+   \end{flalign*}
+   Now see how we could replicate the proof in Agda using our definition of =_⊢_=.
    #+begin_src text
 ⊢A↝A : ∀ {A Π} → Π ⊢ A ↝ A
 ⊢A↝A {A} = MP (MP (C2 {Π} {A} {A ↝ A} {A}) (C1 {Π} {A} {A ↝ A})) (C1 {Π} {A} {A})
@@ -2666,25 +2675,37 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 ⊢A↝A {A} = MP (MP C2 C1) (C1 {B = A})
    #+end_src
    From the previous result it is easy to show that $A▷A$ is an IL theorem.
+   \begin{flalign*}
+        0.\ &  A → A                        &\text{By } ⊢A→A \\
+        1.\ &  □ (A → A)                    &\text{By necessitation on 0} \\
+        2.\ &  □ (A → A) → (A ▷ A)          &\text{By J1} \\
+        3.\ &  A ▷ A                        &\text{By MP 2, 1} \\
+       ■
+   \end{flalign*}
+   And now the same proof in Agda.
    #+begin_src text
 ⊢A▷A : ∀ {A Π} → Π ⊢ A ▷ A
 ⊢A▷A {A} = MP J1 (nec ⊢A↝A)
    #+end_src
    Although the Agda proofs of $A→A$ and $A▷A$ are short, it is very hard for a
-   human to fully understand them with the syntax used above. This problem
+   human to fully understand them with the Agda syntax used above. This problem
    motivates our next section, in which we present a way to express syntactic
    proofs in Agda using paper-like syntax.
 
 *** An eDSL for syntactic proofs
      In this section we present a language for writing Hilbert style proofs for
      logic $IL$. This language was first presented by the author of this paper in
-     cite:slug for logic $K$ and what follows is an adaptation of that.
+     cite:slug for logic $K$.
 
-     We begin by introducing the concept of /eDSL/. The acronym eDSL stands for
+     We begin by introducing the concept of eDSL. The acronym eDSL stands for
      Embedded Domain Specific Language. It refers to a small language (a set of
      functions and datatypes) embedded in another language (in this case Agda)
      that has been designed to solve a problem in a very specific domain, in this
      case, Hilbert style proofs.
+
+     We begin by showing how we could write the two syntactic proofs presented
+     in the previous section in our eDSL. Then we will present the language in
+     detail.
 
      First example:
    #+begin_src text
@@ -2698,7 +2719,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
        ■
    #+end_src
 
-   And the other example:
+   Second example:
    #+begin_src text
 ⊢A▷A : ∀ {A} → [] ⊢ A ▷ A
 ⊢A▷A {A} =
@@ -2709,6 +2730,34 @@ data _⊢_ (Π : List Fm) : Fm → Set where
        ■
    #+end_src
 
+   We see that our eDSL allows us to write syntactic proofs in a very similar
+   human-friendly syntax which is almost identical to the pen and paper usual
+   syntax with the standout benefit that the proof is computer checked. We want
+   to emphasize, as it may be surprising to the reader, that the proofs shown
+   above are actual Agda code.
+
+   We proceed by giving a short description of the language, which consists of
+   four types of instructions:
+   1. =[_]_By_=. This instruction is used to include a theorem in the proof. The
+      theorem can be any axiom scheme of IL or anything proved to be a theorem.
+      More precisely, the theorem can be any =A= if we have =Π ⊢ A= for some =Π=.
+   2. =[_]_ByNec_=. This instruction applies the necessitation rule to a formula
+      in a previous line referenced by its number. This rule can only be applied
+      if we have an empty set of assumptions.
+   3. =[_]_ByMP_=. This instruction applies the modus ponens rule to two
+      formulas in previous lines referenced by their number.
+   4. =■=. The proof must be closed using this instruction.
+   Every instruction must be increasingly numbered starting at 0.
+
+   Thanks to the design of the language, if the user mistakenly numbers one of
+   the instructions Agda will report an error indicating where the error is. If
+   the user improperly instantiates an axiom scheme or theorem or references
+   an incorrect line, it will also be prompted with an error.
+   Summarizing, an error will appear if the proof has any deficiency.
+
+   The detailed inner workings of the language fall out of the scope of this
+   paper, however, we encourage the reader to look for further information in
+   cite:slug if their are interested.
 
 
 * Verbrugge
