@@ -2741,6 +2741,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    1. =[_]_By_=. This instruction is used to include a theorem in the proof. The
       theorem can be any axiom scheme of IL or anything proved to be a theorem.
       More precisely, the theorem can be any =A= if we have =Π ⊢ A= for some =Π=.
+      The first instruction must be of this kind and must be preceded with =begin=.
    2. =[_]_ByNec_=. This instruction applies the necessitation rule to a formula
       in a previous line referenced by its number. This rule can only be applied
       if we have an empty set of assumptions.
@@ -2751,15 +2752,79 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 
    Thanks to the design of the language, if the user mistakenly numbers one of
    the instructions Agda will report an error indicating where the error is. If
-   the user improperly instantiates an axiom scheme or theorem or references
-   an incorrect line, it will also be prompted with an error.
-   Summarizing, an error will appear if the proof has any deficiency.
+   the user improperly instantiates an axiom scheme or theorem or references an
+   incorrect line, it will also be prompted with an error. Summarizing, an error
+   will appear if the proof has any deficiency. This holds true as the eDSL is
+   implemented in Agda and thus it is verified.
 
-   The detailed inner workings of the language fall out of the scope of this
-   paper, however, we encourage the reader to look for further information in
-   cite:slug if their are interested.
+   We proceed by giving a rough approximation on how the language has been
+   implemented. Details of the inner workings of the language are left out as
+   they fall out of the scope of this paper, however, we encourage the reader to look
+   for further information in cite:slug if they are interested.
 
+   We begin by defining the datatype that represents our language.
+   #+begin_src text
+data HilbertProof : List Fm → Fm → Nat → Set where
+  begin : ∀ {Σ A} → Σ ⊢ A → HilbertProof Σ A 0
+  by : ∀ {Σ A B n} → Σ ⊢ B → HilbertProof Σ A n → HilbertProof Σ B (suc n)
+   Ax : ∀ {Σ B n} → (A : Fm) → HilbertProof Σ B n → HilbertProof (A ∷ Σ) A (suc n)
+  nec : ∀ {Σ n □A C} (H : HilbertProof [] C n) (i : HilbertRef H (□A) □_)
+    → HilbertProof Σ (□A) (suc n)
+  MP : ∀ {n Σ A B C} (H : HilbertProof Σ C n) → HilbertRef H (A ↝ B) id
+    → HilbertRef H A id → HilbertProof Σ B (suc n)
+   #+end_src
+   Each instruction (except =■=) has its corresponding constructor. We see that
+   the datatype is indexed by a list of formulas and a formula. Those are the set of
+   assumptions and the formula that is shown to be a theorem. The third index is
+   a natural number. This number keeps track of the length of the proof and it
+   is needed to ensure that references to previous lines are not out of bounds.
+   The type =HilbertRef= represents a reference to a previous line in the proof.
+   We omit its definition here as is not crucial for understanding the overall
+   idea.
 
+   Then we define the front end syntax for each of the constructors. For
+   instance, the definition of the =[_]_By_= instruction is as follows (we omit
+   the type for simplicity as it is the same the type of the constructor =by=).
+   #+begin_src text
+infixl 10 _[_]_By_
+_[_]_By_ : ...
+H [ n ] B By p = by p H
+   #+end_src
+   Notice that we also declare the instruction to have left associativity
+   (=infixl=), which will allow us to write each subsequent instruction below
+   the other without need of parentheses.
+
+   We skip how references work for simplicity, as they use advanced Agda
+   features (type classes and instance arguments (cite:agda-doc)) in order to be
+   automatically checked without an explicit proof.
+
+   Observe now how we can build a proof in this language.
+   #+begin_src text
+⊢A▷A' : ∀ {A} → HilbertProof [] (A ▷ A) 3
+⊢A▷A' {A} =
+  begin[ 0 ] A ↝ A                 By ⊢A↝A
+       [ 1 ] □ (A ↝ A)             ByNec 0
+       [ 2 ] □ (A ↝ A) ↝ (A ▷ A)   By J1
+       [ 3 ] A ▷ A                 ByMP 2 , 1
+   #+end_src
+   It is essentially the same as we showcased before but it is lacking the
+   closing =■= instruction. The type of such instruction is:
+   #+begin_src text
+_■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
+   #+end_src
+   We see that =■= is defined as a postfix operator which translates a proof
+   =HilbertProof Σ A n= into a proof =Σ ⊢ A=. This translation step is where
+   most of the complexity lays. Needless to say, as is implemented and verified
+   in Agda it is guaranteed to be correct. This ends the tour of the language.
+
+   We strongly believe in the practical utility of this language as it can be
+   used by logicians that are not Agda experts due to its simple and familiar
+   syntax. We also know that long syntactic proofs are error prone. This
+   language completely removes such problem. Despite all the positives, there is
+   some room for improvement. For instance, the language does not include the
+   deduction theorem rule, which is frequently used in practice. Note that this
+   limitation can be ameliorated as we can use the deduction theorem outside of
+   the eDSL and then include the result by using a =[_]_By_= instruction.
 * Verbrugge
   In this section we proof that given a generalized Veltman model that satisfies
   a certain property, we can build an ordinary Veltman model with the same
@@ -2946,4 +3011,3 @@ title=Bibliography
 
   # #+INCLUDE: "./all.org" example
   # #+INCLUDE: "./latex/Base.tex" export latex
-
