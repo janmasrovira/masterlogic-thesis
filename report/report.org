@@ -102,12 +102,14 @@
 #+latex_header: \newunicodechar{ₖ}{\makebox[0.5em]{\textsubscript{k}}}
 #+latex_header: \newunicodechar{ₙ}{\makebox[0.5em]{\textsubscript{n}}}
 #+latex_header: \newunicodechar{ₗ}{\makebox[0.5em]{\textsubscript{l}}}
+#+latex_header: \newunicodechar{⸴}{\makebox[0.5em]{,}}
 #+latex_header: \newunicodechar{｛}{\ensuremath{\{}}
 #+latex_header: \newunicodechar{｝}{\ensuremath{\}}}
 #+latex_header: \setmathfont{Latin Modern Math}
 
 * Introduction
 ** Overview of interpretability logics
+   mention $M$, $P$ and $R$.
 ** Original contributions
    This work includes the following original contributions:
    1. Generalized frame condition for $R₁$ (in collaboration with Luka). [[theorem:R₁][Link]];
@@ -1359,7 +1361,7 @@ LABEL. FOR EXAMPLE:)}}}
      of $B$;
   2. A proof of $A∧B$ is a proof of $A$ and a proof of $B$;
   3. A proof of $A∨B$ is a proof of $A$ or a proof of $B$;
-  4. Nothing is a proof of $⊥$.
+  4. Nothing is a proof of $⊥$;
   5. $⊤$ is always true.
 
   According to the BHK interpretation a proof of $A→A$ is just the identity
@@ -2282,22 +2284,22 @@ data Σ {a b : Level} (A : Seta a) (B : A → Set b) : Set (a ⊔ b) where
     proj₂ (a , b) = b
     #+end_src
 ** Noetherian relations
+   <<sec:agda-noetherian>>
     We say that a relation is \gls*{noetherian} if it is conversely
     well-founded. We begin by formalizing the concept of infinite ascending
     chain in Agda. In order to do that, we define a coinductive record datatype
     (cite:agda-doc,norell:thesis). A coinductive record is allowed to be
     infinite.
-
     #+begin_src text
 record InfiniteChain {ℓW ℓR} {W : Set ℓW} (_<_ : Rel W ℓR) (a : W)
   : Set (ℓR ⊔ ℓW)where
   coinductive
+  constructor infiniteChain
   field
     b : W
     a<b : a < b
     tail : InfiniteChain _<_ b
     #+end_src
-
     We see that the previous record datatype represents an infinite ascending
     chain starting at =a= of some relation =_<_=. It has three fields. =b=: The
     next element in the chain. =a<b=: A proof that $a < b$ and =tail=: an
@@ -2318,6 +2320,11 @@ InfiniteChain.b (infiniteRefl {x = x} Rxx) = x
 InfiniteChain.a<b (infiniteRefl {x = x} Rxx) = Rxx
 InfiniteChain.tail (infiniteRefl {x = x} Rxx) = infiniteRefl Rxx
     #+end_src
+    We see that each equation corresponds to a different field in the record
+    datatype. This construction is known as /copattern/. Coinductive
+    datatypes must be constructed in this way. Copatterns are for
+    coinductive types what patterns are for inductive (finite) types. In
+    cite:abel2013programming copatterns are described in detail.
 
     And then we can apply the Noetherian definition.
     #+begin_src text
@@ -2326,7 +2333,7 @@ Noetherian⇒Irreflexive : ∀ {ℓR ℓW} {W : Set ℓW} {R : Rel W ℓR}
 Noetherian⇒Irreflexive noetherian Rxx = noetherian (infiniteRefl Rxx)
     #+end_src
 
-    To see another example refer to the proof of soundness for J5 (pending).
+    To see another example refer to Section [[sec:agda-L]].
 ** Ordinary semantics
    <<sec:agda-ord-semantics>>
    In this section we explain how we have represented ordinary Veltman semantics
@@ -2602,9 +2609,87 @@ record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW
     S-ext : ∀ {w x V V'} → S w x V → V ⊆ V' → V' ⊆ V → S w x V'
    #+end_src
 
-   Notice that just below the definition of the field =W : Set=, we have introduced a
-   definition of the type =𝕎 : Set₁=
+*** A guided Agda proof
+    <<sec:agda-L>> In this section we guide the user through a non-trivial Agda
+    proof. This is intended to give the reader a feel of how an Agda proof
+    dealing with semantics. We prove that for any generalized Veltman model $M$ and world
+    $w$ we have that $w$ forces Löb's axiom. In symbols: \[M , w ⊩ □ (□ A → A) →
+    □ A.\] Note that this is part of the soundness proof for IL.
 
+    We begin by outlining the proof without Agda. Assume that for some world
+    $w₀$ we have $w_0⊩□ (□ A → A)$. Assume for a contradiction that $w⊮□A$, then
+    there exists some $w₁$ such that $w₀Rw₁⊮A$. Since $w₀Rw₁$ it follows that
+    $w₁⊩□A→A$. Then since $w₁⊮A$ we necessarily have that $w₁⊮□A$. Then there
+    exists $w₂$ such that $w₁Rw₂⊮A$. Since $R$ is transitive we have that
+    $w₀Rw₂$ and thus $w₂⊩□A→A$. We can repeat the previous argument indefinitely
+    to build an infinite chain $w₀Rw₁R…$, which is a contradiction since $R$ is
+    Noetherian. This concludes the pen and paper proof.
+
+    We proceed with the Agda proof. During the course of this example we use
+    some lemmas listed below, which we have proved in Agda, however, we just
+    copy their type here and we omit their proof in order to save space. Also,
+    assume that we have some model =M= in scope.
+    #+begin_src
+    ⊩4' : ∀ {w A} → M , w ⊩ □ A → M , w ⊩ □ □ A
+    ⊮□ : ∀ {w A} → M , w ⊮ □ A ⇔ (∃[ u ] (R w u × M , u ⊮ A))
+    ⊩□ : ∀ {w A} → M , w ⊩ □ A ⇔ (∀ {v} → R w v → M , v ⊩ A)
+    ⊩→¬⊮ : ∀ {w A} → M , w ⊩ A → ¬ (M , w ⊮ A)
+    #+end_src
+
+    We begin by showing a useful lemma: for any $w,u,A$, if $wRu$ and $u⊮A$ and
+    $w⊩□(□A→A)$ then we can build an infinite \text{$R$-chain} starting at $w$.
+    The following type expresses the aforementioned property.
+    #+begin_src text
+    L-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
+    #+end_src
+    Recall that infinite chains are defined as coinductive datatypes in Section
+    [[sec:agda-noetherian]]. Hence we proceed by building the infinite chain using
+    copatterns. The first two components are clear:
+    #+begin_src
+  InfiniteChain.b (L-chain {w} {u} Rwu uA uF) = u
+  InfiniteChain.a<b (L-chain {w} {u} Rwu uA uF) = Rwu
+    #+end_src
+    Then we must show that there is an infinite chain starting at $u$. The
+    argument =w⊩□⟨□A↝A⟩= has type =M , w ⊩ □ (□ A ↝ A)=, hence by applying the
+    lemma =⊩□= in the right direction and using the fact that =Rwu= has type $R
+    w u$ we get a term of type =M , u ⊩ □ A ↝ A= which we pattern match using
+    the =width= construct[fn::The =width= construct allows us to pattern match
+    on terms that can be build from the arguments of the function.]. By the
+    definition of the constructor =impl= for the =_,_⊩_= datatype it follows
+    that we have two cases: either =M , u ⊩ A= or =M , u ⊮ □ A=.
+
+    If it is the case that =M , u ⊩ A= we can build a term of type =⊥= by using
+    the =⊩→¬⊮= lemma. Then we can use the principle of explosion to return
+    anything.
+    #+begin_src
+  InfiniteChain.tail (L-chain Rwu u⊮A w⊩□⟨□A↝A⟩) with (⊩□ ⇒ w⊩□⟨□A↝A⟩) Rwu
+  ... | impl (inj₂ u⊩A) = explosion (⊩→¬⊮ u⊩A u⊮A)
+    #+end_src
+
+    On the contrary, if we have that =M , u ⊮ □ A= then by the =⊮□= lemma we get
+    that there exists some =v= such that =R u v= and =M , v ⊩ A=. Then we can
+    use again
+    #+begin_src
+  ... | impl (inj₁ x⊮□A) with ⊮□ ⇒ x⊮□A
+  ... | (v ⸴ Ruv ⸴ v⊩A) = L-chain Ruv v⊩A ((⊩□ ⇒ ⊩4' w⊩□⟨□A↝A⟩) Rwu)
+    #+end_src
+
+
+    Putting it all together we have:
+    #+begin_src
+  L-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
+  InfiniteChain.b (L-chain {w} {u} Rwu uA uF) = u
+  InfiniteChain.a<b (L-chain {w} {u} Rwu uA uF) = Rwu
+  InfiniteChain.tail (L-chain {w} {u} Rwu u⊮A w⊩□⟨□A↝A⟩)
+     with (⊩□ ⇒ w⊩□⟨□A↝A⟩) Rwu
+  ... | impl (inj₂ u⊩A) = ⊥-elim (⊩→¬⊮ u⊩A u⊮A)
+  ... | impl (inj₁ x⊮□A) with ⊮□ ⇒ x⊮□A
+  ... | (v ⸴ Ruv ⸴ v⊩A) = L-chain Ruv v⊩A ((⊩□ ⇒ ⊩4' w⊩□⟨□A↝A⟩) Rwu)
+
+  ⊩L : ∀ {w A} → M , w ⊩ □ (□ A ↝ A) ↝ □ A
+  ⊩L {w} {A} = ⊩↝ ⇐ λ w⊩□⟨□A→A⟩ → ⊩□ ⇐ λ {u} Rwu → ⊩⇔¬⊮ ⇐
+    λ {u⊮A → R-noetherian (L-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
+    #+end_src
 ** IL and syntactic proofs
    Here we present our efforts on formalizing syntactic IL proofs in Agda. We
    restrict ourselves to finite sets of assumptions.
@@ -2819,7 +2904,7 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
 
    We strongly believe in the practical utility of this language as it can be
    used by logicians that are not Agda experts due to its simple and familiar
-   syntax. We also know that long syntactic proofs are error prone. This
+   syntax. We are all aware that long syntactic proofs are error prone. This
    language completely removes such problem. Of course, there is some room for
    improvement, for instance, the language does not include the deduction
    theorem rule, which is frequently used in practice. Note that this limitation
