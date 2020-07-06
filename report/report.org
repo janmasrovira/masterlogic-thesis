@@ -87,6 +87,7 @@
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 #+latex_header: \newcommand{\prin}[1]{\text{$\mathsf{#1}$}}
+#+latex_header: \newcommand{\il}[0]{\text{$\mathsf{IL}$}}
 #+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
 
@@ -161,9 +162,9 @@
    the underlying formula, however, they are not meant to be a replacement as
    they cannot unambiguously convey all the information in the formula.
 
-** Logic $IL$
+** Logic \il
    <<sec:il>>
-   The logic $IL$ encompasses all classical tautologies in the new language plus
+   The logic \il encompasses all classical tautologies in the new language plus
    the following axiom schemes:
    - K: $□ (A → B) → □ A → □ B$;
    - L: $□ (□ A → A) → □ A$;
@@ -173,70 +174,70 @@
    - J4: $A ▷ B → ♢ A → ♢ B$;
    - J5: $♢ A ▷ A$.
    If $A$ is an instantiation of any of the previous axiom schemes, then
-   $⊢_{IL}A$. Additionally it has the following rules:
-   - Necessitation: if $⊢_{IL}A$ then $⊢_{IL}□A$.
-   - Modus ponens: if $Π⊢_{IL}A→B$ and $Π⊢_{IL}A$ then $Π⊢_{IL}B$.
-   - Identity: If $A∈Π$ then $Π⊢_{IL}A$.
+   $⊢_{\il}A$. Additionally it has the following rules:
+   - Necessitation: if $⊢_{\il}A$ then $⊢_{\il}□A$.
+   - Modus ponens: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$.
+   - Identity: If $A∈Π$ then $Π⊢_{\il}A$.
 
    While it is acceptable to have infinite sets of assumptions, when verifying
    properties in Agda we have restricted ourselves to finite sets. This
    restriction is not meaningful in the context of this project.
 
    {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
-   $Π⊢_{IL}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
+   $Π⊢_{\il}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
    then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
 
    {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
-   semantics*. That is, if $Π⊢_{IL}A$ and $M$ is a generalized model with a world
+   semantics*. That is, if $Π⊢_{\il}A$ and $M$ is a generalized model with a world
    $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
 
    {{{beginproof}}} {{{agda}}} We have verified this in Agda for all the presented
    quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
 
    {{{begintheorem}}} *Weakening*. If
-   $Π⊢_{IL}A$ then $B,Π⊢_{IL}A$. {{{endtheorem}}}
+   $Π⊢_{\il}A$ then $B,Π⊢_{\il}A$. {{{endtheorem}}}
    {{{beginproof}}} {{{agda}}} {{{endproof}}}
 
    {{{begintheorem}}} *Deduction*.
-   $Π⊢_{IL}A→B$ iff $A,Π⊢_{IL}B$. {{{endtheorem}}}
+   $Π⊢_{\il}A→B$ iff $A,Π⊢_{\il}B$. {{{endtheorem}}}
    {{{beginproof}}} {{{agda}}} {{{endproof}}}
 
    {{{begintheorem}}} *Cut*. If
-   $Π⊢_{IL}B$ and $B,Π⊢_{IL}A$ then $Π⊢_{IL}A$. {{{endtheorem}}}
+   $Π⊢_{\il}B$ and $B,Π⊢_{\il}A$ then $Π⊢_{\il}A$. {{{endtheorem}}}
    {{{beginproof}}} {{{agda}}} {{{endproof}}}
 
-   {{{begintheorem}}} *Structurality*. If $Π⊢_{IL}B$ and $σ$ is a
-   substitution then $σ[Π]⊢_{IL}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
+   {{{begintheorem}}} *Structurality*. If $Π⊢_{\il}B$ and $σ$ is a
+   substitution then $σ[Π]⊢_{\il}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
    {{{agda}}} {{{endproof}}}
 
-   {{{begintheorem}}} *Conjunction*. $Π⊢_{IL}A∧B$ iff $Π⊢_{IL}A$ and $Π⊢_{IL}B$.
+   {{{begintheorem}}} *Conjunction*. $Π⊢_{\il}A∧B$ iff $Π⊢_{\il}A$ and $Π⊢_{\il}B$.
    {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
 
    {{{begintheorem}}} The following holds:
-    1. $⊢_{IL} A → A$;
-    2. $⊢_{IL} A ▷ A$;
-    3. $⊢_{IL} (A → B) → (B → C) → A → C$;
-    4. $⊢_{IL} A → ¬ ¬ A$;
-    5. $⊢_{IL} (¬ ¬ A) → A$;
-    6. $⊢_{IL} (A → B) → ¬ B → ¬ A$;
-    7. $⊢_{IL} A → ⊤$;
-    8. $⊢_{IL} ⊥ → A$;
-    9. $⊢_{IL} ¬ A → A → B$;
-    10. $⊢_{IL} A ∧ B → A$;
-    11. $⊢_{IL} A ∧ B → B$;
-    12. $⊢_{IL} (A → B → C) → B → A → C$;
-    13. $⊢_{IL} A → B → A ∧ B$;
-    14. $⊢_{IL} A → A ∨ B$;
-    15. $⊢_{IL} B → A ∨ B$;
-    16. $⊢_{IL} A ▷ (A ∨ ♢ A)$;
-    17. $⊢_{IL} (A ∨ ♢ A) ▷ A$;
-    18. $⊢_{IL} A → B ⇒ ⊢_{IL} □ A → □ B$;
-    19. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} □ A ↔ □ B$;
-    20. $⊢_{IL} □ (A ∧ B) ↔ (□ A ∧ □ B)$;
-    21. $⊢_{IL} A → B ⇒ ⊢_{IL} ♢ A → ♢ B$;
-    22. $⊢_{IL} A ↔ B ⇒ ⊢_{IL} ♢ A ↔ ♢ B$;
-    23. $⊢_{IL} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
-    24. $⊢_{IL} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
+    1. $⊢_{\il} A → A$;
+    2. $⊢_{\il} A ▷ A$;
+    3. $⊢_{\il} (A → B) → (B → C) → A → C$;
+    4. $⊢_{\il} A → ¬ ¬ A$;
+    5. $⊢_{\il} (¬ ¬ A) → A$;
+    6. $⊢_{\il} (A → B) → ¬ B → ¬ A$;
+    7. $⊢_{\il} A → ⊤$;
+    8. $⊢_{\il} ⊥ → A$;
+    9. $⊢_{\il} ¬ A → A → B$;
+    10. $⊢_{\il} A ∧ B → A$;
+    11. $⊢_{\il} A ∧ B → B$;
+    12. $⊢_{\il} (A → B → C) → B → A → C$;
+    13. $⊢_{\il} A → B → A ∧ B$;
+    14. $⊢_{\il} A → A ∨ B$;
+    15. $⊢_{\il} B → A ∨ B$;
+    16. $⊢_{\il} A ▷ (A ∨ ♢ A)$;
+    17. $⊢_{\il} (A ∨ ♢ A) ▷ A$;
+    18. $⊢_{\il} A → B ⇒ ⊢_{\il} □ A → □ B$;
+    19. $⊢_{\il} A ↔ B ⇒ ⊢_{\il} □ A ↔ □ B$;
+    20. $⊢_{\il} □ (A ∧ B) ↔ (□ A ∧ □ B)$;
+    21. $⊢_{\il} A → B ⇒ ⊢_{\il} ♢ A → ♢ B$;
+    22. $⊢_{\il} A ↔ B ⇒ ⊢_{\il} ♢ A ↔ ♢ B$;
+    23. $⊢_{\il} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
+    24. $⊢_{\il} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
    {{{endtheorem}}}
    {{{beginproof}}} {{{agda}}}
    {{{endproof}}}
@@ -356,7 +357,7 @@
    for the quasi-transitivity condition. Theorem [[theorem:trans]] presents the
    some direct implications between them. Theorems [[theorem:il-sound]] and
    [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
-   for proving completeness of IL.
+   for proving completeness of \il.
 
 
 #+name: fig:table-trans
@@ -547,6 +548,14 @@
    {{{joost(AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE
    PRINCIPLE INTRODUCED AND BY WHOM. ALSO\, WHY IS IT IMPORTANT\, ETC.)}}}
 
+   The \prin{M} principle is coined after Franco Montagna because the principle
+   appeared during discussions between Franco Montagna and Albert Visser about
+   interpretability logic (cite:bilkova2009interpretability).
+
+   The theorems of $\sf{ILM}$ are the set of interpretability principles that
+   are always provable in theories which are $Σ_1$ sound, have full induction and
+   prove consistency of any of its finite subsystems (cite paper)
+   (cite:visser1997overview). An example of such theory is $\sf{PA}$.
 *** Ordinary semantics
    The frame condition for \prin{M} for ordinary semantics, we write $\kord{M}$,
    reads as follows:
@@ -1333,28 +1342,29 @@ LABEL. FOR EXAMPLE:)}}}
    {{{endproof}}}
 
    {{{beginremark}}}
-   For instance, if we want the frame condition for \prin{P₀} we look at
+   For instance, if we want the frame condition for \prin{P₀} we would look at
     \[(a ▷ ♢ b → □ (a ▷ b))^*_{gen}.\]
-    where $a,b$ are different variables.
+    Where $a,b$ are different variables.
    {{{endremark}}}
 * The logic of Agda
   # Adapted from cite:norell:thesis (Section 1.3).
 
-  In this section we give an informal overview of the basic constructions on
-  Agda that will hopefully help the reader get an intuition of how dependent
-  types can be used to proof mathematical properties. We will also highlight
-  some intricacies of the language that are relevant to our project. This is not
-  meant to be an exhaustive analysis on the inner workings of Agda, as this
+  In this section we give an informal overview of the basic Agda constructions
+  that will hopefully help the reader get an intuition of how dependent types
+  can be used to prove mathematical properties. We will also highlight some
+  intricacies of the language that are relevant to our project. This is not
+  meant to be an exhaustive analysis of the inner workings of Agda, as this
   falls out of the scope of this project. The original author of Agda, Ulf
-  Norell, has suggested cite:cockx2018elaborating as a good reference for that
-  matter.
+  Norell, has suggested[fn::In correspondence via email.]
+  cite:cockx2018elaborating as a good reference for that matter.
 
 ** BHK interpretation of propositional logic
-  As Agda is based on an intuitionistic type theory we believe that a good way
-  to start the introduction is through the BHK interpretation
-  (cite:sep-intuitionistic-logic-development) of intuitionistic logic. We start
-  with propositional logic and later on (Section [[sec:bhk-fol]]) we introduce first
-  order logic.
+  Agda is based on an intuitionistic type theory with dependent types that
+  extends Per Martin-Löf's type theory (cite:martin1984intuitionistic). Agda's
+  constructive nature suggests that a fitting way start the introduction is
+  through the BHK interpretation of intuitionistic logic
+  (cite:sep-intuitionistic-logic-development). We start with propositional logic
+  and later on (Section [[sec:bhk-fol]]) we continue with first order logic.
 
   The BHK interpretation states that:
   1. A proof of $A→B$ is an algorithm that transforms a proof of $A$ into a proof
@@ -1376,8 +1386,10 @@ LABEL. FOR EXAMPLE:)}}}
   id = λ a → a
   #+end_src
   When the term that we are defining is a function, we are allowed to move the
-  arguments to the left of the === sign. Furthermore, we should write the type of
-  the function using the =:= symbol. We use the symbol =→= for functions.
+  arguments to the left of the === sign. Furthermore, we should write the type
+  of the function using the =:= symbol. The =:= symbol denotes the typing
+  relation, hence =a : A= reads as ``term =a= has type =A= ''. We use the symbol
+  =→= for functions.
   #+begin_src text
   id : A → A
   id a = a
@@ -1397,27 +1409,31 @@ LABEL. FOR EXAMPLE:)}}}
   id a = a
   #+end_src
   With the technicalities out of the way, we can finally say that we have
-  completed our first Agda proof according to the BHK interpretation. Let us see
-  another example involving functions[fn::The =→= function symbol has right
-  associativity.].
+  completed our first Agda proof of $A→A$ according to the BHK interpretation.
+  Let us see another example involving functions[fn::The =→= function symbol has
+  right associativity.].
   #+begin_src text
   commute : {A B C : Set} → (A → B → C) → B → A → C
   commute f b a = f a b
   #+end_src
+  We see that =commute= has three arguments, namely =f : A → B → C=, =b : B= and
+  =a : A=. Then in the right hand side of the === sign we have =f a b=, which
+  should read as ``term =f= applied to =a= and =b=''. Notice how function
+  application is denoted by simple juxtaposition.
 
   Let us now put our attention on proofs that revolve around conjunction. For
   instance, let us prove that $A∧ B → B ∧ A$. In order to represent $A∧B$ in
   Agda we need to define a so called /product type/. A product type is in rough
-  terms a tuple. Consider the following pair definition:
+  terms the type of a tuple. Consider the following pair definition:
   #+begin_src text
 data _×_ (A B : Set) : Set where
   _,_ : A → B → A × B
   #+end_src
-  This definition defines a new type called =_×_= with parameters =(A B : Set)=.
+  This definition defines a new datatype called =_×_= with parameters =(A B : Set)=.
   Datatypes with parameters are called parameterized datatypes. Parameters are
   shared among all constructors. It has a single constructor named =_,_=.
   Underscores are used to denote infix operators. We see that the type of the
-  constructor =_,_= is =A → B → A × B=. This tells us that =_,_= is a function
+  constructor =_,_= is =A → B → A × B=. This tells us that =_,_= is a constructor
   that takes an argument of type =A= (or a proof of =A=), an argument of type
   =B= and then returns a term of type =A × B=. Constructors are a special kind
   of functions that are used to build terms of their corresponding datatype.
@@ -1429,16 +1445,13 @@ data _×_ (A B : Set) : Set where
   swap : {A B : Set} → A × B → B × A
   swap (a , b) = b , a
   #+end_src
-  Note that we used pattern matching deconstruct the term and access the
+  Note that we used pattern matching to deconstruct the term and access the
   components of the pair. For the =_×_= type we only have one constructor so we
   only need one case.
   # Refer to Section [[sec:agda-datatype]] for more details on data type definition
   # and pattern matching.
 
-  Let us show some more examples[fn::The =_= characters means that these
-  definitions are not named and thus cannot be referred to from other parts of
-  the code. This is not relevant here as they are just examples.][fn::Notice
-  that for function application in Agda we write =f a b=.]:
+  Let us show some more examples:
   #+begin_src text
   p1 : {A B : Set} → A → B → A × B
   p1 a b = a , b
@@ -1446,12 +1459,12 @@ data _×_ (A B : Set) : Set where
   p2 : {A B : Set} → A × B → A
   p2 (a , b) = a
 
-  p3 : {A B C : Set} → (A → B → C) → A × B → C
+  p3 : {A B C : Set} → (A → B → C) → (A × B) → C
   p3 f (a , b) = f a b
   #+end_src
   Now that we are familiarized with conjunction and product types we can proceed
   by exploring disjunction. In order to express options we can define a new data
-  type called sum type/ thus:
+  type called sum type thus:
   #+begin_src text
 data _⊎_ (A B : Set) : Set where
   inj₁ : A → A ⊎ B
@@ -1460,7 +1473,7 @@ data _⊎_ (A B : Set) : Set where
   We see that the main difference with respect to the pair type is that now we
   have two constructors named =inj₁= and =inj₂=. The constructor =inj₁= is used
   to build a proof of =A ⊎ B= by providing a proof of =A=. The constructor
-  =inj₂= has the analogous functionality for =B=.
+  =inj₂= builds a proof of =A ⊎ B= given a proof of =B=.
 
   Since we have two constructors, when pattern matching against an argument of
   this type we will need to define two cases (if we want to access its
@@ -1490,8 +1503,9 @@ data _⊎_ (A B : Set) : Set where
   #+begin_src text
   data ⊥ : Set where
   #+end_src
-  Notice that =⊥= has no constructors and hence it is impossible to construct a term
-  with type =⊥=. The bottom type is specially useful to define negation:
+  Notice that =⊥= has no constructors and hence it is impossible to construct a
+  term with type =⊥=. The bottom type is specially useful to define negation,
+  which we define in the following way:
   #+begin_src text
   ¬ : Set → Set
   ¬ A = A → ⊥
@@ -1502,7 +1516,14 @@ data _⊎_ (A B : Set) : Set where
   explosion : {A : Set} → ⊥ → A
   explosion ()
   #+end_src
-  As we are in an intuitionistic logic the following properties are not provable:
+  Since the =⊥= type has no constructors, we get the empty pattern when pattern
+  matching against the argument of type =⊥=.
+
+  As we are in an intuitionistic logic the following properties are not
+  provable[fn::See that we use the symbol =¬= in the name of the term =¬¬elim=.
+  Here the =¬= symbol is just part of the name and serves the same purpose of
+  any other character. Hence it is important to note that =¬a= (just a name with
+  the =¬= character) is different from =¬ a= (the negation of =a=).]:
   #+begin_src text
   ¬¬elim : {A : Set} → ¬ (¬ A) → A
   ¬¬elim = ?             -- not provable
@@ -1510,7 +1531,7 @@ data _⊎_ (A B : Set) : Set where
   excluded-middle : {A : Set} → A ⊎ (¬ A)
   excluded-middle = ?    -- not provable
   #+end_src
-  However, we can show the following:
+  However, we can show that $¬¬¬A→¬A$:
   #+begin_src text
   ¬¬¬elim : {A : Set} → ¬ (¬ (¬ A)) → ¬ A
   ¬¬¬elim ¬¬¬a a = ¬¬¬a (λ ¬a → ¬a a)
@@ -1525,7 +1546,7 @@ data _⊎_ (A B : Set) : Set where
   #+end_src
 
   We finally climb to the $⊤$. We shall define a datatype which we call the
-  /unit type/ or /singleton type/.
+  /unit type/.
   #+begin_src text
   data ⊤ : Set where
     tt : ⊤
@@ -1540,8 +1561,12 @@ data _⊎_ (A B : Set) : Set where
 
 ** Booleans and case analysis
    The /true or false/ concept is ubiquitous in computer science and in logic.
-   In Agda we can define the =Bool= type in a similar fashion to the disjunction
-   type we defined before.
+   In this section we show how we can define a datatype that represents that
+   concept and we give a small introduction to case analysis through pattern
+   matching.
+
+   In Agda we can define the =Bool= type in a similar fashion to the
+   disjunction type we defined before.
    #+begin_src text
    data Bool : Set where
      true : Bool
@@ -2002,7 +2027,6 @@ syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
        ｛ x ｝ = λ y → x ≡ y
        #+end_example
 
-
 ** Positivity
    <<sec:positivity>>
 
@@ -2045,7 +2069,7 @@ absurd = self-app (bad self-app)
    should just link to the online doc.
 
 *** Pattern matching
-*** Implicit arguments and ifnerence
+*** Implicit arguments and inference
    <<sec:agda-implicit-args>>
 *** datatype definitions and constructors
     <<sec:agda-datatype>>
@@ -2611,10 +2635,11 @@ record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW
 
 *** A guided Agda proof
     <<sec:agda-L>> In this section we guide the user through a non-trivial Agda
-    proof. This is intended to give the reader a feel of how an Agda proof
-    dealing with semantics. We prove that for any generalized Veltman model $M$ and world
-    $w$ we have that $w$ forces Löb's axiom. In symbols: \[M , w ⊩ □ (□ A → A) →
-    □ A.\] Note that this is part of the soundness proof for IL.
+    proof, which will hopefully give the reader a feel of how we can proof
+    generalized Veltman semantic properties in Agda. We prove that for any
+    generalized Veltman model $M$ and world $w$ we have that $w$ forces Löb's
+    axiom. In symbols: \[∀MwA.\ M , w ⊩ □ (□ A → A) → □ A.\] Note that since
+    Löb's axiom is in $\sf{IL}$ we need to show this as part of the soundness proof.
 
     We begin by outlining the proof without Agda. Assume that for some world
     $w₀$ we have $w_0⊩□ (□ A → A)$. Assume for a contradiction that $w⊮□A$, then
@@ -2627,71 +2652,104 @@ record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW
 
     We proceed with the Agda proof. During the course of this example we use
     some lemmas listed below, which we have proved in Agda, however, we just
-    copy their type here and we omit their proof in order to save space. Also,
+    display their type here and we omit their proof in order to save space. Also,
     assume that we have some model =M= in scope.
-    #+begin_src
+    #+begin_src text
     ⊩4' : ∀ {w A} → M , w ⊩ □ A → M , w ⊩ □ □ A
     ⊮□ : ∀ {w A} → M , w ⊮ □ A ⇔ (∃[ u ] (R w u × M , u ⊮ A))
     ⊩□ : ∀ {w A} → M , w ⊩ □ A ⇔ (∀ {v} → R w v → M , v ⊩ A)
-    ⊩→¬⊮ : ∀ {w A} → M , w ⊩ A → ¬ (M , w ⊮ A)
+    ⊩⇔¬⊮ : ∀ {w A} → M , w ⊩ A ⇔ ¬ (M , w ⊮ A)
+    _⇒_ : ∀ {a b} {A : Set a} {B : Set b} → A ⇔ B → A → B
     #+end_src
+
+    *Naming convention*. In this proof we use the popular convention to name
+    variables after their type, which greatly improves the readability of
+    proofs. For instance, if we bind some variable of type =R w u= we will name
+    it =Rwu=; if we bind a variable of type =M , w ⊩ A= we will name it =w⊩A=;
+    and so on.
 
     We begin by showing a useful lemma: for any $w,u,A$, if $wRu$ and $u⊮A$ and
     $w⊩□(□A→A)$ then we can build an infinite \text{$R$-chain} starting at $w$.
     The following type expresses the aforementioned property.
     #+begin_src text
-    L-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
+    R-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
     #+end_src
     Recall that infinite chains are defined as coinductive datatypes in Section
     [[sec:agda-noetherian]]. Hence we proceed by building the infinite chain using
     copatterns. The first two components are clear:
-    #+begin_src
-  InfiniteChain.b (L-chain {w} {u} Rwu uA uF) = u
-  InfiniteChain.a<b (L-chain {w} {u} Rwu uA uF) = Rwu
+    #+begin_src text
+  InfiniteChain.b (R-chain {w} {u} Rwu uA uF) = u
+  InfiniteChain.a<b (R-chain {w} {u} Rwu uA uF) = Rwu
     #+end_src
     Then we must show that there is an infinite chain starting at $u$. The
     argument =w⊩□⟨□A↝A⟩= has type =M , w ⊩ □ (□ A ↝ A)=, hence by applying the
-    lemma =⊩□= in the right direction and using the fact that =Rwu= has type $R
-    w u$ we get a term of type =M , u ⊩ □ A ↝ A= which we pattern match using
-    the =width= construct[fn::The =width= construct allows us to pattern match
+    lemma =⊩□= in the right (=⇒=) direction and using the fact that =Rwu= has type =R
+    w u= we get a term of type =M , u ⊩ □ A ↝ A= which we pattern match using
+    the =widh= construct[fn::The =width= construct allows us to pattern match
     on terms that can be build from the arguments of the function.]. By the
     definition of the constructor =impl= for the =_,_⊩_= datatype it follows
     that we have two cases: either =M , u ⊩ A= or =M , u ⊮ □ A=.
 
     If it is the case that =M , u ⊩ A= we can build a term of type =⊥= by using
-    the =⊩→¬⊮= lemma. Then we can use the principle of explosion to return
+    the =⊩→¬⊮= lemma and then we can use the principle of explosion to return
     anything.
-    #+begin_src
-  InfiniteChain.tail (L-chain Rwu u⊮A w⊩□⟨□A↝A⟩) with (⊩□ ⇒ w⊩□⟨□A↝A⟩) Rwu
+    #+begin_src text
+  InfiniteChain.tail (R-chain Rwu u⊮A w⊩□⟨□A↝A⟩) with (⊩□ ⇒ w⊩□⟨□A↝A⟩) Rwu
   ... | impl (inj₂ u⊩A) = explosion (⊩→¬⊮ u⊩A u⊮A)
     #+end_src
 
     On the contrary, if we have that =M , u ⊮ □ A= then by the =⊮□= lemma we get
     that there exists some =v= such that =R u v= and =M , v ⊩ A=. Then we can
-    use again
-    #+begin_src
+    use the =⊩4'= lemma to get a term of type =M , w ⊩ □ (□ (□ A ↝ A))=, then by
+    lemma =⊩□= and the fact we have a proof of =R w u= we can build a term of
+    type =M , u ⊩ □ (□ A ↝ A)=. Finally by a recursive call (induction
+    hypothesis) to =R-chain= with =R u v= and =v⊩A= and the term described above
+    we get a term of the desired type.
+    #+begin_src text
   ... | impl (inj₁ x⊮□A) with ⊮□ ⇒ x⊮□A
-  ... | (v ⸴ Ruv ⸴ v⊩A) = L-chain Ruv v⊩A ((⊩□ ⇒ ⊩4' w⊩□⟨□A↝A⟩) Rwu)
+  ... | (v ⸴ Ruv ⸴ v⊩A) = R-chain Ruv v⊩A ((⊩□ ⇒ ⊩4' w⊩□⟨□A↝A⟩) Rwu)
     #+end_src
-
+    This concludes the proof of the lemma. We now proceed to prove our theorem.
+    The statement of the theorem is represented by the following type:
+    #+begin_src text
+  ⊩L : ∀ {w A} → M , w ⊩ □ (□ A ↝ A) ↝ □ A
+    #+end_src
+    We use lemma =⊩↝= to get a proof of =M , w ⊩ □ (□ A ↝ A)=. Then we use lemma
+    =⊩□= on the left direction, so we assume =R w u= and our goal is to show =M
+    , u ⊩ A=. By using lemma =⊩⇔¬⊮= on the left direction. Our goal is to show
+    =¬ (M , w ⊮ A)= which normalizes to =M , w ⊮ A → ⊥=, hence we assume =M , u
+    ⊮ A= and we aim to build a proof of =⊥=. We can build an infinite chain with
+    lemma =R-chain= proved above and the facts that =R w u=, =M , u ⊮ A= and =M
+    , w ⊩ □ (□ A ↝ A)=. Before the final step it may be useful to recall the
+    definition of a =Noetherian= relation (see Section [[sec:agda-noetherian]]):
+    #+begin_src text
+Noetherian _<_ = ∀ {a} → ¬ (InfiniteChain _<_ a)
+    #+end_src
+    Finally we use the property that the =R= relation of the model is Noetherian
+    to get a term of type =⊥= as desired.
+    #+begin_example
+  ⊩L : ∀ {w A} → M , w ⊩ □ (□ A ↝ A) ↝ □ A
+  ⊩L {w} {A} = ⊩↝ ⇐ λ w⊩□⟨□A→A⟩ → ⊩□ ⇐ λ {u} Rwu → ⊩⇔¬⊮ ⇐
+    λ {u⊮A → R-noetherian (R-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
+    #+end_example
 
     Putting it all together we have:
-    #+begin_src
-  L-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
-  InfiniteChain.b (L-chain {w} {u} Rwu uA uF) = u
-  InfiniteChain.a<b (L-chain {w} {u} Rwu uA uF) = Rwu
-  InfiniteChain.tail (L-chain {w} {u} Rwu u⊮A w⊩□⟨□A↝A⟩)
+    #+begin_src text
+  R-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
+  InfiniteChain.b (R-chain {w} {u} Rwu uA uF) = u
+  InfiniteChain.a<b (R-chain {w} {u} Rwu uA uF) = Rwu
+  InfiniteChain.tail (R-chain {w} {u} Rwu u⊮A w⊩□⟨□A↝A⟩)
      with (⊩□ ⇒ w⊩□⟨□A↝A⟩) Rwu
   ... | impl (inj₂ u⊩A) = ⊥-elim (⊩→¬⊮ u⊩A u⊮A)
   ... | impl (inj₁ x⊮□A) with ⊮□ ⇒ x⊮□A
-  ... | (v ⸴ Ruv ⸴ v⊩A) = L-chain Ruv v⊩A ((⊩□ ⇒ ⊩4' w⊩□⟨□A↝A⟩) Rwu)
+  ... | (v ⸴ Ruv ⸴ v⊩A) = R-chain Ruv v⊩A ((⊩□ ⇒ ⊩4' w⊩□⟨□A↝A⟩) Rwu)
 
   ⊩L : ∀ {w A} → M , w ⊩ □ (□ A ↝ A) ↝ □ A
   ⊩L {w} {A} = ⊩↝ ⇐ λ w⊩□⟨□A→A⟩ → ⊩□ ⇐ λ {u} Rwu → ⊩⇔¬⊮ ⇐
-    λ {u⊮A → R-noetherian (L-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
+    λ {u⊮A → R-noetherian (R-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
     #+end_src
-** IL and syntactic proofs
-   Here we present our efforts on formalizing syntactic IL proofs in Agda. We
+** \il and syntactic proofs
+   Here we present our efforts on formalizing syntactic \il proofs in Agda. We
    restrict ourselves to finite sets of assumptions.
 
    We begin by defining the necessary type to represent a finite list:
@@ -2708,7 +2766,7 @@ data _∈_ {a : Level} {A : Set a} (a : A) : Pred (List A) a where
    #+end_src
 
    Now that we have all the necessary tools, we proceed to define the relation
-   =_⊢_=, which represents the IL logic in Agda.
+   =_⊢_=, which represents the \il logic in Agda.
    #+begin_src text
 data _⊢_ (Π : List Fm) : Fm → Set where
   -- identity rule
@@ -2731,11 +2789,11 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    #+end_src
    We include constructor =Ax= so we can use assumptions. We include
    constructors =C1=, =C2= and =C3= so that every classical tautology in the
-   language of IL can be proved. Then we add the axioms of IL and finally we add
+   language of \il can be proved. Then we add the axioms of \il and finally we add
    =MP= for modus ponens and =nec= for necessitation. Note that the
-   necessitation rule only accepts IL theorems (empty set of assumptions) and
+   necessitation rule only accepts \il theorems (empty set of assumptions) and
    thus this definition is fitting for local semantics.
-   We have proven several results about IL, which are presented in Section
+   We have proven several results about \il, which are presented in Section
    [[sec:il]].
 
    Consider the pen and paper syntactic proof of $A→A$.
@@ -2759,7 +2817,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 ⊢A↝A : ∀ {A Π} → Π ⊢ A ↝ A
 ⊢A↝A {A} = MP (MP C2 C1) (C1 {B = A})
    #+end_src
-   From the previous result it is easy to show that $A▷A$ is an IL theorem.
+   From the previous result it is easy to show that $A▷A$ is an \il theorem.
    \begin{flalign*}
         0.\ &  A → A                        &\text{By } ⊢A→A \\
         1.\ &  □ (A → A)                    &\text{By necessitation on 0} \\
@@ -2779,7 +2837,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 
 *** An eDSL for syntactic proofs
      In this section we present a language for writing Hilbert style proofs for
-     logic $IL$. This language was first presented by the author of this paper in
+     logic \il. This language was first presented by the author of this paper in
      cite:slug for logic $K$.
 
      We begin by introducing the concept of eDSL. The acronym eDSL stands for
@@ -2824,7 +2882,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    We proceed by giving a short description of the language, which consists of
    four types of instructions:
    1. =[_]_By_=. This instruction is used to include a theorem in the proof. The
-      theorem can be any axiom scheme of IL or anything proved to be a theorem.
+      theorem can be any axiom scheme of \il or anything proved to be a theorem.
       More precisely, the theorem can be any =A= if we have =Π ⊢ A= for some =Π=.
       The first instruction must be of this kind and must be preceded with =begin=.
    2. =[_]_ByNec_=. This instruction applies the necessitation rule to a formula
@@ -3089,7 +3147,6 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
 heading=bibintoc,
 title=Bibliography
 ]
-
 
 * Appendix
   All the Agda code goes here.
