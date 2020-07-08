@@ -146,6 +146,7 @@
    3. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
    4. $⟦A⟧≔\{w:w⊩A\}$;
    5. {{{agda}}} this is Agda's logo. Each proof that is formalized in Agda
+    ll
       has been tagged with it;
    6. When we write a dot after the quantification of some variables, the scope of
       the variables extends to the rightmost part of what follows. Hence the
@@ -1675,7 +1676,7 @@ data _≡_ : Bool → Bool → Set where
    #+begin_src text
    refl' : (n : Nat) → n ≡ n
    refl' zero = z≡z
-   refl' (suc n) = refl (suc n)
+   refl' (suc n) = refl' (suc n)
    #+end_src
    While the types match we see that in the inductive case we perform a
    recursive call on the same argument and thus we get an infinite loop. Agda
@@ -1975,34 +1976,37 @@ syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
    <<sec:agda-equality>>
 
    In Sections [[sec:agda-nat]] and [[sec:agda-bool]] we have seen how we can define
-   equality for Booleans and naturals. In this section we explore
-   polymorphic equality and some of its properties and limitations.
+   equality for Booleans and naturals. In this section we explore polymorphic
+   equality and some of its properties and limitations. Of course, the main
+   advantage of polymorphic equality is that we can use it for every type and
+   thus there is no need to redefine it for every new datatype that we
+   define.
 
-   Below we present a slight simplification of equality as defined in
+   Below we present a slight simplification of polymorphic equality as defined in
    cite:agda-stdlib.
    #+begin_example
 data _≡_ {a : Level} {A : Set a} (x : A) : A → Set a where
   refl : x ≡ x
    #+end_example
 
-   We give a description of the polymorphic equality datatype defined above taken
-   from cite:plfa2019: For any type =A= and for any =x= of type =A=, the
-   constructor =refl= provides evidence that =x ≡ x=. Hence, every value is
-   equal to itself, and we have no other way of showing values equal. The
-   definition features an asymmetry, in that the first argument to =_≡_= is
-   given by the parameter =x : A=, while the second is given by an index in =A →
-   Set a=. The first argument to =_≡_= can be a parameter because it does not
-   vary, while the second must be an index, so it can be required to be equal to
-   the first.
+   It may help the reader to read the following description of the polymorphic
+   equality datatype defined above taken from cite:plfa2019: For any type =A=
+   and for any =x= of type =A=, the constructor =refl= provides evidence that =x
+   ≡ x=. Hence, every value is equal to itself, and we have no other way of
+   showing values equal. The definition features an asymmetry, in that the first
+   argument to =_≡_= is given by the parameter =x : A=, while the second is
+   given by an index in =A → Set a=. The first argument to =_≡_= can be a
+   parameter because it does not vary, while the second must be an index, so it
+   can be required to be equal to the first.
 
-   It is easy to see that it is a reflexive relation.
+   It is easy to see that equality is a reflexive relation.
    #+begin_src text
 reflexive : {ℓ : Level} {A : Set ℓ} {a : A} → a ≡ a
 reflexive = refl
    #+end_src
    We can also show that it is symmetric.
    #+begin_src text
-symmetric : ∀ {ℓ} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
+symmetric : {ℓ : Level} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
 symmetric a≡b = ?
    #+end_src
    The argument =a≡b= has type =a ≡ b= and our goal is to give a term of type =b
@@ -2011,14 +2015,47 @@ symmetric a≡b = ?
    matching against the argument =a≡b=. Then the goal becomes =a ≡ a= and we can
    use the =refl= constructor.
    #+begin_src text
-symmetric : ∀ {ℓ} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
+symmetric : {ℓ : Level} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
 symmetric refl = refl
    #+end_src
    We can prove transitivity in an analogous way.
    #+begin_src text
-transitivity : ∀ {ℓ} {A : Set ℓ} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
+transitivity : {ℓ : Level} {A : Set ℓ} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
 transitivity refl refl = refl
    #+end_src
+   We can also show that if =x ≡ y= then for any =f= we have =f x ≡ f y=.
+   #+begin_src text
+cong : {ℓA ℓB : Level} {A : Set ℓA} {B : Set ℓB} {x y : A}
+  → (f : A → B) → x ≡ y → f x ≡ f y
+cong f refl = refl
+   #+end_src
+
+   We now see that this new equality datatype is equivalent to the previously
+   defined equality for naturals. To avoid a name clash, we redefine equality
+   for naturals with the =_ℕ≡_= symbol. We also rename reflexivity for =_ℕ≡_=
+   as =ℕrefl=.
+   #+begin_src text
+   data _ℕ≡_ : Nat → Nat → Set where
+     z≡z : zero ℕ≡ zero
+     s≡s : {a b : Nat} → a ℕ≡ b → suc a ℕ≡ suc b
+
+   ℕrefl : (n : Nat) → n ℕ≡ n
+   ℕrefl zero = z≡z
+   ℕrefl (suc n) = s≡s (ℕrefl n)
+   #+end_src
+   We show that the new equality implies the old equality.
+   #+begin_example
+   ≡→ℕ≡ : {a b : Nat} → a ≡ b → a ℕ≡ b
+   ≡→ℕ≡ {a} refl = ℕrefl a
+   #+end_example
+   We see that the old equality implies the new equality.
+   #+begin_example
+   ℕ≡→≡ : {a b : Nat} → a ℕ≡ b → a ≡ b
+   ℕ≡→≡ z=z = refl
+   ℕ≡→≡ (s=s aℕ≡b) = cong suc (ℕ≡→≡ aℕ≡b)
+   #+end_example
+
+   See Section [[sec:agda-ext]] for a note on extensionality.
 ** Predicates as mathematical sets
    <<sec:sets>>
    In this section when we say /set/ we refer to a subset of an Agda type. The
@@ -2083,8 +2120,43 @@ transitivity refl refl = refl
        #+end_example
 
 *** Extensionality
-    <<sec:agda-ext>>
-    A necessary question is ``can we define equality of sets?''.
+    <<sec:agda-ext>> In Set theory we call axiom of extensionality the property
+    that if two sets have the same elements, then they are equal. As in Agda we
+    represent sets as functions we reword extensionality for functions: if two
+    functions have the same domain and coincide for every element in their domain then
+    they are equal. In symbols: \[∀fg.(∀x.f(x)=g(x))⇒f=g.\]
+
+    In Agda we can represent this concept thus (cite:agda-stdlib):
+    #+begin_src text
+Extensionality : (a b : Level) → Set _
+Extensionality a b =
+  {A : Set a} {B : A → Set b} {f g : (x : A) → B x} →
+  ((x : A) → f x ≡ g x) → f ≡ g
+    #+end_src
+
+    {{{jan(give simplified version without dependent function?)}}}
+
+    #+begin_src text
+Extensionality : (a b : Level) → Set _
+Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
+  ((x : A) → f x ≡ g x) → f ≡ g
+    #+end_src
+    It is usually the case that we accept the axiom of extensionality as part of
+    our metalogic as it is part of the most popular logical framework
+    $\sf{ZFC}$, however, in Agda the property of extensionality is not an axiom
+    nor a provable theorem.
+
+    An direct consequence of the lack of extensionality is that we cannot show
+    equality of sets by double inclusion.
+    #+begin_src text
+    ⊆⊇→≡ : {ℓS ℓA : Level} {A : Set ℓA} {X Y : Pred A ℓS} → X ⊆ Y → Y ⊆ X → X ≡ Y
+    ⊆⊇→≡ = ? -- not provable
+    #+end_src
+
+    We will see that this has a small effect on
+    the definition of generalized Veltman frames in Section
+    [[sec:agda-gen-semantics]].
+
 ** Positivity
    <<sec:positivity>>
 
@@ -2121,14 +2193,163 @@ self-app (bad f) = f (bad f)
 absurd : ⊥
 absurd = self-app (bad self-app)
    #+end_src
-** Agda syntax
-   This section is meant to be a summary of some of the important parts of the
-   language reference. I am not sure if this section should be in the report or
-   should just link to the online doc.
+** Agda reference
+   This section contains a thorough description of some of the topics that were
+   touched in the introduction prior to this section. We believe that the
+   intuition given in the introduction should be enough for the reader to be
+   able to read Section [[sec:agda-project]], however, we encourage the reader to
+   resort to the ensuing reference if they wish for more precise information on
+   the language. The contents of this section have been merely copied from the
+   online Agda documentation (cite:agda-doc).
 
-*** Pattern matching
+*** Pattern matching :noexport:
+
 *** Implicit arguments and inference
-   <<sec:agda-implicit-args>>
+    <<sec:agda-implicit-args>>
+
+    It is possible to omit terms that the type checker can figure out for
+    itself, replacing them by =_=. If the type checker cannot infer the value of
+    an =_= it will report an error. For instance, for the polymorphic identity
+    function
+
+    #+begin_example
+    id : (A : Set) → A → A
+    #+end_example
+
+    the first argument can be inferred from the type of the second argument, so
+    we might write =id _ zero= for the application of the identity function to
+    =zero=.
+
+    We can even write this function application without the first argument. In
+    that case we declare an implicit function space:
+
+    #+begin_example
+    id : {A : Set} → A → A
+    #+end_example
+
+    and then we can use the notation =id zero=.
+
+    Another example:
+    #+begin_example
+    _==_  : {A : Set} → A → A → Set
+    subst : {A : Set} (C : A → Set) {x y : A} → x == y → C x → C y
+    #+end_example
+    Note how the first argument to =_==_= is left implicit. Similarly, we may
+    leave out the implicit arguments =A=, =x=, and =y= in an application of
+    =subst=. To give an implicit argument explicitly, enclose it in curly braces.
+    The following two expressions are equivalent:
+
+    #+begin_example
+    x1 = subst C eq cx
+    x2 = subst {_} C {_} {_} eq cx
+    #+end_example
+
+    It is worth noting that implicit arguments are also inserted at the end of
+    an application, if it is required by the type. For example, in the
+    following, =y1= and =y2= are equivalent.
+
+    #+begin_example
+    y1 : a == b → C a → C b
+    y1 = subst C
+
+    y2 : a == b → C a → C b
+    y2 = subst C {_} {_}
+    #+end_example
+
+    Implicit arguments are inserted eagerly in left-hand sides so =y3= and =y4= are
+    equivalent. An exception is when no type signature is given, in which case
+    no implicit argument insertion takes place. Thus in the definition of =y5= the
+    only implicit is the =A= argument of =subst=.
+
+    #+begin_example
+    y3 : {x y : A} → x == y → C x → C y
+    y3 = subst C
+
+    y4 : {x y : A} → x == y → C x → C y
+    y4 {x} {y} = subst C {_} {_}
+
+    y5 = subst C
+    #+end_example
+
+    It is also possible to write lambda abstractions with implicit arguments.
+    For example, given =id : (A : Set) → A → A=, we can define the identity
+    function with implicit type argument as
+
+    #+begin_example
+    id’ = λ {A} → id A
+    #+end_example
+
+    Implicit arguments can also be referred to by name, so if we want to give
+    the expression =e= explicitly for =y= without giving a value for =x= we can
+    write
+
+    #+begin_example
+    subst C {y = e} eq cx
+    #+end_example
+
+    In rare circumstances it can be useful to separate the name used to give an
+    argument by name from the name of the bound variable, for instance if the
+    desired name shadows an existing name. To do this you write
+
+    #+begin_example
+    id₂ : {A = X : Set} → X → X  -- name of bound variable is X
+    id₂ x = x
+
+    use-id₂ : (Y : Set) → Y → Y
+    use-id₂ Y = id₂ {A = Y}      -- but the label is A
+    #+end_example
+
+    Labeled bindings must appear by themselves when typed, so the type =Set= needs
+    to be repeated in this example:
+
+    #+begin_example
+    const : {A = X : Set} {B = Y : Set} → A → B → A
+    const x y = x
+    #+end_example
+
+    When constructing implicit function spaces the implicit argument can be
+    omitted, so both expressions below are valid expressions of type ={A : Set}
+    → A → A=:
+    #+begin_example
+    z1 = λ {A} x → x
+    z2 = λ x → x
+    #+end_example
+    The =∀= (or =forall=) syntax for function types also has implicit variants:
+
+    #+begin_example
+    ① : (∀ {x : A} → B)    is-the-same-as  ({x : A} → B)
+    ② : (∀ {x} → B)        is-the-same-as  ({x : _} → B)
+    ③ : (∀ {x y} → B)      is-the-same-as  (∀ {x} → ∀ {y} → B)
+    #+end_example
+
+    In very special situations it makes sense to declare unnamed hidden
+    arguments ={A} → B=. In the following =example=, the hidden argument to =scons= of
+    type =zero ≤ zero= can be solved by \text{$η$-expansion}, since this type reduces to =⊤=.
+
+    #+begin_example
+    data ⊥ : Set where
+
+    _≤_ : Nat → Nat → Set
+    zero ≤ _      = ⊤
+    suc m ≤ zero  = ⊥
+    suc m ≤ suc n = m ≤ n
+
+    data SList (bound : Nat) : Set where
+    []    : SList bound
+    scons : (head : Nat) → {head ≤ bound} → (tail : SList head) → SList bound
+
+    example : SList zero
+    example = scons zero []
+    #+end_example
+
+    There are no restrictions on when a function space can be implicit. Internally,
+    explicit and implicit function spaces are treated in the same way. This means
+    that there are no guarantees that implicit arguments will be solved. When there
+    are unsolved implicit arguments the type checker will give an error message
+    indicating which application contains the unsolved arguments. The reason for
+    this liberal approach to implicit arguments is that limiting the use of implicit
+    argument to the cases where we guarantee that they are solved rules out many
+    useful cases in practice.
 *** datatype definitions and constructors
     <<sec:agda-datatype>>
         #+begin_src text
@@ -2171,6 +2392,7 @@ absurd = self-app (bad self-app)
   # |           | \vert | $(x:A)Γ$              | telescopes                   |
 
 * Agda in the project
+  <<sec:agda-project>>
   The goal of this section is to guide the reader through some key parts of the
   code that we have implemented. It is worth noting that we have started from
   scratch as we believe that no other previous work in interpretability logics
@@ -2662,6 +2884,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    Next we present how we represent in Agda common operations on sets.
    Assume for the below definitions that we have some =A : Set= in scope.
 ** Generalized semantics
+   <<sec:agda-gen-semantics>>
    In this section we explain how we have represented generalized Veltman
    semantics in Agda. As explained in Section [[sec:trans]] we consider eight
    different quasi-transitivity properties, thus, we need to define everything
