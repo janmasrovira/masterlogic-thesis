@@ -1,8 +1,14 @@
 #+latex_compiler: xelatex
-#+latex_class: article
-#+title: Interpretability logics
-#+author: Jan Mas Rovira
-#+subtitle: Master's thesis
+#+lAtEx_class: report
+#+options: H:4
+#+options: toc:nil
+
+# #+latex_compiler: xelatex
+# #+latex_class: report
+# #+title: Interpretability logics
+# #+author: Jan Mas Rovira
+# #+subtitle: Master's thesis
+# #+options: toc:nil
 
 #+latex_header: \usepackage{hyperref}
 #+latex_header: \usepackage{graphicx}
@@ -109,6 +115,54 @@
 #+latex_header: \newunicodechar{｝}{\ensuremath{\}}}
 #+latex_header: \setmathfont{Latin Modern Math}
 
+#+latex_header: \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+
+\begin{titlepage}
+  \begin{center}
+
+    \textsc{\Large Masther's thesis to obtain the degree\\ Master in pure and applied logic}
+     \\[1cm]
+
+    \horrule{0.5pt} \\[0.4cm]
+    { \Huge \bfseries Generalized Veltman semantics in Agda \\[0.4cm] }
+
+    \horrule{1.6pt} \\[2.4cm]
+
+    ~\textsc{\huge Jan Mas Rovira}
+
+    ~\\[1.2cm]
+    \begin{tabular}[!htb]{ll}
+    \text{\large Supervised by } &\textsc{\Large Joost J. Joosten} \\
+    \text{\large and } &\textsc{\Large Luka Mikec}
+    \end{tabular}
+    ~\\[5.2cm]
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=9cm]{img/ub_logo}
+    \end{figure}
+    \vfill
+
+    \text{\Large Facultat de Filosofia de Barcelona and}\\
+    \text{\Large Facultat de Matemàtiques de Barcelona}\\
+    {\Large July 2020}
+
+  \end{center}
+\end{titlepage}
+#+BEGIN_abstract
+wip
+#+END_abstract
+
+\newpage
+
+\renewcommand{\abstractname}{Acknowledgements}
+#+BEGIN_abstract
+wip
+#+END_abstract
+
+\newpage
+#+toc: headlines 2
+\newpage
 * Introduction
 ** Overview of interpretability logics
    mention $M$, $P$ and $R$.
