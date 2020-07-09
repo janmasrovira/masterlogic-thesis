@@ -102,6 +102,7 @@
 #+latex_header: \newunicodechar{ᵢ}{\makebox[0.5em]{\textsubscript{i}}}
 #+latex_header: \newunicodechar{ₖ}{\makebox[0.5em]{\textsubscript{k}}}
 #+latex_header: \newunicodechar{ₙ}{\makebox[0.5em]{\textsubscript{n}}}
+#+latex_header: \newunicodechar{ₘ}{\makebox[0.5em]{\textsubscript{m}}}
 #+latex_header: \newunicodechar{ₗ}{\makebox[0.5em]{\textsubscript{l}}}
 #+latex_header: \newunicodechar{⸴}{\makebox[0.5em]{,}}
 #+latex_header: \newunicodechar{｛}{\ensuremath{\{}}
@@ -532,6 +533,198 @@
 
   {{{endremark}}}
 
+* Generalized vs ordinary models
+  In this section we discuss how we can transform an ordinary model into a
+  generalized model and vice versa. Of course, we want the transformation to
+  maintain the forcing relation associated with the models.
+
+  In Section [[sec:ord-to-gen]] we see a straightforward transformation from an
+  ordinary Veltman model into a generalized Veltman model. In Section
+  [[sec:verbrugge]] we see an involved transformation from a generalized model into
+  an ordinary model. This transformation is due to Verbrugge and was described
+  in cite:Verbrugge. The proof was originally described to work with
+  quasi-transitivity Condition (6). We have slightly improved the result by
+  showing that the same transformation also works for Conditions (3), (4) and
+  (5). In Section [[sec:gen-to-ord-luka]] we show a transformation that achieves the
+  same as Verbrugge's transformation but it is much simpler. This transformation
+  was suggested by Luka Mikec during online correspondence.
+
+** From ordinary to generalized
+   <<sec:ord-to-gen>>
+** From generalized to ordinary (Verbrugge)
+   <<sec:verbrugge>>
+   In this section we proof that given a generalized Veltman model that satisfies
+   a certain property, we can build an ordinary Veltman model with the same
+   associated forcing relation. For the rest of this section we fix a generalized
+   Veltman model $M≔⟨W, R, S, V⟩$.
+
+   We define an ordinary Veltman model $M'≔⟨W',R',S',V'⟩$ where
+   \begin{flalign*}
+   W'≔&\{⟨x,A⟩:A⊆W^2, \\ &(W1)\ ∀⟨u,v⟩∈A\ ∃Y(xS_uY,v∈Y), \\
+   & (W2)\ ∀uV(xS_uV⇒∃v∈V(⟨u,v⟩∈A)\}; \\
+   R'≔&\{⟨⟨x,A⟩,⟨y,B⟩⟩ : xRy,∀wz(wRx⇒⟨w,z⟩∈B⇒⟨w,z⟩∈A)\}; \\
+   S'≔&\{⟨⟨w,C⟩,⟨x,A⟩,⟨y,B⟩⟩ : ⟨w,C⟩R'⟨x,A⟩,⟨w,C⟩R'⟨y,B⟩, ∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A) \}; \\
+   V'≔&\{⟨⟨x, A⟩,var⟩: ⟨x,var⟩∈V, ⟨x,A⟩∈W'\}.
+   \end{flalign*}
+
+   {{{beginlemma}}}
+   The structure $⟨W',R',S',V'⟩$ is an ordinary Veltman model.
+   {{{endlemma}}}
+   {{{beginproof}}}
+   {{{agda}}} It is routine to check that all the requirement are satisfied.
+   {{{endproof}}}
+
+   Let the conditions $(C_0)$ and $(C_1)$ be defined thus:
+   \begin{flalign*}
+   (C₀)&≔∀wxV.xS_wV⇒∃y∈V.∀bV'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
+   (C₁)&≔∀wbxV.wRx⇒xS_bV⇒∃v∈V.xS_b\{v\},(bRw⇒wS_b\{v\}).
+   \end{flalign*}
+   {{{begintheorem}}}
+   If $M$ satisfies both conditions $(C_0)$ and $(C_1)$ then
+   for any world $⟨w,C⟩∈W'$ and formula $D$:
+   \[w⊩D⇔⟨w,C⟩⊩D\]
+   {{{endtheorem}}}
+   {{{beginproof}}} {{{agda}}}
+   We proceed by induction on the formula. We only consider the
+   case $D▷E$ as the other cases are easy.
+   - \boxed{⇒} Assume $w⊩D▷E$ and let $C$ be such that $⟨w,C⟩∈W'$. We
+     want to prove $⟨w,C⟩⊩D▷E$. Assume that for some $⟨x,A⟩∈W'$ we have
+     $⟨w,C⟩R'⟨x,A⟩⊩D$. By IH it follows that $x⊩D$ and hence there exists $V$
+     such that $xS_wV⊩E$. By $(C_0)$ there is some $y∈V$ such that
+
+     #+name: eq:verb-y-cond
+     \begin{equation}
+     ∀bV'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\})
+     \end{equation}
+
+     We proceed by showing that there is some $B$ such that
+     $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. Let $B$ be defined thus:
+     \[B≔\{⟨u,v⟩: ∃Y.yS_uY,v∈Y,(u=w⇒⟨w,v⟩∈A),(uRw⇒⟨u,v⟩∈C)\}\]
+
+     To show $⟨y,B⟩∈W'$ we need to prove that $(W1)$ and $(W2)$ hold. The
+     condition $(W1)$ follows immediately from the definition of $B$. To show
+     $(W2)$ assume that for some $b$ and $V$ we have $yS_bV$. We need to see that
+     there exists $v∈V$ such that $⟨b,v⟩∈B$. From $yS_bV$ and [[eq:verb-y-cond]] we
+     get that there exists $v∈V'$ such that
+     \begin{flalign}
+     b=w &⇒ xS_b\{v\} \label{eq:verb-b=w}, \\
+     bRw &⇒ wS_b\{v\} \label{eq:verb-2}
+     \end{flalign}
+     To show that $⟨b,v⟩∈B$ we first see that $b=w⇒⟨w,v⟩∈A$. Assume $b=w$, then
+     by \ref{eq:verb-b=w} it follows that $xS_b\{v\}$ and therefore by condition
+     $(W2)$ for $A$ it follows $⟨b,v⟩∈A$. We proceed likewise and use
+     \ref{eq:verb-2} to show $bRw⇒⟨b,v⟩∈C$. This concludes the proof that
+     $⟨y,B⟩∈W'$.
+
+     We now check the conditions for $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. We already have
+     $⟨w,C⟩R'⟨x,A⟩$ by assumption. To see that $⟨w,C⟩R'⟨y,B⟩$ we first observe
+     that $wRy$ holds since $xS_wV$ and $y∈V$. Then assume that for some $b,z$ we
+     have $bRw$ and $⟨b,z⟩∈B$. Then from the definition of $B$ it follows that
+     $⟨b,z⟩∈C$. The condition $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$ follows immediately from the
+     definition of $B$.
+
+     Finally, since $V⊩E$ and $y∈V$ we have $y⊩E$ and thus by IH it follows that
+     $⟨y,B⟩⊩E$.
+
+   - \boxed{⇐} We proceed by contraposition. Assume $w⊮D▷E$, then there exists
+     $x$ such that $wRx$ and
+     #+name: eq:verb-neg
+     \begin{equation}
+     ∀Y(vS_wY⇒∃y∈Y(y⊮E)).
+     \end{equation}
+
+     Let $A$ be defined thus:
+     \[A≔ \{⟨b,v⟩:(∃Y.xS_bY,v∈Y),(b=w⇒M,v⊮E),(bRw⇒⟨b,v⟩∈C)\}.\]
+
+     We first show that $⟨x,A⟩∈W'$. Condition $(W1)$ follows directly from the
+     definition of $A$. To show that $(W2)$ holds assume that for some $b$ and
+     $V$ we have $xS_bV$. We need to see that for some $v∈V$ we have $⟨b,v⟩∈A$.
+     Since $wRx$ and $xS_bV$ it follows from condition $(C_1)$ that there exists
+     $v∈V$ such that
+     \begin{flalign}
+     &xS_b\{v\}, \label{eq:verb-neg-b=w} \\
+     bRw⇒&wS_b\{v\}. \label{eq:verb-neg-bRw}
+     \end{flalign}
+     The first condition to show $⟨b,v⟩∈A$, namely that $∃Y.xS_bY,v∈Y$, is met
+     trivially. For the next condition assume $b=w$, then see that we have
+     $xS_w\{v\}$ by \ref{eq:verb-neg-b=w} and thus by [[eq:verb-neg]] it follows that
+     $v⊮E$. For the remaining condition assume $bRw$, then by \ref{eq:verb-neg-bRw} we
+     have $wS_b\{v\}$ and thus by $(W2)$ for $C$ we have $⟨b,v⟩∈C$. Therefore we
+     conclude $⟨b,v⟩∈A$ and thus $⟨x,A⟩∈W'$.
+
+     To see that $⟨w,C⟩R'⟨x,A⟩$ we already have $wRx$ by assumption. The
+     remaining condition, $∀bz(bRx⇒⟨b,z⟩∈A⇒⟨b,z⟩∈C)$, follows directly from the
+     definition of $A$.
+
+     Since $x⊩D$, it follows from the IH that $⟨x,A⟩⊩D$.
+
+     Lastly, assume that for some $⟨y,B⟩∈W'$ we have $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. By
+     definition of $S'$ we have $xS_wy$ and thus $wRy$. By quasi-reflexivity of
+     $S$ we then have $yS_w\{y\}$ and thus by $(W2)$ for $B$ we have $⟨w,y⟩∈B$.
+     By definition of $S'$ we also have that $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$, hence
+     $⟨w,y⟩∈A$. By definition of $A$ it follows that $y⊮E$ and by IH we have
+     $⟨y,B⟩⊮E$, which concludes the proof.
+   {{{endproof}}}
+
+   {{{begintheorem}}} If a generalized Veltman frame satisfies
+   quasi-transitivity Condition 3, 4, 5 or 6, then it satisfies conditions
+   $(C_0)$ and $(C_1)$. {{{endtheorem}}}
+
+   {{{beginproof}}} {{{agda}}} Here we prove the property for a generalized
+   Veltman frame satisfying quasi-transitivity Condition 3. Conditions 4, 5 and 6
+   imply Condition 3 as shown in Theorem [[theorem:trans]].
+
+   Assume $F$ is a generalized Veltman frame satisfying quasi-transitivity
+   Condition 3.
+   It is easy to observe that the following property holds:
+   #+name: eq:verb-trans-prop
+   \begin{equation}
+   uS_xY ⇒ ∃\, y∈Y\, ∀ z(yS_x\{z\} ⇒ uS_x\{z\}).
+   \end{equation}
+   - \boxed{(C₀)} Assume that for some $w,x,V$ we have $xS_wV$. Then by
+     [[eq:verb-trans-prop]] there is some $y∈V$ such that
+     #+name: eq:verb-trans-y
+     \begin{equation}
+      ∀ z(yS_w\{z\} ⇒ xS_w\{z\}).
+     \end{equation}
+
+     Now assume that for some $b,V'$ we have $yS_bV'$. It follows by
+     [[eq:verb-trans-prop]] that there is some $v∈V'$ such that
+     #+name: eq:verb-trans-v
+     \begin{equation}
+      ∀ z(vS_b\{z\} ⇒ yS_b\{z\}).
+     \end{equation}
+     Assume that $b=w$, we need to see that $xS_b\{v\}$. From $xS_wV$ and $y∈V$
+     it follows that $wRy$. Then by quasi-reflexivity we have $yS_w\{y\}$ and by
+     [[eq:verb-trans-y]] we get $xS_w\{v\}$ which is the same as $xS_b\{v\}$. Assume
+     that $bRw$, we need to see that $wS_b\{v\}$. From $bRwRy$ we have
+     $wS_b\{y\}$ and from property [[eq:verb-trans-prop]] we get
+     #+name: eq:verb-trans-Sbyz
+     \begin{equation}
+     ∀z(yS_b\{z\}⇒wS_b\{z\}).
+     \end{equation}
+     Then since $yS_bV'$ and $v∈V'$ we have $bRv$ so by quasi-reflexivity we have
+     $vS_b\{v\}$. Finally by [[eq:verb-trans-v]] we get $yS_b\{v\}$ and by
+     [[eq:verb-trans-Sbyz]] we get $wS_b\{v\}$.
+   - \boxed{(C_1)} Assume that for some $w,b,x,V$ we have $wRxS_bV$.
+     By [[eq:verb-trans-prop]] it follows that there is some $v∈V$ such that
+     #+name: eq:verb-trans-SbxV
+     \begin{equation}
+      ∀z(vS_b\{z\} ⇒ xS_b\{z\}).
+     \end{equation}
+     We first see that $xS_b\{v\}$. From $xS_bV$ and $v∈V$ we get $bRv$ and by
+     quasi-reflexivity we get $vS_b\{v\}$. Then by [[eq:verb-trans-SbxV]] we have
+     $xS_b\{v\}$. Assume $bRw$, we need to see $wS_b\{v\}$. By quasi-reflexivity
+     we get $vS_b\{v\}$ and by [[eq:verb-trans-SbxV]] we get $xS_b\{v\}$. By $bRwRx$
+     we get $wS_b\{x\}$ and thus by [[eq:verb-trans-prop]] we have
+     #+name: eq:verb-Sbwx
+     \begin{equation}
+     ∀z(xS_b\{z\}⇒wS_b\{z\}).
+     \end{equation}
+     Finally by $xS_b\{v\}$ and [[eq:verb-Sbwx]] we get $wS_b\{v\}$.
+   {{{endproof}}}
+** From generalized to ordinary (Luka)
+   <<sec:gen-to-ord-luka>>
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
   formulas that carries some special significance.
@@ -1350,8 +1543,8 @@ LABEL. FOR EXAMPLE:)}}}
 * The logic of Agda
   # Adapted from cite:norell:thesis (Section 1.3).
 
-  In this section we give an informal overview of the basic Agda constructions
-  that will hopefully help the reader get an intuition of how dependent types
+  In this section we give an informal overview of the basic Agda constructions,
+  which will hopefully help the reader get an intuition of how dependent types
   can be used to prove mathematical properties. We will also highlight some
   intricacies of the language that are relevant to our project. This is not
   meant to be an exhaustive analysis of the inner workings of Agda, as this
@@ -1373,31 +1566,35 @@ LABEL. FOR EXAMPLE:)}}}
   2. A proof of $A∧B$ is a proof of $A$ and a proof of $B$;
   3. A proof of $A∨B$ is a proof of $A$ or a proof of $B$;
   4. Nothing is a proof of $⊥$;
-  5. $⊤$ is always true.
+  5. $⊤$ is always true and provable.
 
   According to the BHK interpretation a proof of $A→A$ is just the identity
   function. We can express this in Agda by writing the identity lambda term:
   #+begin_src text
-  (λ a → a)
+  λ a → a
   #+end_src
-  The previous term is valid. However, in Agda we must give a name to all the
-  terms that we define so we can refer to them in other parts of our code.
-  We will name our term =id=:
+  See that we use the structure =λ arg₁ arg₂ … → term= to define lambda
+  functions. The previous term is valid. However, in Agda we must give a name to
+  all the terms that we define so we can refer to them in other parts of our
+  code. We will name our term =id=:
   #+begin_src text
   id = λ a → a
   #+end_src
   When the term that we are defining is a function, we are allowed to move the
   arguments to the left of the === sign. Furthermore, we should write the type
   of the function using the =:= symbol. The =:= symbol denotes the typing
-  relation, hence =a : A= reads as ``term =a= has type =A= ''. We use the symbol
-  =→= for functions.
+  relation, hence =a : A= reads as ``term =a= has type =A=''. Sometimes we also
+  say that ``the term =a= is a proof of =A=''.
   #+begin_src text
   id : A → A
   id a = a
   #+end_src
   The previous function is only valid if the type =A= has been defined. Since
   our intention is that it should work for any type, we should rewrite it to be
-  polymorphic. We can do that by declaring a type variable =A=.
+  polymorphic. We can do that by declaring a type variable =A=. We can do this
+  by adding an extra argument of the form =(A : Set)=. We see that =A= has type
+  =Set=, which is the Agda word for type. Named arguments can be referenced in
+  the right part of the =→=, thus we can write:
   #+begin_src text
   id : (A : Set) → A → A
   id A a = a
@@ -1410,7 +1607,9 @@ LABEL. FOR EXAMPLE:)}}}
   id a = a
   #+end_src
   With the technicalities out of the way, we can finally say that we have
-  completed our first Agda proof of $A→A$ according to the BHK interpretation.
+  completed our first Agda proof of $A→A$ according to the BHK interpretation by
+  implementing and typing the identity function in Agda.
+
   Let us see another example involving functions[fn::The =→= function symbol has
   right associativity.].
   #+begin_src text
@@ -1462,6 +1661,9 @@ data _×_ (A B : Set) : Set where
 
   p3 : {A B C : Set} → (A → B → C) → (A × B) → C
   p3 f (a , b) = f a b
+
+  p4 : {A B C : Set} → ((A × B) × C) → (A × (B × C))
+  p4 ((a , b) , c) = a , (b , c)
   #+end_src
   Now that we are familiarized with conjunction and product types we can proceed
   by exploring disjunction. In order to express options we can define a new data
@@ -1546,26 +1748,28 @@ data _⊎_ (A B : Set) : Set where
   p1 a ¬a = explosion (¬a a)
   #+end_src
 
-  We finally climb to the $⊤$. We shall define a datatype which we call the
+  We finally climb to the $⊤$ by defining a datatype which we call the
   /unit type/.
   #+begin_src text
   data ⊤ : Set where
     tt : ⊤
   #+end_src
-  We see that this type has a single constructor with no parameters, hence there
-  only exists one term with this type, namely =tt=. An example:
+  We see that this type has a single constructor (=tt=) with no parameters, hence there
+  only exists one term with this type, namely =tt=. Some examples:
   #+begin_src text
   ⊤⊤ : ⊤ × ⊤
   ⊤⊤ = tt , tt
+
+  ¬¬⊤ : ¬ (¬ ⊤)
+  ¬¬⊤ ¬⊤ = ¬⊤ tt
   #+end_src
   This concludes the first part of the introduction.
 
 ** Booleans and case analysis
-   <<sec:agda-bool>>
-   The /true or false/ concept is ubiquitous in computer science and in logic.
-   In this section we show how we can define a datatype that represents that
-   concept and we give a small introduction to case analysis through pattern
-   matching.
+   <<sec:agda-bool>> The /true or false/ concept is ubiquitous in computer
+   science and in logic. In this section we show how we can define a datatype
+   that represents this dichotomy and we give a small introduction to
+   case analysis through pattern matching.
 
    In Agda we can define the =Bool= type in a similar fashion to the
    disjunction type we defined before.
@@ -1574,7 +1778,8 @@ data _⊎_ (A B : Set) : Set where
      true : Bool
      false : Bool
    #+end_src
-   Let us define the =not= and =and= Boolean operators using pattern matching:
+   As a simple example, see how we can define the =not= and =and= Boolean
+   operators using pattern matching:
    #+begin_src text
    not : Bool → Bool
    not false = true
@@ -1585,8 +1790,8 @@ data _⊎_ (A B : Set) : Set where
    and true b = b
    #+end_src
    We proceed by defining equality for the =Bool= type[fn::This definition is
-   just for illustrative purposes. It is possible to define polymorphic equality,
-   see Section [[sec:agda-equality]].]. We use the symbol
+   just for illustrative purposes. It is possible to define polymorphic equality
+   as described in Section [[sec:agda-equality]].]. We use the symbol
    =≡= because === is reserved for Agda.
    #+begin_src text
 data _≡_ : Bool → Bool → Set where
@@ -1620,7 +1825,7 @@ data _≡_ : Bool → Bool → Set where
    construction (i.e. an Agda function definition) to provide function definitions,
    like =not=, and theorems, like =notnot=.
 
-   Pattern matching (case analysis) is ubiquitous is Agda, be it in definitions
+   Pattern matching (case analysis) is ubiquitous in Agda, be it in definitions
    or in proofs. We show some more examples below:
    #+begin_src text
    p1 : (b : Bool) → and false b ≡ false
@@ -1669,7 +1874,7 @@ data _≡_ : Bool → Bool → Set where
    n=. By performing a recursive call with =n= as argument we get a proof of =n
    ≡ n=, then we can use the constructor =s≡s= to build a term of type =suc n ≡
    suc n=. It can be enlightening to observe that in a proof by induction, such
-   as the previous one, a recursive call plays the role of the induction
+   as the previous one, a recursive call plays the role of an induction
    hypothesis.
 
    An inexperienced Agda user might try the following:
@@ -1766,45 +1971,46 @@ suc-r (suc a) b = s≡s (suc-r a  b)
 ** Universe hierarchy
    <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
    For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
-   we have mentioned before, in a dependent type theory we are allowed to mix
-   types and terms, hence =Nat= is a term in itself and must be assigned a type.
-   Agda calls the type of (small) types =Set=, hence we have that =Nat= has type
+   we have seen before, in a dependent type theory we are allowed to mix types
+   and terms, hence =Nat= is a term in itself and must be assigned a type. Agda
+   calls the type of (small) types =Set=, hence we have that =Nat= has type
    =Set=. But then =Set= is also a term an must be assigned a type as well.
-   Could we have that the type of =Set= is =Set=? The first version of
-   Martin-Löf’s type theory (cite:martin-lof-1971a) had an
-   axiom stating that there is a type of all types and thus we would have that
-   the type of =Set= is =Set=. However Girard showed
-   (cite:sep-type-theory-intuitionistic) that having =Set : Set= allowed the
-   Burali-Forti paradox[fn::The assumption that there is a set of all ordinal
-   numbers leads to a contradiction.] to be encoded in the theory. In order to
-   avoid such inconsistency Agda builds a hierarchy of universes where small
-   types such as =Nat= and =Bool= are assigned the type =Set 0= and then for
-   every $i∈ω$ we have that =Set i : Set i+1=. Notice however, that =Set i : Set
-   i+1= is true while =Set i : Set i+n= does not hold for $n>1$. In Agda we write
-   =Set= instead of =Set 0=. When the level is a constant natural number we can
-   also write =Set₁=, =Set₂=, etc. instead of =Set 1=, =Set 2=, etc.
+   Could we have that the type of =Set= is =Set=? No. The first version of
+   Martin-Löf’s type theory (cite:martin-lof-1971a) had an axiom stating that
+   there is a type of all types and thus we would have that the type of =Set= is
+   =Set=. However Girard showed (cite:sep-type-theory-intuitionistic) that
+   having =Set : Set= allowed the Burali-Forti paradox[fn::The assumption that
+   there is a set of all ordinal numbers leads to a contradiction.] to be
+   encoded in the theory, and thus the relation =Set : Set= needs to be
+   rejected. In order to avoid such inconsistency Agda builds a hierarchy of
+   universes where small types such as =Nat= and =Bool= are assigned the type
+   =Set 0= and then for every $i∈ω$ we have that =Set i : Set i+1=. Notice
+   however, that =Set i : Set i+1= is true while =Set i : Set i+n= does not hold
+   for $n>1$. In Agda we write =Set= instead of =Set 0=. When the level is a
+   constant natural number we can also write =Set₁=, =Set₂=, etc. instead of
+   =Set 1=, =Set 2=, etc.
 
    It is possible to combine types of different universe levels. The biggest type
    is the one that counts. For instance:
    #+begin_src text
-   to : Set₃ → Set₁ → Set₃
-   to A B = A → B
+   function : Set₃ → Set₁ → Set₃
+   function A B = A → B
    #+end_src
    The typing rule is analogous for product and sum types.
 
    Agda provides a primitive[fn::/primitive/ means that it is built in the
-   language and it cannot be user defined.] type for universe levels called
+   language and it cannot be defined by the user.] type for universe levels called
    =Level=. Essentially it is the same as =Nat= (we have =lzero= for the base
-   level and =lsuc= for the successor level), but it only works as a universe
+   level and =lsuc= for the successor level), but it is designed to work as a universe
    index. Having the =Level= type allows us to write universe polymorphic
    functions. See the same function as before, but now with universe
    polymorphism.
    #+begin_src text
-   to' : {a b : Level} → Set a → Set b → Set (a ⊔ b)
-   to' A B = A → B
+   function' : {a b : Level} → Set a → Set b → Set (a ⊔ b)
+   function' A B = A → B
    #+end_src
    The =_⊔_= operator is a primitive operator of type =Level → Level → Level=
-   that returns the maximum of its two operands.
+   that normalizes to the the maximum of its two operands.
 
    Most of the functions that we have defined before should be rewritten to be
    universe polymorphic if possible. For instance, we can now rewrite the
@@ -1825,8 +2031,8 @@ suc-r (suc a) b = s≡s (suc-r a  b)
    c : {i : Level} → Set i    -- only with cumulativity
    c = Nat
    #+end_src
-
    In our project we have not used this extension.
+
 ** BHK interpretation of first order logic
    <<sec:bhk-fol>>
    <<sec:predicates>>
@@ -1918,7 +2124,7 @@ data _×_ (A B : Set) : Set where
    #+end_src
    The problem is that the type of the second component, =B=, is independent of
    the first component and thus we cannot express what we need. Here is where
-   the $Σ$ type (or dependent pair\glspl*{dependent-pair}) comes into play. A
+   the $Σ$ type (or \gls*{dependent-pair}) comes into play. A
    dependent pair is a structure where the type of the second component depends
    on the value of the first component. This concept is defined by the following
    datatype.
@@ -1964,9 +2170,10 @@ syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
    #+end_src
    There is a variation of this notation which omits the type of the variable as
    it can be inferred in many cases. That is, instead of =Σ[ c ∈ A ] (P c)= we
-   would have =∃[ c ] (P c)=. We use this notation, for instance, in the
-   definition of Veltman semantics in Section [[sec:agda-ord-semantics]].
-   See again the =∃-intro= theorem type using this notation:
+   would have =∃[ c ] (P c)=. We prefer this notation when possible in the
+   project[fn::For instance, in the definition of Veltman semantics in Section
+   [[sec:agda-ord-semantics]].]. See again the =∃-intro= theorem type using this
+   notation:
    #+begin_src text
    ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
      → (a : A) → P a → ∃[ c ] (P c)
@@ -2202,31 +2409,66 @@ absurd = self-app (bad self-app)
    the language. The contents of this section have been merely copied from the
    online Agda documentation (cite:agda-doc).
 
-*** Pattern matching :noexport:
+*** Function definitions and pattern matching
+    A function is defined by first declaring its type followed by a number of
+    equations called clauses. Each clause consists of the function being defined
+    applied to a number of patterns, followed by = and a term called the
+    right-hand side. For example:
+    #+begin_example
+    not : Bool → Bool
+    not true  = false
+    not false = true
+    #+end_example
+    Functions are allowed to call themselves recursively, for example:
+    #+begin_example
+    twice : Nat → Nat
+    twice zero    = zero
+    twice (suc n) = suc (suc (twice n))
+    #+end_example
 
-*** Implicit arguments and inference
+    The general form for defining a function is
+    #+begin_example
+    f : (x₁ : A₁) → … → (xₙ : Aₙ) → B
+    f p₁ … pₙ = d
+    …
+    f q₁ … qₙ = e
+    #+end_example
+    where =f= is a new identifier, =pᵢ= and =qᵢ= are patterns of type =Aᵢ=, and =d= and =e=
+    are expressions.
+
+    The declaration above gives the identifier =f= the type =(x₁ : A₁) → … → (xₙ :
+    Aₙ) → B= and =f= is defined by the defining equations. Patterns are matched
+    from top to bottom, i.e., the first pattern that matches the actual
+    parameters is the one that is used.
+
+    By default, Agda checks the following properties of a function definition:
+    1. The patterns in the left-hand side of each clause should consist only of
+       constructors and variables.
+    2. No variable should occur more than once on the left-hand side of a single
+       clause.
+    3. The patterns of all clauses should together cover all possible inputs of
+       the function.
+    4. The function should be terminating on all possible inputs.
+
+*** Implicit arguments and automatic inference
     <<sec:agda-implicit-args>>
 
     It is possible to omit terms that the type checker can figure out for
     itself, replacing them by =_=. If the type checker cannot infer the value of
     an =_= it will report an error. For instance, for the polymorphic identity
     function
-
     #+begin_example
     id : (A : Set) → A → A
     #+end_example
-
     the first argument can be inferred from the type of the second argument, so
     we might write =id _ zero= for the application of the identity function to
     =zero=.
 
     We can even write this function application without the first argument. In
     that case we declare an implicit function space:
-
     #+begin_example
     id : {A : Set} → A → A
     #+end_example
-
     and then we can use the notation =id zero=.
 
     Another example:
@@ -2238,16 +2480,13 @@ absurd = self-app (bad self-app)
     leave out the implicit arguments =A=, =x=, and =y= in an application of
     =subst=. To give an implicit argument explicitly, enclose it in curly braces.
     The following two expressions are equivalent:
-
     #+begin_example
     x1 = subst C eq cx
     x2 = subst {_} C {_} {_} eq cx
     #+end_example
-
     It is worth noting that implicit arguments are also inserted at the end of
     an application, if it is required by the type. For example, in the
     following, =y1= and =y2= are equivalent.
-
     #+begin_example
     y1 : a == b → C a → C b
     y1 = subst C
@@ -2255,12 +2494,10 @@ absurd = self-app (bad self-app)
     y2 : a == b → C a → C b
     y2 = subst C {_} {_}
     #+end_example
-
     Implicit arguments are inserted eagerly in left-hand sides so =y3= and =y4= are
     equivalent. An exception is when no type signature is given, in which case
     no implicit argument insertion takes place. Thus in the definition of =y5= the
     only implicit is the =A= argument of =subst=.
-
     #+begin_example
     y3 : {x y : A} → x == y → C x → C y
     y3 = subst C
@@ -2270,27 +2507,21 @@ absurd = self-app (bad self-app)
 
     y5 = subst C
     #+end_example
-
     It is also possible to write lambda abstractions with implicit arguments.
     For example, given =id : (A : Set) → A → A=, we can define the identity
     function with implicit type argument as
-
     #+begin_example
     id’ = λ {A} → id A
     #+end_example
-
     Implicit arguments can also be referred to by name, so if we want to give
     the expression =e= explicitly for =y= without giving a value for =x= we can
     write
-
     #+begin_example
     subst C {y = e} eq cx
     #+end_example
-
     In rare circumstances it can be useful to separate the name used to give an
     argument by name from the name of the bound variable, for instance if the
     desired name shadows an existing name. To do this you write
-
     #+begin_example
     id₂ : {A = X : Set} → X → X  -- name of bound variable is X
     id₂ x = x
@@ -2301,7 +2532,6 @@ absurd = self-app (bad self-app)
 
     Labeled bindings must appear by themselves when typed, so the type =Set= needs
     to be repeated in this example:
-
     #+begin_example
     const : {A = X : Set} {B = Y : Set} → A → B → A
     const x y = x
@@ -2323,9 +2553,9 @@ absurd = self-app (bad self-app)
     #+end_example
 
     In very special situations it makes sense to declare unnamed hidden
-    arguments ={A} → B=. In the following =example=, the hidden argument to =scons= of
-    type =zero ≤ zero= can be solved by \text{$η$-expansion}, since this type reduces to =⊤=.
-
+    arguments ={A} → B=. In the following =example=, the hidden argument to
+    =scons= of type =zero ≤ zero= can be solved by \text{$η$-expansion}, since
+    this type reduces to =⊤=.
     #+begin_example
     data ⊥ : Set where
 
@@ -2341,7 +2571,6 @@ absurd = self-app (bad self-app)
     example : SList zero
     example = scons zero []
     #+end_example
-
     There are no restrictions on when a function space can be implicit. Internally,
     explicit and implicit function spaces are treated in the same way. This means
     that there are no guarantees that implicit arguments will be solved. When there
@@ -2352,12 +2581,137 @@ absurd = self-app (bad self-app)
     useful cases in practice.
 *** datatype definitions and constructors
     <<sec:agda-datatype>>
-        #+begin_src text
+
+    The general form of the definition of a simple datatype =D= is the following
+    #+begin_src text
   data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
     c₁ : A₁
     ...
     cₙ : Aₙ
-        #+end_src
+    #+end_src
+
+    The name D of the data type and the names =c₁=, …, =cₙ= of the constructors
+    must be new w.r.t. the current signature and context, and the types =A₁=, …,
+    =Aₙ= must be function types ending in =D=, i.e. they must be of the form
+    #+begin_example
+    (y₁ : B₁) → ... → (yₘ : Bₘ) → D
+    #+end_example
+
+    Datatypes can have parameters. They are declared after the name of the
+    datatype but before the colon, for example:
+    #+begin_example
+    data List (A : Set) : Set where
+      []  : List A
+      _∷_ : A → List A → List A
+    #+end_example
+
+    In addition to parameters, datatypes can also have indices. In contrast to
+    parameters which are required to be the same for all constructors, indices
+    can vary from constructor to constructor. They are declared after the colon
+    as function arguments to =Set=. For example, fixed-length vectors can be
+    defined by indexing them over their length of type =Nat=:
+
+    #+begin_example
+    data Vector (A : Set) : Nat → Set where
+      []  : Vector A zero
+      _∷_ : {n : Nat} → A → Vector A n → Vector A (suc n)
+    #+end_example
+
+    Notice that the parameter =A= is bound once for all constructors, while the
+    index ={n : Nat}= must be bound locally in the constructor =_∷_=.
+
+    Indexed datatypes can also be used to describe predicates, for example the
+    predicate =Even : Nat → Set= can be defined as follows:
+
+    #+begin_example
+    data Even : Nat → Set where
+      even-zero  : Even zero
+      even-plus2 : {n : Nat} → Even n → Even (suc (suc n))
+    #+end_example
+
+    The general form of the definition of a (parametrized, indexed) datatype =D=
+    is the following
+
+    #+begin_example
+    data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
+      c₁ : A₁
+      ...
+      cₙ : Aₙ
+    #+end_example
+
+    where the types =A₁=, …, =Aₙ= are function types of the form
+    #+begin_example
+    (z₁ : B₁) → ... → (zₘ : Bₘ) → D x₁ ... xₖ t₁ ... tₗ
+    #+end_example
+*** Function types
+    Function types are written =(x : A) → B=, or in the case of non-dependent
+    functions simply =A → B=. For instance, the type of the addition function
+    for natural numbers is:
+    #+begin_example
+    Nat → Nat → Nat
+    #+end_example
+    and the type of the addition function for vectors is:
+    #+begin_example
+    (A : Set) → (n : Nat) → (u : Vec A n) → (v : Vec A n) → Vec A n
+    #+end_example
+
+    where =Set= is the type of sets and =Vec A n= is the type of vectors with =n=
+    elements of type =A=. Arrows between consecutive hypotheses of the form =(x :
+    A)= may also be omitted, and =(x : A) (y : A)= may be shortened to =(x y : A)=:
+    #+begin_example
+    (A : Set) (n : Nat) (u v : Vec A n) → Vec A n
+    #+end_example
+
+    Functions are constructed by lambda abstractions, which can be either typed
+    or untyped. For instance, both expressions below have type =(A : Set) → A → A=
+    (the second expression checks against other types as well):
+    #+begin_example
+    example₁ = λ (A : Set) (x : A) → x
+    example₂ = λ A x → x
+    #+end_example
+
+    The application of a function =f : (x : A) → B= to an argument =a : A= is
+    written =f a= and the type of this is \texttt{B[x := a]}.
+
+    Some notation conventions follow.
+    - Function types:
+      #+begin_example
+      prop₁ : ((x : A) (y : B) → C) is-the-same-as   ((x : A) → (y : B) → C)
+      prop₂ : ((x y : A) → C)      is-the-same-as   ((x : A)(y : A) → C)
+      prop₃ : (∀ (x : A) → C)  is-the-same-as   ((x : A) → C)
+      prop₄ : (∀ x → C)        is-the-same-as   ((x : _) → C)
+      prop₅ : (∀ x y → C)      is-the-same-as   (∀ x → ∀ y → C)
+      #+end_example
+
+    - Functional abstraction:
+      #+begin_example
+      (λ x y → e)                    is-the-same-as   (λ x → (λ y → e))
+      #+end_example
+
+    - Functional application:
+      #+begin_example
+      (f a b)                       is-the-same-as    ((f a) b)
+      #+end_example
+
+*** Record types
+    The general form of a record declaration is as follows:
+    #+begin_example
+    record <recordname> <parameters> : Set <level> where
+      <directives>
+      constructor <constructorname>
+      field
+        <fieldname1> : <type1>
+        <fieldname2> : <type2>
+        -- ...
+      <declarations>
+    #+end_example
+    All the components are optional, and can be given in any order. In
+    particular, fields can be given in more than one block, interspersed with
+    other declarations. Each field is a component of the record. Types of later
+    fields can depend on earlier fields.
+
+    The directives available are eta-equality, no-eta-equality, inductive and
+    co-inductive. For more information visit cite:agda-doc.
 ** old :noexport:
   #   What sets dependent type theory apart from other type theories is that types
   #   can depend on terms. In a non-dependent theory types and terms live in
@@ -2398,7 +2752,7 @@ absurd = self-app (bad self-app)
   scratch as we believe that no other previous work in interpretability logics
   has been done in Agda.
 
-  The implementation relies on the Agda standard library cite:agda-stdlib.
+  The implementation relies on the Agda standard library (cite:agda-stdlib).
 
 ** Naming conventions :noexport:
    1. If we have =f : T= we say that =f= has type =T= or that =f= is a proof of =T=.
@@ -3250,177 +3604,6 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    theorem rule, which is frequently used in practice. Note that this limitation
    can be ameliorated as we can use the deduction theorem outside of the eDSL
    and then include the result by using a =[_]_By_= instruction.
-* Verbrugge
-  In this section we proof that given a generalized Veltman model that satisfies
-  a certain property, we can build an ordinary Veltman model with the same
-  associated forcing relation. For the rest of this section we fix a generalized
-  Veltman model $M≔⟨W, R, S, V⟩$.
-
-  We define an ordinary Veltman model $M'≔⟨W',R',S',V'⟩$ where
-  \begin{flalign*}
-  W'≔&\{⟨x,A⟩:A⊆W^2, \\ &(W1)\ ∀⟨u,v⟩∈A\ ∃Y(xS_uY,v∈Y), \\
-  & (W2)\ ∀uV(xS_uV⇒∃v∈V(⟨u,v⟩∈A)\}; \\
-  R'≔&\{⟨⟨x,A⟩,⟨y,B⟩⟩ : xRy,∀wz(wRx⇒⟨w,z⟩∈B⇒⟨w,z⟩∈A)\}; \\
-  S'≔&\{⟨⟨w,C⟩,⟨x,A⟩,⟨y,B⟩⟩ : ⟨w,C⟩R'⟨x,A⟩,⟨w,C⟩R'⟨y,B⟩, ∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A) \}; \\
-  V'≔&\{⟨⟨x, A⟩,var⟩: ⟨x,var⟩∈V, ⟨x,A⟩∈W'\}.
-  \end{flalign*}
-
-  {{{beginlemma}}}
-  The structure $⟨W',R',S',V'⟩$ is an ordinary Veltman model.
-  {{{endlemma}}}
-  {{{beginproof}}}
-  {{{agda}}} It is routine to check that all the requirement are satisfied.
-  {{{endproof}}}
-
-  Let the conditions $(C_0)$ and $(C_1)$ be defined thus:
-  \begin{flalign*}
-  (C₀)&≔∀wxV.xS_wV⇒∃y∈V.∀bV'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
-  (C₁)&≔∀wbxV.wRx⇒xS_bV⇒∃v∈V.xS_b\{v\},(bRw⇒wS_b\{v\}).
-  \end{flalign*}
-  {{{begintheorem}}}
-  If $M$ satisfies both conditions $(C_0)$ and $(C_1)$ then
-  for any world $⟨w,C⟩∈W'$ and formula $D$:
-  \[w⊩D⇔⟨w,C⟩⊩D\]
-  {{{endtheorem}}}
-  {{{beginproof}}} {{{agda}}}
-  We proceed by induction on the formula. We only consider the
-  case $D▷E$ as the other cases are easy.
-  - \boxed{⇒} Assume $w⊩D▷E$ and let $C$ be such that $⟨w,C⟩∈W'$. We
-    want to prove $⟨w,C⟩⊩D▷E$. Assume that for some $⟨x,A⟩∈W'$ we have
-    $⟨w,C⟩R'⟨x,A⟩⊩D$. By IH it follows that $x⊩D$ and hence there exists $V$
-    such that $xS_wV⊩E$. By $(C_0)$ there is some $y∈V$ such that
-
-    #+name: eq:verb-y-cond
-    \begin{equation}
-    ∀bV'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\})
-    \end{equation}
-
-    We proceed by showing that there is some $B$ such that
-    $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. Let $B$ be defined thus:
-    \[B≔\{⟨u,v⟩: ∃Y.yS_uY,v∈Y,(u=w⇒⟨w,v⟩∈A),(uRw⇒⟨u,v⟩∈C)\}\]
-
-    To show $⟨y,B⟩∈W'$ we need to prove that $(W1)$ and $(W2)$ hold. The
-    condition $(W1)$ follows immediately from the definition of $B$. To show
-    $(W2)$ assume that for some $b$ and $V$ we have $yS_bV$. We need to see that
-    there exists $v∈V$ such that $⟨b,v⟩∈B$. From $yS_bV$ and [[eq:verb-y-cond]] we
-    get that there exists $v∈V'$ such that
-    \begin{flalign}
-    b=w &⇒ xS_b\{v\} \label{eq:verb-b=w}, \\
-    bRw &⇒ wS_b\{v\} \label{eq:verb-2}
-    \end{flalign}
-    To show that $⟨b,v⟩∈B$ we first see that $b=w⇒⟨w,v⟩∈A$. Assume $b=w$, then
-    by \ref{eq:verb-b=w} it follows that $xS_b\{v\}$ and therefore by condition
-    $(W2)$ for $A$ it follows $⟨b,v⟩∈A$. We proceed likewise and use
-    \ref{eq:verb-2} to show $bRw⇒⟨b,v⟩∈C$. This concludes the proof that
-    $⟨y,B⟩∈W'$.
-
-    We now check the conditions for $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. We already have
-    $⟨w,C⟩R'⟨x,A⟩$ by assumption. To see that $⟨w,C⟩R'⟨y,B⟩$ we first observe
-    that $wRy$ holds since $xS_wV$ and $y∈V$. Then assume that for some $b,z$ we
-    have $bRw$ and $⟨b,z⟩∈B$. Then from the definition of $B$ it follows that
-    $⟨b,z⟩∈C$. The condition $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$ follows immediately from the
-    definition of $B$.
-
-    Finally, since $V⊩E$ and $y∈V$ we have $y⊩E$ and thus by IH it follows that
-    $⟨y,B⟩⊩E$.
-
-  - \boxed{⇐} We proceed by contraposition. Assume $w⊮D▷E$, then there exists
-    $x$ such that $wRx$ and
-    #+name: eq:verb-neg
-    \begin{equation}
-    ∀Y(vS_wY⇒∃y∈Y(y⊮E)).
-    \end{equation}
-
-    Let $A$ be defined thus:
-    \[A≔ \{⟨b,v⟩:(∃Y.xS_bY,v∈Y),(b=w⇒M,v⊮E),(bRw⇒⟨b,v⟩∈C)\}.\]
-
-    We first show that $⟨x,A⟩∈W'$. Condition $(W1)$ follows directly from the
-    definition of $A$. To show that $(W2)$ holds assume that for some $b$ and
-    $V$ we have $xS_bV$. We need to see that for some $v∈V$ we have $⟨b,v⟩∈A$.
-    Since $wRx$ and $xS_bV$ it follows from condition $(C_1)$ that there exists
-    $v∈V$ such that
-    \begin{flalign}
-    &xS_b\{v\}, \label{eq:verb-neg-b=w} \\
-    bRw⇒&wS_b\{v\}. \label{eq:verb-neg-bRw}
-    \end{flalign}
-    The first condition to show $⟨b,v⟩∈A$, namely that $∃Y.xS_bY,v∈Y$, is met
-    trivially. For the next condition assume $b=w$, then see that we have
-    $xS_w\{v\}$ by \ref{eq:verb-neg-b=w} and thus by [[eq:verb-neg]] it follows that
-    $v⊮E$. For the remaining condition assume $bRw$, then by \ref{eq:verb-neg-bRw} we
-    have $wS_b\{v\}$ and thus by $(W2)$ for $C$ we have $⟨b,v⟩∈C$. Therefore we
-    conclude $⟨b,v⟩∈A$ and thus $⟨x,A⟩∈W'$.
-
-    To see that $⟨w,C⟩R'⟨x,A⟩$ we already have $wRx$ by assumption. The
-    remaining condition, $∀bz(bRx⇒⟨b,z⟩∈A⇒⟨b,z⟩∈C)$, follows directly from the
-    definition of $A$.
-
-    Since $x⊩D$, it follows from the IH that $⟨x,A⟩⊩D$.
-
-    Lastly, assume that for some $⟨y,B⟩∈W'$ we have $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. By
-    definition of $S'$ we have $xS_wy$ and thus $wRy$. By quasi-reflexivity of
-    $S$ we then have $yS_w\{y\}$ and thus by $(W2)$ for $B$ we have $⟨w,y⟩∈B$.
-    By definition of $S'$ we also have that $∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A)$, hence
-    $⟨w,y⟩∈A$. By definition of $A$ it follows that $y⊮E$ and by IH we have
-    $⟨y,B⟩⊮E$, which concludes the proof.
-  {{{endproof}}}
-
-  {{{begintheorem}}} If a generalized Veltman frame satisfies
-  quasi-transitivity Condition 3, 4, 5 or 6, then it satisfies conditions
-  $(C_0)$ and $(C_1)$. {{{endtheorem}}}
-
-  {{{beginproof}}} {{{agda}}} Here we prove the property for a generalized
-  Veltman frame satisfying quasi-transitivity Condition 3. Conditions 4, 5 and 6
-  imply Condition 3 as shown in Theorem [[theorem:trans]].
-
-  Assume $F$ is a generalized Veltman frame satisfying quasi-transitivity
-  Condition 3.
-  It is easy to observe that the following property holds:
-  #+name: eq:verb-trans-prop
-  \begin{equation}
-  uS_xY ⇒ ∃\, y∈Y\, ∀ z(yS_x\{z\} ⇒ uS_x\{z\}).
-  \end{equation}
-  - \boxed{(C₀)} Assume that for some $w,x,V$ we have $xS_wV$. Then by
-    [[eq:verb-trans-prop]] there is some $y∈V$ such that
-    #+name: eq:verb-trans-y
-    \begin{equation}
-     ∀ z(yS_w\{z\} ⇒ xS_w\{z\}).
-    \end{equation}
-
-    Now assume that for some $b,V'$ we have $yS_bV'$. It follows by
-    [[eq:verb-trans-prop]] that there is some $v∈V'$ such that
-    #+name: eq:verb-trans-v
-    \begin{equation}
-     ∀ z(vS_b\{z\} ⇒ yS_b\{z\}).
-    \end{equation}
-    Assume that $b=w$, we need to see that $xS_b\{v\}$. From $xS_wV$ and $y∈V$
-    it follows that $wRy$. Then by quasi-reflexivity we have $yS_w\{y\}$ and by
-    [[eq:verb-trans-y]] we get $xS_w\{v\}$ which is the same as $xS_b\{v\}$. Assume
-    that $bRw$, we need to see that $wS_b\{v\}$. From $bRwRy$ we have
-    $wS_b\{y\}$ and from property [[eq:verb-trans-prop]] we get
-    #+name: eq:verb-trans-Sbyz
-    \begin{equation}
-    ∀z(yS_b\{z\}⇒wS_b\{z\}).
-    \end{equation}
-    Then since $yS_bV'$ and $v∈V'$ we have $bRv$ so by quasi-reflexivity we have
-    $vS_b\{v\}$. Finally by [[eq:verb-trans-v]] we get $yS_b\{v\}$ and by
-    [[eq:verb-trans-Sbyz]] we get $wS_b\{v\}$.
-  - \boxed{(C_1)} Assume that for some $w,b,x,V$ we have $wRxS_bV$.
-    By [[eq:verb-trans-prop]] it follows that there is some $v∈V$ such that
-    #+name: eq:verb-trans-SbxV
-    \begin{equation}
-     ∀z(vS_b\{z\} ⇒ xS_b\{z\}).
-    \end{equation}
-    We first see that $xS_b\{v\}$. From $xS_bV$ and $v∈V$ we get $bRv$ and by
-    quasi-reflexivity we get $vS_b\{v\}$. Then by [[eq:verb-trans-SbxV]] we have
-    $xS_b\{v\}$. Assume $bRw$, we need to see $wS_b\{v\}$. By quasi-reflexivity
-    we get $vS_b\{v\}$ and by [[eq:verb-trans-SbxV]] we get $xS_b\{v\}$. By $bRwRx$
-    we get $wS_b\{x\}$ and thus by [[eq:verb-trans-prop]] we have
-    #+name: eq:verb-Sbwx
-    \begin{equation}
-    ∀z(xS_b\{z\}⇒wS_b\{z\}).
-    \end{equation}
-    Finally by $xS_b\{v\}$ and [[eq:verb-Sbwx]] we get $wS_b\{v\}$.
-  {{{endproof}}}
 * other
 
 \printglossary
