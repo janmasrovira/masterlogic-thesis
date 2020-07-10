@@ -421,13 +421,13 @@ wip
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
 | Nr. | Semantic requirement for transitivity                                                  | Mentioned in                              |
 |-----+----------------------------------------------------------------------------------------+-------------------------------------------|
-| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | This paper                                |
+| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | \cite{joosten2020overview}                |
 | (2) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 \cite{Verbrugge}            |
-| (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
+| (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | \cite{joosten2020overview}                |
 | (4) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}         |
-| (5) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | This paper                                |
+| (5) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | \cite{joosten2020overview}                |
 | (6) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}            |
-| (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | This paper                                |
+| (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | \cite{joosten2020overview}                |
 | (8) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle} |
 
    #+caption: Diagrams for conditions 2, 4 and 6.
@@ -800,10 +800,11 @@ wip
    appeared during discussions between Franco Montagna and Albert Visser about
    interpretability logic (cite:bilkova2009interpretability).
 
-   The theorems of $\textsf{ILM}$ are the set of interpretability principles that
-   are always provable in theories which are $Σ_1$ sound, have full induction and
-   prove consistency of any of its finite subsystems (cite paper)
-   (cite:visser1997overview). An example of such theory is $\textsf{PA}$.
+   The theorems of $\textsf{ILM}$ are the set of interpretability principles
+   that are always provable in theories which are $Σ_1$ sound, have full
+   induction and prove consistency of any of its finite subsystems
+   (cite:visser1997overview,joosten2020overview). An example of such theory is
+   $\textsf{PA}$.
 *** Ordinary semantics
    The frame condition for \prin{M} for ordinary semantics, we write $\kord{M}$,
    reads as follows:
