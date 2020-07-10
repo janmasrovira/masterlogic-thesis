@@ -1,5 +1,5 @@
 #+latex_compiler: xelatex
-#+lAtEx_class: report
+#+lAtEx_class: scrreprt
 #+options: H:4
 #+options: toc:nil
 
@@ -97,9 +97,9 @@
 #+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
 
-#+latex_header: \newcommand{\joost}[1]{\textcolor{purple}{\bf Joost: #1}}
-#+latex_header: \newcommand{\jan}[1]{\textcolor{orange}{\bf Jan: #1}}
-#+latex_header: \newcommand{\luka}[1]{\textcolor{blue}{\bf Luka: #1}}
+#+latex_header: \newcommand{\joost}[1]{\textcolor{purple}{\textbf Joost: #1}}
+#+latex_header: \newcommand{\jan}[1]{\textcolor{orange}{\textbf Jan: #1}}
+#+latex_header: \newcommand{\luka}[1]{\textcolor{blue}{\textbf Luka: #1}}
 
 # Missing monospaced characters
 #+latex_header: \setmathfont{XITS Math}
@@ -220,7 +220,7 @@ wip
 
 ** Logic \il
    <<sec:il>>
-   The logic \il encompasses all classical tautologies in the new language plus
+   The logic \il{} encompasses all classical tautologies in the new language plus
    the following axiom schemes:
    - K: $□ (A → B) → □ A → □ B$;
    - L: $□ (□ A → A) → □ A$;
@@ -800,10 +800,10 @@ wip
    appeared during discussions between Franco Montagna and Albert Visser about
    interpretability logic (cite:bilkova2009interpretability).
 
-   The theorems of $\sf{ILM}$ are the set of interpretability principles that
+   The theorems of $\textsf{ILM}$ are the set of interpretability principles that
    are always provable in theories which are $Σ_1$ sound, have full induction and
    prove consistency of any of its finite subsystems (cite paper)
-   (cite:visser1997overview). An example of such theory is $\sf{PA}$.
+   (cite:visser1997overview). An example of such theory is $\textsf{PA}$.
 *** Ordinary semantics
    The frame condition for \prin{M} for ordinary semantics, we write $\kord{M}$,
    reads as follows:
@@ -2404,7 +2404,7 @@ Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
     #+end_src
     It is usually the case that we accept the axiom of extensionality as part of
     our metalogic as it is part of the most popular logical framework
-    $\sf{ZFC}$, however, in Agda the property of extensionality is not an axiom
+    $\textsf{ZFC}$, however, in Agda the property of extensionality is not an axiom
     nor a provable theorem.
 
     An direct consequence of the lack of extensionality is that we cannot show
@@ -2784,7 +2784,7 @@ absurd = self-app (bad self-app)
   #   W
 
   # #+name: fig:agda-syntax
-  # #+caption: The syntax of $\sf{UTT}_Σ$.
+  # #+caption: The syntax of $\textsf{UTT}_Σ$.
   # #+attr_latex: :align llll :float t :center t :placement [H]
   # | $s,t,A,B$ | $≔$   | $x$                   | variable                     |
   # |           | \vert | $(x:A)→B$             | dependent function type      |
@@ -2793,7 +2793,7 @@ absurd = self-app (bad self-app)
   # |           | \vert | $(x:A)×B$             | dependent pair  type         |
   # |           | \vert | $⟨s,t⟩$               | dependent pairs              |
   # |           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
-  # |           | \vert | $\sf{Set}_i$          | universes $(i∈ω)$            |
+  # |           | \vert | $\textsf{Set}_i$          | universes $(i∈ω)$            |
   # |           | \vert | $𝟏$                   | the unit type                |
   # |           | \vert | $⟨⟩$                  | the element of the unit type |
   # | $Γ,Δ$     | $≔$   | $ε$                   |                              |
@@ -3329,7 +3329,7 @@ record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW
     generalized Veltman semantic properties in Agda. We prove that for any
     generalized Veltman model $M$ and world $w$ we have that $w$ forces Löb's
     axiom. In symbols: \[∀MwA.\ M , w ⊩ □ (□ A → A) → □ A.\] Note that since
-    Löb's axiom is in $\sf{IL}$ we need to show this as part of the soundness proof.
+    Löb's axiom is in $\textsf{IL}$ we need to show this as part of the soundness proof.
 
     We begin by outlining the proof without Agda. Assume that for some world
     $w₀$ we have $w_0⊩□ (□ A → A)$. Assume for a contradiction that $w⊮□A$, then
@@ -3439,7 +3439,7 @@ Noetherian _<_ = ∀ {a} → ¬ (InfiniteChain _<_ a)
     λ {u⊮A → R-noetherian (R-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
     #+end_src
 ** \il{} and syntactic proofs
-   Here we present our efforts on formalizing syntactic \il proofs in Agda. We
+   Here we present our efforts on formalizing syntactic \il{} proofs in Agda. We
    restrict ourselves to finite sets of assumptions.
 
    We begin by defining the necessary type to represent a finite list:
@@ -3456,7 +3456,7 @@ data _∈_ {a : Level} {A : Set a} (a : A) : Pred (List A) a where
    #+end_src
 
    Now that we have all the necessary tools, we proceed to define the relation
-   =_⊢_=, which represents the \il logic in Agda.
+   =_⊢_=, which represents the \il{} logic in Agda.
    #+begin_src text
 data _⊢_ (Π : List Fm) : Fm → Set where
   -- identity rule
@@ -3479,9 +3479,9 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    #+end_src
    We include constructor =Ax= so we can use assumptions. We include
    constructors =C1=, =C2= and =C3= so that every classical tautology in the
-   language of \il can be proved. Then we add the axioms of \il and finally we add
+   language of \il{} can be proved. Then we add the axioms of \il{} and finally we add
    =MP= for modus ponens and =nec= for necessitation. Note that the
-   necessitation rule only accepts \il theorems (empty set of assumptions) and
+   necessitation rule only accepts \il{} theorems (empty set of assumptions) and
    thus this definition is fitting for local semantics.
    We have proven several results about \il, which are presented in Section
    [[sec:il]].
@@ -3507,7 +3507,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 ⊢A↝A : ∀ {A Π} → Π ⊢ A ↝ A
 ⊢A↝A {A} = MP (MP C2 C1) (C1 {B = A})
    #+end_src
-   From the previous result it is easy to show that $A▷A$ is an \il theorem.
+   From the previous result it is easy to show that $A▷A$ is an \il{} theorem.
    \begin{flalign*}
         0.\ &  A → A                        &\text{By } ⊢A→A \\
         1.\ &  □ (A → A)                    &\text{By necessitation on 0} \\
@@ -3572,7 +3572,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    We proceed by giving a short description of the language, which consists of
    four types of instructions:
    1. =[_]_By_=. This instruction is used to include a theorem in the proof. The
-      theorem can be any axiom scheme of \il or anything proved to be a theorem.
+      theorem can be any axiom scheme of \il{} or anything proved to be a theorem.
       More precisely, the theorem can be any =A= if we have =Π ⊢ A= for some =Π=.
       The first instruction must be of this kind and must be preceded with =begin=.
    2. =[_]_ByNec_=. This instruction applies the necessitation rule to a formula
