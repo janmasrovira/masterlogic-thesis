@@ -25,6 +25,7 @@
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 #+latex_header: \usepackage{multicol}
+#+latex_header: \usepackage[object=vectorian]{pgfornament}
 
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
@@ -87,6 +88,7 @@
 #+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first component}}
 #+latex_header: \newglossaryentry{sum type}{name={sum type},description={A disjunction of two ore more types}}
 #+latex_header: \newglossaryentry{decidable model}{name={decidable model},description={A model whose forcing relation is decidable}}
+#+latex_header: \newglossaryentry{multi decidable model}{name={multi-decidable model},description={A model whose forcing relation is decidable for sets}}
 #+latex_header: \newglossaryentry{Rel}{name={\texttt{Rel}},description={Homogeneous relation}}
 #+latex_header: \newglossaryentry{REL}{name={\texttt{REL}},description={Heterogeneous relation}}
 #+latex_header: \newglossaryentry{Pred}{name={\texttt{Pred}},description={A predicate or a subset}}
@@ -116,26 +118,29 @@
 #+latex_header: \setmathfont{Latin Modern Math}
 
 #+latex_header: \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
+#+latex_header: \input{header.tex}
 
 \begin{titlepage}
   \begin{center}
 
     \textsc{\Large Masther's thesis to obtain the degree\\ Master in pure and applied logic}
-     \\[1cm]
+     \\[1.4cm]
 
-    \horrule{0.5pt} \\[0.4cm]
-    { \Huge \bfseries Generalized Veltman semantics in Agda \\[0.4cm] }
+    % \horrule{0.5pt} \\[0.4cm]
+    { \huge \bfseries Generalized Veltman semantics in Agda \\[0.01cm] }
 
-    \horrule{1.6pt} \\[2.4cm]
+    \horrule{0.7pt} \\[2cm]
+    % \horrule{1.6pt}
+    % \sectionlinetwo{black}{87}
 
-    ~\textsc{\huge Jan Mas Rovira}
+    ~\textsc{\LARGE Jan Mas Rovira}
 
     ~\\[1.2cm]
     \begin{tabular}[!htb]{ll}
     \text{\large Supervised by } &\textsc{\Large Joost J. Joosten} \\
     \text{\large and } &\textsc{\Large Luka Mikec}
     \end{tabular}
-    ~\\[5.2cm]
+    ~\\[6.2cm]
 
     \begin{figure}[H]
       \centering
@@ -149,15 +154,16 @@
 
   \end{center}
 \end{titlepage}
+
 #+BEGIN_abstract
-wip
+abstract
 #+END_abstract
 
 \newpage
 
 \renewcommand{\abstractname}{Acknowledgements}
 #+BEGIN_abstract
-wip
+thanks
 #+END_abstract
 
 \newpage
@@ -779,6 +785,23 @@ wip
    {{{endproof}}}
 ** From generalized to ordinary (Luka)
    <<sec:gen-to-ord-luka>>
+
+   I tried reconstructing the remainder of Mladen's proof and got stuck on
+   another issue. Instead of trying to fix it, I started playing with another
+   formulation of the same (or similar) construction which I think is much more
+   convenient:
+
+   For every $u S_w V$ and $v \in V$, put $u_{(w, v)} S_w \{v\}$,
+   where $u_{(w, v)}$ is a fresh world that inherits transitions that the world
+   $u$ was a part of. The construction should be performed recursively, starting
+   with R-leaves $w$, then proceeding with their direct R-ancestors etc. Finally,
+   remove all transition $u S_w V$ where $|V| > 1$.
+
+   Unless I'm missing something, it is almost obvious that this preserves truth
+   values. There are details to be spelled out though, for example what does
+   $u_{(w, v)}$ inherit exactly (it shouldn't be too hard, I actually did
+   something similar in the old version of the IL complexity paper).
+
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
   formulas that carries some special significance.
@@ -3218,8 +3241,10 @@ data _,_⊮_ M w where
    remaining directions we need to assume that the forcing relation is
    decidable.
 
-   {{{begindef}}} We say that =M= is \gls*{decidable model} if for any world =w= and
-   formula =A= we have that either =M , w ⊩ A= or =M , w ⊮ A=.
+   {{{begindef}}} <<def:ord-decidable-model>>
+
+   We say that =M= is \gls*{decidable model} if for any world =w= and formula
+   =A= we have that either =M , w ⊩ A= or =M , w ⊮ A=.
 
    In Agda terms:
    #+begin_src text
@@ -3293,12 +3318,12 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    Next we present how we represent in Agda common operations on sets.
    Assume for the below definitions that we have some =A : Set= in scope.
 ** Generalized semantics
-   <<sec:agda-gen-semantics>>
-   In this section we explain how we have represented generalized Veltman
-   semantics in Agda. As explained in Section [[sec:trans]] we consider eight
-   different quasi-transitivity properties, thus, we need to define everything
-   related to generalized Veltman semantics to be generic with respect to the
-   quasi-transitivity condition used, which was certainly a challenge.
+   <<sec:agda-gen-semantics>> In this section we explain how we have represented
+   generalized Veltman semantics in Agda. As explained in Section [[sec:trans]] we
+   consider eight different quasi-transitivity properties, thus, we need to
+   define everything related to generalized Veltman semantics to be generic with
+   respect to the quasi-transitivity condition used, which was certainly
+   presented some challenges.
 
    Analogously to ordinary semantics we start by defining a frame. We begin by
    defining a datatype that represents a frame without the quasi-transitivity
@@ -3324,13 +3349,119 @@ record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW
     S-ext : ∀ {w x V V'} → S w x V → V ⊆ V' → V' ⊆ V → S w x V'
    #+end_src
 
+   Then we define a new datatype =Frame= which represents a non-transitive
+   Generalized Veltman frame plus some quasi-transitivity condition, which is
+   left as a parameter =T=.
+   #+begin_example
+record Frame (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS)
+  (T : (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  : Set (lsuc ℓW ⊔ ℓR ⊔ ℓS) where
+  constructor frame
+  field
+    frame-0 : FrameNoTrans {ℓW} {ℓR} {ℓS} W R S
+    quasitrans : T W S
+   #+end_example
+
+   We now define all the quasi-transitivity conditions. Here we only present
+   Condition (4).
+   #+begin_example
+  Trans-4 : (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  Trans-4 W S = ∀ {x u Y} → S x u Y → ∃[ y ] (y ∈ Y × (∀ {Y'} → S x y Y' → S x u Y'))
+   #+end_example
+
+   And finally we can define a datatype that represents a generalized Veltman
+   frame for each of the quasi-transitivity conditions as a simple instantiation
+   of the generic =Frame= defined before. Here we only present Condition (4).
+   #+begin_example
+Frame4 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame4 W R S = Frame W R S (Trans-4 W S)
+   #+end_example
+
+
+   In order to define the generalized Veltman semantics forcing relation, since
+   we need to define it generically to work for any quasi-transitivity condition
+   assume that we have some term =T= representing such condition of typed thus:
+   #+begin_example
+   (T : ∀ {ℓW ℓS} (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+   #+end_example
+
+   Then we define a generalized model in an analogous way to how we did it for
+   ordinary semantics:
+   #+begin_example
+  record Model
+    {ℓW ℓR ℓS}
+    (W : Set ℓW)
+    (R : Rel W ℓR)
+    (S : REL₃ _ _ _ ℓS)
+    (V : REL W Var lzero)
+    : Set (lsuc ℓW ⊔ ℓR ⊔ ℓS) where
+    constructor model
+    field
+      F : Frame {ℓW} {ℓR} {ℓS} W R S T
+   #+end_example
+
+   And finally we define the forcing relation using mutually recursive datatypes
+   as we did for ordinary semantics. The only difference is in the =rhd=
+   constructor.
+   #+begin_example
+  data _,_⊮_ {ℓW ℓR ℓS W R S V} (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+    : Fm → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+
+  data _,_⊩_ {ℓW ℓR ℓS W R S V} (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+    : Fm → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+
+  data _,_⊩_ {ℓW} {ℓR} {ℓS} {W} {R} {S} {V} M w where
+    var : ∀ {a : Var} → a ∈ V w → M , w ⊩ var a
+    impl : ∀ {A B} → M , w ⊮ A ⊎ M , w ⊩ B → M , w ⊩ A ↝ B
+    rhd : ∀ {A B} →
+      (∀ {u} → R w u → M , u ⊮ A ⊎ (∃[ Y ] (S w u Y × (Y ⊆ M ,_⊩ B))))
+      → M , w ⊩ A ▷ B
+
+  data _,_⊮_ {ℓW} {ℓR} {ℓS} {W} {R} {S} {V} M w where
+    var : ∀ {a : Var} → a ∉ V w → M , w ⊮ var a
+    impl : ∀ {A B} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
+    rhd : ∀ {A B} →
+      ∃[ u ] (R w u × M , u ⊩ A
+      × ∀ Y → Satisfiable Y → (¬ S w u Y) ⊎ (Satisfiable (Y ∩ (M ,_⊮ B))))
+      → M , w ⊮ A ▷ B
+    bot : M , w ⊮ ⊥'
+   #+end_example
+
+   Recall that in section [[sec:agda-ord-semantics]] in order to prove some
+   properties we had to assume that the ordinary models where decidable in the
+   sense defined in Definition [[def:ord-decidable-model]]. For generalized
+   semantics we need to make a stronger assumption described in the next
+   definition.
+
+   {{{begindef}}} We say that =M= is \gls*{multi decidable model} if for any set
+   of worlds =Y= and formula =A= we can decide whether
+   1. for every element =y= in =Y= we have =M , y ⊮ A=; or
+   2. there is an element =y= in =Y= such that =M , y ⊮ A=.
+
+   In Agda terms:
+   #+begin_src text
+  MultiDecidableModel : ∀ {ℓW ℓR ℓS W R S V} → Model {ℓW} {ℓR} {ℓS} W R S V
+    → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS ⊔ lsuc ℓW)
+  MultiDecidableModel {ℓW = ℓW} {W = W} M =
+    ∀ (Y : Pred W ℓW) A → Y ⊆ M ,_⊩ A ⊎ Satisfiable (Y ∩ (M ,_⊮ A))
+   #+end_src
+   Observe that any multi-decidable model is also decidable.
+   {{{enddef}}}
+
+   {{{beginlemma}}} <<lemma:gen-lemmas>> Assuming that we restrict ourselves to
+   multi-decidable models then properties in lemmas [[lemma:forcing-neg]],
+   [[lemma:equiv]] and [[lemma:ord-equiv-dec]] also hold for generalized semantics.
+   {{{endlemma}}} {{{beginproof}}} {{{agda}}}
+   {{{endproof}}}
+
 *** A guided Agda proof
     <<sec:agda-L>> In this section we guide the user through a non-trivial Agda
     proof, which will hopefully give the reader a feel of how we can proof
     generalized Veltman semantic properties in Agda. We prove that for any
     generalized Veltman model $M$ and world $w$ we have that $w$ forces Löb's
     axiom. In symbols: \[∀MwA.\ M , w ⊩ □ (□ A → A) → □ A.\] Note that since
-    Löb's axiom is in $\textsf{IL}$ we need to show this as part of the soundness proof.
+    Löb's axiom is in $\textsf{IL}$ we need to show this as part of the
+    soundness proof.
 
     We begin by outlining the proof without Agda. Assume that for some world
     $w₀$ we have $w_0⊩□ (□ A → A)$. Assume for a contradiction that $w⊮□A$, then
