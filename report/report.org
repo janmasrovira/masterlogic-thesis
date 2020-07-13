@@ -97,7 +97,8 @@
 #+latex_header: \newcommand{\prin}[1]{\text{$\mathsf{#1}$}}
 #+latex_header: \newcommand{\il}[0]{\text{$\mathsf{IL}$}}
 #+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
-#+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
+# #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
+#+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
 
 #+latex_header: \newcommand{\joost}[1]{\textcolor{purple}{\textbf Joost: #1}}
 #+latex_header: \newcommand{\jan}[1]{\textcolor{orange}{\textbf Jan: #1}}
@@ -198,6 +199,9 @@ thanks
    7. $♢ A ≔ ¬ □ ¬ A$.
 
    The precedence of the operators is in the following order: $∧,▷,∨,→$.
+
+   The scope of unary symbols ($□,♢,¬$) is as small as possible. Thus $□A∧¬¬B$ is
+   the same as $(□A)∧(¬¬B)$.
 ** Notation
    Some notation that we use throughout the report:
    1. If $A$ and $B$ are binary relations, then $wAuBv$ means $wAu$ and $uBv$.
@@ -820,8 +824,8 @@ thanks
    The \prin{M} principle reads as follows:
    \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C).\]
 
-   {{{joost(AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE
-   PRINCIPLE INTRODUCED AND BY WHOM. ALSO\, WHY IS IT IMPORTANT\, ETC.)}}}
+   # {{{joost(AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE
+   # PRINCIPLE INTRODUCED AND BY WHOM. ALSO\, WHY IS IT IMPORTANT\, ETC.)}}}
 
    The \prin{M} principle is coined after Franco Montagna because the principle
    appeared during discussions between Franco Montagna and Albert Visser about
@@ -833,7 +837,7 @@ thanks
    (cite:visser1997overview,joosten2020overview). An example of such theory is
    $\textsf{PA}$.
 *** Ordinary semantics
-   The frame condition for \prin{M} for ordinary semantics, we write $\kord{M}$,
+   The frame condition for \prin{M} for ordinary semantics, which we write as $\kord{M}$,
    reads as follows:
    \[∀w,x,y,z(xS_w yRz ⇒ xRz).\]
 
@@ -875,8 +879,8 @@ thanks
    {{{endproof}}}
 
 *** Generalized semantics
-   The frame condition for \prin{M} for generalized semantics, we write $\kgen{M}$,
-   reads as follows:
+   The frame condition for \prin{M} for generalized semantics, which we write as
+   $\kgen{M}$, reads as follows:
 
    \[ ∀w,x,V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz))).\]
 
@@ -919,9 +923,12 @@ thanks
    The \prin{M₀} principle reads as follows:
    \[A ▷ B → ♢ A ∧ □ C ▷ B ∧ □ C.\]
 
-*** Ordinary semantics
+*** TODO Ordinary semantics
+    {{{jan(update drawing)}}}
+
     The $\kord{M₀}$ condition reads as follows:
-    \[∀w,x,y,z(wRxRyS_wz⇒xS_wz,∀u(zRu⇒xRu)).\]
+    # \[∀w,x,y,z(wRxRyS_wz⇒xS_wz,∀u(zRu⇒xRu)).\]
+    \[∀w,x,y,z(wRxRyS_wz⇒∀u(zRu⇒xRu)).\]
 
    #+caption: Ordinary frame condition for \prin{M₀}.
    #+name: fig:M_0-ord
@@ -939,17 +946,19 @@ thanks
     - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
       that $w⊩A▷B$ and that there exists some $x$ such that $wRx⊩ ♢ A ∧ □ C$. It
       follows that there exists some world $y$ such that $xRy⊩A$, then since
-      $wRy$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. By the
-      $\kord{M₀}$ condition we have that $xS_wz$ and $(⋆)\ ∀u(zRu⇒xRu)$. Hence,
-      it remains to show $z⊩□C$. Consider some world $u$ such that $zRu$, by
-      $(⋆)$ it follows that $xRu$ and since $x⊩□C$ we also have $u⊩C$.
+      $wRy$ and $w⊩A▷B$ there exists a world $z$ such that $yS_wz⊩B$. Observe
+      that from $wRxRy$ it follows that $xS_wy$ and by transitivity of $S_w$ and
+      $yS_wz$ we get $xS_wz$. It remains to show $z⊩□C$. Consider some world $u$
+      such that $zRu$, then by the $\kord{M₀}$ condition we have that
+      $∀u(zRu⇒xRu)$ and thus it follows that $xRu$ and since $x⊩□C$ we also have
+      $u⊩C$.
     - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$ and
       assume that for some $w,x,y,z$ we have $wRxRyS_wz$. Consider a model based
       on $F$ such that the following holds:
       \begin{flalign*}
       ⟦a⟧ &= \{y\}; \\
       ⟦b⟧ &= \{z\}; \\
-      ⟦c⟧ &= \{w:xRw\}.
+      ⟦c⟧ &= \{v:xRv\}.
       \end{flalign*}
       Observe that $w⊩a▷b$ since $a$ is forced only in $y$ and we have $yS_wz⊩b$.
       It follows that $w⊩(♢ a ∧ □ c) ▷ (b ∧ □ c)$. Clearly $x⊩♢a∧□c$, hence there
@@ -2879,7 +2888,7 @@ infix 70 □_
 
   It is often the case that we define priority and associativity for our infix
   operators in order to minimize the amount of needed parentheses. The following
-  code defines the /infixity/ of =_↝_= and =_▷_=
+  code defines the /infixity/ (level or priority) of =_↝_= and =_▷_=.
     #+begin_src text
   infixr 20 _↝_
   infixr 50 _▷_
