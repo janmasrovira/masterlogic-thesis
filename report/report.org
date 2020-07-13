@@ -237,13 +237,15 @@ thanks
    - J5: $♢ A ▷ A$.
    If $A$ is an instantiation of any of the previous axiom schemes, then
    $⊢_{\il}A$. Additionally it has the following rules:
-   - Necessitation: if $⊢_{\il}A$ then $⊢_{\il}□A$.
-   - Modus ponens: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$.
-   - Identity: If $A∈Π$ then $Π⊢_{\il}A$.
+   - Necessitation: if $⊢_{\il}A$ then $⊢_{\il}□A$;
+   - modus ponens: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$;
+   - identity: If $A∈Π$ then $Π⊢_{\il}A$.
 
-   While it is acceptable to have infinite sets of assumptions, when verifying
-   properties in Agda we have restricted ourselves to finite sets. This
-   restriction is not meaningful in the context of this project.
+   {{{beginremark}}} While it is acceptable to have an infinite set of
+   assumptions $Π$, when verifying properties in Agda we have restricted
+   ourselves to finite sets and thus we assume that $Π$ is finite in the Agda
+   proof. This restriction is not meaningful in the context of this project.
+   {{{endremark}}}
 
    {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
    $Π⊢_{\il}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
@@ -416,18 +418,20 @@ thanks
 
 ** Transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
-   for the quasi-transitivity condition. Theorem [[theorem:trans]] presents the
+   for the quasi-transitivity condition which we present in the table below. See
+   that in definition [[def:gen-frame]] we used Condition (2). Theorem [[theorem:trans]] presents
    some direct implications between them. Theorems [[theorem:il-sound]] and
    [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
-   for proving completeness of \il.
-
+   for proving completeness of \il{}. It is worth mentioning however, that not
+   all of them are sufficiently expressive to prove completeness for extensions
+   of \il{}.
 
 #+name: fig:table-trans
 #+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
 | Nr. | Semantic requirement for transitivity                                                  | Mentioned in                              |
 |-----+----------------------------------------------------------------------------------------+-------------------------------------------|
-| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | \cite{joosten2020overview}                |
+| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | how to cite? \cite{joosten2020overview}   |
 | (2) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 \cite{Verbrugge}            |
 | (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | \cite{joosten2020overview}                |
 | (4) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}         |
@@ -456,7 +460,7 @@ thanks
  # $M'$ has the same truth value as $M$. This has been verified in Agda.
 
  {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
- $M≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)$ represent the monotonicity condition. The
+ \[M≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the monotonicity condition. The
  following implications hold.
 
  The first item should be read as $F⊨M∧(1)→(2)$.
@@ -490,19 +494,18 @@ thanks
  {{{agda}}}
  {{{endproof}}}
 
- {{{begintheorem}}}
- <<theorem:trans-extend>>
- Given an ordinary Veltman model $M=⟨W,R,S,V⟩$ we can find some
- generalized Veltman model $M'=⟨W,R,S',V⟩$ satisfying transitivity
- $(i)∈\{1…8\}$ such that for every world $w$ and formula $A$: \[M,w⊩A⇔M',w⊩A.\]
- {{{endtheorem}}}
+ {{{begintheorem}}} <<theorem:trans-extend>> Given an ordinary Veltman model
+ $M=⟨W,R,S,V⟩$ we can find some generalized Veltman model $M'=⟨W,R,S',V⟩$, where
+ we can replace our notion of quasi-transitivity by any of the Conditions
+ $(i)∈\{1,…,8\}$. Furthermore, for every world $w$ and formula $A$:
+ \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
 
- {{{beginproof}}} We prove it for the transitivity condition (2) (the rest can
- be proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
+ {{{beginproof}}} We prove it for the quasi-transitivity Condition (2) (the rest
+ can be proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
  $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus: \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}.\] It is
- easy to observe that $M'$ satisfies conditions $1,…,5$ from definition
- [[def:gen-frame]]. It is also easy to see that it satisfies transitivity 2. We show
- that they force the same formulas by induction on the complexity of the
+ easy to observe that $M'$ satisfies conditions 1--5 from definition
+ [[def:gen-frame]]. It is also easy to see that it satisfies quasi-transitivity (2).
+ We show that they force the same formulas by induction on the complexity of the
  formula. The only interesting case is $A▷B$.
    - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$. It follows that
      there exists some $y$ such that $xS_wy⊩B$. By definition of $M'$ we have
@@ -520,8 +523,8 @@ thanks
   #+end_center
 
   {{{begintheorem}}} <<theorem:mono>> Let $F=⟨W,R,S⟩$ be a generalized Veltman
-  frame with quasi-transitivity $(i)∈\{1,…,8\}$.
-  Let $F'=⟨W,R,S'⟩$ where $S'$ is the monotone closure of $S$:
+  frame with quasi-transitivity $(i)∈\{1,…,8\}$. Let $F'=⟨W,R,S'⟩$ where $S'$ is
+  the monotone closure of $S$:
 
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}.\]
 
@@ -535,9 +538,9 @@ thanks
 
   We check conditions listed in definition [[def:gen-frame]].
   - Conditions 1 and 2 are clear since $R$ is unchanged;
-  - condition 3 follows from the fact that in the definition of $S'$ we require
+  - Condition 3 follows from the fact that in the definition of $S'$ we require
     $Y'⊆\{u:wRu\}$;
-  - for conditions 4 and 5 observe that $S⊆S'$. Then, since these conditions hold for
+  - for Conditions 4 and 5 observe that $S⊆S'$. Then, since these conditions hold for
     $F$ they also hold for $F'$;
   - for quasi-transitivity Condition (2) assume that $uS'_xY'$ and that for
     every $y'∈Y'$ we have $y'S'_xΥ_{y'}$. We need to show that
@@ -587,9 +590,10 @@ thanks
   show the $S_w$ relations required by quasi-reflexivity for clarity.] in figure
   [[fig:example-trans]] such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that
   $w⊩¬(p ▷ q)$ as $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ and
-  $v_0S_w\{v_0\}$ with $v_0⊮q$ and $v_1⊮q$. If we take the monotonic closure of
-  $S$ we have $v_0S_w \{v_1, v_2\}$ and by quasi-transitivity (8) we get $v_0S_w
-  \{v_3\}$ and consequently $w⊩¬(p ▷ q)$ is no longer true.
+  $v_0S_w\{v_0\}$ (by quasi-reflexivity) with $v_0⊮q$ and $v_1⊮q$. If we take
+  the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
+  quasi-transitivity (8) we get $v_0S_w \{v_3\}$ and consequently $w⊩¬(p ▷ q)$
+  is no longer true.
 
   {{{endremark}}}
 
@@ -809,7 +813,7 @@ thanks
   {{{joost(OF COURSE\, YOU WILL NEED SOME GENERAL BACKGROUND. WHAT DOES FRAME
   VALIDITY MEAN\, WHAT ARE FRAME CONDITIONS\, ETC.)}}}
 
-  In this section we present a series of principles in conjunction with their
+  In this section we present a number of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
   semantics.
 ** The principle \prin{M}
