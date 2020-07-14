@@ -170,6 +170,12 @@ thanks
 \newpage
 #+toc: headlines 2
 \newpage
+* [0/2] Pending                                                    :noexport:
+** [0/2] Apply Luka's comments for review 1
+   [[file:./jan_thesis_comments_16_06_20.pdf][pdf-link]].
+*** TODO Fix drawings
+** TODO Apply Luka's comments for review 2
+   [[file:./jan_thesis_comments_07_07_2020.pdf][pdf-link]].
 * Introduction
 ** Overview of interpretability logics
    mention $M$, $P$ and $R$.
@@ -1014,7 +1020,8 @@ thanks
    The \prin{P₀} principle reads as follows:
    \[A ▷ ♢ B → □ (A ▷ B).\]
 *** Ordinary semantics
-    The $(P₀)_{ord}$ condition reads as follows:
+    The $\kord{P₀}$ condition reads as follows:
+
     \[∀w,x,y,z,u(wRxRyS_wzRu⇒yS_xu).\]
 
    #+caption: Ordinary frame condition for \prin{P₀}.
@@ -1023,10 +1030,10 @@ thanks
    [[file:img/P_0-ord.pdf]]
 
    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
-   $(P₀)_{ord}$ condition iff any model based on $F$ forces every instantiation of
+   $\kord{P₀}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{P₀} principle. In symbols:
 
-   \[F ⊨ (P₀)_{ord} ⇔ F ⊩ P₀.\] {{{endtheorem}}}
+   \[F ⊨ \kord{P₀} ⇔ F ⊩ P₀.\] {{{endtheorem}}}
 
    {{{beginproof}}}
    {{{agda}}}
@@ -1034,7 +1041,7 @@ thanks
      that $w⊩A▷♢B$ and that there is a world $x$ such that $wRx$. Our goal is to
      show that $x⊩A▷B$. Consider a world $y$ such that $xRy⊩A$. As $wRy$ and
      $w⊩A▷♢B$ then there exist some worlds $z,u$ such that $yS_wzRu⊩B$. By the
-     $(P₀)_{ord}$ condition it follows that $yS_xu$ and thus $x⊩A▷B$.
+     $\kord{P₀}$ condition it follows that $yS_xu$ and thus $x⊩A▷B$.
    - \boxed{⇐} Let $a,b∈Var$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume that
      $wRxRyS_wzRu$. We want to show $yS_xu$. Consider a model based on $F$ such
      that:
@@ -1050,8 +1057,8 @@ thanks
    {{{endproof}}}
 
 *** Generalized semantics
-    The $(P_0)_{gen}$ condition reads as follows:
-    \[∀w,x,y,Y,Z((wRxRyS_wY,∀y∈Y∃z∈Z(yRz))⇒∃Z'⊆Z(yS_xZ')).\]
+    The $\kgen{P_0}$ condition reads as follows:
+    \[∀w,x,y,V,Z((wRxRyS_wV,∀v∈Y∃z∈Z(vRz))⇒∃Z'⊆Z(yS_xZ')).\]
 
    #+caption: Generalized frame condition for \prin{P₀}.
    #+name: fig:P_0-gen
@@ -1060,29 +1067,30 @@ thanks
 
 
    {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
-   $(P₀)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+   $\kgen{P₀}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{P₀} principle. In symbols:
 
-   \[F ⊨ (P₀)_{gen} ⇔ F ⊩ P₀.\] {{{endtheorem}}}
+   \[F ⊨ \kgen{P₀} ⇔ F ⊩ P₀.\] {{{endtheorem}}}
 
    {{{beginproof}}}
    {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷♢B$ and that there is a world $x$ such that $wRx$. We aim to show
      that $x⊩A▷B$. Assume there is a world $u$ such that $xRu⊩A$ and as $wRu$
-     and $w⊩A▷♢B$ then there exists a set $Y$ $uS_xY⊩♢B$. Let $𝔹=\{w:w⊩B\}$.
-     Then observe that $∀y∈Y$ there exists some $z∈𝔹$ since $Y⊩♢B$. Hence by the
-     $(P₀)_{gen}$ condition there exists some $𝔹'⊆𝔹$ such that $yS_x𝔹'$. Clearly
-     $𝔹'⊩B$, therefore $x⊩A▷B$.
+     and $w⊩A▷♢B$ then there exists a set $V$ $uS_xV⊩♢B$. Let $𝔹=\{v:v⊩B\}$.
+     Then observe that because $V⊩♢B$ we have that for all $v$ in $V$ there
+     exists some $z∈𝔹$ such that $vRz$. Hence by the $\kgen{P₀}$ condition
+     there exists some $𝔹'⊆𝔹$ such that $yS_x𝔹'$. Clearly $𝔹'⊩B$, therefore
+     $x⊩A▷B$.
    - \boxed{⇐} Let $a,b∈Var$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume
-     that for some $w,x,y,Y,Z$ we have $wRxRyS_wY$ and $(⋆)\ ∀y∈Y∃z∈Z(yRz)$.
+     that for some $w,x,y,V,Z$ we have $wRxRyS_wY$ and $(⋆)\ ∀v∈V∃z∈Z(vRz)$.
      Consider a model based on $F$ such that:
      \begin{flalign*}
     ⟦a⟧ &= \{y\}; \\
     ⟦b⟧ &= Z.
      \end{flalign*}
      See that $w⊩a▷♢b$ as the only world that forces $a$ is $y$ and we have
-     $yS_wY$ and by $(⋆)$ it follows that $Y⊩♢b$. Consequently it holds that
+     $yS_wV$ and by $(⋆)$ it follows that $V⊩♢b$. Consequently it holds that
      $w⊩□(a▷b)$ and since $wRx$ then $x⊩a▷b$. Also, since $xRy⊩a$ then there
      exists $Z'$ such that $yS_xZ'⊩b$. Clearly $Z'⊩b$ implies $Z'⊆Z$ so we are
      done.
@@ -1100,7 +1108,8 @@ thanks
 
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
-    \[∀w,x,y,z\left(wRxRyS_wz⇒∀v(zRv⇒yS_xv)\right)\ .\]
+
+    \[∀w,x,y,z,u(wRxRyS_wzRu⇒yS_xu).\]
 
    #+caption: Ordinary frame condition for \prin{R}.
    #+name: fig:ord-R-condition
@@ -1188,7 +1197,7 @@ LABEL. FOR EXAMPLE:)}}}
    depends on the frame, but it should always be clear from context.
    {{{enddef}}}
 
-    The $R_{gen}$ condition reads as follows:
+    The $\kgen{R}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x,y,Y,K(wRxRyS_wY,K∈𝒞(x,y)   \\
     ⇒& ∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz→z∈K))).
@@ -1202,10 +1211,10 @@ LABEL. FOR EXAMPLE:)}}}
    {{{begintheorem}}}
    <<theorem:R⁰>>
    For any generalized frame $F$, we have that $F$ satisfies the
-   $R_{gen}$ condition iff any model based on $F$ forces every instantiation of
+   $\kgen{R}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{R} principle. In symbols:
 
-   \[F ⊨ R_{gen} ⇔ F ⊩ R.\]
+   \[F ⊨ \kgen{R} ⇔ F ⊩ R.\]
    {{{endtheorem}}}
    {{{beginproof}}}
    {{{agda}}}
@@ -1216,7 +1225,7 @@ LABEL. FOR EXAMPLE:)}}}
      ∀V(yS_xV⇒∃c∈V(c⊩C))$. Consider the set $K≔\{c:c⊩C,∃V(c∈V,yS_xV)\}$. Clearly
      by $(⋆)$ it follows that $K$ is a choice set for $⟨x,y⟩$. By transitivity
      of $R$ we get $wRy$ and since $w⊩A▷B$ then there must exist some $Y$ such
-     that $yS_wY⊩B$. We can now apply the $R_{gen}$ condition and get a $Y'⊆Y$
+     that $yS_wY⊩B$. We can now apply the $\kgen{R}$ condition and get a $Y'⊆Y$
      such that $xS_wY'$ and $(†)\ ∀y'∈Y'∀z(y'Rz→z∈K)$. To show that $Y'$ is the
      desired set it remains to see that $Y'⊩B∧□C$. From the fact that $Y'⊆Y⊩B$
      it easily follows that $Y'⊩B$. Now, let $y'∈Y'$ and $u$ such that $y'Ru$,
@@ -1299,7 +1308,7 @@ LABEL. FOR EXAMPLE:)}}}
     2. $Rₓ^{-1}[E]≔R^{-1}[E]∩R[x]$. $E$ denotes a set.
 
 
-    The $(R_1)_{gen}$ condition reads as follows:
+    The $\kgen{R_1}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x,u,𝔹,ℂ,𝔼(wRxRuS_w𝔹, ℂ∈𝒞(x,u) \\
     ⇒\ & (∃𝔹'⊆𝔹)(xS_w𝔹',R[𝔹']⊆ℂ,(∀v∈𝔹')(∀c∈ℂ)(vRcSₓRₓ^{-1}[𝔼]⇒(∃𝔼'⊆𝔼)cS_v𝔼')))
@@ -1312,10 +1321,10 @@ LABEL. FOR EXAMPLE:)}}}
     {{{begintheorem}}}
     <<theorem:R₁>>
     For any generalized frame $F$, we have that $F$ satisfies the
-    $(R₁)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+    $\kgen{R_1}$ condition iff any model based on $F$ forces every instantiation of
     the \prin{R₁} principle. In symbols:
 
-    \[F⊨(R₁)_{gen}⇔F⊩R₁.\]
+    \[F⊨\kgen{R₁}⇔F⊩R₁.\]
     {{{endtheorem}}}
 
     {{{beginproof}}}
@@ -1327,7 +1336,7 @@ LABEL. FOR EXAMPLE:)}}}
       such that $c_Z ⊩C$. From $wRu$, $w⊩ A▷ B$ and $u⊩ A$ follows in particular
       that there is a $𝔹$, $uS_w 𝔹 ⊩B$. Let $ℂ ≔ \{c_Z: uS_x Z\}$. It is easy to
       check that $ℂ ∈ 𝒞(x, u)$. Let $𝔼 ≔ [⊩E]$ (set of worlds that force $E$).
-      For the selected $w, x, u, 𝔹, ℂ, 𝔼$ the property $(R 1)_{gen}$ implies
+      For the selected $w, x, u, 𝔹, ℂ, 𝔼$ the property $\kgen{R_1}$ implies
       that there exists $𝔹' ⊆ 𝔹$ such that:
 
       \[xS_w𝔹',R[𝔹']⊆ℂ ,(∀v∈𝔹')(∀c∈ℂ)(vRcS_xR_x^{-1}[𝔼]⇒(∃𝔼'⊆𝔼)cS_v𝔼').\]
@@ -1340,7 +1349,7 @@ LABEL. FOR EXAMPLE:)}}}
       $cS_x[♢E]_x$ which is the same as $cS_x R_x^{−1}[𝔼]$ so by the above
       property there exists $𝔼'⊆𝔼$ such that $cS_v 𝔼'$. Because $𝔼'⊆𝔼$ we have
       $𝔼'⊩E$.
-    - \boxed{⇐} Assume for a contradiction that $F⊭(R₁)_{gen}$. It follows that
+    - \boxed{⇐} Assume for a contradiction that $F⊭\kgen{R_1}$. It follows that
       there exist $w,x,u,𝔹,ℂ,𝔼$ such that $wRxRuS_w𝔹$, $ℂ∈𝒞(x,u)$ and:
       \[(∀𝔹'⊆𝔹)\left(xS_w𝔹', R[𝔹']⊆ℂ⇒ (∃v∈𝔹')(∃c∈ℂ)(∃Z⊆R_x^{-1}[𝔼].vRcS_xZ,∀𝔼'⊆𝔼.
       c\cancel{S}_v 𝔼')\right).\]
@@ -1394,7 +1403,7 @@ LABEL. FOR EXAMPLE:)}}}
 *** Generalized semantics
     Some definitions:
 
-    The $(R_2)_{gen}$ condition reads as follows:
+    The $\kgen{R_2}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x,u,𝔹,ℂ,𝔼(wRxRuS_w𝔹, ℂ∈𝒞(x,u) \\
     ⇒\ & (∃𝔹'⊆𝔹)(xS_w𝔹',R[𝔹']⊆ℂ,(∀v∈𝔹')(∀c∈ℂ)(vRcSₓRₓ^{-1}[𝔼]⇒(∃𝔼'⊆𝔼)cS_v𝔼')))
@@ -1407,10 +1416,10 @@ LABEL. FOR EXAMPLE:)}}}
     {{{begintheorem}}}
     <<theorem:R₂>>
     For any generalized frame $F$, we have that $F$ satisfies the
-    $(R₂)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+    $\kgen{R_2}$ condition iff any model based on $F$ forces every instantiation of
     the \prin{R_2} principle. In symbols:
 
-    \[F⊨(R₂)_{gen}⇔F⊩R₂\]
+    \[F⊨\kgen{R_2}⇔F⊩R₂\]
     {{{endtheorem}}}
 
     {{{beginproof}}}
@@ -1473,7 +1482,7 @@ LABEL. FOR EXAMPLE:)}}}
    \[A ▷ B → (♢ [(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)] ∧ (D ▷ A)) ▷ (B ∧ □ C) \]
 
 *** Generalized semantics
-    The $(R²)_{gen}$ condition reads as follows:
+    The $\kgen{R²}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x,y,z,s,𝔸,𝔹,ℂ,𝔻,𝔼.\\
     &wRxRyRzRs, \\
@@ -1487,10 +1496,10 @@ LABEL. FOR EXAMPLE:)}}}
 
     {{{begintheorem}}}
     For any generalized frame $F$, we have that $F$ satisfies the
-    $(R²)_{gen}$ condition iff any model based on $F$ forces every instantiation of
+    $\kgen{R²}$ condition iff any model based on $F$ forces every instantiation of
     the $R²$ principle. In symbols:
 
-    \[F⊨(R²)_{gen}⇔F⊩R²\]
+    \[F⊨\kgen{R²}⇔F⊩R²\]
     {{{endtheorem}}}
 
     {{{beginproof}}}
@@ -1568,13 +1577,13 @@ LABEL. FOR EXAMPLE:)}}}
       Then assume also that $wRx⊩((Dₙ▷A)∧U_n)$. By lemma [[lemma:Rⁿ]] it follows
       that there exist $y,z,x₀,…,x_{n}$ satisfying $1…6$. Then let $𝔸≔⟦A⟧$,
       $𝔹≔⟦B⟧$, $ℂ≔⟦C⟧$ and for $i≤n$ let $𝔻ᵢ≔⟦Dᵢ⟧$. It is routine to check that
-      the left part of the $(R^{n+1})_{gen}$ holds and thus we get that there exists
+      the left part of the $\kgen{R^{n+1}}$ holds and thus we get that there exists
       some $V⊆𝔹$ such that $x_{n}S_wV$ and $R[V]⊆ℂ$. Since $V⊆𝔹$ we have that
       $x_{n}⊩B$ and since $R[V]⊆ℂ$ we have $x_{n}⊩□C$. Finally, since
       $x_{n}=x$ we conclude $x⊩B∧□C$.
     - \boxed{⇐} Fix a frame $F$ and let $a,b,c,d₀,…,dₙ$ be propositional
       variables and assume $F⊩R^{n+1}$. Assume that the left part of the
-      implication of $(R^{n+1})_{gen}$ holds. Now consider a model based on $F$
+      implication of $\kgen{R^{n+1}}$ holds. Now consider a model based on $F$
       that satisfies the following:
       \begin{flalign*}
        ⟦a⟧ &= 𝔸; \\
@@ -1595,11 +1604,11 @@ LABEL. FOR EXAMPLE:)}}}
 
    \newpage
 ** Generic generalized frame condition
-   In this section we present a method that given a formula $A$, builds a (second
-   order?) formula that is a generalized frame condition for $A$.
+   In this section we present a method that given a formula $A$, builds a second
+   order formula that is a generalized frame condition for $A$.
 
    {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$ with
-   $Var(A)=x₁,…,xₙ$. Let $ℱ$ be defined by (we write $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$).
+   $Var(A)=\{x₁,…,xₙ\}$. Let $ℱ$ be defined by (we write $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$).
  \begin{flalign*}
    ℱ&:\underbrace{𝒫(W)×⋯×𝒫(W)}_n×Fm→𝒫(W) \\
    ℱ(𝕏_*,xᵢ) &≔  𝕏ᵢ;\\
@@ -1609,17 +1618,18 @@ LABEL. FOR EXAMPLE:)}}}
  \end{flalign*}
 
    Then define
-   \[(A)^*_{gen}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A). \]
+   # \[(A)^*_{gen}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A). \]
+   \[\kgen{A^*}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A). \]
 
    {{{enddef}}}
 
    {{{begintheorem}}}
 
    Let $A$ be a formula. For any generalized frame $F$, we have that $F$
-   satisfies the $(A)^*_{gen}$ condition iff any model based on $F$ forces $A$.
+   satisfies the $\kgen{A^*}$ condition iff any model based on $F$ forces $A$.
    In symbols:
 
-     \[F⊨(A)^*_{gen}⇔F⊩A.\]
+     \[F⊨\kgen{A^*}⇔F⊩A.\]
    {{{endtheorem}}}
 
    {{{beginproof}}}
@@ -1628,7 +1638,7 @@ LABEL. FOR EXAMPLE:)}}}
 
    {{{beginremark}}}
    For instance, if we want the frame condition for \prin{P₀} we would look at
-    \[(a ▷ ♢ b → □ (a ▷ b))^*_{gen}.\]
+    \[\kgen{(a ▷ ♢ b → □ (a ▷ b))^*}.\]
     Where $a,b$ are different variables.
    {{{endremark}}}
 * The logic of Agda
