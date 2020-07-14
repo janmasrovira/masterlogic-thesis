@@ -1122,7 +1122,6 @@ thanks
 
 \luka{ I agree, that's what Croatian authors do}
 
-
    {{{begintheorem}}}
    For any ordinary frame $F$, we have that $F$ satisfies the
    $\kord{R}$ condition iff any model based on $F$ forces every instantiation of
@@ -1131,28 +1130,28 @@ thanks
    \[F ⊨ \kord{R} ⇔ F ⊩ R\ .\]
    {{{endtheorem}}}
 
-{{{joost(HERE AND IN THE THESIS IN GENERAL\, I MISS A DISCUSSION ABOUT
-ASSURINGNESS. THIS SHOULD BE ADDED AND USED. AT THIS PARTICULAR POINT IN YOUR
-PROOF YOU SHOULD MENTION THAT y IS A C-assuring SUCCESSOR OF x SO THAT YOU
-OBTAIN (*).)}}}
+# {{{joost(HERE AND IN THE THESIS IN GENERAL\, I MISS A DISCUSSION ABOUT
+# ASSURINGNESS. THIS SHOULD BE ADDED AND USED. AT THIS PARTICULAR POINT IN YOUR
+# PROOF YOU SHOULD MENTION THAT y IS A C-assuring SUCCESSOR OF x SO THAT YOU
+# OBTAIN (*).)}}}
 
-{{{luka(Joost\, would you use assuringness/criticality even in semantic
-context? I would add a note\, something along the lines of "of course\, we can
-associate a MCS with every world of a model\, if we suppose e.g. that all
-propositional variables $p_i$ for $i > ...$ are evaluated as false and let $mcs(w) =
-\{A : w \Vdash A\}$".)}}}
+# {{{luka(Joost\, would you use assuringness/criticality even in semantic
+# context? I would add a note\, something along the lines of "of course\, we can
+# associate a MCS with every world of a model\, if we suppose e.g. that all
+# propositional variables $p_i$ for $i > ...$ are evaluated as false and let $mcs(w) =
+# \{A : w \Vdash A\}$".)}}}
 
-a world \(y\) such that \(xRy⊩A\) and \((⋆)\ ∀v(yS_xv⇒v⊩C)\).
+# a world \(y\) such that \(xRy⊩A\) and \((⋆)\ ∀v(yS_xv⇒v⊩C)\).
 
-{{{joost(MAKE THIS FORMULA DISPLAYED. MOREOVER\, IT IS BETTER TO GENERATE A
-LABEL. FOR EXAMPLE:)}}}
+# {{{joost(MAKE THIS FORMULA DISPLAYED. MOREOVER\, IT IS BETTER TO GENERATE A
+# LABEL. FOR EXAMPLE:)}}}
 
 
    {{{beginproof}}}
    {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩¬(A▷¬C)$. We need
-     to see that there is some world $v$ such that $xS_wv⊩B∧□C$. From
+     to see that there is some world $z$ such that $xS_wz⊩B∧□C$. From
      $x⊩¬(A▷¬C)$ we get a world $y$ such that $xRy⊩A$ and $(⋆)\ ∀v(yS_xv⇒v⊩C)$.
      Since $w⊩A▷B$, and by transitivity we have $wRy$, it follows that there
      exists a world $z$ such that $yS_wz⊩B$. To see that $z$ is the desired
@@ -1189,10 +1188,10 @@ LABEL. FOR EXAMPLE:)}}}
 
 *** Generalized semantics
 
-    We first introduce the concept of choice set
+    We first introduce the concept of choice set.
 
-   {{{begindef}}} If $xRy$ we say that a set of worlds $K$ is a \gls{choice-set} for
-   $⟨x,y⟩$ iff for any $V$ such that $yS_xV$ we have $V∩K≠∅$. We denote the
+   {{{begindef}}} If $xRy$ we say that a set of worlds $K$ is a \gls{choice-set}
+   for $⟨x,y⟩$ iff for any $V$ such that $yS_xV$ we have $V∩K≠∅$. We denote the
    family of choice sets for $⟨x,y⟩$ by $𝒞(x,y)$. Note that this definition
    depends on the frame, but it should always be clear from context.
    {{{enddef}}}
@@ -1200,7 +1199,7 @@ LABEL. FOR EXAMPLE:)}}}
     The $\kgen{R}$ condition reads as follows:
     \begin{flalign*}
     &∀w,x,y,Y,K(wRxRyS_wY,K∈𝒞(x,y)   \\
-    ⇒& ∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz→z∈K))).
+    ⇒& ∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz⇒z∈K))).
     \end{flalign*}
 
    #+caption: Generalized frame condition for \prin{R}.
@@ -1218,7 +1217,7 @@ LABEL. FOR EXAMPLE:)}}}
    {{{endtheorem}}}
    {{{beginproof}}}
    {{{agda}}}
-   - \boxed{⇒} Let $M$ be a model based on $F$ assume there is a world $w$ such
+   - \boxed{⇒} Let $M$ be a model based on $F$ and assume there is a world $w$ such
      that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)$. We need to
      show that there is a set $Z$ such that $xS_wZ⊩B∧□C$. From $x⊩¬(A▷¬C)$ it
      follows that there is a world $y$ such that $xRy⊩A$ and $(⋆)\
@@ -1226,11 +1225,11 @@ LABEL. FOR EXAMPLE:)}}}
      by $(⋆)$ it follows that $K$ is a choice set for $⟨x,y⟩$. By transitivity
      of $R$ we get $wRy$ and since $w⊩A▷B$ then there must exist some $Y$ such
      that $yS_wY⊩B$. We can now apply the $\kgen{R}$ condition and get a $Y'⊆Y$
-     such that $xS_wY'$ and $(†)\ ∀y'∈Y'∀z(y'Rz→z∈K)$. To show that $Y'$ is the
+     such that $xS_wY'$ and $(†)\ ∀y'∈Y'∀z(y'Rz⇒z∈K)$. To show that $Y'$ is the
      desired set it remains to see that $Y'⊩B∧□C$. From the fact that $Y'⊆Y⊩B$
      it easily follows that $Y'⊩B$. Now, let $y'∈Y'$ and $u$ such that $y'Ru$,
      from $(†)$ we get $u∈K$ and by definition of $K$ we have $u⊩C$.
-   - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩ a ▷ b → (¬ (a ▷ ¬c) ▷ (b ∧ □ c))$.
+   - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩ a ▷ b → ¬ (a ▷ ¬c) ▷ (b ∧ □ c)$.
      Assume also that for some $w,x,y,Y,K$ we have $wRxRyS_wY,K∈𝒞(x,y)$. Now
      consider a model based on $F$ that satisfies the following:
     \begin{flalign*}
@@ -1238,9 +1237,9 @@ LABEL. FOR EXAMPLE:)}}}
     ⟦b⟧ &=Y; \\
     ⟦c⟧ &= K. \\
     \end{flalign*}
-    By assumption we have $w⊩a ▷ b → (¬ (a ▷ ¬c) ▷ (b ∧ □ c))$. Observe that
-     that $w⊩a▷b$ since $yS_wY⊩b$. Thus $w⊩¬ (a ▷ ¬c) ▷ (b ∧ □ c)$. Being $y$
-     the only world that forces $a$, in order to show $x⊩¬(a▷¬c)$ we need to see
+    By assumption we have $w⊩a ▷ b → ¬ (a ▷ ¬c) ▷ (b ∧ □ c)$. Observe that that
+     $w⊩a▷b$ since $yS_wY⊩b$. Thus $w⊩¬ (a ▷ ¬c) ▷ (b ∧ □ c)$. As $y$ is the
+     only world that forces $a$, in order to show $x⊩¬(a▷¬c)$ we need to see
      that $∀V(yS_xV⇒∃z∈V(z⊩c))$, which is equivalent to $∀V(yS_xV⇒∃z∈V∩K)$ and
      this holds since $K∈𝒞(x,y)$. As a consequence of $x⊩¬(a▷¬c)$ we have that
      there exists a $Y'$ such that $xS_wY'⊩b∧□c$. From $Y'⊩b$ we get $Y'⊆Y$ and
