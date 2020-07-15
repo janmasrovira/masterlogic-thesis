@@ -25,7 +25,6 @@
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 #+latex_header: \usepackage{multicol}
-#+latex_header: \usepackage[object=vectorian]{pgfornament}
 
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
@@ -119,7 +118,6 @@
 #+latex_header: \setmathfont{Latin Modern Math}
 
 #+latex_header: \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
-#+latex_header: \input{header.tex}
 
 \begin{titlepage}
   \begin{center}
