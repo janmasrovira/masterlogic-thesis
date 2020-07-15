@@ -122,7 +122,7 @@
 \begin{titlepage}
   \begin{center}
 
-    \textsc{\Large Masther's thesis to obtain the degree\\ Master in pure and applied logic}
+    \textsc{\Large Master's thesis to obtain the degree\\ Master in pure and applied logic}
      \\[1.4cm]
 
     % \horrule{0.5pt} \\[0.4cm]
