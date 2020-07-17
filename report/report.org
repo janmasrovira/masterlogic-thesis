@@ -3,13 +3,6 @@
 #+options: H:4
 #+options: toc:nil
 
-# #+latex_compiler: xelatex
-# #+latex_class: report
-# #+title: Interpretability logics
-# #+author: Jan Mas Rovira
-# #+subtitle: Master's thesis
-# #+options: toc:nil
-
 #+latex_header: \usepackage{hyperref}
 #+latex_header: \usepackage{graphicx}
 #+latex_header: \usepackage{unicode-math}
@@ -34,7 +27,6 @@
 #+latex_header: \newcommand{\todo}[0]{\textcolor{red}{pending}}
 #+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
 #+latex_header: \newcommand{\red}[1]{\textcolor{red}{#1 }}
-#+macro: jan @@latex:{\color{red}@@Jan: $1@@latex:}@@
 
 #+macro: begindef @@latex:\begin{definition}@@
 #+macro: enddef @@latex:\end{definition}@@
@@ -73,7 +65,12 @@
 
 #+macro: beginmulticols @@latex:\begin{multicols}{$1}@@
 #+macro: endmulticols @@latex:\end{multicols}@@
+
+#+latex_header: \newcommand{\joost}[1]{\textcolor{purple}{\textbf Joost: #1}}
+#+latex_header: \newcommand{\jan}[1]{\textcolor{blue}{\textbf Jan: #1}}
+#+latex_header: \newcommand{\luka}[1]{\textcolor{green}{\textbf Luka: #1}}
 #+macro: joost @@latex:\joost{$1}@@
+#+macro: jan @@latex:\jan{$1}@@
 #+macro: luka @@latex:\luka{$1}@@
 
 {{{defglossary(gvm,model,Generalized Veltman model)}}}
@@ -99,15 +96,13 @@
 # #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
 
-#+latex_header: \newcommand{\joost}[1]{\textcolor{purple}{\textbf Joost: #1}}
-#+latex_header: \newcommand{\jan}[1]{\textcolor{orange}{\textbf Jan: #1}}
-#+latex_header: \newcommand{\luka}[1]{\textcolor{blue}{\textbf Luka: #1}}
 
 # Missing monospaced characters
 #+latex_header: \setmathfont{XITS Math}
 #+latex_header: \newfontfamily{\myfont}{XITS Math}
 #+latex_header: \newunicodechar{𝕎}{\makebox[1em]{\myfont𝕎}}
 #+latex_header: \newunicodechar{ᵢ}{\makebox[0.5em]{\textsubscript{i}}}
+#+latex_header: \newunicodechar{ⱼ}{\makebox[0.5em]{\textsubscript{j}}}
 #+latex_header: \newunicodechar{ₖ}{\makebox[0.5em]{\textsubscript{k}}}
 #+latex_header: \newunicodechar{ₙ}{\makebox[0.5em]{\textsubscript{n}}}
 #+latex_header: \newunicodechar{ₘ}{\makebox[0.5em]{\textsubscript{m}}}
@@ -1520,13 +1515,33 @@ thanks
     cite:two-new-series.
 
 *** Generalized semantics
+
+  # Rⁿ-condition : Nat → Set _
+  # Rⁿ-condition zero = R-condition F
+  # Rⁿ-condition (suc n) =
+  #   ∀ {w y z : W} {𝔸 𝔹 ℂ : 𝕎} (x : (i : Nat) → {i < suc n} → W) (𝔻 : (i : Nat) → i ≤ n → 𝕎)
+  #   → R w (x n {s≤s (≤-reflexive refl)})
+  #   → R (x 0 {s≤s z≤n}) y
+  #   → R y z
+  #   → z ∈ 𝔻 zero z≤n
+  #   → ((i : Nat) → (i<n : i < n) → R (x (suc i) {s≤s i<n}) (x i {s≤s (<⇒≤ i<n)}))
+  #   → (∀ {u} → R w u → u ∈ 𝔸 → ∃[ V ] (S w u V × V ⊆ 𝔹))
+  #   → (∀ {u} → R (x n {s≤s (≤-reflexive refl)}) u → u ∈ 𝔻 n (≤-reflexive refl)
+  #       → Σ 𝕎 λ V → S (x n {s≤s (≤-reflexive refl)}) u V × V ⊆ 𝔸)
+  #   → ((i : Nat) → (i<n : i < n) → {u : W} → R (x i {s≤s (<⇒≤ i<n)}) u
+  #     → u ∈ 𝔻 i (<⇒≤ i<n)
+  #     → ∃[ V ] (S (x i {s≤s (<⇒≤ i<n)}) u V × V ⊆ 𝔻 (suc i) i<n))
+  #   → (∀ {V} → S y z V → Satisfiable (V ∩ ℂ))
+  #     → ∃[ V ] (V ⊆ 𝔹 × S w (x n {s≤s (≤-reflexive refl)}) V × R[ V ] ⊆ ℂ)
+
+
     The $\kgen{Rⁿ}$ condition reads as follows:
     \begin{flalign*}
     ∀w,&x₀,…,x_{n-1},y,z,𝔸,𝔹,ℂ,𝔻₀,…,𝔻_{n-1}.\\
     &wRx_{n-1}R…Rx_0RyRz, \\
     & (∀u.wRu,u∈𝔸⇒∃V.uS_wV⊆𝔹), \\
     & (∀u.x_{n-1}Ru∈𝔻_{n-1}⇒∃V.uS_{x_{n-1}}V⊆𝔸), \\
-    & (∀i∈\{1,…,n-1\}∀u.xᵢRu∈𝔻_i⇒∃V.uS_{x_i}V⊆𝔻_{i+1}), \\
+    & (∀i∈\{1,…,n-2\}∀u.xᵢRu∈𝔻_i⇒∃V.uS_{x_i}V⊆𝔻_{i+1}), \\
     & (∀V.zS_yV⇒V∩ℂ≠0),      \\
     & z∈𝔻₀ \\
     ⇒\ & ∃V⊆𝔹.x_{n-1}S_wV,R[V]⊆ℂ.
@@ -1642,72 +1657,307 @@ thanks
 * The logic of Agda
   # Adapted from cite:norell:thesis (Section 1.3).
 
-  In this section we give an informal overview of the basic Agda constructions,
+  In this part we give an informal overview of the basic Agda constructions,
   which will hopefully help the reader get an intuition of how dependent types
-  can be used to prove mathematical properties. We will also highlight some
-  intricacies of the language that are relevant to our project. This is not
-  meant to be an exhaustive analysis of the inner workings of Agda, as this
-  falls out of the scope of this project. The original author of Agda, Ulf
-  Norell, has suggested[fn::In correspondence via email.]
-  cite:cockx2018elaborating as a good reference for that matter.
+  can be used to formalize and prove mathematical properties. We will also
+  highlight some intricacies of the language that are relevant to our project.
+  This part of the thesis is not meant to be an exhaustive analysis of the inner
+  workings of Agda, as this falls out of the scope of this project. The original
+  author of Agda, Ulf Norell, has suggested[fn::In correspondence via email.]
+  cite:cockx2018elaborating as a good reference for that purpose.
+
+** Basic introduction to types
+   what are types? give historical context.
+** Basic Agda
+   In this section we precisely define a small *subset* of Agda.
+
+   {{{begindef}}} <<def:agda-term>> *Term/Type*. An Agda term is recursively
+   defined as shown in the table below. Note that we use =x= to denote an
+   arbitrary identifier, we use =p₁=, …, =pₙ= to denote arbitrary patterns, we
+   use =A,=, =B=, =A₁=, =…=, =Aₙ= to denote terms arbitrary terms and we use
+   =c= to denote an arbitrary constructor.
+
+   # #+caption: The syntax of terms (and types).
+   #+name: fig:agda-term
+   #+attr_latex: :align llll :float t :center t :placement [H]
+    | $term$ | $≔$   | =f=                        | identifier;                               |
+    |        | \vert | =(x : A) → B=              | function type                             |
+    |        | \vert | =λ x → A=                  | lambda abstraction;                       |
+    |        | \vert | =λ {p₁ → A₁; … ; pₙ → Aₙ}= | lambda abstraction with pattern matching; |
+    |        | \vert | =A B=                      | function application;                     |
+    |        | \vert | =Set ℓ=                    | universe $(ℓ∈ω)$.                         |
+   The =→= in the function type has right associativity, hence =(a : A) → (b :
+   B) → C= is the same as =(a : A) → ((b : B) → C)=. The =→= in the lambda
+   abstraction extends to the rightmost part, hence =λ x → λ y → A B= is the
+   same as =(λ x → (λ y → A B))=. Function application has left associativity,
+   hence =a b c= is the same as =(a b) c=. Also note that the =i= in =Set i= can
+   be an identifier but for simplicity in this section we restrict the =i= to be
+   an arbitrary constant natural number.
+
+   It is important to keep in mind that in dependent type theory terms and types
+   refer to the same construct. We will use one word or the other depending on
+   the context.
+
+   An example term:
+   #+begin_example
+   λ (A : Set 0) → λ (B : Set 0) → (f : A → B) → (a : A) → B
+   #+end_example
+   {{{enddef}}}
+
+   {{{begindef}}} *Identifier*. An identifier is a sequence of characters which
+   do not contain any white space or parentheses (normal =()= or curly ={}=)
+   and furthermore it is different than all reserved keywords. Some identifier
+   examples are =a=, =x=, =¬¬x=, =A▷B=, =A→B=, =Some-Long-Word=.
+
+   Some of the Agda reserved keywords are =λ=, =∀=, =→=, ===,
+   =data=, =where=, =:=. {{{jan(I don't think this has to be exhaustive.)}}}
+
+   It is worth noting that syntactically constructors and identifiers are
+   subject to the same rules. Agda detects constructors by using the datatype
+   definitions in scope. For more information on constructors see the definition
+   of a datatype ([[def:agda-datatype]]). {{{enddef}}}
+
+  {{{begindef}}} *Function definition*. A function definition is used to bind a
+  new[fn::By new we mean that is has not yet been bound by another definition.]
+  identifier to a term. Below we present two schemes of function definitions:
+  #+begin_example
+  x : T
+  x = A
+
+  y : T'
+  y = A'
+  #+end_example
+  The above code should read as: The identifier =x= is bound to =A=, which is a
+  term of type =T=. Likewise, the identifier =y= is bound to =A'= which is a
+  term of type =T'=.
+
+  Note that =A : T= and =A' : T'= must be valid according to the typing rules
+  ([sec:typing-rules], not done yet).
+
+  When we deal with two terms =A= and =T= which are related by the typing
+  relation =A : T= we will use the word =term= for =A= and the word =type= for
+  =T=. {{{jan(This should probably be stated in the section before. WIP)}}}
+
+  Function definitions are evaluated in order, thus, in =T'= and in =A'= we can
+  refer to =x=. However, neither in =A= or =T= we can refer to =y=.
+
+  Recursive references are allowed in the term, thus we can refer to =x= in =A=.
+  Likewise we can refer to =y= in =A'=.
+
+  Also note that we cannot bind the same identifier twice.
+  {{{enddef}}}
+
+  {{{begindef}}} <<def:agda-datatype>> *Datatype definition*. Datatype
+  definitions are used to introduce new terms/types to the language. We call
+  datatypes the types which have been defined using a datatype definition. For
+  instance, we would use a datatype definition to define a type representing the
+  natural numbers.
+
+  The general form of the definition of a datatype =D= is the following:
+  #+begin_example
+    data D (x₁ : P₁) … (xₖ : Pₖ) : (y₁ : Q₁) → … → (yₗ : Qₗ) → Set ℓ where
+      c₁ : T₁
+      …
+      cₙ : Tₙ
+    #+end_example
+  We distinguish the following parts of the declaration:
+  1. /Name/. =D= is an identifier, which is the name of the newly introduced
+     datatype. =D= is assigned the following type and is brought into scope:
+     #+begin_example
+     (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ : Qₗ) → Set ℓ
+     #+end_example
+     By bringing =D= into scope we mean that =D= can be referenced in the
+     constructor types =T₁=, …, =Tₙ=, also in subsequent datatypes definitions
+     and in terms defined after the definition of the datatype =D=.
+  2. /Indices/. =(y₁ : Q₁) … (yₗ : Qₗ)= are the indices of the datatype. For any
+     $i∈\{1,…,l\}$ we have that:
+     1. =yᵢ= is an identifier with associated type =Qᵢ=;
+     2. the type =Qᵢ= can reference =xⱼ= for any $j∈\{1,…,k\}$;
+     3. if $i>1$ we have that the type =Qᵢ= can reference any =yⱼ= for $j<i$.
+  3. /Parameters/. =(x₁ : P₁) … (xₖ : Pₖ)= are the parameters of the datatype.
+     For every $i∈\{1,…,k\}$ we have that:
+     1. =xᵢ= is an identifier with associated
+        type =Pᵢ=;
+     2. if $i>1$ we have that the type =Pᵢ= can reference any =xⱼ= for $j<i$.
+  4. /Constructors/. =c₁ … cₙ= are identifiers, which we call the constructors
+     of the datatype. For every $i∈\{1,…,n\}$ we have that:
+     1. =Tᵢ= is the type of the constructor =cᵢ=.
+     2. =Tᵢ= has to be of the form:
+       #+begin_example
+       (z₁ : B₁) → ... → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ
+     #+end_example
+        Where for every $i∈\{1,…,l\}$ we have that ==tᵢ : Qᵢ=, furthermore =tᵢ=
+        can refer to =zⱼ= for any $j∈\{1,…,m\}$.
+
+        If we focus on the return type[fn::The rightmost term which is not a
+        function type.] of =cᵢ=, namely =D x₁ … xₖ t₁ … tₗ=, we see that the
+        first $k$ arguments to =D= are required to be precisely the parameters
+        of =D=, while the remaining $l$ arguments, the indices, can be any terms
+        =t₁=, …, =tₗ= of type =Q₁=, …, =Qₗ= respectively and may vary for each
+        constructor. For that reason, we say that parameters are shared among
+        all constructors, while indices are specified on a constructor basis.
+        Refer to Section [[sec:agda-ref-datatype]] for a meaningful example.
+
+     The following is fundamental: the only way to build a term of type =D x₁ …
+     xₖ t₁ … tₗ= is to build a term of the form =cᵢ w₁ ... wₘ=, for some
+     $i∈\{1,…,n\}$, assuming =cᵢ= is declared to have the type =(z₁ : B₁) → ...
+     → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ= and =w₁=, ... =wₘ= are terms of type =B₁=,
+     ... =Bₘ= respectively.
+  {{{enddef}}}
+
+  {{{begindef}}} *Pattern*. A pattern is recursively defined as follows. We use
+  =p₁,= …, =pₙ= to denote patterns.
+  #+name: fig:agda-pattern
+  # #+caption: The syntax of patterns.
+  #+attr_latex: :align llll :float t :center t :placement [H]
+  | $pattern$ | $≔$   | =c p₁ … pₙ= | constructor of arity =n ≥ 0=; |
+  |           | \vert | =x=         | identifier;                   |
+  |           | \vert | =()=        | empty pattern;                |
+  |           | \vert | =_=         | wildcard.                     |
+  A pattern cannot contain repeated identifiers. We define $ids(p)$ to be the
+  set of identifiers that appear in a pattern.
+
+  Note that patterns of the form =c p₁ … pₙ= for $n≥1$ which are not nested must
+  be surrounded by parentheses. {{{enddef}}}
+
+
+  {{{begindef}}} *Module*. A module is a sequence of function definitions and
+  datatype definitions. Each function definition exposes the bound identifier to
+  the subsequent definitions. Each datatype definition exposes the name of the
+  datatype and constructors to the subsequent definitions.
+
+  An example module named =Example= which contains a definition of the =Bool=
+  datatype and the =not= function:
+  #+begin_example
+  module Example where
+    data Bool : Set 0 where
+      true : Bool
+      false : Bool
+
+    not : (b : Bool) → Bool
+    not = λ { false → true; true → false}
+
+    id : (b : Bool) → Bool
+    id = λ b → not (not b)
+  #+end_example
+  {{{enddef}}}
+
+  {{{begindef}}} *Well-scoped term*. A well-scoped term is a term where every
+  identifier and constructor is bound. In other words, there are no free
+  identifiers or constructors.
+
+  The set of free identifiers is defined as usual (following the syntax
+  defined in Definition [[def:agda-term]]):
+  \begin{flalign*}
+  &free(x) ≔ ∅  &\text{if identifier $x$ is bound.} \\
+  &free(x) ≔ \{x\} &\text{otherwise.}  \\
+  &free(λx→A) ≔ free(A)∖\{x\}  \\
+  &free(λ\ \{\ p₁→A₁;\ …;\ pₙ→Aₙ\}) ≔ ⋃_{i}\Big(free(Aᵢ)∖ids(pᵢ)\Big)  \\
+  &free(A\ B) ≔ free(A)∪free(B)  \\
+  &free(Set\ i) ≔ ∅  \\
+  \end{flalign*}
+  {{{enddef}}}
+
 
 ** BHK interpretation of propositional logic
   Agda is based on an intuitionistic type theory with dependent types that
-  extends Per Martin-Löf's type theory (cite:martin1984intuitionistic). Agda's
+  extends Per Martin-Löf's type theory (cite:martin1984intuitionistic).
+  {{{joost(Really\, who are you writing for? I guess we can assume that all
+  professor (and thus\, intended readers) know what intuitionistic logic is.
+  However\, ML type theory and dependent types need explanation. So this sentence
+  is in need of some more context\, pointers and or explanation.)}}} Agda's
   constructive nature suggests that a fitting way start the introduction is
   through the BHK interpretation of intuitionistic logic
   (cite:sep-intuitionistic-logic-development). We start with propositional logic
   and later on (Section [[sec:bhk-fol]]) we continue with first order logic.
 
   The BHK interpretation states that:
-  1. A proof of $A→B$ is an algorithm that transforms a proof of $A$ into a proof
-     of $B$;
+  1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of $A$
+     into a proof of $B$;
   2. A proof of $A∧B$ is a proof of $A$ and a proof of $B$;
-  3. A proof of $A∨B$ is a proof of $A$ or a proof of $B$;
+  3. A proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we commit to
+     and according to that, a proof of $A$ or a proof of $B$;
   4. Nothing is a proof of $⊥$;
   5. $⊤$ is always true and provable.
 
-  According to the BHK interpretation a proof of $A→A$ is just the identity
-  function. We can express this in Agda by writing the identity lambda term:
+  According to the BHK interpretation a proof of $A→A$ is an algorithm
+  implementing the identity function. We can express this algorithm in Agda by
+  writing the identity lambda term {{{joost(So this is exactly why one
+  other student missed a lot of points. I know that the formal language of Agda
+  (what is that called?) is very extensive. However\, you should formally specify
+  your language or at least chunks of it. What are your symbols\, constructors\,
+  etc. Reading conventions\, etc. It is BAD PRACTICE to have the reader distil
+  this from the practice\, text\, examples and context. I know many introductions
+  to type theory and proof assistants get this actually wrong. Please\, be more
+  precise and formal. Part of your assignment is showing that you have learned
+  this competence in our master. What are the terms? How are they inductively
+  defined? What is your alphabet\, etc.)}}}:
   #+begin_src text
   λ a → a
   #+end_src
-  See that we use the structure =λ arg₁ arg₂ … → term= to define lambda
-  functions. The previous term is valid. However, in Agda we must give a name to
-  all the terms that we define so we can refer to them in other parts of our
-  code. We will name our term =id=:
+  {{{joost(full stop?)}}} {{{jan(I prefer not to put stops since they are not
+  part of Agda's syntax and it may be confusing to insert them.)}}} See that we
+  use the structure =λ arg₁ arg₂ … → term= to define lambda functions. The
+  previous term is valid. However, in Agda we must give a name to all the terms
+  that we define so we can refer to them in other parts of our code. We will
+  name our term =id=:
   #+begin_src text
   id = λ a → a
   #+end_src
-  When the term that we are defining is a function, we are allowed to move the
-  arguments to the left of the === sign. Furthermore, we should write the type
-  of the function using the =:= symbol. The =:= symbol denotes the typing
-  relation, hence =a : A= reads as ``term =a= has type =A=''. Sometimes we also
-  say that ``the term =a= is a proof of =A=''.
+  When the term that we are defining is a lambda term, we are allowed to move
+  the arguments to the left of the === sign. Furthermore, we should write the
+  type {{{joost(what are types? Where do they historically come from? How are
+  types defined in Agda? Again\, provide a formal definition of correct
+  types)}}} of the function using the =:= symbol. The =:= symbol denotes the
+  typing relation{{{joost(a relation between wellformed types and wellformed
+  terms?)}}}, hence =a : A= reads as ``term =a= has type =A=''. Sometimes we
+  also say that ``the term =a= is a proof of =A=''.
   #+begin_src text
   id : A → A
   id a = a
   #+end_src
-  The previous function is only valid if the type =A= has been defined. Since
-  our intention is that it should work for any type, we should rewrite it to be
-  polymorphic. We can do that by declaring a type variable =A=. We can do this
-  by adding an extra argument of the form =(A : Set)=. We see that =A= has type
-  =Set=, which is the Agda word for type. Named arguments can be referenced in
-  the right part of the =→=, thus we can write:
+  {{{joost(How to parse the last line? Maybe say that we write ”id a” instead of
+  id(a) and that function application goes before =. Do we have both
+  term-equality and type equality? What about equality?)}}} The previous
+  function is only valid if the type =A= has been defined. Since our intention
+  is that it {{{joost(what?)}}} should work for any type, we should rewrite it
+  to be polymorphic {{{joost(ou cannot expect the reader to know what
+  polymorphism is. This should be properly introduced. I would encourage you to
+  rethink the setup of this chapter. You will be judged on your ability to apply
+  logical techniques to exposing a field and clearly transmit ideas and concepts
+  using crystal-clear definitions. Your current exposition is too informal and
+  along the way. If I were in the jury – which I will– I would be annoyed by
+  it.)}}}. We can do that by declaring a type variable =A=. We can do this by
+  adding an extra argument of the form =(A : Set)=. We see that =A= has type
+  =Set=, which is the Agda word for type {{{joost(The new reader will be lost
+  here. So we have concrete types? And we have type variables of type type? Does
+  Set itself have a type? Please\, rethink your presentation.)}}}. Named
+  arguments can be referenced in the right part of the =→=, thus we can write
+  {{{joost((mention right-associativity of the arrow (is it called as
+  such?)))}}}:
   #+begin_src text
   id : (A : Set) → A → A
   id A a = a
   #+end_src
-  Since the value of =A= will always be the type of the second argument, we can
-  infer its value and thus it is recommended to use an implicit argument (see
-  Section [[sec:agda-implicit-args]]).
+  Since the argument named =A= will always be the type of the second argument
+  {{{joost(second argument of what? of the polymorphic identity? Will the
+  polymorphic version receive the same name?)}}}, we can infer its value and
+  thus it is recommended to use an implicit argument (see Section
+  [[sec:agda-implicit-args]]).
   #+begin_src text
   id : {A : Set} → A → A
   id a = a
   #+end_src
-  With the technicalities out of the way, we can finally say that we have
-  completed our first Agda proof of $A→A$ according to the BHK interpretation by
-  implementing and typing the identity function in Agda.
+  {{{joost(the reader should be dizzy here: we have defined id using a lambda
+  term\, then there are some schemes that follow the format (i deduce\, if
+  correct this must be made explicit) type declaration\, term definition. Can we
+  all give them the same name? Or should we understand that we erase the
+  previous definition and replace it with a new one?)}}} With the technicalities
+  out of the way, we can finally say that we have completed our first Agda proof
+  of $A→A$ according to the BHK interpretation by implementing and typing the
+  identity function in Agda. {{{joost(What does it mean to have a proof in
+  Agda? Note that A to A is a type.... Be precise please. It may be a good place
+  to mention the Curry Howard iso? Anyways\, do it in a structured fashion.)}}}
 
   Let us see another example involving functions[fn::The =→= function symbol has
   right associativity.].
@@ -1717,36 +1967,53 @@ thanks
   #+end_src
   We see that =commute= has three arguments, namely =f : A → B → C=, =b : B= and
   =a : A=. Then in the right hand side of the === sign we have =f a b=, which
-  should read as ``term =f= applied to =a= and =b=''. Notice how function
-  application is denoted by simple juxtaposition.
+  should read as ``term =f= applied to =a= and =b='' {{{joost(It is good to
+  recall this and I would leave it here. But, there should be another structure
+  of this section. Maybe something like: basic ideas (what are types, terms,
+  etc.), syntax, reading conventions (left associativity of application, right
+  associativity of implication/abstraction), computation, etc.)}}}. Notice how
+  function application is denoted by simple juxtaposition.
 
   Let us now put our attention on proofs that revolve around conjunction. For
-  instance, let us prove that $A∧ B → B ∧ A$. In order to represent $A∧B$ in
-  Agda we need to define a so called /product type/. A product type is in rough
-  terms the type of a tuple. Consider the following pair definition:
+  instance, let us prove that $A∧ B → B ∧ A$. {{{joost(Again\, you mean 𝐴 ∧ 𝐵 → 𝐵
+  ∧ 𝐴 as proposition? Or as type? What does it mean to prove something in
+  Agda?)}}} In order to represent $A∧B$ in Agda we need to define a so called
+  /product type/. A product type is in rough terms the type of a tuple. Consider
+  the following pair definition:
   #+begin_src text
 data _×_ (A B : Set) : Set where
   _,_ : A → B → A × B
   #+end_src
-  This definition defines a new datatype called =_×_= with parameters =(A B : Set)=.
-  Datatypes with parameters are called parameterized datatypes. Parameters are
-  shared among all constructors. It has a single constructor named =_,_=.
-  Underscores are used to denote infix operators. We see that the type of the
-  constructor =_,_= is =A → B → A × B=. This tells us that =_,_= is a constructor
-  that takes an argument of type =A= (or a proof of =A=), an argument of type
-  =B= and then returns a term of type =A × B=. Constructors are a special kind
-  of functions that are used to build terms of their corresponding datatype.
-  When we /pattern match/ (or deconstruct) a term we will have a case for each
-  possible constructor of the type of that term.
+  {{{joost(Help\, what is this syntax? What is the iterated ”:” supposed to
+  mean? Is ”data” part of predefined syntax? Or is it a name? What about the
+  bars? So\, we are now seeing something new? This is no longer of the format
+  ”type declaration\, term definition of the corresponding type”? We are
+  defining new types? So this is another functionality of Agda? What of the
+  things exposed here form part of the type constructors? We classic logicians
+  get lost by so much computer science implicitness.)}}} This definition defines
+  a new datatype {{{joost(help\, Help\, HELP\, HEEEELLP!!!!! All of a sudden
+  there are datatypes? So\, they are different from types?)}}}called =_×_= with
+  parameters =(A B : Set)=. Datatypes with parameters are called parameterized
+  datatypes. Parameters are shared among all constructors {{{joost(What does
+  this sentence mean?)}}} . It has a single constructor named =_,_=. Underscores
+  are used to denote infix operators. We see that the type of the constructor
+  =_,_= is =A → B → A × B=. {{{joost(So underscore times underscore A B is the
+  same as A times B?)}}} This tells us that =_,_= is a constructor that takes an
+  argument of type =A= (or a proof of =A=), an argument of type =B= and then
+  returns a term of type =A × B=. A constructor is a special kind of function
+  {{{joost(from types to types?)}}} that is used to build terms of their
+  corresponding datatype. When we /pattern match/ (or deconstruct) a term we
+  will have a case for each possible constructor of the type of that term.
 
   Let us give a proof of the theorem $A∧ B → B ∧ A$:
   #+begin_src text
   swap : {A B : Set} → A × B → B × A
   swap (a , b) = b , a
   #+end_src
-  Note that we used pattern matching to deconstruct the term and access the
-  components of the pair. For the =_×_= type we only have one constructor so we
-  only need one case.
+  {{{joost(Why are there parenthesis on the left of the equality sign and not on
+  the right?)}}} Note that we used pattern matching to deconstruct the term and
+  access the components of the pair. For the =_×_= type we only have one
+  constructor so we only need one case.
   # Refer to Section [[sec:agda-datatype]] for more details on data type definition
   # and pattern matching.
 
@@ -1764,22 +2031,28 @@ data _×_ (A B : Set) : Set where
   p4 : {A B C : Set} → ((A × B) × C) → (A × (B × C))
   p4 ((a , b) , c) = a , (b , c)
   #+end_src
-  Now that we are familiarized with conjunction and product types we can proceed
-  by exploring disjunction. In order to express options we can define a new data
-  type called sum type thus:
+  {{{joost(maybe you can give informative names to the defined terms? Like
+  ”Currying” for p1\, ”Projection” for p2? etc. Why are there parenthesis in p2
+  but not in p1? Also\, in p3 and p4 one could have added parenthesis. Say when
+  we may omit them.)}}} Now that we are familiarized with conjunction and
+  product types we can proceed by exploring disjunction. In order to express
+  options we can define a new datatype called sum type thus:
   #+begin_src text
 data _⊎_ (A B : Set) : Set where
   inj₁ : A → A ⊎ B
   inj₂ : B → A ⊎ B
   #+end_src
   We see that the main difference with respect to the pair type is that now we
-  have two constructors named =inj₁= and =inj₂=. The constructor =inj₁= is used
+  have two constructors {{{joost(I think you can somewhere include a general
+  discussion on constructors. What are they\, what do they? What is their syntax
+  and use?)}}} which we named =inj₁= and =inj₂=. The constructor =inj₁= is used
   to build a proof of =A ⊎ B= by providing a proof of =A=. The constructor
   =inj₂= builds a proof of =A ⊎ B= given a proof of =B=.
 
   Since we have two constructors, when pattern matching against an argument of
   this type we will need to define two cases (if we want to access its
-  contents). See as an example the following theorems:
+  contents). See as an example the following theorems {{{joost(theorems? who
+  heard theorems? what are theorems?)}}}:
   #+begin_src text
   p1: {A B : Set} → A ⊎ B → B ⊎ A
   p1 (inj₁ a) = inj₂ a
@@ -1789,10 +2062,11 @@ data _⊎_ (A B : Set) : Set where
   p2 (inj₁ a) f g = f a
   p2 (inj₂ b) f g = g b
   #+end_src
-
-  The reader may have raised the following question in their mind: what if we
-  leave out a case for the sum type? In other words, is the following
-  definition acceptable?
+  {{{joost(Note that you have already defined p1 and p2. Are you overwriting
+  them?)}}} The reader may have raised the following question in their mind:
+  what if we leave out a case for the sum type? {{{joost(What do you mean? In
+  defining a term for a non-inhabited type I guess\, but that is not clear from
+  what you write.)}}} In other words, is the following definition acceptable?
   #+begin_src text
   wrong : {A B : Set} → A ⊎ B → A
   wrong : (inj₁ a) = a
@@ -1812,14 +2086,17 @@ data _⊎_ (A B : Set) : Set where
   ¬ : Set → Set
   ¬ A = A → ⊥
   #+end_src
-  The principle of explosion can be trivially proved as shown below. Agda uses
-  =()= to denote the empty or impossible pattern.
+  The principle of explosion {{{joost(Allauakbar\, what is this principle?)}}}
+  can be trivially proved as shown below. Agda uses =()= to denote the empty or
+  impossible pattern.
   #+begin_src text
   explosion : {A : Set} → ⊥ → A
   explosion ()
   #+end_src
-  Since the =⊥= type has no constructors, we get the empty pattern when pattern
-  matching against the argument of type =⊥=.
+  {{{joost(I feel I need some extra explanation here. So explosion () is a term
+  of type A. Where is that A reflected in the term? Should explosion not have two
+  arguments here?)}}} Since the =⊥= type has no constructors, we get the empty
+  pattern when pattern matching against the argument of type =⊥=.
 
   As we are in an intuitionistic logic the following properties are not
   provable[fn::See that we use the symbol =¬= in the name of the term =¬¬elim=.
@@ -1839,13 +2116,17 @@ data _⊎_ (A B : Set) : Set where
   ¬¬¬elim ¬¬¬a a = ¬¬¬a (λ ¬a → ¬a a)
   #+end_src
   It might help the reader to see that =¬ (¬ (¬ A)) → ¬ A = (((A → ⊥) → ⊥) → ⊥)
-  → A → ⊥=.
+  → A → ⊥=. {{{joost(Give the reader some more explanation. What is the lambda
+  doing there? How does this work? Maybe compare it with a proof in ND (natural
+  deduction) of the corresponding proposition?)}}}
 
   Some more examples:
   #+begin_src text
   p1 : {A B : Set} A → ¬ A → B
   p1 a ¬a = explosion (¬a a)
   #+end_src
+  {{{joost(Are we overwriting p1 again? Again\, how do we see that explosion
+  generates something of type B?)}}}
 
   We finally climb to the $⊤$ by defining a datatype which we call the
   /unit type/.
@@ -1862,7 +2143,8 @@ data _⊎_ (A B : Set) : Set where
   ¬¬⊤ : ¬ (¬ ⊤)
   ¬¬⊤ ¬⊤ = ¬⊤ tt
   #+end_src
-  This concludes the first part of the introduction.
+  {{{joost(What is the purpose of those examples? Make that clear: we prove
+  theorems about Top here)}}} This concludes the first part of the introduction.
 
 ** Booleans and case analysis
    <<sec:agda-bool>> The /true or false/ concept is ubiquitous in computer
@@ -2679,6 +2961,7 @@ absurd = self-app (bad self-app)
     argument to the cases where we guarantee that they are solved rules out many
     useful cases in practice.
 *** datatype definitions and constructors
+    <<sec:agda-ref-datatype>>
     <<sec:agda-datatype>>
 
     The general form of the definition of a simple datatype =D= is the following
@@ -2730,7 +3013,6 @@ absurd = self-app (bad self-app)
 
     The general form of the definition of a (parametrized, indexed) datatype =D=
     is the following
-
     #+begin_example
     data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
       c₁ : A₁
