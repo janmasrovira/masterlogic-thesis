@@ -1843,11 +1843,10 @@ thanks
   {{{enddef}}}
 
   {{{begindef}}} *Well-scoped term*. A well-scoped term is a term where every
-  identifier and constructor is bound. In other words, there are no free
-  identifiers or constructors.
+  identifier in it is bound. In other words, there are no free identifiers.
 
-  The set of free identifiers is defined as usual (following the syntax
-  defined in Definition [[def:agda-term]]):
+  The set of free identifiers is defined as usual (following the syntax defined
+  in Definition [[def:agda-term]]):
   \begin{flalign*}
   &free(x) ≔ ∅  &\text{if identifier $x$ is bound.} \\
   &free(x) ≔ \{x\} &\text{otherwise.}  \\
@@ -1856,9 +1855,20 @@ thanks
   &free(A\ B) ≔ free(A)∪free(B)  \\
   &free(Set\ i) ≔ ∅  \\
   \end{flalign*}
+
+  We always assume terms to be well-scoped.
   {{{enddef}}}
 
+*** Typing rules
+    WIP
 
+    1. If  =(x : A); Γ ⊢ t : B= then =Γ ⊢ T : (x : A) → B=;
+    2. if  =Γ ⊢ f : (x : A) → B= and =Γ ⊢ y : A= then =Γ ⊢ f y : B[x ↦ y]=;
+    3. todo: lambda with patterns.
+    4. =Set i : Set (i + 1)= for every $i∈ω$.
+
+*** Normalization rules
+    wip
 ** BHK interpretation of propositional logic
   Agda is based on an intuitionistic type theory with dependent types that
   extends Per Martin-Löf's type theory (cite:martin1984intuitionistic).
