@@ -1851,7 +1851,7 @@ thanks
   The =↵= symbol represents a line break.
 
 
-  An example module named =Example= which contains a definition of the =Bool=
+  An example module which contains a definition of the =Bool=
   datatype and the =not= function:
   #+begin_example
     data Bool : Set 0 where
@@ -1932,28 +1932,32 @@ thanks
 
     {{{begindef}}} <<def:agda-check-module>> *Type checking a module*. We
     understand by /type checking/ the process of checking that all terms in a
-    module are well-typed and respect the typing annotations. By respecting the
-    typing annotations we mean that if we have the following definition:
-    #+begin_example
-    x : A
-    x = t
-    #+end_example
-    Then we need check that =t= is well-typed and furthermore has type =A=. It
-    may be worth noticing that sometimes the annotation =x : A= may be redundant
-    since the type of =t= can be automatically inferred to be =A= from the
-    rules. However, for simplicity we assume that the annotation is always
+    module are well-typed and respect the typing annotations. Below we describe
+    the process in detail.
+
+    # By respecting the
+    # typing annotations we mean that if we have the following definition:
+    # #+begin_example
+    # x : A
+    # x = t
+    # #+end_example
+    # Then we need check that =t= is well-typed and furthermore has type =A=.
+
+    It may be worth noticing that sometimes the annotation =x : A= may be
+    redundant since the type of =t= can be automatically inferred to be =A= from
+    the rules. However, for simplicity we assume that the annotation is always
     required.
 
     The process of type-checking a module is as follows:
     1. At the beginning of a module we start with an empty context $Γ ≔ ∅$.
     2. We look at the next definition.
-       - If it is a *function definition*, it is of the
-         form
+       - If it is a *function definition*, it is of the form
          #+begin_example
          x : A
          x = t
          #+end_example
-         We let $Γ'≔Γ;x:A$ and we check $Γ'⊢t:A$.
+         Check there is some $ℓ$ such that $Γ⊢A:Set\ ℓ$. Then let $Γ'≔Γ;x:A$
+         and check $Γ'⊢t:A$.
 
          We repeat step 2 with context $Γ'$.
        - If it is a *datatype definition*, it is the form
@@ -1969,7 +1973,7 @@ thanks
          #+end_example
 
          We check that:
-         1. For each parameter =xᵢ : Pᵢ= we check that for some $ε≤ℓ$ we have
+         1. For each parameter =xᵢ : Pᵢ= check that for some $ε≤ℓ$ we have
             \[Γ;x₁:P₁;…;x_{i-1}:P_{i-1}⊢Pᵢ:Set\ ε.\]
          2. Then let
             \begin{flalign*}
@@ -1979,7 +1983,7 @@ thanks
             \end{flalign*}
              # \[Γ'≔Γ;x₁ : P₁; …; xₖ : Pₖ;D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ :
              #  Qₗ) → Set\ ℓ. \]
-            For each $i∈\{1,…,n\}$ we check that
+            For each $i∈\{1,…,n\}$ check that
             \[Γ'⊢ (z₁ : B₁) → … → (zₘ : Bₘ) → D\ x₁\ …\ xₖ\ t₁\ …\ tₗ : Set\ ℓ.\]
             # #+begin_example
             # cᵢ : (z₁ : B₁) → … → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ
@@ -1999,8 +2003,6 @@ thanks
               &cₙ : (z^n₁ : B^n₁) → … → (z^nₘ : B^nₘ) → D\ x₁\ …\ xₖ\ t^n₁\ …\ t^nₗ
             \end{flalign*}
             and continue to step 2 with context $Γ''$.
-    3. We repeat the process for the next definition until we reach the end of
-       the module.
     {{{enddef}}}
 *** Normalization rules
     wip
