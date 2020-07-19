@@ -1893,6 +1893,8 @@ thanks
     function. This restriction is not a limiting as we can always rename our
     identifiers to De Bruijn indices (cite:de1972lambda), which guarantee this
     assumption.
+
+    *Notation*. We use $Γ;t:A$ as short for $Γ∪\{⟨t:A⟩\}$.
     {{{enddef}}}
 
     {{{begindef}}} *Well-typed term*. We say that a term $t$ is well-typed in
@@ -1903,7 +1905,6 @@ thanks
     We usually use the concept of well-typed term in the context of a module, in
     that case, we implicitly refer to the context assigned by the structure of
     the module. See Definition [[def:agda-check-module]] for a thorough explanation.
-
     {{{enddef}}}
 
    #+caption: Typing rules for terms.
@@ -1929,40 +1930,75 @@ thanks
     cite:norell:thesis for that purpose. Here we present a simplification.
     {{{jan(pending.)}}}
 
-    {{{begindef}}}
-    <<def:agda-check-module>>
-    *Type checking a module*. We understand by /type checking/ the process of
-    checking that all terms and definitions in a module are correct with respect
-    to the typing rules. We proceed by describing this process:
+    {{{begindef}}} <<def:agda-check-module>> *Type checking a module*. We
+    understand by /type checking/ the process of checking that all terms in a
+    module are well-typed and respect the typing annotations. By respecting the
+    typing annotations we mean that if we have the following definition:
+    #+begin_example
+    x : A
+    x = t
+    #+end_example
+    Then we need check that =t= is well-typed and furthermore has type =A=. It
+    may be worth noticing that sometimes the annotation =x : A= may be redundant
+    since the type of =t= can be automatically inferred to be =A= from the
+    rules. However, for simplicity we assume that the annotation is always
+    required.
+
+    The process of type-checking a module is as follows:
     1. At the beginning of a module we start with an empty context $Γ ≔ ∅$.
     2. We look at the next definition.
-      - If it is a function definition of the
-        form
-        #+begin_example
-        x : A
-        x = t
-        #+end_example
-        We set $Γ'≔Γ;x:A$ and we check $Γ'⊢t:A$.
+       - If it is a *function definition*, it is of the
+         form
+         #+begin_example
+         x : A
+         x = t
+         #+end_example
+         We let $Γ'≔Γ;x:A$ and we check $Γ'⊢t:A$.
 
-      - If it is a datatype definition of the form
-          #+begin_example
-      data D (x₁ : P₁) … (xₖ : Pₖ) : (y₁ : Q₁) → … → (yₗ : Qₗ) → Set ℓ where
-        c₁ : T₁
-        …
-        cₙ : Tₙ
-          #+end_example
-          where each =Tᵢ= is of the form
-          #+begin_example
-          (z₁ : B₁) → ... → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ
-        #+end_example
+         We repeat step 2 with context $Γ'$.
+       - If it is a *datatype definition*, it is the form
+           #+begin_example
+       data D (x₁ : P₁) … (xₖ : Pₖ) : (y₁ : Q₁) → … → (yₗ : Qₗ) → Set ℓ where
+         c₁ : T₁
+         …
+         cₙ : Tₙ
+           #+end_example
+           where each =Tᵢ= is of the form
+           #+begin_example
+           (z₁ : B₁) → … → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ
+         #+end_example
 
-        Then we let \[Γ'≔Γ;D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ :
-        Qₗ) → Set\ ℓ. \]
-
-        We check that: ????
-        1. $Γ'⊢D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ : Qₗ) → Set\ ℓ$
-        2. and =cᵢ : Tᵢ= for every $i∈\{1,…,n\}$
-        to the context.
+         We check that:
+         1. For each parameter =xᵢ : Pᵢ= we check that for some $ε≤ℓ$ we have
+            \[Γ;x₁:P₁;…;x_{i-1}:P_{i-1}⊢Pᵢ:Set\ ε.\]
+         2. Then let
+            \begin{flalign*}
+             Γ'≔&Γ;x₁ : P₁; …; xₖ : Pₖ; \\
+               &D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ :
+              Qₗ) → Set\ ℓ.
+            \end{flalign*}
+             # \[Γ'≔Γ;x₁ : P₁; …; xₖ : Pₖ;D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ :
+             #  Qₗ) → Set\ ℓ. \]
+            For each $i∈\{1,…,n\}$ we check that
+            \[Γ'⊢ (z₁ : B₁) → … → (zₘ : Bₘ) → D\ x₁\ …\ xₖ\ t₁\ …\ tₗ : Set\ ℓ.\]
+            # #+begin_example
+            # cᵢ : (z₁ : B₁) → … → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ
+            # #+end_example
+            #  We check that for all
+            # $j∈\{1,…,m\}$ there is some $ε≤ℓ$ such that
+            # \[Γ';x₁:P₁;…;x_{k}:P_{k}⊢B_j :Set\ ε.\] Furthermore, for all
+            # $j∈\{1,…,l\}$ we check that
+            # \[Γ';x₁:P₁;…;x_{k}:P_{k};z₁:B₁;…;zₘ:Bₘ;t₁:Q₁;…;t_{j-1}:Q_{j-1}⊢
+            # tⱼ:Qⱼ. \]
+            Then let
+            \begin{flalign*}
+             Γ''≔&Γ;D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ :
+              Qₗ) → Set\ ℓ; \\
+              &c₁ : (z^1₁ : B^1₁) → … → (z^1ₘ : B^1ₘ) → D\ x₁\ …\ xₖ\ t^1₁\ …\ t^1ₗ; \\
+              & ⋮ \\
+              &cₙ : (z^n₁ : B^n₁) → … → (z^nₘ : B^nₘ) → D\ x₁\ …\ xₖ\ t^n₁\ …\ t^nₗ
+            \end{flalign*}
+            and continue to step 2 with context $Γ''$.
     3. We repeat the process for the next definition until we reach the end of
        the module.
     {{{enddef}}}
