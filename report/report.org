@@ -122,7 +122,7 @@
      \\[1.4cm]
 
     % \horrule{0.5pt} \\[0.4cm]
-    { \huge \bfseries Generalized Veltman semantics in Agda \\[0.01cm] }
+    { \huge \bfseries Interpretability logics and generalized Veltman semantics in Agda \\[0.01cm] }
 
     \horrule{0.7pt} \\[2cm]
     % \horrule{1.6pt}
@@ -1670,13 +1670,38 @@ thanks
 ** Basic introduction to types
    what are types? give historical context.
 ** Basic Agda
-   In this section we precisely define a moderate subset of Agda.
+   In this section we precisely define a moderate subset of Agda. We have tried
+   to remain faithful to the semantics of the real Agda language, however, this
+   is an incomplete simplification and thus is not meant to be a
+   precise reference for the real Agda language.
+
+   We introduce several concepts that have cyclic dependencies and thus a linear
+   presentation is not possible. {{{jan(write something to help the reader.)}}}
+
+   {{{begindef}}} *Identifier*. An identifier is a sequence of characters which
+   do not contain any white space or parentheses (normal =()= or curly ={}=)
+   and furthermore it is different than all reserved keywords. Some identifier
+   examples are =a=, =x=, =¬¬x=, =A▷B=, =A→B=, =Some-Long-Word=.
+
+   Some of the Agda reserved keywords are =λ=, =∀=, =→=, ===,
+   =data=, =where=, =:=. {{{jan(I don't think this has to be exhaustive.)}}}
+
+   It is worth noting that syntactically constructors and identifiers are
+   subject to the same rules. Agda detects constructors by using the datatype
+   definitions in scope. For more information on constructors see the definition
+   of a datatype ([[def:agda-datatype]]). {{{jan(should this be in?)}}} {{{enddef}}}
 
    {{{begindef}}} <<def:agda-term>> *Term/Type*. An Agda term is recursively
-   defined as shown in the table below. Note that we use =x= to denote an
-   arbitrary identifier, we use =p₁=, …, =pₙ= to denote arbitrary patterns, we
-   use =A,=, =B=, =A₁=, =…=, =Aₙ= to denote terms arbitrary terms and we use
-   =c= to denote an arbitrary constructor.
+   defined as shown in the figure below.
+
+   An Agda *type* is a term =A= such that =A : Set ℓ= for some =ℓ=. Definition
+   [[def:agda-well-typed]] gives a description of the Agda typing rules. We want to
+   emphasize, and it is obvious from the definition, that all types are also terms.
+
+   We use =x= to denote an arbitrary identifier, we use =p₁=, …, =pₙ= to denote
+   arbitrary patterns (see Definition [[def:agda-pattern]]), we use =A,=, =B=, =A₁=,
+   =…=, =Aₙ= to denote arbitrary terms and we use =c= to denote an arbitrary
+   constructor (see Definition [[def:agda-constructor]]).
 
    # #+caption: The syntax of terms (and types).
    #+name: fig:agda-term
@@ -1691,12 +1716,12 @@ thanks
    {{{jan(Is the following presentation preferred?)}}}
    #+name: fig:agda-term2
    #+attr_latex: :align llll :float t :center t :placement [H]
-    | $term$ | $≔$   | =iden=                               | identifier;                               |
-    |        | \vert | =(iden : term) → term=               | function type                             |
-    |        | \vert | =λ iden → term=                      | lambda abstraction;                       |
-    |        | \vert | =λ {pat₁ → term₁; … ; patₙ → termₙ}= | lambda abstraction with pattern matching; |
-    |        | \vert | =term term=                          | function application;                     |
-    |        | \vert | =Set ℓ=                              | universe $(ℓ∈ω)$.                         |
+    | $term$ | $≔$   | =iden=                           | identifier;                               |
+    |        | \vert | =(iden : type) → term=           | function type                             |
+    |        | \vert | =λ iden → term=                  | lambda abstraction;                       |
+    |        | \vert | =λ {pat → term; … ; pat → term}= | lambda abstraction with pattern matching; |
+    |        | \vert | =term term=                      | function application;                     |
+    |        | \vert | =Set ℓ=                          | universe $(ℓ∈ω)$.                         |
 
    The =→= in the function type has right associativity, hence =(a : A) → (b :
    B) → C= is the same as =(a : A) → ((b : B) → C)=. The =→= in the lambda
@@ -1706,32 +1731,21 @@ thanks
    be an identifier but for simplicity in this section we restrict the =i= to be
    an arbitrary constant natural number.
 
-   It is important to keep in mind that in dependent type theory terms and types
-   refer to the same construct. We will use one word or the other depending on
-   the context.
-
    An example term:
    #+begin_example
    λ (A : Set 0) → λ (B : Set 0) → (f : A → B) → (a : A) → B
    #+end_example
    {{{enddef}}}
 
-   {{{begindef}}} *Identifier*. An identifier is a sequence of characters which
-   do not contain any white space or parentheses (normal =()= or curly ={}=)
-   and furthermore it is different than all reserved keywords. Some identifier
-   examples are =a=, =x=, =¬¬x=, =A▷B=, =A→B=, =Some-Long-Word=.
-
-   Some of the Agda reserved keywords are =λ=, =∀=, =→=, ===,
-   =data=, =where=, =:=. {{{jan(I don't think this has to be exhaustive.)}}}
-
-   It is worth noting that syntactically constructors and identifiers are
-   subject to the same rules. Agda detects constructors by using the datatype
-   definitions in scope. For more information on constructors see the definition
-   of a datatype ([[def:agda-datatype]]). {{{enddef}}}
 
   {{{begindef}}} *Function definition*. A function definition is used to bind a
   new[fn::By new we mean that is has not yet been bound by another definition.]
   identifier to a term.
+
+  /Note/: Maybe the name ``term definition'' or ``term binding'' would be more
+  appropriate for the concept defined here. We have decided to use the name
+  ``Function definition'' since it is widely used in the field of computer
+  science.
 
   # #+name: fig:agda-fundef
   # #+attr_latex: :align llll :float t :center t :placement [H]
@@ -1766,11 +1780,11 @@ thanks
   Also note that we cannot bind the same identifier twice.
   {{{enddef}}}
 
-  {{{begindef}}} <<def:agda-datatype>> *Datatype definition*. Datatype
-  definitions are used to introduce new terms/types to the language. We call
-  datatypes the types which have been defined using a datatype definition. For
-  instance, we would use a datatype definition to define a type representing the
-  natural numbers.
+  {{{begindef}}} <<def:agda-constructor>> <<def:agda-datatype>> *Datatype
+  definition*. Datatype definitions are used to introduce new terms/types to the
+  language. We call datatypes the types which have been defined using a datatype
+  definition. For instance, we would use a datatype definition to define a type
+  representing the natural numbers.
 
   The general form of the definition of a datatype =D= is the following:
   #+begin_example
@@ -1822,10 +1836,14 @@ thanks
      $i∈\{1,…,n\}$, assuming =cᵢ= is declared to have the type =(z₁ : B₁) → ...
      → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ= and =w₁=, ... =wₘ= are terms of type =B₁=,
      ... =Bₘ= respectively.
+
+     There are no datatypes or constructors which are inherent to the language,
+     thus, every datatype and constructor will be defined by the user in a
+     datatype definition.
   {{{enddef}}}
 
-  {{{begindef}}} *Pattern*. A pattern is recursively defined as follows. We use
-  =p₁,= …, =pₙ= to denote patterns.
+  {{{begindef}}} <<def:agda-pattern>> *Pattern*. A pattern is recursively
+  defined as follows. We use =p₁,= …, =pₙ= to denote patterns.
   #+name: fig:agda-pattern
   #+attr_latex: :align llll :float t :center t :placement [H]
   | $pattern$ | $≔$   | =c p₁ … pₙ= | constructor of arity =n ≥ 0=; |
@@ -1863,22 +1881,22 @@ thanks
   #+end_example
   {{{enddef}}}
 
-  {{{begindef}}} *Well-scoped term*. A well-scoped term is a term where every
-  identifier in it is bound. In other words, there are no free identifiers.
+  # {{{begindef}}} *Well-scoped term*. A well-scoped term is a term where every
+  # identifier in it is bound. In other words, there are no free identifiers.
 
-  The set of free identifiers is defined as usual (following the syntax defined
-  in Definition [[def:agda-term]]):
-  \begin{flalign*}
-  &free(x) ≔ ∅  &\text{if identifier $x$ is bound.} \\
-  &free(x) ≔ \{x\} &\text{otherwise.}  \\
-  &free(λx→A) ≔ free(A)∖\{x\}  \\
-  &free(λ\ \{\ p₁→A₁;\ …;\ pₙ→Aₙ\}) ≔ ⋃_{i}\Big(free(Aᵢ)∖ids(pᵢ)\Big)  \\
-  &free(A\ B) ≔ free(A)∪free(B)  \\
-  &free(Set\ i) ≔ ∅  \\
-  \end{flalign*}
+  # The set of free identifiers is defined as usual (following the syntax defined
+  # in Definition [[def:agda-term]]):
+  # \begin{flalign*}
+  # &free(x) ≔ ∅  &\text{if identifier $x$ is bound.} \\
+  # &free(x) ≔ \{x\} &\text{otherwise.}  \\
+  # &free(λx→A) ≔ free(A)∖\{x\}  \\
+  # &free(λ\ \{\ p₁→A₁;\ …;\ pₙ→Aₙ\}) ≔ ⋃_{i}\Big(free(Aᵢ)∖ids(pᵢ)\Big)  \\
+  # &free(A\ B) ≔ free(A)∪free(B)  \\
+  # &free(Set\ i) ≔ ∅  \\
+  # \end{flalign*}
 
-  We always assume terms to be well-scoped.
-  {{{enddef}}}
+  # We always assume terms to be well-scoped.
+  # {{{enddef}}}
 
 *** Contexts, and typing rules
 
@@ -1897,9 +1915,11 @@ thanks
     *Notation*. We use $Γ;t:A$ as short for $Γ∪\{⟨t:A⟩\}$.
     {{{enddef}}}
 
-    {{{begindef}}} *Well-typed term*. We say that a term $t$ is well-typed in
-    context $Γ$ if $Γ⊢t:A$ for some type $A$. The rules for $⊢$ are presented
-    below.
+    {{{begindef}}} <<def:agda-well-typed>> *Well-typed term*. We say that a term
+    $t$ is well-typed in context $Γ$ if $Γ⊢t:A$ for some type $A$. The rules for
+    $⊢$ are presented below. We also define the relation $⊢_{Ρ}$, which is for
+    typing patterns. For that purpose we need an auxiliary function definition,
+    $τ$, which is defined afterwards.
 
     The structure of a module implicitly assigns a context to each term in it.
     We usually use the concept of well-typed term in the context of a module, in
@@ -1910,30 +1930,61 @@ thanks
    #+caption: Typing rules for terms.
    #+name: fig:type
    #+attr_latex: :float
-    \begin{figure}[H]
-    \begin{mathpar}
-    \inferrule[Id]{t : A ∈ Γ}{Γ ⊢ t : A}
-    \and
-    \inferrule[Level]{\ }{Γ⊢Set\ i : Set\ (i+1)}
-    \and
-    \inferrule[Function]{Γ ⊢ A:Set\ i \\ x:A;Γ ⊢ B : Set\ i}{Γ ⊢ (x:A)→B:Set\ i}
-    \\
-    \inferrule[Abstraction]{x:A; Γ ⊢ t:B }{Γ⊢λx→t:(x:A)→B}
-    \and
-    \inferrule[Application]{Γ⊢f:(x:A)→B \\ Γ⊢a:A }{Γ⊢f\ a : B[x↦t]}
-    \end{mathpar}
-    \end{figure}
+   \begin{figure}[H]
+   \begin{mathpar}
+   \inferrule[Id]{t : A ∈ Γ}{Γ ⊢ t : A}
+   \and
+   \inferrule[Level]{\ }{Γ⊢Set\ i : Set\ (i+1)}
+   \and
+   \inferrule[Arrow]{Γ ⊢ A:Set\ i \\ Γ; x:A ⊢ B : Set\ i}{Γ ⊢ (x:A)→B:Set\ i}
+   \\
+   \inferrule[Abstraction]{x:A; Γ ⊢ t:B }{Γ⊢λx→t:(x:A)→B}
+   \and
+   \inferrule[Application]{Γ⊢f:(x:A)→B \\ Γ⊢a:A }{Γ⊢f\ a : B[x↦t]}
+   \\
+   \inferrule[Pattern abstraction]{\text{Let } \overline{D}≔D\ x₁\ …\ xₙ\ t₁\ …\ tₙ \\\\
+     Γ⊢_{Ρ}p₁:\overline{D} \\ … \\  Γ⊢_{Ρ}pₙ:\overline{D} \\\\
+     Γ∪τ(Γ,\overline{D},p₁)⊢ s₁:B \\ … \\ Γ∪τ(Γ,\overline{D},pₙ)⊢ sₙ:B}
+     {Γ⊢λ\ \{p₁ →s₁;\ …\ ;\ pₙ→sₙ\}:(x:\overline{D})→B}
+   \end{mathpar}
+   \end{figure}
+
+   #+caption: Typing rules for patterns.
+   #+name: fig:pat-type-rules
+   #+attr_latex: :float
+   \begin{figure}[H]
+   \begin{mathpar}
+   \inferrule[Identifier]{\ }{Γ⊢_{Ρ}x : A}
+   \and
+   \inferrule[Wildcard]{\ }{Γ⊢_{Ρ}\_ : A}
+   \\
+   \inferrule[Constructor]{c:(b₁:B₁)→…→(b:Bₙ)→D\ x₁\ …\ xₙ\ t₁\ …\ tₙ ∈Γ \\\\ Γ⊢_Ρp₁: B₁ \\ … \\ Γ⊢_Ρpₙ:Bₙ   }{Γ⊢_Ρc\ p₁\ …\ pₙ : D\ x₁\ …\ xₙ\ t₁\ …\ tₙ}
+   \end{mathpar}
+   \end{figure}
+
+   Let $\overline{D}≔D\ x₁\ …\ xₙ\ t₁\ …\ tₙ$. We now define
+   $τ(Γ,\overline{D},p)$, which is the of identifiers bound by pattern $p$ and
+   their respective types. Assume that $Γ⊢_{Ρ}p:\overline{D}$. Finally, let $τ$
+   be defined as follows:
+  \begin{flalign*}
+  &τ(Γ,\overline{D},x)≔ \{x:\overline{D}\} & \text{Identifier} \\
+  &τ(Γ,\overline{D},\_)≔ ∅ & \text{Wildcard} \\
+  &τ(Γ,\overline{D},c\ p₁\ …\ pₙ)≔ τ(Γ,p₁,B₁)∪…∪τ(Γ,pₙ,Bₙ) & \text{Constructor} \\
+  &\hspace{3.5cm} \text{assuming } c:(b₁:B₁)→…→(b:Bₙ)→\overline{D}∈Γ
+  \end{flalign*}
 
 
-    The precise typing rule for the lambda abstraction with patterns falls out
-    of the scope of this thesis. We ask the reader to refer to Chapter 2 of
-    cite:norell:thesis for that purpose. Here we present a simplification.
-    {{{jan(pending.)}}}
+  Absurd pattern {{{jan(TODO)}}}.
 
-    {{{begindef}}} <<def:agda-check-module>> *Type checking a module*. We
-    understand by /type checking/ the process of checking that all terms in a
-    module are well-typed and respect the typing annotations. Below we describe
-    the process in detail.
+  The precise typing rule for the lambda abstraction with patterns falls out
+  of the scope of this thesis. We ask the reader to refer to Chapter 2 of
+  cite:norell:thesis for that purpose. Here we present a simplification.
+  {{{jan(pending.)}}}
+
+  {{{begindef}}} <<def:agda-check-module>> *Type checking a module*. We
+  understand by /type checking/ the process of checking that all terms in a
+  module are well-typed and respect the typing annotations. Below we describe
+  the process in detail.
 
     # By respecting the
     # typing annotations we mean that if we have the following definition:
@@ -2004,8 +2055,20 @@ thanks
             \end{flalign*}
             and continue to step 2 with context $Γ''$.
     {{{enddef}}}
-*** Normalization rules
-    wip
+*** Normalization
+
+    We use $a,b,c,t$ to denote terms and $f$ to denote an identifier.
+   #+caption: Normalization rules for terms.
+   #+name: fig:normalization
+   #+attr_latex: :float
+    \begin{figure}[H]
+    \begin{mathpar}
+    \inferrule[$β$-reduction]{\ }{(λ x → t)\ a↓t[x↦a] } \and
+    \inferrule[Transitivity]{a↓b \\ b↓c }{a↓c} \and
+    \inferrule[Def]{f=t∈Δ  }{Δ⊢f↓t}
+    \end{mathpar}
+    \end{figure}
+
 ** BHK interpretation of propositional logic
   Agda is based on an intuitionistic type theory with dependent types that
   extends Per Martin-Löf's type theory (cite:martin1984intuitionistic).
