@@ -1672,16 +1672,18 @@ thanks
 ** Basic Agda
    In this section we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
-   is an incomplete simplification and thus is not meant to be a
-   precise reference for the real Agda language.
+   is an incomplete simplification and thus is not meant to be a precise
+   reference for the real Agda language. We comment on some of the
+   simplifications in section ???.
 
    We introduce several concepts that have cyclic dependencies and thus a linear
    presentation is not possible. {{{jan(write something to help the reader.)}}}
 
    {{{begindef}}} *Identifier*. An identifier is a sequence of characters which
-   do not contain any white space or parentheses (normal =()= or curly ={}=)
-   and furthermore it is different than all reserved keywords. Some identifier
-   examples are =a=, =x=, =¬¬x=, =A▷B=, =A→B=, =Some-Long-Word=.
+   do not contain any white space or parentheses (normal =()= or curly ={}=) and
+   furthermore it is different than all reserved keywords. Some identifier
+   examples are =a=, =x=, =¬¬x=, =A▷B=, =A→B=, =Some-Long-Word=. For all
+   practical purposes, we can assume we have an infinite set of identifiers.
 
    Some of the Agda reserved keywords are =λ=, =∀=, =→=, ===,
    =data=, =where=, =:=. {{{jan(I don't think this has to be exhaustive.)}}}
@@ -1765,7 +1767,7 @@ thanks
   term of type =T'=.
 
   Note that =A : T= and =A' : T'= must be valid according to the typing rules
-  ([sec:typing-rules], not done yet).
+  (see Section [[sec:typing-rules]]).
 
   When we deal with two terms =A= and =T= which are related by the typing
   relation =A : T= we will use the word =term= for =A= and the word =type= for
@@ -1793,6 +1795,7 @@ thanks
       …
       cₙ : Tₙ
     #+end_example
+  Note that it is possible to have $k=0$, $l=0$ and/or $n=0$.
   We distinguish the following parts of the declaration:
   1. /Name/. =D= is an identifier, which is the name of the newly introduced
      datatype. =D= is assigned the following type and is brought into scope:
@@ -1899,6 +1902,7 @@ thanks
   # {{{enddef}}}
 
 *** Contexts, and typing rules
+    <<sec:typing-rules>>
 
     {{{begindef}}} *Context*. A context is a (finite) set of pairs
     $⟨identifier:type⟩$. It is used to keep track of what identifiers are bound
@@ -1981,10 +1985,12 @@ thanks
   cite:norell:thesis for that purpose. Here we present a simplification.
   {{{jan(pending.)}}}
 
-  {{{begindef}}} <<def:agda-check-module>> *Type checking a module*. We
-  understand by /type checking/ the process of checking that all terms in a
-  module are well-typed and respect the typing annotations. Below we describe
-  the process in detail.
+  {{{begindef}}} <<def:agda-check-module>> *Scoping and type checking a module*.
+  We understand by /scoping/ the process of implicitly assigning a context to
+  each part of the module. We understand by /type checking/ the process of
+  checking that all terms in a module are well-typed (in their corresponding
+  context) and respect the typing annotations. These processes are tightly tied
+  and thus we describe them together.
 
     # By respecting the
     # typing annotations we mean that if we have the following definition:
@@ -1996,8 +2002,12 @@ thanks
 
     It may be worth noticing that sometimes the annotation =x : A= may be
     redundant since the type of =t= can be automatically inferred to be =A= from
-    the rules. However, for simplicity we assume that the annotation is always
-    required.
+    the rules. Type inference is widely used in the real Agda language, however,
+    in this presentation we skip it for simplicity. We lightly touch the topic in
+    section {{{jan(???)}}}.
+
+    However, for simplicity we do not differentiate between type inference
+    and type checking. assume that the annotation is always required.
 
     The process of type-checking a module is as follows:
     1. At the beginning of a module we start with an empty context $Γ ≔ ∅$.
@@ -2057,7 +2067,16 @@ thanks
     {{{enddef}}}
 *** Normalization
 
-    We use $a,b,c,t$ to denote terms and $f$ to denote an identifier.
+    Normalization is refers to the process of simplifying or evaluating a term
+    via rewrite rules. The reader may be already acquainted with the
+    \textsc{$β$-reduction} rule, which is present in untyped lambda calculus,
+    the most basic form of lambda calculus. Here we present the mentioned rule
+    among others. We use the notation $t↓t'$ to say that term $t$ normalizes to
+    term $t'$. Normalization can happen in nested terms. For instance, if we
+    have that $t↓t'$ then $λ x→ t↓λx→t'$. Likewise for the other terms.
+
+    We use $a,b,c,t$ to denote arbitrary terms and $x,f$ to denote arbitrary
+    identifiers.
    #+caption: Normalization rules for terms.
    #+name: fig:normalization
    #+attr_latex: :float
@@ -2065,9 +2084,60 @@ thanks
     \begin{mathpar}
     \inferrule[$β$-reduction]{\ }{(λ x → t)\ a↓t[x↦a] } \and
     \inferrule[Transitivity]{a↓b \\ b↓c }{a↓c} \and
-    \inferrule[Def]{f=t∈Δ  }{Δ⊢f↓t}
+    \inferrule[Definition]{f=t∈Δ  }{Δ⊢f↓t}
+    \\
+    \inferrule[Match]{a↓b \\ ∃^{min}i.match(pᵢ,b)=σ  }{Δ⊢λ\ \{p₁→t₁;…;pₙ→tₙ\}\ a↓σ(tᵢ)}
     \end{mathpar}
     \end{figure}
+
+    Here we define the partial function $match$, which takes a pattern and a
+    term and returns (maybe) a substitution. We represent a substitution by a
+    set of pairs of the form $⟨x↦t⟩$, which means ``replace identifier $x$ by
+    term $t$''. Keep in mind that a pattern does not contain repeated
+    identifiers, so the result (if it succeeds) of $match$ is a proper function.
+    \begin{flalign*}
+    &match(x, t)≔ \{⟨x↦t⟩\} \\
+    &match(\_, t)≔ ∅ \\
+    &match(c\ p₁\ …\ pₙ, c'\ t₁\ …\ tₙ)≔ \begin{cases}
+             ⋃_i(match(pᵢ,tᵢ)) & \text{if $c=c'$ and all recursive calls succed;}  \\
+             \text{fail} & \text{otherwise.}\end{cases}
+    \end{flalign*}
+
+    Some examples for the \textsc{$β$-reduction} rule:
+    \begin{flalign*}
+    &λ y → (λx→x)\ y ↓ λ y → y & \\
+    &(λx→x)\ a ↓ a &
+    \end{flalign*}
+    To see examples for the \textsc{Match} rule assume we have the following
+    definition in scope:
+    #+begin_example
+    data Nat : Set 0 where
+      zero : Nat
+      suc : Nat → Nat
+
+    plus : Nat → Nat → Nat
+    plus = λ { zero → (λ b → b); (suc a) → (λ b → suc (plus a b) ) }
+    #+end_example
+    Then see that the term =plus zero= normalizes to the identity function:
+    \begin{flalign*}
+    &plus\ zero↓λ b → b &
+    \end{flalign*}
+
+    As another example, see that the term =plus (suc zero)= normalizes to =λ b →
+    suc b=. We present this example step by step.
+    \begin{flalign*}
+    plus\ (suc\ zero)&↓ &\textsc{Def}
+    \\ λ\ \{ zero → (λ b → b);\ (suc\ a) → (λ b → suc\ (plus\ a\ b) )\}\ (suc\ zero)& ↓ & \textsc{Match}
+    \\ λ b → suc\ (plus\ zero\ b) &↓ & \textsc{Def}
+    \\ λ b → suc\ ((λ b' → b')\ b) &↓ &\textsc{$β$-reduction}
+    \\ λ b → suc\ b
+    \end{flalign*}
+
+
+
+
+*** A note on pattern matching
+*** Syntax sugar
 
 ** BHK interpretation of propositional logic
   Agda is based on an intuitionistic type theory with dependent types that
