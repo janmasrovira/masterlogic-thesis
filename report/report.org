@@ -1666,18 +1666,18 @@ thanks
   workings of Agda, as this falls out of the scope of this project. The original
   author of Agda, Ulf Norell, has suggested[fn::In correspondence via email.]
   cite:cockx2018elaborating as a good reference for that purpose.
-
-** Basic introduction to types
+** Introduction to types
    what are types? give historical context.
 ** Basic Agda
    In this section we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
    is an incomplete simplification and thus is not meant to be a precise
    reference for the real Agda language. We comment on some of the
-   simplifications in section ???.
+   simplifications in Section [[sec:agda-limitations]].
 
    We introduce several concepts that have cyclic dependencies and thus a linear
    presentation is not possible. {{{jan(write something to help the reader.)}}}
+   To ease a first reading we summarize the concepts presented in this section.
 
    {{{begindef}}} *Identifier*. An identifier is a sequence of characters which
    do not contain any white space or parentheses (normal =()= or curly ={}=) and
@@ -1904,9 +1904,11 @@ thanks
 *** Contexts, and typing rules
     <<sec:typing-rules>>
 
-    {{{begindef}}} *Context*. A context is a (finite) set of pairs
-    $⟨identifier:type⟩$. It is used to keep track of what identifiers are bound
-    and what is their type.
+    {{{begindef}}} *Context*. A context is a pair of (finite) sets $⟨Τ,Δ⟩$. The
+    set $Τ$ consists of pairs $⟨identifier:type⟩$. It is used to keep track of
+    what identifiers are bound and what is their type. The set $Δ$ consists of
+    pairs $⟨identifier=term⟩$ which are the identifiers which have been assigned
+    a term through a function definition.
 
     In order to simplify things we assume that there is no /shadowing/, which
     means that an identifier which is already bound in the current context
@@ -1916,7 +1918,9 @@ thanks
     identifiers to De Bruijn indices (cite:de1972lambda), which guarantee this
     assumption.
 
-    *Notation*. We use $Γ;t:A$ as short for $Γ∪\{⟨t:A⟩\}$.
+    *Notation*. We refer to contexts by a single letter, thus if $Γ=⟨Τ,Δ⟩$ we
+    abuse notation and write $a:t∈Γ$ instead of $⟨a:t⟩∈Τ$ and $a=t∈Γ$ instead of
+    $⟨a=t⟩∈Δ$. Also, we use $Γ;t:A$ as short for $⟨Τ ∪\{⟨t:A⟩\},Δ⟩$.
     {{{enddef}}}
 
     {{{begindef}}} <<def:agda-well-typed>> *Well-typed term*. We say that a term
@@ -1948,7 +1952,7 @@ thanks
    \\
    \inferrule[Pattern abstraction]{\text{Let } \overline{D}≔D\ x₁\ …\ xₙ\ t₁\ …\ tₙ \\\\
      Γ⊢_{Ρ}p₁:\overline{D} \\ … \\  Γ⊢_{Ρ}pₙ:\overline{D} \\\\
-     Γ∪τ(Γ,\overline{D},p₁)⊢ s₁:B \\ … \\ Γ∪τ(Γ,\overline{D},pₙ)⊢ sₙ:B}
+     Γ∪τ(Γ,\overline{D},p₁)⊢ s₁:B \\ … \\ Γ∪τ(Γ,\overline{D},pₙ)⊢ sₙ:B} \\\\
      {Γ⊢λ\ \{p₁ →s₁;\ …\ ;\ pₙ→sₙ\}:(x:\overline{D})→B}
    \end{mathpar}
    \end{figure}
@@ -1980,10 +1984,10 @@ thanks
 
   Absurd pattern {{{jan(TODO)}}}.
 
-  The precise typing rule for the lambda abstraction with patterns falls out
-  of the scope of this thesis. We ask the reader to refer to Chapter 2 of
-  cite:norell:thesis for that purpose. Here we present a simplification.
-  {{{jan(pending.)}}}
+  # The precise typing rule for the lambda abstraction with patterns falls out
+  # of the scope of this thesis. We ask the reader to refer to Chapter 2 of
+  # cite:norell:thesis for that purpose. Here we present a simplification.
+  # {{{jan(pending.)}}}
 
   {{{begindef}}} <<def:agda-check-module>> *Scoping and type checking a module*.
   We understand by /scoping/ the process of implicitly assigning a context to
@@ -2066,14 +2070,26 @@ thanks
             and continue to step 2 with context $Γ''$.
     {{{enddef}}}
 *** Normalization
+    <<sec:agda-normalization>> Normalization is refers to the process of
+    simplifying or evaluating a term via rewrite rules. The reader may be
+    already acquainted with the \textsc{$β$-reduction} rule, which is present in
+    untyped lambda calculus, the most basic form of lambda calculus. Here we
+    present the mentioned rule among others. We use the notation $Δ⊢_Nt↓t'$ to
+    say that term $t$ normalizes to term $t'$ in context $Δ$. We extend the
+    definition of context to also contain all the pairs $⟨identifier=term⟩$
+    which are defined in a function definition above in the module. To be more
+    precise, now a context consists of two sets: One contains the typing
+    relations $⟨identifier:term⟩$ and the other contains the binding relations
+    $⟨identifier=term⟩$.
 
-    Normalization is refers to the process of simplifying or evaluating a term
-    via rewrite rules. The reader may be already acquainted with the
-    \textsc{$β$-reduction} rule, which is present in untyped lambda calculus,
-    the most basic form of lambda calculus. Here we present the mentioned rule
-    among others. We use the notation $t↓t'$ to say that term $t$ normalizes to
-    term $t'$. Normalization can happen in nested terms. For instance, if we
-    have that $t↓t'$ then $λ x→ t↓λx→t'$. Likewise for the other terms.
+    Normalization can happen in nested terms. For instance, if we have that
+    $t↓t'$ then $λ x→ t↓λx→t'$. Likewise for the other kinds of terms.
+
+    In the rule \textsc{Match} we use the notation $∃^{min}i$ to mean that in
+    case there exist multiple values for $i$ such that the function
+    $match(pᵢ,b)$ succeeds and returns a substitution $σ$, then we must take the
+    minimum of such \text{$i$s}. In other words, we check patterns in order and
+    we use the first that succeeds.
 
     We use $a,b,c,t$ to denote arbitrary terms and $x,f$ to denote arbitrary
     identifiers.
@@ -2082,18 +2098,18 @@ thanks
    #+attr_latex: :float
     \begin{figure}[H]
     \begin{mathpar}
-    \inferrule[$β$-reduction]{\ }{(λ x → t)\ a↓t[x↦a] } \and
-    \inferrule[Transitivity]{a↓b \\ b↓c }{a↓c} \and
-    \inferrule[Definition]{f=t∈Δ  }{Δ⊢f↓t}
+    \inferrule[$β$-reduction]{\ }{Δ⊢_N(λ x → t)\ a↓t[x↦a] } \and
+    \inferrule[Transitivity]{Δ⊢_Na↓b \\ Δ⊢_Nb↓c }{Δ⊢_Na↓c} \and
+    \inferrule[Definition]{f=t∈Δ  }{Δ⊢_Nf↓t}
     \\
-    \inferrule[Match]{a↓b \\ ∃^{min}i.match(pᵢ,b)=σ  }{Δ⊢λ\ \{p₁→t₁;…;pₙ→tₙ\}\ a↓σ(tᵢ)}
+    \inferrule[Match]{Δ⊢_Na↓b \\ ∃^{min}i.match(pᵢ,b)=σ  }{Δ⊢_Nλ\ \{p₁→t₁;…;pₙ→tₙ\}\ a↓σ(tᵢ)}
     \end{mathpar}
     \end{figure}
 
     Here we define the partial function $match$, which takes a pattern and a
-    term and returns (maybe) a substitution. We represent a substitution by a
-    set of pairs of the form $⟨x↦t⟩$, which means ``replace identifier $x$ by
-    term $t$''. Keep in mind that a pattern does not contain repeated
+    term, then either fails or returns a substitution. We represent a substitution
+    by a set of pairs of the form $⟨x↦t⟩$, which means ``replace identifier $x$
+    by term $t$''. Keep in mind that a pattern does not contain repeated
     identifiers, so the result (if it succeeds) of $match$ is a proper function.
     \begin{flalign*}
     &match(x, t)≔ \{⟨x↦t⟩\} \\
@@ -2134,858 +2150,950 @@ thanks
     \end{flalign*}
 
 
+    {{{begintheorem}}}
+    Normalization is type-preserving.
+    \begin{figure}[H]
+    \begin{mathpar}
+    \inferrule[]{Γ⊢_N t↓t' \\ Γ⊢t:A }{Γ⊢t':A }
+    \end{mathpar}
+    \end{figure}
+    {{{endtheorem}}}
+    {{{beginproof}}}
+    By an easy proof by induction.
+    {{{endproof}}}
+
+*** Totality
+    In order to be a sound system, Agda requires all of its terms to be
+    total. Thus, it needs to assure that:
+    1. Every lambda abstraction with pattern matching of the form =λ {p₁ → A₁; …
+       ; pₙ → Aₙ}= must have a set of exhaustive patterns =p₁=, …, =pₙ=. For
+       instance if we have the following:
+       #+begin_example
+       data Bool : Set 0 where
+         true : Bool
+         false : Bool
+
+       wrong : (b : Bool) → Bool
+       wrong = λ { true → true }
+       #+end_example
+       Then the definition of =wrong= is rejected since it does not have the
+       =false= pattern. The coverage algorithm (the algorithm which checks
+       the exhaustivity of patterns) is described in
+       cite:norell:thesis.
+    2. All recursive calls are non-problematic. In other words, there are no
+       infinite loops.
 
 
-*** A note on pattern matching
+*** Limitations
+    <<sec:agda-limitations>>
+    As mentioned at the beginning of this section we did not give a complete
+    presentation of the language due to its complexity. Moreover, we had to
+    simplify some of the concepts presented. Here we comment on those
+    simplifications.
+
+**** Pattern matching on indexed datatypes
+     The typing rules given in section [[sec:typing-rules]] are not enough to
+     sensibly deal with datatypes which have indices.
+
+     Consider the following example:
+     #+begin_example
+     data Bool : Set 0 where
+       true : Bool
+       false : Bool
+
+     data IsTrue : (b : Bool) → Set 0 where
+       is-true : IsTrue true
+
+     data IsFalse : (b : Bool) → Set 0 where
+       is-false : IsFalse false
+
+     not : (b : Bool) → Bool
+     not = λ {true → false; false → true}
+     #+end_example
+     We see that we have the usual definition of =Bool=. We also an indexed
+     datatype called =IsTrue=. Observe that it has a single constructor called
+     =is-true= which gives a term of type =IsTrue true=. Since =is-true= is
+     the only constructor it is impossible to build a term of type =IsTrue
+     false=. After this we have a dual definition called =IsFalse=. Then we have
+     the definition of the =not= function with the expected definition.
+
+     We expect that we should be able to prove that if have a term =b : Bool=
+     and a term of type =IsTrue b= we should be able to give a term of type
+     =IsFalse (not b)=. We represent this property with the following type:
+     #+begin_example
+     property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
+     #+end_example
+     Giving a term of this type can be done in real Agda as follows:
+     #+begin_example
+     property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
+     property = λ b → λ { is-true → is-false }
+     #+end_example
+     Unfortunately, giving a term of this type is not possible with the typing
+     rules that we gave. To see this, consider the context $Γ$ at the =?= site.
+     #+begin_example
+     property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
+     property = λ b → λ p → ?
+     #+end_example
+     We have $b:Bool∈Γ$ and $p : IsTrue\ b ∈Γ$.
+
+     See the Chapter 2 of cite:norell:thesis for an overview of how pattern
+     matching works in real Agda.
+
+     Consider the context at =?= and name it $Γ$.
+
+       1. Absurd patterns
+       2. Unreachable patterns
+       3. Universes
 *** Syntax sugar
 
-** BHK interpretation of propositional logic
-  Agda is based on an intuitionistic type theory with dependent types that
-  extends Per Martin-Löf's type theory (cite:martin1984intuitionistic).
-  {{{joost(Really\, who are you writing for? I guess we can assume that all
-  professor (and thus\, intended readers) know what intuitionistic logic is.
-  However\, ML type theory and dependent types need explanation. So this sentence
-  is in need of some more context\, pointers and or explanation.)}}} Agda's
-  constructive nature suggests that a fitting way start the introduction is
-  through the BHK interpretation of intuitionistic logic
-  (cite:sep-intuitionistic-logic-development). We start with propositional logic
-  and later on (Section [[sec:bhk-fol]]) we continue with first order logic.
+** Agda tutorial
+*** BHK interpretation of propositional logic
+   Agda is based on an intuitionistic type theory with dependent types that
+   extends Per Martin-Löf's type theory (cite:martin1984intuitionistic).
+   {{{joost(Really\, who are you writing for? I guess we can assume that all
+   professor (and thus\, intended readers) know what intuitionistic logic is.
+   However\, ML type theory and dependent types need explanation. So this sentence
+   is in need of some more context\, pointers and or explanation.)}}} Agda's
+   constructive nature suggests that a fitting way start the introduction is
+   through the BHK interpretation of intuitionistic logic
+   (cite:sep-intuitionistic-logic-development). We start with propositional logic
+   and later on (Section [[sec:bhk-fol]]) we continue with first order logic.
 
-  The BHK interpretation states that:
-  1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of $A$
-     into a proof of $B$;
-  2. A proof of $A∧B$ is a proof of $A$ and a proof of $B$;
-  3. A proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we commit to
-     and according to that, a proof of $A$ or a proof of $B$;
-  4. Nothing is a proof of $⊥$;
-  5. $⊤$ is always true and provable.
+   The BHK interpretation states that:
+   1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of $A$
+      into a proof of $B$;
+   2. A proof of $A∧B$ is a proof of $A$ and a proof of $B$;
+   3. A proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we commit to
+      and according to that, a proof of $A$ or a proof of $B$;
+   4. Nothing is a proof of $⊥$;
+   5. $⊤$ is always true and provable.
 
-  According to the BHK interpretation a proof of $A→A$ is an algorithm
-  implementing the identity function. We can express this algorithm in Agda by
-  writing the identity lambda term {{{joost(So this is exactly why one
-  other student missed a lot of points. I know that the formal language of Agda
-  (what is that called?) is very extensive. However\, you should formally specify
-  your language or at least chunks of it. What are your symbols\, constructors\,
-  etc. Reading conventions\, etc. It is BAD PRACTICE to have the reader distil
-  this from the practice\, text\, examples and context. I know many introductions
-  to type theory and proof assistants get this actually wrong. Please\, be more
-  precise and formal. Part of your assignment is showing that you have learned
-  this competence in our master. What are the terms? How are they inductively
-  defined? What is your alphabet\, etc.)}}}:
-  #+begin_src text
-  λ a → a
-  #+end_src
-  {{{joost(full stop?)}}} {{{jan(I prefer not to put stops since they are not
-  part of Agda's syntax and it may be confusing to insert them.)}}} See that we
-  use the structure =λ arg₁ arg₂ … → term= to define lambda functions. The
-  previous term is valid. However, in Agda we must give a name to all the terms
-  that we define so we can refer to them in other parts of our code. We will
-  name our term =id=:
-  #+begin_src text
-  id = λ a → a
-  #+end_src
-  When the term that we are defining is a lambda term, we are allowed to move
-  the arguments to the left of the === sign. Furthermore, we should write the
-  type {{{joost(what are types? Where do they historically come from? How are
-  types defined in Agda? Again\, provide a formal definition of correct
-  types)}}} of the function using the =:= symbol. The =:= symbol denotes the
-  typing relation{{{joost(a relation between wellformed types and wellformed
-  terms?)}}}, hence =a : A= reads as ``term =a= has type =A=''. Sometimes we
-  also say that ``the term =a= is a proof of =A=''.
-  #+begin_src text
-  id : A → A
-  id a = a
-  #+end_src
-  {{{joost(How to parse the last line? Maybe say that we write ”id a” instead of
-  id(a) and that function application goes before =. Do we have both
-  term-equality and type equality? What about equality?)}}} The previous
-  function is only valid if the type =A= has been defined. Since our intention
-  is that it {{{joost(what?)}}} should work for any type, we should rewrite it
-  to be polymorphic {{{joost(ou cannot expect the reader to know what
-  polymorphism is. This should be properly introduced. I would encourage you to
-  rethink the setup of this chapter. You will be judged on your ability to apply
-  logical techniques to exposing a field and clearly transmit ideas and concepts
-  using crystal-clear definitions. Your current exposition is too informal and
-  along the way. If I were in the jury – which I will– I would be annoyed by
-  it.)}}}. We can do that by declaring a type variable =A=. We can do this by
-  adding an extra argument of the form =(A : Set)=. We see that =A= has type
-  =Set=, which is the Agda word for type {{{joost(The new reader will be lost
-  here. So we have concrete types? And we have type variables of type type? Does
-  Set itself have a type? Please\, rethink your presentation.)}}}. Named
-  arguments can be referenced in the right part of the =→=, thus we can write
-  {{{joost((mention right-associativity of the arrow (is it called as
-  such?)))}}}:
-  #+begin_src text
-  id : (A : Set) → A → A
-  id A a = a
-  #+end_src
-  Since the argument named =A= will always be the type of the second argument
-  {{{joost(second argument of what? of the polymorphic identity? Will the
-  polymorphic version receive the same name?)}}}, we can infer its value and
-  thus it is recommended to use an implicit argument (see Section
-  [[sec:agda-implicit-args]]).
-  #+begin_src text
-  id : {A : Set} → A → A
-  id a = a
-  #+end_src
-  {{{joost(the reader should be dizzy here: we have defined id using a lambda
-  term\, then there are some schemes that follow the format (i deduce\, if
-  correct this must be made explicit) type declaration\, term definition. Can we
-  all give them the same name? Or should we understand that we erase the
-  previous definition and replace it with a new one?)}}} With the technicalities
-  out of the way, we can finally say that we have completed our first Agda proof
-  of $A→A$ according to the BHK interpretation by implementing and typing the
-  identity function in Agda. {{{joost(What does it mean to have a proof in
-  Agda? Note that A to A is a type.... Be precise please. It may be a good place
-  to mention the Curry Howard iso? Anyways\, do it in a structured fashion.)}}}
-
-  Let us see another example involving functions[fn::The =→= function symbol has
-  right associativity.].
-  #+begin_src text
-  commute : {A B C : Set} → (A → B → C) → B → A → C
-  commute f b a = f a b
-  #+end_src
-  We see that =commute= has three arguments, namely =f : A → B → C=, =b : B= and
-  =a : A=. Then in the right hand side of the === sign we have =f a b=, which
-  should read as ``term =f= applied to =a= and =b='' {{{joost(It is good to
-  recall this and I would leave it here. But, there should be another structure
-  of this section. Maybe something like: basic ideas (what are types, terms,
-  etc.), syntax, reading conventions (left associativity of application, right
-  associativity of implication/abstraction), computation, etc.)}}}. Notice how
-  function application is denoted by simple juxtaposition.
-
-  Let us now put our attention on proofs that revolve around conjunction. For
-  instance, let us prove that $A∧ B → B ∧ A$. {{{joost(Again\, you mean 𝐴 ∧ 𝐵 → 𝐵
-  ∧ 𝐴 as proposition? Or as type? What does it mean to prove something in
-  Agda?)}}} In order to represent $A∧B$ in Agda we need to define a so called
-  /product type/. A product type is in rough terms the type of a tuple. Consider
-  the following pair definition:
-  #+begin_src text
-data _×_ (A B : Set) : Set where
-  _,_ : A → B → A × B
-  #+end_src
-  {{{joost(Help\, what is this syntax? What is the iterated ”:” supposed to
-  mean? Is ”data” part of predefined syntax? Or is it a name? What about the
-  bars? So\, we are now seeing something new? This is no longer of the format
-  ”type declaration\, term definition of the corresponding type”? We are
-  defining new types? So this is another functionality of Agda? What of the
-  things exposed here form part of the type constructors? We classic logicians
-  get lost by so much computer science implicitness.)}}} This definition defines
-  a new datatype {{{joost(help\, Help\, HELP\, HEEEELLP!!!!! All of a sudden
-  there are datatypes? So\, they are different from types?)}}}called =_×_= with
-  parameters =(A B : Set)=. Datatypes with parameters are called parameterized
-  datatypes. Parameters are shared among all constructors {{{joost(What does
-  this sentence mean?)}}} . It has a single constructor named =_,_=. Underscores
-  are used to denote infix operators. We see that the type of the constructor
-  =_,_= is =A → B → A × B=. {{{joost(So underscore times underscore A B is the
-  same as A times B?)}}} This tells us that =_,_= is a constructor that takes an
-  argument of type =A= (or a proof of =A=), an argument of type =B= and then
-  returns a term of type =A × B=. A constructor is a special kind of function
-  {{{joost(from types to types?)}}} that is used to build terms of their
-  corresponding datatype. When we /pattern match/ (or deconstruct) a term we
-  will have a case for each possible constructor of the type of that term.
-
-  Let us give a proof of the theorem $A∧ B → B ∧ A$:
-  #+begin_src text
-  swap : {A B : Set} → A × B → B × A
-  swap (a , b) = b , a
-  #+end_src
-  {{{joost(Why are there parenthesis on the left of the equality sign and not on
-  the right?)}}} Note that we used pattern matching to deconstruct the term and
-  access the components of the pair. For the =_×_= type we only have one
-  constructor so we only need one case.
-  # Refer to Section [[sec:agda-datatype]] for more details on data type definition
-  # and pattern matching.
-
-  Let us show some more examples:
-  #+begin_src text
-  p1 : {A B : Set} → A → B → A × B
-  p1 a b = a , b
-
-  p2 : {A B : Set} → A × B → A
-  p2 (a , b) = a
-
-  p3 : {A B C : Set} → (A → B → C) → (A × B) → C
-  p3 f (a , b) = f a b
-
-  p4 : {A B C : Set} → ((A × B) × C) → (A × (B × C))
-  p4 ((a , b) , c) = a , (b , c)
-  #+end_src
-  {{{joost(maybe you can give informative names to the defined terms? Like
-  ”Currying” for p1\, ”Projection” for p2? etc. Why are there parenthesis in p2
-  but not in p1? Also\, in p3 and p4 one could have added parenthesis. Say when
-  we may omit them.)}}} Now that we are familiarized with conjunction and
-  product types we can proceed by exploring disjunction. In order to express
-  options we can define a new datatype called sum type thus:
-  #+begin_src text
-data _⊎_ (A B : Set) : Set where
-  inj₁ : A → A ⊎ B
-  inj₂ : B → A ⊎ B
-  #+end_src
-  We see that the main difference with respect to the pair type is that now we
-  have two constructors {{{joost(I think you can somewhere include a general
-  discussion on constructors. What are they\, what do they? What is their syntax
-  and use?)}}} which we named =inj₁= and =inj₂=. The constructor =inj₁= is used
-  to build a proof of =A ⊎ B= by providing a proof of =A=. The constructor
-  =inj₂= builds a proof of =A ⊎ B= given a proof of =B=.
-
-  Since we have two constructors, when pattern matching against an argument of
-  this type we will need to define two cases (if we want to access its
-  contents). See as an example the following theorems {{{joost(theorems? who
-  heard theorems? what are theorems?)}}}:
-  #+begin_src text
-  p1: {A B : Set} → A ⊎ B → B ⊎ A
-  p1 (inj₁ a) = inj₂ a
-  p1 (inj₂ b) = inj₁ b
-
-  p2 : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
-  p2 (inj₁ a) f g = f a
-  p2 (inj₂ b) f g = g b
-  #+end_src
-  {{{joost(Note that you have already defined p1 and p2. Are you overwriting
-  them?)}}} The reader may have raised the following question in their mind:
-  what if we leave out a case for the sum type? {{{joost(What do you mean? In
-  defining a term for a non-inhabited type I guess\, but that is not clear from
-  what you write.)}}} In other words, is the following definition acceptable?
-  #+begin_src text
-  wrong : {A B : Set} → A ⊎ B → A
-  wrong : (inj₁ a) = a
-  #+end_src
-  The answer is no. Agda rejects it as it requires all of the definitions to be
-  exhaustive, otherwise it would not be a sound system.
-
-  We proceed with $⊥$. We can define a datatype which we call /bottom type/ or
-  /empty type/.
-  #+begin_src text
-  data ⊥ : Set where
-  #+end_src
-  Notice that =⊥= has no constructors and hence it is impossible to construct a
-  term with type =⊥=. The bottom type is specially useful to define negation,
-  which we define in the following way:
-  #+begin_src text
-  ¬ : Set → Set
-  ¬ A = A → ⊥
-  #+end_src
-  The principle of explosion {{{joost(Allauakbar\, what is this principle?)}}}
-  can be trivially proved as shown below. Agda uses =()= to denote the empty or
-  impossible pattern.
-  #+begin_src text
-  explosion : {A : Set} → ⊥ → A
-  explosion ()
-  #+end_src
-  {{{joost(I feel I need some extra explanation here. So explosion () is a term
-  of type A. Where is that A reflected in the term? Should explosion not have two
-  arguments here?)}}} Since the =⊥= type has no constructors, we get the empty
-  pattern when pattern matching against the argument of type =⊥=.
-
-  As we are in an intuitionistic logic the following properties are not
-  provable[fn::See that we use the symbol =¬= in the name of the term =¬¬elim=.
-  Here the =¬= symbol is just part of the name and serves the same purpose of
-  any other character. Hence it is important to note that =¬a= (just a name with
-  the =¬= character) is different from =¬ a= (the negation of =a=).]:
-  #+begin_src text
-  ¬¬elim : {A : Set} → ¬ (¬ A) → A
-  ¬¬elim = ?             -- not provable
-
-  excluded-middle : {A : Set} → A ⊎ (¬ A)
-  excluded-middle = ?    -- not provable
-  #+end_src
-  However, we can show that $¬¬¬A→¬A$:
-  #+begin_src text
-  ¬¬¬elim : {A : Set} → ¬ (¬ (¬ A)) → ¬ A
-  ¬¬¬elim ¬¬¬a a = ¬¬¬a (λ ¬a → ¬a a)
-  #+end_src
-  It might help the reader to see that =¬ (¬ (¬ A)) → ¬ A = (((A → ⊥) → ⊥) → ⊥)
-  → A → ⊥=. {{{joost(Give the reader some more explanation. What is the lambda
-  doing there? How does this work? Maybe compare it with a proof in ND (natural
-  deduction) of the corresponding proposition?)}}}
-
-  Some more examples:
-  #+begin_src text
-  p1 : {A B : Set} A → ¬ A → B
-  p1 a ¬a = explosion (¬a a)
-  #+end_src
-  {{{joost(Are we overwriting p1 again? Again\, how do we see that explosion
-  generates something of type B?)}}}
-
-  We finally climb to the $⊤$ by defining a datatype which we call the
-  /unit type/.
-  #+begin_src text
-  data ⊤ : Set where
-    tt : ⊤
-  #+end_src
-  We see that this type has a single constructor (=tt=) with no parameters, hence there
-  only exists one term with this type, namely =tt=. Some examples:
-  #+begin_src text
-  ⊤⊤ : ⊤ × ⊤
-  ⊤⊤ = tt , tt
-
-  ¬¬⊤ : ¬ (¬ ⊤)
-  ¬¬⊤ ¬⊤ = ¬⊤ tt
-  #+end_src
-  {{{joost(What is the purpose of those examples? Make that clear: we prove
-  theorems about Top here)}}} This concludes the first part of the introduction.
-
-** Booleans and case analysis
-   <<sec:agda-bool>> The /true or false/ concept is ubiquitous in computer
-   science and in logic. In this section we show how we can define a datatype
-   that represents this dichotomy and we give a small introduction to
-   case analysis through pattern matching.
-
-   In Agda we can define the =Bool= type in a similar fashion to the
-   disjunction type we defined before.
+   According to the BHK interpretation a proof of $A→A$ is an algorithm
+   implementing the identity function. We can express this algorithm in Agda by
+   writing the identity lambda term {{{joost(So this is exactly why one
+   other student missed a lot of points. I know that the formal language of Agda
+   (what is that called?) is very extensive. However\, you should formally specify
+   your language or at least chunks of it. What are your symbols\, constructors\,
+   etc. Reading conventions\, etc. It is BAD PRACTICE to have the reader distil
+   this from the practice\, text\, examples and context. I know many introductions
+   to type theory and proof assistants get this actually wrong. Please\, be more
+   precise and formal. Part of your assignment is showing that you have learned
+   this competence in our master. What are the terms? How are they inductively
+   defined? What is your alphabet\, etc.)}}}:
    #+begin_src text
-   data Bool : Set where
-     true : Bool
-     false : Bool
+   λ a → a
    #+end_src
-   As a simple example, see how we can define the =not= and =and= Boolean
-   operators using pattern matching:
+   {{{joost(full stop?)}}} {{{jan(I prefer not to put stops since they are not
+   part of Agda's syntax and it may be confusing to insert them.)}}} See that we
+   use the structure =λ arg₁ arg₂ … → term= to define lambda functions. The
+   previous term is valid. However, in Agda we must give a name to all the terms
+   that we define so we can refer to them in other parts of our code. We will
+   name our term =id=:
    #+begin_src text
-   not : Bool → Bool
-   not false = true
-   not true = false
-
-   and : Bool → Bool → Bool
-   and false b = false
-   and true b = b
+   id = λ a → a
    #+end_src
-   We proceed by defining equality for the =Bool= type[fn::This definition is
-   just for illustrative purposes. It is possible to define polymorphic equality
-   as described in Section [[sec:agda-equality]].]. We use the symbol
-   =≡= because === is reserved for Agda.
+   When the term that we are defining is a lambda term, we are allowed to move
+   the arguments to the left of the === sign. Furthermore, we should write the
+   type {{{joost(what are types? Where do they historically come from? How are
+   types defined in Agda? Again\, provide a formal definition of correct
+   types)}}} of the function using the =:= symbol. The =:= symbol denotes the
+   typing relation{{{joost(a relation between wellformed types and wellformed
+   terms?)}}}, hence =a : A= reads as ``term =a= has type =A=''. Sometimes we
+   also say that ``the term =a= is a proof of =A=''.
    #+begin_src text
-data _≡_ : Bool → Bool → Set where
-  t≡t : true ≡ true
-  f≡f : false ≡ false
-   #+end_src
-   We see that the type of =_≡_= is =Bool → Bool → Set=. We say that =_≡_= is an
-   /indexed datatype/, in this case with two =Bool= indices. In contrast to
-   parameters (recall the definitions of =_×_= and =_⊎_=) which are shared among
-   all constructors, indices are specified on a constructor basis.
-
-   Let us prove the following property:
-   #+begin_src text
-   notnot : (b : Bool) → not (not b) ≡ b
-   notnot true = t≡t
-   notnot false = f≡f
-   #+end_src
-   There are a number of things that are worth mentioning. First, we see that we
-   refer to =b= on the returning result =not (not b) ≡ b=, which is possible in
-   virtue of dependent types. Then we see that we pattern match on =b= and thus
-   we need to fill out two cases. We could make an analogy with a hand written
-   proof by cases. The case split with pattern matching allows Agda to know via
-   /normalization/ that in the =true= case we must provide a term (proof) of
-   type =true ≡ true=, which we can provide using the =t≡t= constructor. We
-   proceed analogously in the =false= case. Agda normalizes the terms when
-   possible, for instance the term =not (not b)= is already normalized because
-   we cannot apply any rule. On the other hand the term =not (not true)= can be
-   normalized to =not false= and further normalized to =true= by using the
-   definition of =not=. For further information on normalization refer to
-   cite:norell:thesis. Another thing to notice is that we use the same
-   construction (i.e. an Agda function definition) to provide function definitions,
-   like =not=, and theorems, like =notnot=.
-
-   Pattern matching (case analysis) is ubiquitous in Agda, be it in definitions
-   or in proofs. We show some more examples below:
-   #+begin_src text
-   p1 : (b : Bool) → and false b ≡ false
-   p1 b = f≡f
-
-   p2 : (b : Bool) → and b false ≡ false
-   p2 true = f≡f
-   p2 false = f≡f
-   #+end_src
-   See that in the first case we did not need to do pattern matching while in
-   the second we had to. This is due to how the definition of =and= is written
-   which in our case performs pattern matching on the first argument.
-** Naturals and induction
-   <<sec:agda-nat>>
-   In this section we will have a look at the simplest possible recursive
-   structure, the natural numbers. In Agda natural numbers can be defined in the
-   following way:
-   #+begin_src
-   data Nat : Set where
-     zero : Nat
-     suc : Nat → Nat
-   #+end_src
-   The definition should be intuitive enough for the reader at this point. We
-   can represent the number $1$ with the term =suc zero=, the number $2$ with
-   =suc (suc zero)= and so on.
-
-   Let us continue by defining the equality relation for natural
-   numbers[fn::Agda does not allow overloading of symbols so we would need to
-   use a different name other than =_≡_= to avoid the clash with the equality relation
-   of Booleans that we defined before.].
-   #+begin_src text
-   data _≡_ : Nat → Nat → Set where
-     z≡z : zero ≡ zero
-     s≡s : {a b : Nat} → a ≡ b → suc a ≡ suc b
-   #+end_src
-   We see that it has a similar structure to the datatype for Boolean equality.
-   The only difference is that the =s≡s= constructor requires a proof of =a ≡ b=
-   as an argument. Let us show that every natural number is equal to itself.
-   #+begin_src text
-   refl : (n : Nat) → n ≡ n
-   refl zero = z≡z
-   refl (suc n) = s≡s (refl n)
-   #+end_src
-   We see that we pattern match on =n=, for the =zero= case we give the =z≡z=
-   constructor. For the =suc= case we need to provide a proof of =suc n ≡ suc
-   n=. By performing a recursive call with =n= as argument we get a proof of =n
-   ≡ n=, then we can use the constructor =s≡s= to build a term of type =suc n ≡
-   suc n=. It can be enlightening to observe that in a proof by induction, such
-   as the previous one, a recursive call plays the role of an induction
-   hypothesis.
-
-   An inexperienced Agda user might try the following:
-   #+begin_src text
-   refl' : (n : Nat) → n ≡ n
-   refl' zero = z≡z
-   refl' (suc n) = refl' (suc n)
-   #+end_src
-   While the types match we see that in the inductive case we perform a
-   recursive call on the same argument and thus we get an infinite loop. Agda
-   has a termination checker that rejects proofs where termination cannot be
-   assured and thus rejects the previous definition. We know that termination is
-   an undecidable problem hence it is inevitable that Agda will reject some
-   programs that in fact would always terminate. For more information on Agda's
-   termination checker refer to cite:norell:thesis,agda-doc.
-
-   We now define addition on natural numbers:
-   #+begin_src text
-   _+_ : Nat → Nat → Nat
-   zero + b = b
-   (suc a) + b = suc (a + b)
-   #+end_src
-
-   Proving associativity can be achieved by means of an inductive proof
-   following a similar structure as before. For the base case we use the =refl=
-   property proved above.
-   #+begin_src text
-assoc : (a b c : Nat) → (a + b) + c ≡ a + (b + c)
-assoc zero b c = refl (b + c)
-assoc (suc a) b c = s≡s (assoc a b c)
-   #+end_src
-
-   Consider the following example involving negation. Keep in mind that =¬ (n ≡
-   suc n) = n ≡ suc n → ⊥=.
-   #+begin_src text
-   p1 : (n : Nat) → ¬ (n ≡ suc n)
-   p1 zero ()
-   p1 (suc n) (s≡s x) = p1 n x
-   #+end_src
-   For the base case we have the impossible pattern because when =n = zero= the
-   second argument is supposed to have the type =zero ≡ suc zero= which is not
-   unifiable with any type of a constructor and thus we get the empty pattern.
-   For more information on Agda unification refer to cite:norell:thesis.
-
-   Finally, let us focus on proving commutativity of addition, which is a more
-   involved example. We first prove transitivity of equality, which is proved by
-   an easy induction.
-   #+begin_src text
-trans : {a b c : Nat} → a ≡ b → b ≡ c → a ≡ c
-trans z≡z z≡z = z≡z
-trans (s≡s x) (s≡s y) = s≡s (trans x y)
-   #+end_src
-   Notice how there are two missing cases, that is, =z≡z= with =s≡s= and vice
-   versa. We are allowed to do that because Agda was able to
-   detect the empty pattern. We could have also omitted the =p1 zero ()= case in
-   the theorem above.
-
-   We proceed by proving two lemmas by an easy induction:
-   #+begin_src text
-zero-r : (a : Nat) → a ≡ (a + zero)
-zero-r zero = z≡z
-zero-r (suc a) = s≡s (zero-r a)
-
-suc-r : (a b : Nat) → suc (a + b) ≡ (a + suc b)
-suc-r zero b = refl (suc b)
-suc-r (suc a) b = s≡s (suc-r a  b)
-   #+end_src
-
-   At last, we put all the pieces together to prove our theorem:
-   #+begin_src text
-+commut : (a b : Nat) → (a + b) ≡ (b + a)
-+commut zero b = zero-r b
-+commut (suc a) b = trans (s≡s (+commut a b)) (suc-r b a)
-   #+end_src
-   For the base case we must prove =0 + b ≡ b + 0= which normalizes to =b ≡ b +
-   0= and then we can use our =zero-r= lemma. For the inductive case we must
-   prove =suc a + b ≡ b + suc a= which normalizes to =suc (a + b) ≡ b + suc a=.
-   By IH we know that =a + b ≡ b + a= so by =s≡s= we get =suc (a + b) ≡ suc (b +
-   a)=. Then by our lemma =suc-r= we get =suc (b + a) ≡ b + suc a=. Finally by
-   transitivity we get the desired =suc (a + b) ≡ b + suc a=.
-
-   We hope that at this point the user has a grasp of how properties can be
-   proved in Agda.
-
-   # To summarize, we outline the usual course of action when we
-   # want to prove a theorem.
-   # 1. We define the datatypes and functions that represent our relations,
-   #    operators, assumptions and so on. Usually there are multiple
-   #    routes that we can take, and it is important to implement definitions in a
-   #    way that they are easy to work with.
-   # 2. We prove intermediary lemmas...
-   # 3. The type of a function can represent a mathematical proposition.
-   # 4. The term
-** Universe hierarchy
-   <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
-   For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
-   we have seen before, in a dependent type theory we are allowed to mix types
-   and terms, hence =Nat= is a term in itself and must be assigned a type. Agda
-   calls the type of (small) types =Set=, hence we have that =Nat= has type
-   =Set=. But then =Set= is also a term an must be assigned a type as well.
-   Could we have that the type of =Set= is =Set=? No. The first version of
-   Martin-Löf’s type theory (cite:martin-lof-1971a) had an axiom stating that
-   there is a type of all types and thus we would have that the type of =Set= is
-   =Set=. However Girard showed (cite:sep-type-theory-intuitionistic) that
-   having =Set : Set= allowed the Burali-Forti paradox[fn::The assumption that
-   there is a set of all ordinal numbers leads to a contradiction.] to be
-   encoded in the theory, and thus the relation =Set : Set= needs to be
-   rejected. In order to avoid such inconsistency Agda builds a hierarchy of
-   universes where small types such as =Nat= and =Bool= are assigned the type
-   =Set 0= and then for every $i∈ω$ we have that =Set i : Set i+1=. Notice
-   however, that =Set i : Set i+1= is true while =Set i : Set i+n= does not hold
-   for $n>1$. In Agda we write =Set= instead of =Set 0=. When the level is a
-   constant natural number we can also write =Set₁=, =Set₂=, etc. instead of
-   =Set 1=, =Set 2=, etc.
-
-   It is possible to combine types of different universe levels. The biggest type
-   is the one that counts. For instance:
-   #+begin_src text
-   function : Set₃ → Set₁ → Set₃
-   function A B = A → B
-   #+end_src
-   The typing rule is analogous for product and sum types.
-
-   Agda provides a primitive[fn::/primitive/ means that it is built in the
-   language and it cannot be defined by the user.] type for universe levels called
-   =Level=. Essentially it is the same as =Nat= (we have =lzero= for the base
-   level and =lsuc= for the successor level), but it is designed to work as a universe
-   index. Having the =Level= type allows us to write universe polymorphic
-   functions. See the same function as before, but now with universe
-   polymorphism.
-   #+begin_src text
-   function' : {a b : Level} → Set a → Set b → Set (a ⊔ b)
-   function' A B = A → B
-   #+end_src
-   The =_⊔_= operator is a primitive operator of type =Level → Level → Level=
-   that normalizes to the the maximum of its two operands.
-
-   Most of the functions that we have defined before should be rewritten to be
-   universe polymorphic if possible. For instance, we can now rewrite the
-   identity function thus:
-   #+begin_src text
-   id : {a : Level} {A : Set a} → A → A
+   id : A → A
    id a = a
    #+end_src
-
-   In the most recent version of Agda (2.6.1) there is an option to enable
-   /universe cumulativity/ (cite:agda-doc). This extension adds the typing rule
-   $Setᵢ:Setⱼ$ for $i<j$. Hence it allows us to write the following:
+   {{{joost(How to parse the last line? Maybe say that we write ”id a” instead of
+   id(a) and that function application goes before =. Do we have both
+   term-equality and type equality? What about equality?)}}} The previous
+   function is only valid if the type =A= has been defined. Since our intention
+   is that it {{{joost(what?)}}} should work for any type, we should rewrite it
+   to be polymorphic {{{joost(ou cannot expect the reader to know what
+   polymorphism is. This should be properly introduced. I would encourage you to
+   rethink the setup of this chapter. You will be judged on your ability to apply
+   logical techniques to exposing a field and clearly transmit ideas and concepts
+   using crystal-clear definitions. Your current exposition is too informal and
+   along the way. If I were in the jury – which I will– I would be annoyed by
+   it.)}}}. We can do that by declaring a type variable =A=. We can do this by
+   adding an extra argument of the form =(A : Set)=. We see that =A= has type
+   =Set=, which is the Agda word for type {{{joost(The new reader will be lost
+   here. So we have concrete types? And we have type variables of type type? Does
+   Set itself have a type? Please\, rethink your presentation.)}}}. Named
+   arguments can be referenced in the right part of the =→=, thus we can write
+   {{{joost((mention right-associativity of the arrow (is it called as
+   such?)))}}}:
    #+begin_src text
-   a : Set              -- always allowed
-   a = Nat
-   b : Set₁             -- only with cumulativity
-   b = Nat
-   c : {i : Level} → Set i    -- only with cumulativity
-   c = Nat
+   id : (A : Set) → A → A
+   id A a = a
    #+end_src
-   In our project we have not used this extension.
-
-** BHK interpretation of first order logic
-   <<sec:bhk-fol>>
-   <<sec:predicates>>
-
-   We extend the interpretation that we gave before to include the universal and
-   existential quantifiers (cite:sep-intuitionistic-logic-development):
-   1. A proof of $∀x.P(x)$ is a function that given an arbitrary element $c$ in
-      the domain, builds a proof that $c$ satisfies $P$.
-   2. A proof of $∃x.P(x)$ is a witness $c$ in the domain and a proof that $c$
-     satisfies $P$.
-   Before diving into quantifiers we first discuss how to represent relations in
-   Agda. Recall the equality relation for natural numbers =_≡_= that we defined
-   before. Its type is =Nat → Nat → Set=. Let us say that we want to define a
-   generic type =REL= for relations on any type. A first attempt could be:
-
+   Since the argument named =A= will always be the type of the second argument
+   {{{joost(second argument of what? of the polymorphic identity? Will the
+   polymorphic version receive the same name?)}}}, we can infer its value and
+   thus it is recommended to use an implicit argument (see Section
+   [[sec:agda-implicit-args]]).
    #+begin_src text
-REL : Set → Set → Set₁
-REL A B = A → B → Set
+   id : {A : Set} → A → A
+   id a = a
    #+end_src
+   {{{joost(the reader should be dizzy here: we have defined id using a lambda
+   term\, then there are some schemes that follow the format (i deduce\, if
+   correct this must be made explicit) type declaration\, term definition. Can we
+   all give them the same name? Or should we understand that we erase the
+   previous definition and replace it with a new one?)}}} With the technicalities
+   out of the way, we can finally say that we have completed our first Agda proof
+   of $A→A$ according to the BHK interpretation by implementing and typing the
+   identity function in Agda. {{{joost(What does it mean to have a proof in
+   Agda? Note that A to A is a type.... Be precise please. It may be a good place
+   to mention the Curry Howard iso? Anyways\, do it in a structured fashion.)}}}
 
-   This first definition is somewhat limited. Recall that =Set = Set 0=, thus we
-   restrict =A= and =B= to be small types, furthermore, we require the relation
-   to be a small type as well. If we make our =REL= definition universe
-   polymorphic it turns out like this.\glsadd{REL}
+   Let us see another example involving functions[fn::The =→= function symbol has
+   right associativity.].
    #+begin_src text
-REL : {a b : Level} → Set a → Set b → (ℓ : Level) → Set (a ⊔ b ⊔ lsuc ℓ)
-REL A B ℓ = A → B → Set ℓ
+   commute : {A B C : Set} → (A → B → C) → B → A → C
+   commute f b a = f a b
    #+end_src
-   This is the definition used in the Agda standard library (cite:agda-stdlib)
-   and is the one that we use in our project.
+   We see that =commute= has three arguments, namely =f : A → B → C=, =b : B= and
+   =a : A=. Then in the right hand side of the === sign we have =f a b=, which
+   should read as ``term =f= applied to =a= and =b='' {{{joost(It is good to
+   recall this and I would leave it here. But, there should be another structure
+   of this section. Maybe something like: basic ideas (what are types, terms,
+   etc.), syntax, reading conventions (left associativity of application, right
+   associativity of implication/abstraction), computation, etc.)}}}. Notice how
+   function application is denoted by simple juxtaposition.
 
-   For homogeneous relations we use the name =Rel=:\glsadd{Rel}
+   Let us now put our attention on proofs that revolve around conjunction. For
+   instance, let us prove that $A∧ B → B ∧ A$. {{{joost(Again\, you mean 𝐴 ∧ 𝐵 → 𝐵
+   ∧ 𝐴 as proposition? Or as type? What does it mean to prove something in
+   Agda?)}}} In order to represent $A∧B$ in Agda we need to define a so called
+   /product type/. A product type is in rough terms the type of a tuple. Consider
+   the following pair definition:
    #+begin_src text
-Rel : {a : Level} → Set a → (ℓ : Level) → Set (a ⊔ lsuc ℓ)
-Rel A ℓ = REL A A ℓ
+ data _×_ (A B : Set) : Set where
+   _,_ : A → B → A × B
    #+end_src
+   {{{joost(Help\, what is this syntax? What is the iterated ”:” supposed to
+   mean? Is ”data” part of predefined syntax? Or is it a name? What about the
+   bars? So\, we are now seeing something new? This is no longer of the format
+   ”type declaration\, term definition of the corresponding type”? We are
+   defining new types? So this is another functionality of Agda? What of the
+   things exposed here form part of the type constructors? We classic logicians
+   get lost by so much computer science implicitness.)}}} This definition defines
+   a new datatype {{{joost(help\, Help\, HELP\, HEEEELLP!!!!! All of a sudden
+   there are datatypes? So\, they are different from types?)}}}called =_×_= with
+   parameters =(A B : Set)=. Datatypes with parameters are called parameterized
+   datatypes. Parameters are shared among all constructors {{{joost(What does
+   this sentence mean?)}}} . It has a single constructor named =_,_=. Underscores
+   are used to denote infix operators. We see that the type of the constructor
+   =_,_= is =A → B → A × B=. {{{joost(So underscore times underscore A B is the
+   same as A times B?)}}} This tells us that =_,_= is a constructor that takes an
+   argument of type =A= (or a proof of =A=), an argument of type =B= and then
+   returns a term of type =A × B=. A constructor is a special kind of function
+   {{{joost(from types to types?)}}} that is used to build terms of their
+   corresponding datatype. When we /pattern match/ (or deconstruct) a term we
+   will have a case for each possible constructor of the type of that term.
 
-   By using these new definitions we could have defined the type of =_≡_= thus
-   (observe that =Rel Nat lzero= normalizes to =Nat → Nat → Set=):
+   Let us give a proof of the theorem $A∧ B → B ∧ A$:
    #+begin_src text
-   data _≡_ : Rel Nat lzero where
-     ... -- same as before
+   swap : {A B : Set} → A × B → B × A
+   swap (a , b) = b , a
    #+end_src
+   {{{joost(Why are there parenthesis on the left of the equality sign and not on
+   the right?)}}} Note that we used pattern matching to deconstruct the term and
+   access the components of the pair. For the =_×_= type we only have one
+   constructor so we only need one case.
+   # Refer to Section [[sec:agda-datatype]] for more details on data type definition
+   # and pattern matching.
 
-   \glsadd{Pred}
-   In a similar way we can define predicates:
+   Let us show some more examples:
    #+begin_src text
-   Pred : {a : Level} → Set a → (ℓ : Level) → Set (a ⊔ lsuc ℓ)
-   Pred A ℓ = A → Set ℓ
-   #+end_src
+   p1 : {A B : Set} → A → B → A × B
+   p1 a b = a , b
 
-   We proceed by giving a representation of the universal quantifier:
-   #+begin_src text
-data ∀[_] {a ℓ : Level} (A : Set a) (P : Pred A ℓ) : Set (a ⊔ ℓ) where
-  proof∀ : ((a : A) → P a) → ∀[ A ] P
-   #+end_src
-   The definition is straightforward. In fact this datatype is just a wrapper
-   for a function of type =(a : A) → P a=.
+   p2 : {A B : Set} → A × B → A
+   p2 (a , b) = a
 
-   For instance, let us prove that every successor of a natural number is
-   different than zero:
-   #+begin_src text
-aux : (n : Nat) → ¬ (suc n ≡ zero)
-aux n ()
+   p3 : {A B C : Set} → (A → B → C) → (A × B) → C
+   p3 f (a , b) = f a b
 
-s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
-s≠z = proof∀ aux
+   p4 : {A B C : Set} → ((A × B) × C) → (A × (B × C))
+   p4 ((a , b) , c) = a , (b , c)
    #+end_src
-   Alternatively we could have written a shorter version that does not use an
-   auxiliary lemma.
+   {{{joost(maybe you can give informative names to the defined terms? Like
+   ”Currying” for p1\, ”Projection” for p2? etc. Why are there parenthesis in p2
+   but not in p1? Also\, in p3 and p4 one could have added parenthesis. Say when
+   we may omit them.)}}} Now that we are familiarized with conjunction and
+   product types we can proceed by exploring disjunction. In order to express
+   options we can define a new datatype called sum type thus:
    #+begin_src text
-s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
-s≠z = proof∀ λ {n ()}
+ data _⊎_ (A B : Set) : Set where
+   inj₁ : A → A ⊎ B
+   inj₂ : B → A ⊎ B
    #+end_src
-   Proving \text{$∀$-elimination} (if $∀x.P(x)$ and $c$ is in the domain then
-   $P(c)$) is straightforward:
-   #+begin_src text
-   ∀-elim : {a ℓ : Level} {A : Set a} {P : Pred A ℓ} → ∀[ A ] P → (a : A) → P a
-   ∀-elim (proof∀ f) a = f a
-   #+end_src
+   We see that the main difference with respect to the pair type is that now we
+   have two constructors {{{joost(I think you can somewhere include a general
+   discussion on constructors. What are they\, what do they? What is their syntax
+   and use?)}}} which we named =inj₁= and =inj₂=. The constructor =inj₁= is used
+   to build a proof of =A ⊎ B= by providing a proof of =A=. The constructor
+   =inj₂= builds a proof of =A ⊎ B= given a proof of =B=.
 
-   We now move on to the existential quantifier. Recall that according to the
-   BHK interpretation a proof $∃x.P(x)$ is an element $c$ of the domain and a
-   proof that $P(c)$. The first plan could be to use the pair type we defined
-   before to contain the needed elements. We repeat the definition here:
+   Since we have two constructors, when pattern matching against an argument of
+   this type we will need to define two cases (if we want to access its
+   contents). See as an example the following theorems {{{joost(theorems? who
+   heard theorems? what are theorems?)}}}:
    #+begin_src text
-data _×_ (A B : Set) : Set where
-  _,_ : A → B → A × B
-   #+end_src
-   The problem is that the type of the second component, =B=, is independent of
-   the first component and thus we cannot express what we need. Here is where
-   the $Σ$ type (or \gls*{dependent-pair}) comes into play. A
-   dependent pair is a structure where the type of the second component depends
-   on the value of the first component. This concept is defined by the following
-   datatype.
-   #+begin_src text
-data Σ {ℓ ℓ' : Level} (A : Set ℓ) (B : A → Set ℓ') : Set (ℓ ⊔ ℓ') where
-  _,_ : (a : A) → B a → Σ A B
-   #+end_src
-   Proving \text{$∃$-introduction} is trivial:
-   #+begin_src
-   ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
-     → (a : A) → P a → Σ A P
-   ∃-intro a p = a , p
-   #+end_src
-   We now show that $∀x(P(x))⇒¬∃x(¬P(x))$.
-   #+begin_src text
-   p1 : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
-     → ∀[ A ] P → ¬ (Σ A (λ x → ¬ (P x)))
-   p1 (proof∀ f) (c , b) = b (f c)
-   #+end_src
-   Our goal is to give a term of type =⊥=. We have that =f= has type =(a : A) →
-   P a= so =f c= has type =P c=, then =b= has type =¬ (P c)= which is the same
-   as =P c → ⊥=, thus by applying =b= to =(f c)= we get a term of type =⊥=.
+   p1: {A B : Set} → A ⊎ B → B ⊎ A
+   p1 (inj₁ a) = inj₂ a
+   p1 (inj₂ b) = inj₁ b
 
-   Of course, as we are in an intuitionistic logic we cannot show
-   the other direction, namely $¬∃x(¬P(x))⇒∀x(P(x))$.
-
-   *A note on syntax*. The reader may find the $Σ$ syntax a bit too different
-   from the usual existential notation: $∃x(Px)$. We can fix that thanks to
-   Agda's syntax versatility. Agda provides a tool to define custom syntax.
-   Below we show how we can use that tool to improve the syntax of $Σ$ pairs. We
-   will not go into more detail since this feature is of shallow mathematical
-   interest.
-   #+begin_src text
-Σ-syntax : {ℓ ℓ' : Level} → (A : Set ℓ) → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
-Σ-syntax = Σ
-syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
+   p2 : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
+   p2 (inj₁ a) f g = f a
+   p2 (inj₂ b) f g = g b
    #+end_src
-   With this syntax enhancement we can replace =Σ A (λ c → P c)= by =Σ[ c ∈ A ] (P c)=.
-   The previous theorem becomes:
+   {{{joost(Note that you have already defined p1 and p2. Are you overwriting
+   them?)}}} The reader may have raised the following question in their mind:
+   what if we leave out a case for the sum type? {{{joost(What do you mean? In
+   defining a term for a non-inhabited type I guess\, but that is not clear from
+   what you write.)}}} In other words, is the following definition acceptable?
    #+begin_src text
-   ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
-     → (a : A) → P a → Σ[ c ∈ A ] (P c)
+   wrong : {A B : Set} → A ⊎ B → A
+   wrong : (inj₁ a) = a
    #+end_src
-   There is a variation of this notation which omits the type of the variable as
-   it can be inferred in many cases. That is, instead of =Σ[ c ∈ A ] (P c)= we
-   would have =∃[ c ] (P c)=. We prefer this notation when possible in the
-   project[fn::For instance, in the definition of Veltman semantics in Section
-   [[sec:agda-ord-semantics]].]. See again the =∃-intro= theorem type using this
-   notation:
+   The answer is no. Agda rejects it as it requires all of the definitions to be
+   exhaustive, otherwise it would not be a sound system.
+
+   We proceed with $⊥$. We can define a datatype which we call /bottom type/ or
+   /empty type/.
    #+begin_src text
-   ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
-     → (a : A) → P a → ∃[ c ] (P c)
+   data ⊥ : Set where
    #+end_src
-
-** Equality
-   <<sec:agda-equality>>
-
-   In Sections [[sec:agda-nat]] and [[sec:agda-bool]] we have seen how we can define
-   equality for Booleans and naturals. In this section we explore polymorphic
-   equality and some of its properties and limitations. Of course, the main
-   advantage of polymorphic equality is that we can use it for every type and
-   thus there is no need to redefine it for every new datatype that we
-   define.
-
-   Below we present a slight simplification of polymorphic equality as defined in
-   cite:agda-stdlib.
-   #+begin_example
-data _≡_ {a : Level} {A : Set a} (x : A) : A → Set a where
-  refl : x ≡ x
-   #+end_example
-
-   It may help the reader to read the following description of the polymorphic
-   equality datatype defined above taken from cite:plfa2019: For any type =A=
-   and for any =x= of type =A=, the constructor =refl= provides evidence that =x
-   ≡ x=. Hence, every value is equal to itself, and we have no other way of
-   showing values equal. The definition features an asymmetry, in that the first
-   argument to =_≡_= is given by the parameter =x : A=, while the second is
-   given by an index in =A → Set a=. The first argument to =_≡_= can be a
-   parameter because it does not vary, while the second must be an index, so it
-   can be required to be equal to the first.
-
-   It is easy to see that equality is a reflexive relation.
+   Notice that =⊥= has no constructors and hence it is impossible to construct a
+   term with type =⊥=. The bottom type is specially useful to define negation,
+   which we define in the following way:
    #+begin_src text
-reflexive : {ℓ : Level} {A : Set ℓ} {a : A} → a ≡ a
-reflexive = refl
+   ¬ : Set → Set
+   ¬ A = A → ⊥
    #+end_src
-   We can also show that it is symmetric.
+   The principle of explosion {{{joost(Allauakbar\, what is this principle?)}}}
+   can be trivially proved as shown below. Agda uses =()= to denote the empty or
+   impossible pattern.
    #+begin_src text
-symmetric : {ℓ : Level} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
-symmetric a≡b = ?
+   explosion : {A : Set} → ⊥ → A
+   explosion ()
    #+end_src
-   The argument =a≡b= has type =a ≡ b= and our goal is to give a term of type =b
-   ≡ a=. However, the only way to give a term of type =b ≡ a= is by unifying =a=
-   and =b= since we only have the =refl= constructor. We achieve that by pattern
-   matching against the argument =a≡b=. Then the goal becomes =a ≡ a= and we can
-   use the =refl= constructor.
-   #+begin_src text
-symmetric : {ℓ : Level} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
-symmetric refl = refl
-   #+end_src
-   We can prove transitivity in an analogous way.
-   #+begin_src text
-transitivity : {ℓ : Level} {A : Set ℓ} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
-transitivity refl refl = refl
-   #+end_src
-   We can also show that if =x ≡ y= then for any =f= we have =f x ≡ f y=.
-   #+begin_src text
-cong : {ℓA ℓB : Level} {A : Set ℓA} {B : Set ℓB} {x y : A}
-  → (f : A → B) → x ≡ y → f x ≡ f y
-cong f refl = refl
-   #+end_src
+   {{{joost(I feel I need some extra explanation here. So explosion () is a term
+   of type A. Where is that A reflected in the term? Should explosion not have two
+   arguments here?)}}} Since the =⊥= type has no constructors, we get the empty
+   pattern when pattern matching against the argument of type =⊥=.
 
-   We now see that this new equality datatype is equivalent to the previously
-   defined equality for naturals. To avoid a name clash, we redefine equality
-   for naturals with the =_ℕ≡_= symbol. We also rename reflexivity for =_ℕ≡_=
-   as =ℕrefl=.
+   As we are in an intuitionistic logic the following properties are not
+   provable[fn::See that we use the symbol =¬= in the name of the term =¬¬elim=.
+   Here the =¬= symbol is just part of the name and serves the same purpose of
+   any other character. Hence it is important to note that =¬a= (just a name with
+   the =¬= character) is different from =¬ a= (the negation of =a=).]:
    #+begin_src text
-   data _ℕ≡_ : Nat → Nat → Set where
-     z≡z : zero ℕ≡ zero
-     s≡s : {a b : Nat} → a ℕ≡ b → suc a ℕ≡ suc b
+   ¬¬elim : {A : Set} → ¬ (¬ A) → A
+   ¬¬elim = ?             -- not provable
 
-   ℕrefl : (n : Nat) → n ℕ≡ n
-   ℕrefl zero = z≡z
-   ℕrefl (suc n) = s≡s (ℕrefl n)
+   excluded-middle : {A : Set} → A ⊎ (¬ A)
+   excluded-middle = ?    -- not provable
    #+end_src
-   We show that the new equality implies the old equality.
-   #+begin_example
-   ≡→ℕ≡ : {a b : Nat} → a ≡ b → a ℕ≡ b
-   ≡→ℕ≡ {a} refl = ℕrefl a
-   #+end_example
-   We see that the old equality implies the new equality.
-   #+begin_example
-   ℕ≡→≡ : {a b : Nat} → a ℕ≡ b → a ≡ b
-   ℕ≡→≡ z=z = refl
-   ℕ≡→≡ (s=s aℕ≡b) = cong suc (ℕ≡→≡ aℕ≡b)
-   #+end_example
-
-   See Section [[sec:agda-ext]] for a note on extensionality.
-** Predicates as mathematical sets
-   <<sec:sets>>
-   In this section when we say /set/ we refer to a subset of an Agda type. The
-   most natural way to represent subsets in Agda is to use predicates. See
-   [[sec:predicates]] for an introduction. A predicate represents the characteristic
-   function of the associated subset. For instance consider the predicate:
+   However, we can show that $¬¬¬A→¬A$:
    #+begin_src text
-   Pos : Pred Nat lzero
-   Pos n = ¬ (n ≡ 0)
+   ¬¬¬elim : {A : Set} → ¬ (¬ (¬ A)) → ¬ A
+   ¬¬¬elim ¬¬¬a a = ¬¬¬a (λ ¬a → ¬a a)
    #+end_src
-   It represents the subset of strictly positive natural numbers.
+   It might help the reader to see that =¬ (¬ (¬ A)) → ¬ A = (((A → ⊥) → ⊥) → ⊥)
+   → A → ⊥=. {{{joost(Give the reader some more explanation. What is the lambda
+   doing there? How does this work? Maybe compare it with a proof in ND (natural
+   deduction) of the corresponding proposition?)}}}
 
-   We proceed by defining the usual concepts related to mathematical sets. In
-   order to make the types less verbose we assume that we already have =A : Set
-   ℓ= in scope.
-    1. \boxed{∈} A proof of membership is a simple function application.
-       #+begin_src text
-       _∈_ : REL A (Pred A)
-       a ∈ X = X a
-       #+end_src
-       This definition is mostly superfluous but it helps to have a syntax closer
-       to regular mathematics.
-    2. \boxed{∉} A proof of non membership is function from a proof of membership to =⊥=.
-       #+begin_src text
-       _∉_ : REL A (Pred A)
-       a ∉ X = ¬ (a ∈ X)
-       #+end_src
-    3. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
-       membership to =X= to a proof of membership to =Y=.
-       #+begin_example
-       _⊆_ : Rel (Pred A)
-       X ⊆ Y = ∀ {x} → x ∈ X → x ∈ Y
-       #+end_example
-    4. \boxed{∩} We use pairs to represent the intersection. Each component is a
-       proof of membership to =X= and =Y= respectively.
-       #+begin_src text
-       _∩_ : Pred A → Pred A → Pred A
-       X ∩ Y = λ x → x ∈ X × x ∈ Y
-       #+end_src
-    5. \boxed{∪} We use a sum type to represent the union.
-       #+begin_src text
-       _∪_ : Pred A → Pred A → Pred A
-       X ∪ Y = λ x → x ∈ X ⊎ x ∈ Y
-       #+end_src
-    6. \boxed{∅}
-       The empty set is represented by a characteristic constant function to =⊥=.
-       #+begin_src text
-       ∅ : Pred A
-       ∅ = λ x → ⊥
-       #+end_src
-    7. \boxed{𝟏}
-       Similarly, the universe set is represented by a characteristic constant function to =⊤=.
-       #+begin_src text
-       U : Pred A
-       U = λ x → ⊤
-       #+end_src
-    8. \(\boxed{\{x\}}\) A singleton set is defined using equality (assuming we
-       have equality defined for that type).
-       #+begin_example
-       ｛_｝ : A → Pred A
-       ｛ x ｝ = λ y → x ≡ y
-       #+end_example
+   Some more examples:
+   #+begin_src text
+   p1 : {A B : Set} A → ¬ A → B
+   p1 a ¬a = explosion (¬a a)
+   #+end_src
+   {{{joost(Are we overwriting p1 again? Again\, how do we see that explosion
+   generates something of type B?)}}}
+
+   We finally climb to the $⊤$ by defining a datatype which we call the
+   /unit type/.
+   #+begin_src text
+   data ⊤ : Set where
+     tt : ⊤
+   #+end_src
+   We see that this type has a single constructor (=tt=) with no parameters, hence there
+   only exists one term with this type, namely =tt=. Some examples:
+   #+begin_src text
+   ⊤⊤ : ⊤ × ⊤
+   ⊤⊤ = tt , tt
+
+   ¬¬⊤ : ¬ (¬ ⊤)
+   ¬¬⊤ ¬⊤ = ¬⊤ tt
+   #+end_src
+   {{{joost(What is the purpose of those examples? Make that clear: we prove
+   theorems about Top here)}}} This concludes the first part of the introduction.
+
+*** Booleans and case analysis
+    <<sec:agda-bool>> The /true or false/ concept is ubiquitous in computer
+    science and in logic. In this section we show how we can define a datatype
+    that represents this dichotomy and we give a small introduction to
+    case analysis through pattern matching.
+
+    In Agda we can define the =Bool= type in a similar fashion to the
+    disjunction type we defined before.
+    #+begin_src text
+    data Bool : Set where
+      true : Bool
+      false : Bool
+    #+end_src
+    As a simple example, see how we can define the =not= and =and= Boolean
+    operators using pattern matching:
+    #+begin_src text
+    not : Bool → Bool
+    not false = true
+    not true = false
+
+    and : Bool → Bool → Bool
+    and false b = false
+    and true b = b
+    #+end_src
+    We proceed by defining equality for the =Bool= type[fn::This definition is
+    just for illustrative purposes. It is possible to define polymorphic equality
+    as described in Section [[sec:agda-equality]].]. We use the symbol
+    =≡= because === is reserved for Agda.
+    #+begin_src text
+ data _≡_ : Bool → Bool → Set where
+   t≡t : true ≡ true
+   f≡f : false ≡ false
+    #+end_src
+    We see that the type of =_≡_= is =Bool → Bool → Set=. We say that =_≡_= is an
+    /indexed datatype/, in this case with two =Bool= indices. In contrast to
+    parameters (recall the definitions of =_×_= and =_⊎_=) which are shared among
+    all constructors, indices are specified on a constructor basis.
+
+    Let us prove the following property:
+    #+begin_src text
+    notnot : (b : Bool) → not (not b) ≡ b
+    notnot true = t≡t
+    notnot false = f≡f
+    #+end_src
+    There are a number of things that are worth mentioning. First, we see that we
+    refer to =b= on the returning result =not (not b) ≡ b=, which is possible in
+    virtue of dependent types. Then we see that we pattern match on =b= and thus
+    we need to fill out two cases. We could make an analogy with a hand written
+    proof by cases. The case split with pattern matching allows Agda to know via
+    /normalization/ that in the =true= case we must provide a term (proof) of
+    type =true ≡ true=, which we can provide using the =t≡t= constructor. We
+    proceed analogously in the =false= case. Agda normalizes the terms when
+    possible, for instance the term =not (not b)= is already normalized because
+    we cannot apply any rule. On the other hand the term =not (not true)= can be
+    normalized to =not false= and further normalized to =true= by using the
+    definition of =not=. For further information on normalization refer to
+    cite:norell:thesis. Another thing to notice is that we use the same
+    construction (i.e. an Agda function definition) to provide function definitions,
+    like =not=, and theorems, like =notnot=.
+
+    Pattern matching (case analysis) is ubiquitous in Agda, be it in definitions
+    or in proofs. We show some more examples below:
+    #+begin_src text
+    p1 : (b : Bool) → and false b ≡ false
+    p1 b = f≡f
+
+    p2 : (b : Bool) → and b false ≡ false
+    p2 true = f≡f
+    p2 false = f≡f
+    #+end_src
+    See that in the first case we did not need to do pattern matching while in
+    the second we had to. This is due to how the definition of =and= is written
+    which in our case performs pattern matching on the first argument.
+*** Naturals and induction
+    <<sec:agda-nat>>
+    In this section we will have a look at the simplest possible recursive
+    structure, the natural numbers. In Agda natural numbers can be defined in the
+    following way:
+    #+begin_src
+    data Nat : Set where
+      zero : Nat
+      suc : Nat → Nat
+    #+end_src
+    The definition should be intuitive enough for the reader at this point. We
+    can represent the number $1$ with the term =suc zero=, the number $2$ with
+    =suc (suc zero)= and so on.
+
+    Let us continue by defining the equality relation for natural
+    numbers[fn::Agda does not allow overloading of symbols so we would need to
+    use a different name other than =_≡_= to avoid the clash with the equality relation
+    of Booleans that we defined before.].
+    #+begin_src text
+    data _≡_ : Nat → Nat → Set where
+      z≡z : zero ≡ zero
+      s≡s : {a b : Nat} → a ≡ b → suc a ≡ suc b
+    #+end_src
+    We see that it has a similar structure to the datatype for Boolean equality.
+    The only difference is that the =s≡s= constructor requires a proof of =a ≡ b=
+    as an argument. Let us show that every natural number is equal to itself.
+    #+begin_src text
+    refl : (n : Nat) → n ≡ n
+    refl zero = z≡z
+    refl (suc n) = s≡s (refl n)
+    #+end_src
+    We see that we pattern match on =n=, for the =zero= case we give the =z≡z=
+    constructor. For the =suc= case we need to provide a proof of =suc n ≡ suc
+    n=. By performing a recursive call with =n= as argument we get a proof of =n
+    ≡ n=, then we can use the constructor =s≡s= to build a term of type =suc n ≡
+    suc n=. It can be enlightening to observe that in a proof by induction, such
+    as the previous one, a recursive call plays the role of an induction
+    hypothesis.
+
+    An inexperienced Agda user might try the following:
+    #+begin_src text
+    refl' : (n : Nat) → n ≡ n
+    refl' zero = z≡z
+    refl' (suc n) = refl' (suc n)
+    #+end_src
+    While the types match we see that in the inductive case we perform a
+    recursive call on the same argument and thus we get an infinite loop. Agda
+    has a termination checker that rejects proofs where termination cannot be
+    assured and thus rejects the previous definition. We know that termination is
+    an undecidable problem hence it is inevitable that Agda will reject some
+    programs that in fact would always terminate. For more information on Agda's
+    termination checker refer to cite:norell:thesis,agda-doc.
+
+    We now define addition on natural numbers:
+    #+begin_src text
+    _+_ : Nat → Nat → Nat
+    zero + b = b
+    (suc a) + b = suc (a + b)
+    #+end_src
+
+    Proving associativity can be achieved by means of an inductive proof
+    following a similar structure as before. For the base case we use the =refl=
+    property proved above.
+    #+begin_src text
+ assoc : (a b c : Nat) → (a + b) + c ≡ a + (b + c)
+ assoc zero b c = refl (b + c)
+ assoc (suc a) b c = s≡s (assoc a b c)
+    #+end_src
+
+    Consider the following example involving negation. Keep in mind that =¬ (n ≡
+    suc n) = n ≡ suc n → ⊥=.
+    #+begin_src text
+    p1 : (n : Nat) → ¬ (n ≡ suc n)
+    p1 zero ()
+    p1 (suc n) (s≡s x) = p1 n x
+    #+end_src
+    For the base case we have the impossible pattern because when =n = zero= the
+    second argument is supposed to have the type =zero ≡ suc zero= which is not
+    unifiable with any type of a constructor and thus we get the empty pattern.
+    For more information on Agda unification refer to cite:norell:thesis.
+
+    Finally, let us focus on proving commutativity of addition, which is a more
+    involved example. We first prove transitivity of equality, which is proved by
+    an easy induction.
+    #+begin_src text
+ trans : {a b c : Nat} → a ≡ b → b ≡ c → a ≡ c
+ trans z≡z z≡z = z≡z
+ trans (s≡s x) (s≡s y) = s≡s (trans x y)
+    #+end_src
+    Notice how there are two missing cases, that is, =z≡z= with =s≡s= and vice
+    versa. We are allowed to do that because Agda was able to
+    detect the empty pattern. We could have also omitted the =p1 zero ()= case in
+    the theorem above.
+
+    We proceed by proving two lemmas by an easy induction:
+    #+begin_src text
+ zero-r : (a : Nat) → a ≡ (a + zero)
+ zero-r zero = z≡z
+ zero-r (suc a) = s≡s (zero-r a)
+
+ suc-r : (a b : Nat) → suc (a + b) ≡ (a + suc b)
+ suc-r zero b = refl (suc b)
+ suc-r (suc a) b = s≡s (suc-r a  b)
+    #+end_src
+
+    At last, we put all the pieces together to prove our theorem:
+    #+begin_src text
+ +commut : (a b : Nat) → (a + b) ≡ (b + a)
+ +commut zero b = zero-r b
+ +commut (suc a) b = trans (s≡s (+commut a b)) (suc-r b a)
+    #+end_src
+    For the base case we must prove =0 + b ≡ b + 0= which normalizes to =b ≡ b +
+    0= and then we can use our =zero-r= lemma. For the inductive case we must
+    prove =suc a + b ≡ b + suc a= which normalizes to =suc (a + b) ≡ b + suc a=.
+    By IH we know that =a + b ≡ b + a= so by =s≡s= we get =suc (a + b) ≡ suc (b +
+    a)=. Then by our lemma =suc-r= we get =suc (b + a) ≡ b + suc a=. Finally by
+    transitivity we get the desired =suc (a + b) ≡ b + suc a=.
+
+    We hope that at this point the user has a grasp of how properties can be
+    proved in Agda.
+
+    # To summarize, we outline the usual course of action when we
+    # want to prove a theorem.
+    # 1. We define the datatypes and functions that represent our relations,
+    #    operators, assumptions and so on. Usually there are multiple
+    #    routes that we can take, and it is important to implement definitions in a
+    #    way that they are easy to work with.
+    # 2. We prove intermediary lemmas...
+    # 3. The type of a function can represent a mathematical proposition.
+    # 4. The term
+*** Universe hierarchy
+    <<sec:universe-hierarchy>> In Agda every well-typed term is assigned a type.
+    For instance, the type of =true= is =Bool= and the type of =0= is =Nat=. As
+    we have seen before, in a dependent type theory we are allowed to mix types
+    and terms, hence =Nat= is a term in itself and must be assigned a type. Agda
+    calls the type of (small) types =Set=, hence we have that =Nat= has type
+    =Set=. But then =Set= is also a term an must be assigned a type as well.
+    Could we have that the type of =Set= is =Set=? No. The first version of
+    Martin-Löf’s type theory (cite:martin-lof-1971a) had an axiom stating that
+    there is a type of all types and thus we would have that the type of =Set= is
+    =Set=. However Girard showed (cite:sep-type-theory-intuitionistic) that
+    having =Set : Set= allowed the Burali-Forti paradox[fn::The assumption that
+    there is a set of all ordinal numbers leads to a contradiction.] to be
+    encoded in the theory, and thus the relation =Set : Set= needs to be
+    rejected. In order to avoid such inconsistency Agda builds a hierarchy of
+    universes where small types such as =Nat= and =Bool= are assigned the type
+    =Set 0= and then for every $i∈ω$ we have that =Set i : Set i+1=. Notice
+    however, that =Set i : Set i+1= is true while =Set i : Set i+n= does not hold
+    for $n>1$. In Agda we write =Set= instead of =Set 0=. When the level is a
+    constant natural number we can also write =Set₁=, =Set₂=, etc. instead of
+    =Set 1=, =Set 2=, etc.
+
+    It is possible to combine types of different universe levels. The biggest type
+    is the one that counts. For instance:
+    #+begin_src text
+    function : Set₃ → Set₁ → Set₃
+    function A B = A → B
+    #+end_src
+    The typing rule is analogous for product and sum types.
+
+    Agda provides a primitive[fn::/primitive/ means that it is built in the
+    language and it cannot be defined by the user.] type for universe levels called
+    =Level=. Essentially it is the same as =Nat= (we have =lzero= for the base
+    level and =lsuc= for the successor level), but it is designed to work as a universe
+    index. Having the =Level= type allows us to write universe polymorphic
+    functions. See the same function as before, but now with universe
+    polymorphism.
+    #+begin_src text
+    function' : {a b : Level} → Set a → Set b → Set (a ⊔ b)
+    function' A B = A → B
+    #+end_src
+    The =_⊔_= operator is a primitive operator of type =Level → Level → Level=
+    that normalizes to the the maximum of its two operands.
+
+    Most of the functions that we have defined before should be rewritten to be
+    universe polymorphic if possible. For instance, we can now rewrite the
+    identity function thus:
+    #+begin_src text
+    id : {a : Level} {A : Set a} → A → A
+    id a = a
+    #+end_src
+
+    In the most recent version of Agda (2.6.1) there is an option to enable
+    /universe cumulativity/ (cite:agda-doc). This extension adds the typing rule
+    $Setᵢ:Setⱼ$ for $i<j$. Hence it allows us to write the following:
+    #+begin_src text
+    a : Set              -- always allowed
+    a = Nat
+    b : Set₁             -- only with cumulativity
+    b = Nat
+    c : {i : Level} → Set i    -- only with cumulativity
+    c = Nat
+    #+end_src
+    In our project we have not used this extension.
+
+*** BHK interpretation of first order logic
+    <<sec:bhk-fol>>
+    <<sec:predicates>>
+
+    We extend the interpretation that we gave before to include the universal and
+    existential quantifiers (cite:sep-intuitionistic-logic-development):
+    1. A proof of $∀x.P(x)$ is a function that given an arbitrary element $c$ in
+       the domain, builds a proof that $c$ satisfies $P$.
+    2. A proof of $∃x.P(x)$ is a witness $c$ in the domain and a proof that $c$
+      satisfies $P$.
+    Before diving into quantifiers we first discuss how to represent relations in
+    Agda. Recall the equality relation for natural numbers =_≡_= that we defined
+    before. Its type is =Nat → Nat → Set=. Let us say that we want to define a
+    generic type =REL= for relations on any type. A first attempt could be:
+
+    #+begin_src text
+ REL : Set → Set → Set₁
+ REL A B = A → B → Set
+    #+end_src
+
+    This first definition is somewhat limited. Recall that =Set = Set 0=, thus we
+    restrict =A= and =B= to be small types, furthermore, we require the relation
+    to be a small type as well. If we make our =REL= definition universe
+    polymorphic it turns out like this.\glsadd{REL}
+    #+begin_src text
+ REL : {a b : Level} → Set a → Set b → (ℓ : Level) → Set (a ⊔ b ⊔ lsuc ℓ)
+ REL A B ℓ = A → B → Set ℓ
+    #+end_src
+    This is the definition used in the Agda standard library (cite:agda-stdlib)
+    and is the one that we use in our project.
+
+    For homogeneous relations we use the name =Rel=:\glsadd{Rel}
+    #+begin_src text
+ Rel : {a : Level} → Set a → (ℓ : Level) → Set (a ⊔ lsuc ℓ)
+ Rel A ℓ = REL A A ℓ
+    #+end_src
+
+    By using these new definitions we could have defined the type of =_≡_= thus
+    (observe that =Rel Nat lzero= normalizes to =Nat → Nat → Set=):
+    #+begin_src text
+    data _≡_ : Rel Nat lzero where
+      ... -- same as before
+    #+end_src
+
+    \glsadd{Pred}
+    In a similar way we can define predicates:
+    #+begin_src text
+    Pred : {a : Level} → Set a → (ℓ : Level) → Set (a ⊔ lsuc ℓ)
+    Pred A ℓ = A → Set ℓ
+    #+end_src
+
+    We proceed by giving a representation of the universal quantifier:
+    #+begin_src text
+ data ∀[_] {a ℓ : Level} (A : Set a) (P : Pred A ℓ) : Set (a ⊔ ℓ) where
+   proof∀ : ((a : A) → P a) → ∀[ A ] P
+    #+end_src
+    The definition is straightforward. In fact this datatype is just a wrapper
+    for a function of type =(a : A) → P a=.
+
+    For instance, let us prove that every successor of a natural number is
+    different than zero:
+    #+begin_src text
+ aux : (n : Nat) → ¬ (suc n ≡ zero)
+ aux n ()
+
+ s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
+ s≠z = proof∀ aux
+    #+end_src
+    Alternatively we could have written a shorter version that does not use an
+    auxiliary lemma.
+    #+begin_src text
+ s≠z : ∀[ Nat ] (λ n → ¬ (suc n ≡ zero))
+ s≠z = proof∀ λ {n ()}
+    #+end_src
+    Proving \text{$∀$-elimination} (if $∀x.P(x)$ and $c$ is in the domain then
+    $P(c)$) is straightforward:
+    #+begin_src text
+    ∀-elim : {a ℓ : Level} {A : Set a} {P : Pred A ℓ} → ∀[ A ] P → (a : A) → P a
+    ∀-elim (proof∀ f) a = f a
+    #+end_src
+
+    We now move on to the existential quantifier. Recall that according to the
+    BHK interpretation a proof $∃x.P(x)$ is an element $c$ of the domain and a
+    proof that $P(c)$. The first plan could be to use the pair type we defined
+    before to contain the needed elements. We repeat the definition here:
+    #+begin_src text
+ data _×_ (A B : Set) : Set where
+   _,_ : A → B → A × B
+    #+end_src
+    The problem is that the type of the second component, =B=, is independent of
+    the first component and thus we cannot express what we need. Here is where
+    the $Σ$ type (or \gls*{dependent-pair}) comes into play. A
+    dependent pair is a structure where the type of the second component depends
+    on the value of the first component. This concept is defined by the following
+    datatype.
+    #+begin_src text
+ data Σ {ℓ ℓ' : Level} (A : Set ℓ) (B : A → Set ℓ') : Set (ℓ ⊔ ℓ') where
+   _,_ : (a : A) → B a → Σ A B
+    #+end_src
+    Proving \text{$∃$-introduction} is trivial:
+    #+begin_src
+    ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
+      → (a : A) → P a → Σ A P
+    ∃-intro a p = a , p
+    #+end_src
+    We now show that $∀x(P(x))⇒¬∃x(¬P(x))$.
+    #+begin_src text
+    p1 : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
+      → ∀[ A ] P → ¬ (Σ A (λ x → ¬ (P x)))
+    p1 (proof∀ f) (c , b) = b (f c)
+    #+end_src
+    Our goal is to give a term of type =⊥=. We have that =f= has type =(a : A) →
+    P a= so =f c= has type =P c=, then =b= has type =¬ (P c)= which is the same
+    as =P c → ⊥=, thus by applying =b= to =(f c)= we get a term of type =⊥=.
+
+    Of course, as we are in an intuitionistic logic we cannot show
+    the other direction, namely $¬∃x(¬P(x))⇒∀x(P(x))$.
+
+    *A note on syntax*. The reader may find the $Σ$ syntax a bit too different
+    from the usual existential notation: $∃x(Px)$. We can fix that thanks to
+    Agda's syntax versatility. Agda provides a tool to define custom syntax.
+    Below we show how we can use that tool to improve the syntax of $Σ$ pairs. We
+    will not go into more detail since this feature is of shallow mathematical
+    interest.
+    #+begin_src text
+ Σ-syntax : {ℓ ℓ' : Level} → (A : Set ℓ) → (A → Set ℓ') → Set (ℓ ⊔ ℓ')
+ Σ-syntax = Σ
+ syntax Σ-syntax A (λ x → B) = Σ[ x ∈ A ] B
+    #+end_src
+    With this syntax enhancement we can replace =Σ A (λ c → P c)= by =Σ[ c ∈ A ] (P c)=.
+    The previous theorem becomes:
+    #+begin_src text
+    ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
+      → (a : A) → P a → Σ[ c ∈ A ] (P c)
+    #+end_src
+    There is a variation of this notation which omits the type of the variable as
+    it can be inferred in many cases. That is, instead of =Σ[ c ∈ A ] (P c)= we
+    would have =∃[ c ] (P c)=. We prefer this notation when possible in the
+    project[fn::For instance, in the definition of Veltman semantics in Section
+    [[sec:agda-ord-semantics]].]. See again the =∃-intro= theorem type using this
+    notation:
+    #+begin_src text
+    ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
+      → (a : A) → P a → ∃[ c ] (P c)
+    #+end_src
+
+*** Equality
+    <<sec:agda-equality>>
+
+    In Sections [[sec:agda-nat]] and [[sec:agda-bool]] we have seen how we can define
+    equality for Booleans and naturals. In this section we explore polymorphic
+    equality and some of its properties and limitations. Of course, the main
+    advantage of polymorphic equality is that we can use it for every type and
+    thus there is no need to redefine it for every new datatype that we
+    define.
+
+    Below we present a slight simplification of polymorphic equality as defined in
+    cite:agda-stdlib.
+    #+begin_example
+ data _≡_ {a : Level} {A : Set a} (x : A) : A → Set a where
+   refl : x ≡ x
+    #+end_example
+
+    It may help the reader to read the following description of the polymorphic
+    equality datatype defined above taken from cite:plfa2019: For any type =A=
+    and for any =x= of type =A=, the constructor =refl= provides evidence that =x
+    ≡ x=. Hence, every value is equal to itself, and we have no other way of
+    showing values equal. The definition features an asymmetry, in that the first
+    argument to =_≡_= is given by the parameter =x : A=, while the second is
+    given by an index in =A → Set a=. The first argument to =_≡_= can be a
+    parameter because it does not vary, while the second must be an index, so it
+    can be required to be equal to the first.
+
+    It is easy to see that equality is a reflexive relation.
+    #+begin_src text
+ reflexive : {ℓ : Level} {A : Set ℓ} {a : A} → a ≡ a
+ reflexive = refl
+    #+end_src
+    We can also show that it is symmetric.
+    #+begin_src text
+ symmetric : {ℓ : Level} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
+ symmetric a≡b = ?
+    #+end_src
+    The argument =a≡b= has type =a ≡ b= and our goal is to give a term of type =b
+    ≡ a=. However, the only way to give a term of type =b ≡ a= is by unifying =a=
+    and =b= since we only have the =refl= constructor. We achieve that by pattern
+    matching against the argument =a≡b=. Then the goal becomes =a ≡ a= and we can
+    use the =refl= constructor.
+    #+begin_src text
+ symmetric : {ℓ : Level} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
+ symmetric refl = refl
+    #+end_src
+    We can prove transitivity in an analogous way.
+    #+begin_src text
+ transitivity : {ℓ : Level} {A : Set ℓ} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
+ transitivity refl refl = refl
+    #+end_src
+    We can also show that if =x ≡ y= then for any =f= we have =f x ≡ f y=.
+    #+begin_src text
+ cong : {ℓA ℓB : Level} {A : Set ℓA} {B : Set ℓB} {x y : A}
+   → (f : A → B) → x ≡ y → f x ≡ f y
+ cong f refl = refl
+    #+end_src
+
+    We now see that this new equality datatype is equivalent to the previously
+    defined equality for naturals. To avoid a name clash, we redefine equality
+    for naturals with the =_ℕ≡_= symbol. We also rename reflexivity for =_ℕ≡_=
+    as =ℕrefl=.
+    #+begin_src text
+    data _ℕ≡_ : Nat → Nat → Set where
+      z≡z : zero ℕ≡ zero
+      s≡s : {a b : Nat} → a ℕ≡ b → suc a ℕ≡ suc b
+
+    ℕrefl : (n : Nat) → n ℕ≡ n
+    ℕrefl zero = z≡z
+    ℕrefl (suc n) = s≡s (ℕrefl n)
+    #+end_src
+    We show that the new equality implies the old equality.
+    #+begin_example
+    ≡→ℕ≡ : {a b : Nat} → a ≡ b → a ℕ≡ b
+    ≡→ℕ≡ {a} refl = ℕrefl a
+    #+end_example
+    We see that the old equality implies the new equality.
+    #+begin_example
+    ℕ≡→≡ : {a b : Nat} → a ℕ≡ b → a ≡ b
+    ℕ≡→≡ z=z = refl
+    ℕ≡→≡ (s=s aℕ≡b) = cong suc (ℕ≡→≡ aℕ≡b)
+    #+end_example
+
+    See Section [[sec:agda-ext]] for a note on extensionality.
+*** Predicates as mathematical sets
+    <<sec:sets>>
+    In this section when we say /set/ we refer to a subset of an Agda type. The
+    most natural way to represent subsets in Agda is to use predicates. See
+    [[sec:predicates]] for an introduction. A predicate represents the characteristic
+    function of the associated subset. For instance consider the predicate:
+    #+begin_src text
+    Pos : Pred Nat lzero
+    Pos n = ¬ (n ≡ 0)
+    #+end_src
+    It represents the subset of strictly positive natural numbers.
+
+    We proceed by defining the usual concepts related to mathematical sets. In
+    order to make the types less verbose we assume that we already have =A : Set
+    ℓ= in scope.
+     1. \boxed{∈} A proof of membership is a simple function application.
+        #+begin_src text
+        _∈_ : REL A (Pred A)
+        a ∈ X = X a
+        #+end_src
+        This definition is mostly superfluous but it helps to have a syntax closer
+        to regular mathematics.
+     2. \boxed{∉} A proof of non membership is function from a proof of membership to =⊥=.
+        #+begin_src text
+        _∉_ : REL A (Pred A)
+        a ∉ X = ¬ (a ∈ X)
+        #+end_src
+     3. \boxed{⊆} A proof of inclusion =X ⊆ Y= is a function that maps a proof of
+        membership to =X= to a proof of membership to =Y=.
+        #+begin_example
+        _⊆_ : Rel (Pred A)
+        X ⊆ Y = ∀ {x} → x ∈ X → x ∈ Y
+        #+end_example
+     4. \boxed{∩} We use pairs to represent the intersection. Each component is a
+        proof of membership to =X= and =Y= respectively.
+        #+begin_src text
+        _∩_ : Pred A → Pred A → Pred A
+        X ∩ Y = λ x → x ∈ X × x ∈ Y
+        #+end_src
+     5. \boxed{∪} We use a sum type to represent the union.
+        #+begin_src text
+        _∪_ : Pred A → Pred A → Pred A
+        X ∪ Y = λ x → x ∈ X ⊎ x ∈ Y
+        #+end_src
+     6. \boxed{∅}
+        The empty set is represented by a characteristic constant function to =⊥=.
+        #+begin_src text
+        ∅ : Pred A
+        ∅ = λ x → ⊥
+        #+end_src
+     7. \boxed{𝟏}
+        Similarly, the universe set is represented by a characteristic constant function to =⊤=.
+        #+begin_src text
+        U : Pred A
+        U = λ x → ⊤
+        #+end_src
+     8. \(\boxed{\{x\}}\) A singleton set is defined using equality (assuming we
+        have equality defined for that type).
+        #+begin_example
+        ｛_｝ : A → Pred A
+        ｛ x ｝ = λ y → x ≡ y
+        #+end_example
 
 *** Extensionality
     <<sec:agda-ext>> In Set theory we call axiom of extensionality the property
@@ -3025,43 +3133,43 @@ Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
     the definition of generalized Veltman frames in Section
     [[sec:agda-gen-semantics]].
 
-** Positivity
-   <<sec:positivity>>
+*** Positivity
+    <<sec:positivity>>
 
-   In this section we present a technicality as described in the Agda
-   documentation (cite:agda-doc) regarding datatype definitions that will become
-   relevant in Section [[sec:agda-ord-semantics]] where we define ordinary Veltman
-   semantics.
+    In this section we present a technicality as described in the Agda
+    documentation (cite:agda-doc) regarding datatype definitions that will become
+    relevant in Section [[sec:agda-ord-semantics]] where we define ordinary Veltman
+    semantics.
 
-   When defining a datatype =D=, Agda poses an additional requirement on the types
-   of the constructors of =D=, namely that =D= may only occur strictly positively in
-   the types of their arguments. Concretely, for a datatype with constructors
-   =c₁ : A₁, …, cₙ : Aₙ=, Agda checks that each =Aᵢ= has the form
-   #+begin_src text
-   (y₁ : B₁) → ... → (yₗ : Bₗ) → D
-   #+end_src
-   where an argument of type =Bᵢ= of the constructors does not mention =D= or has
-   the form
-   #+begin_example
-   (z₁ : C₁) → ... → (zₖ : Cₖ) → D
-   #+end_example
+    When defining a datatype =D=, Agda poses an additional requirement on the types
+    of the constructors of =D=, namely that =D= may only occur strictly positively in
+    the types of their arguments. Concretely, for a datatype with constructors
+    =c₁ : A₁, …, cₙ : Aₙ=, Agda checks that each =Aᵢ= has the form
+    #+begin_src text
+    (y₁ : B₁) → ... → (yₗ : Bₗ) → D
+    #+end_src
+    where an argument of type =Bᵢ= of the constructors does not mention =D= or has
+    the form
+    #+begin_example
+    (z₁ : C₁) → ... → (zₖ : Cₖ) → D
+    #+end_example
 
-   The following example showcases the possibility to build a term of type =⊥=
-   by defining a non strictly positive type =Bad=. As mentioned above, Agda
-   rejects the definition of =Bad=.
-   #+begin_src text
-data ⊥ : Set where
+    The following example showcases the possibility to build a term of type =⊥=
+    by defining a non strictly positive type =Bad=. As mentioned above, Agda
+    rejects the definition of =Bad=.
+    #+begin_src text
+ data ⊥ : Set where
 
-data Bad : Set where
-  bad : (Bad → ⊥) → Bad
+ data Bad : Set where
+   bad : (Bad → ⊥) → Bad
 
-self-app : Bad → ⊥
-self-app (bad f) = f (bad f)
+ self-app : Bad → ⊥
+ self-app (bad f) = f (bad f)
 
-absurd : ⊥
-absurd = self-app (bad self-app)
-   #+end_src
-** Agda reference
+ absurd : ⊥
+ absurd = self-app (bad self-app)
+    #+end_src
+** Agda official reference
    This section contains a thorough description of some of the topics that were
    touched in the introduction prior to this section. We believe that the
    intuition given in the introduction should be enough for the reader to be
