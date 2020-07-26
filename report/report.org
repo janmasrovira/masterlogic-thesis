@@ -1709,7 +1709,7 @@ thanks
    #+name: fig:agda-term
    #+attr_latex: :align llll :float t :center t :placement [H]
     | $term$ | $≔$   | =f=                        | identifier;                               |
-    |        | \vert | =(x : A) → B=              | function type                             |
+    |        | \vert | =(x : A) → B=              | function type;                            |
     |        | \vert | =λ x → A=                  | lambda abstraction;                       |
     |        | \vert | =λ {p₁ → A₁; … ; pₙ → Aₙ}= | lambda abstraction with pattern matching; |
     |        | \vert | =A B=                      | function application;                     |
@@ -1719,7 +1719,7 @@ thanks
    #+name: fig:agda-term2
    #+attr_latex: :align llll :float t :center t :placement [H]
     | $term$ | $≔$   | =iden=                           | identifier;                               |
-    |        | \vert | =(iden : type) → term=           | function type                             |
+    |        | \vert | =(iden : type) → term=           | function type;                       |
     |        | \vert | =λ iden → term=                  | lambda abstraction;                       |
     |        | \vert | =λ {pat → term; … ; pat → term}= | lambda abstraction with pattern matching; |
     |        | \vert | =term term=                      | function application;                     |
@@ -1795,7 +1795,7 @@ thanks
       …
       cₙ : Tₙ
     #+end_example
-  Note that it is possible to have $k=0$, $l=0$ and/or $n=0$.
+  Note that $k≥0$, $l≥0$ and $n≥0$.
   We distinguish the following parts of the declaration:
   1. /Name/. =D= is an identifier, which is the name of the newly introduced
      datatype. =D= is assigned the following type and is brought into scope:
@@ -1822,7 +1822,7 @@ thanks
        #+begin_example
        (z₁ : B₁) → ... → (zₘ : Bₘ) → D x₁ … xₖ t₁ … tₗ
      #+end_example
-        Where for every $i∈\{1,…,l\}$ we have that ==tᵢ : Qᵢ=, furthermore =tᵢ=
+        Where for every $i∈\{1,…,l\}$ we have that =tᵢ : Qᵢ=, furthermore =tᵢ=
         can refer to =zⱼ= for any $j∈\{1,…,m\}$.
 
         If we focus on the return type[fn::The rightmost term which is not a
@@ -1850,14 +1850,12 @@ thanks
   #+name: fig:agda-pattern
   #+attr_latex: :align llll :float t :center t :placement [H]
   | $pattern$ | $≔$   | =c p₁ … pₙ= | constructor of arity =n ≥ 0=; |
-  |           | \vert | =x=         | identifier;                   |
-  |           | \vert | =()=        | empty pattern;                |
-  |           | \vert | =_=         | wildcard.                     |
+  |           | \vert | =x=         | identifier.                   |
   A pattern cannot contain repeated identifiers. We define $ids(p)$ to be the
   set of identifiers that appear in a pattern.
 
-  Note that patterns of the form =c p₁ … pₙ= for $n≥1$ which are not nested must
-  be surrounded by parentheses. {{{enddef}}}
+  Note that patterns of the form =c p₁ … pₙ= for $n≥1$ must be surrounded by
+  parentheses. {{{enddef}}}
 
   {{{begindef}}} *Module*. A module is a sequence of function definitions and
   datatype definitions. Each function definition exposes the bound identifier to
@@ -1923,11 +1921,11 @@ thanks
     $⟨a=t⟩∈Δ$. Also, we use $Γ;t:A$ as short for $⟨Τ ∪\{⟨t:A⟩\},Δ⟩$.
     {{{enddef}}}
 
-    {{{begindef}}} <<def:agda-well-typed>> *Well-typed term*. We say that a term
-    $t$ is well-typed in context $Γ$ if $Γ⊢t:A$ for some type $A$. The rules for
-    $⊢$ are presented below. We also define the relation $⊢_{Ρ}$, which is for
-    typing patterns. For that purpose we need an auxiliary function definition,
-    $τ$, which is defined afterwards.
+    {{{begindef}}} <<def:agda-well-typed>> *Well-typed term (and patterns)*. We
+    say that a term $t$ is well-typed in context $Γ$ if $Γ⊢t:A$ for some type
+    $A$. The rules for $⊢$ are presented below. We also define the relation
+    $⊢_{Ρ}$, which is for typing patterns. For that purpose we need an auxiliary
+    function definition, $τ$, which is defined afterwards.
 
     The structure of a module implicitly assigns a context to each term in it.
     We usually use the concept of well-typed term in the context of a module, in
@@ -1952,7 +1950,7 @@ thanks
    \\
    \inferrule[Pattern abstraction]{\text{Let } \overline{D}≔D\ x₁\ …\ xₙ\ t₁\ …\ tₙ \\\\
      Γ⊢_{Ρ}p₁:\overline{D} \\ … \\  Γ⊢_{Ρ}pₙ:\overline{D} \\\\
-     Γ∪τ(Γ,\overline{D},p₁)⊢ s₁:B \\ … \\ Γ∪τ(Γ,\overline{D},pₙ)⊢ sₙ:B} \\\\
+     Γ∪τ(Γ,\overline{D},p₁)⊢ s₁:B[x↦p₁] \\ … \\ Γ∪τ(Γ,\overline{D},pₙ)⊢ sₙ:B[x↦pₙ]}
      {Γ⊢λ\ \{p₁ →s₁;\ …\ ;\ pₙ→sₙ\}:(x:\overline{D})→B}
    \end{mathpar}
    \end{figure}
@@ -1963,26 +1961,22 @@ thanks
    \begin{figure}[H]
    \begin{mathpar}
    \inferrule[Identifier]{\ }{Γ⊢_{Ρ}x : A}
-   \and
-   \inferrule[Wildcard]{\ }{Γ⊢_{Ρ}\_ : A}
    \\
-   \inferrule[Constructor]{c:(b₁:B₁)→…→(b:Bₙ)→D\ x₁\ …\ xₙ\ t₁\ …\ tₙ ∈Γ \\\\ Γ⊢_Ρp₁: B₁ \\ … \\ Γ⊢_Ρpₙ:Bₙ   }{Γ⊢_Ρc\ p₁\ …\ pₙ : D\ x₁\ …\ xₙ\ t₁\ …\ tₙ}
+   \inferrule[Constructor]{c:(b₁:B₁)→…→(bₙ:Bₙ)→D\ x₁\ …\ xₙ\ t₁\ …\ tₙ ∈Γ \\\\
+     ∀i∈\{1,…,n-1\}.\ Γ⊢_Ρpᵢ:Bᵢ[b₁↦p₁, …,b_{i-1}↦p_{i-1}]   }{Γ⊢_Ρc\ p₁\ …\ pₙ : D\ x₁\ …\ xₙ\ t₁\ …\ tₙ}
    \end{mathpar}
    \end{figure}
+   {{{jan(explain $[b₁↦p₁]$)}}}
 
    Let $\overline{D}≔D\ x₁\ …\ xₙ\ t₁\ …\ tₙ$. We now define
-   $τ(Γ,\overline{D},p)$, which is the of identifiers bound by pattern $p$ and
-   their respective types. Assume that $Γ⊢_{Ρ}p:\overline{D}$. Finally, let $τ$
-   be defined as follows:
+   $τ(Γ,\overline{D},p)$, which is the set of identifiers bound by pattern $p$
+   paired with their respective types. Assume that $Γ⊢_{Ρ}p:\overline{D}$.
+   Finally, let $τ$ be defined as follows:
   \begin{flalign*}
   &τ(Γ,\overline{D},x)≔ \{x:\overline{D}\} & \text{Identifier} \\
-  &τ(Γ,\overline{D},\_)≔ ∅ & \text{Wildcard} \\
   &τ(Γ,\overline{D},c\ p₁\ …\ pₙ)≔ τ(Γ,p₁,B₁)∪…∪τ(Γ,pₙ,Bₙ) & \text{Constructor} \\
-  &\hspace{3.5cm} \text{assuming } c:(b₁:B₁)→…→(b:Bₙ)→\overline{D}∈Γ
+  &\hspace{3.5cm} \text{assuming } c:(b₁:B₁)→…→(bₙ:Bₙ)→\overline{D}∈Γ
   \end{flalign*}
-
-
-  Absurd pattern {{{jan(TODO)}}}.
 
   # The precise typing rule for the lambda abstraction with patterns falls out
   # of the scope of this thesis. We ask the reader to refer to Chapter 2 of
@@ -2071,7 +2065,10 @@ thanks
     {{{enddef}}}
 *** Normalization
     <<sec:agda-normalization>> Normalization is refers to the process of
-    simplifying or evaluating a term via rewrite rules. The reader may be
+    simplifying or evaluating a term via rewrite rules. Normalization is done
+    automatically before 
+
+    The reader may be
     already acquainted with the \textsc{$β$-reduction} rule, which is present in
     untyped lambda calculus, the most basic form of lambda calculus. Here we
     present the mentioned rule among others. We use the notation $Δ⊢_Nt↓t'$ to
@@ -2113,7 +2110,6 @@ thanks
     identifiers, so the result (if it succeeds) of $match$ is a proper function.
     \begin{flalign*}
     &match(x, t)≔ \{⟨x↦t⟩\} \\
-    &match(\_, t)≔ ∅ \\
     &match(c\ p₁\ …\ pₙ, c'\ t₁\ …\ tₙ)≔ \begin{cases}
              ⋃_i(match(pᵢ,tᵢ)) & \text{if $c=c'$ and all recursive calls succed;}  \\
              \text{fail} & \text{otherwise.}\end{cases}
@@ -2163,6 +2159,7 @@ thanks
     {{{endproof}}}
 
 *** Totality
+    <<sec:agda-totality>>
     In order to be a sound system, Agda requires all of its terms to be
     total. Thus, it needs to assure that:
     1. Every lambda abstraction with pattern matching of the form =λ {p₁ → A₁; …
@@ -2180,9 +2177,18 @@ thanks
        =false= pattern. The coverage algorithm (the algorithm which checks
        the exhaustivity of patterns) is described in
        cite:norell:thesis.
-    2. All recursive calls are non-problematic. In other words, there are no
-       infinite loops.
-
+    2. There are no infinite loops. For instance
+       #+begin_example
+       loop : (A : Set 0) → A
+       loop = λ A → loop A
+       #+end_example
+       In order to do so Agda analyses every recursive call and tries to find a
+       well-founded order on its arguments. If it succeeds the recursive call is
+       considered save, otherwise it is rejected. The Agda online documentation
+       (cite:agda-doc) references cite:abel1998foetus as the basis of the
+       termination checker implemented in Agda. For instance, the checker is
+       sophisticated enough to accept the definition of the Ackermann function
+       (cite:agda-doc), which is non-primitive recursive.
 
 *** Limitations
     <<sec:agda-limitations>>
@@ -2223,27 +2229,33 @@ thanks
      #+begin_example
      property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
      #+end_example
-     Giving a term of this type can be done in real Agda as follows:
+     Providing a term of this type can be done in real Agda as follows:
      #+begin_example
      property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
      property = λ b → λ { is-true → is-false }
      #+end_example
      Unfortunately, giving a term of this type is not possible with the typing
-     rules that we gave. To see this, consider the context $Γ$ at the =?= site.
+     rules that we gave. To see this, consider the context $Γ$ at the =?= site
+     below.
      #+begin_example
      property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
      property = λ b → λ p → ?
      #+end_example
-     We have $b:Bool∈Γ$ and $p : IsTrue\ b ∈Γ$.
+     We have $b:Bool∈Γ$ and $p : IsTrue\ b ∈Γ$. We can try to pattern match on
+     =b=. Then filling the case where =b= is equal to =true= is straightforward
+     because then we must provide a term of type =IsFalse (not true)=.
+     #+begin_example
+     property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
+     property = λ {true → λ p → is-false; false → λ p → ? }
+     #+end_example
+
 
      See the Chapter 2 of cite:norell:thesis for an overview of how pattern
-     matching works in real Agda.
+     matching works in real Agda, including the unification algorithm.
 
-     Consider the context at =?= and name it $Γ$.
-
-       1. Absurd patterns
-       2. Unreachable patterns
-       3. Universes
+**** Universes
+**** Unreachable patterns
+**** Absurd patterns
 *** Syntax sugar
 
 ** Agda tutorial
