@@ -2055,7 +2055,8 @@ thanks
             # tⱼ:Qⱼ. \]
             Then let
             \begin{flalign*}
-             Γ''≔&Γ;D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ :
+             Γ''≔&Γ;\\
+              &D : (x₁ : P₁) → … → (xₖ : Pₖ) → (y₁ : Q₁) → … → (yₗ :
               Qₗ) → Set\ ℓ; \\
               &c₁ : (z^1₁ : B^1₁) → … → (z^1ₘ : B^1ₘ) → D\ x₁\ …\ xₖ\ t^1₁\ …\ t^1ₗ; \\
               & ⋮ \\
@@ -2065,19 +2066,24 @@ thanks
     {{{enddef}}}
 *** Normalization
     <<sec:agda-normalization>> Normalization is refers to the process of
-    simplifying or evaluating a term via rewrite rules. Normalization is done
-    automatically before 
+    simplifying or evaluating a term via rewrite rules.
 
-    The reader may be
-    already acquainted with the \textsc{$β$-reduction} rule, which is present in
-    untyped lambda calculus, the most basic form of lambda calculus. Here we
-    present the mentioned rule among others. We use the notation $Δ⊢_Nt↓t'$ to
-    say that term $t$ normalizes to term $t'$ in context $Δ$. We extend the
-    definition of context to also contain all the pairs $⟨identifier=term⟩$
-    which are defined in a function definition above in the module. To be more
-    precise, now a context consists of two sets: One contains the typing
-    relations $⟨identifier:term⟩$ and the other contains the binding relations
-    $⟨identifier=term⟩$.
+    In real Agda normalization is done at the same time as type-checking via an
+    involved algorithm (see Section 3.3.2 of cite:norell:thesis). Here we
+    present a collection normalization rules which are detached from the
+    type-checking process. Our aim is to provide an intuition of how well-typed
+    terms are simplified automatically in Agda rather than giving details of the
+    algorithm.
+
+    The reader may be already acquainted with the \textsc{$β$-reduction} rule,
+    which is present in untyped lambda calculus, the most basic form of lambda
+    calculus. Here we present the mentioned rule among others. We use the
+    notation $Δ⊢_Nt↓t'$ to say that term $t$ normalizes to term $t'$ in context
+    $Δ$. We extend the definition of context to also contain all the pairs
+    $⟨identifier=term⟩$ which are defined in a function definition above in the
+    module. To be more precise, now a context consists of two sets: One contains
+    the typing relations $⟨identifier:term⟩$ and the other contains the binding
+    relations $⟨identifier=term⟩$.
 
     Normalization can happen in nested terms. For instance, if we have that
     $t↓t'$ then $λ x→ t↓λx→t'$. Likewise for the other kinds of terms.
@@ -2242,20 +2248,21 @@ thanks
      property = λ b → λ p → ?
      #+end_example
      We have $b:Bool∈Γ$ and $p : IsTrue\ b ∈Γ$. We can try to pattern match on
-     =b=. Then filling the case where =b= is equal to =true= is straightforward
-     because then we must provide a term of type =IsFalse (not true)=.
+     =b=.
      #+begin_example
      property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
      property = λ {true → λ p → is-false; false → λ p → ? }
      #+end_example
-
+     Filling in the case where =b= is equal to =true= is straightforward because
+     here the goal is to provide a term of type =IsFalse (not true)=, which
+     normalizes to =IsFalse false=, therefore we can use the term =is-false=.
 
      See the Chapter 2 of cite:norell:thesis for an overview of how pattern
      matching works in real Agda, including the unification algorithm.
 
+**** Absurd patterns
 **** Universes
 **** Unreachable patterns
-**** Absurd patterns
 *** Syntax sugar
 
 ** Agda tutorial
