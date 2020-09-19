@@ -3,7 +3,7 @@ stages:
   - pdf
 
 org2tex:
-  image: janmasrovira/emacs-org:27.0
+  image: janmasrovira/emacs-org:27.1
   stage: org
   only:
     - master

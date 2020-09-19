@@ -1,5 +1,5 @@
 #+latex_compiler: xelatex
-#+lAtEx_class: scrreprt
+#+latex_class: scrreprt
 #+options: H:4
 #+options: toc:nil
 
@@ -342,7 +342,7 @@ thanks
     1. $w⊮⊥$;
     2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $v$ such
        that $v⊩B$ and $uS_wv$.
     {{{enddef}}}
 
@@ -400,7 +400,7 @@ thanks
     1. $w⊮⊥$;
     2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $Y$ such
+    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $Y$ such
        that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
        have $y⊩B$;
     {{{enddef}}}
@@ -2251,18 +2251,31 @@ thanks
      =b=.
      #+begin_example
      property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
-     property = λ {true → λ p → is-false; false → λ p → ? }
+     property = λ {true → λ pt → is-false; false → λ pf → ? }
      #+end_example
      Filling in the case where =b= is equal to =true= is straightforward because
      here the goal is to provide a term of type =IsFalse (not true)=, which
      normalizes to =IsFalse false=, therefore we can use the term =is-false=.
+     The conflicting case is when =b= is equal to false. See that in this case
+     we have that =pf= has type =IsTrue false=. Clearly we should be able to
+     somehow derive a contradiction from this, because it is impossible that a
+     term of this type exists. Agda deals with contradictions with absurd
+     patterns, which are discussed in the next section.
 
+     Another possibility to tackle the previous problem is to pattern match on
+     =p= as we did in real Agda:
+     #+begin_example
+     property : (b : Bool) → (p : IsTrue b) → IsFalse (not b)
+     property = λ b → λ { is-true → ? }
+     #+end_example
+
+     {{{jan(move this comment?)}}}
      See the Chapter 2 of cite:norell:thesis for an overview of how pattern
      matching works in real Agda, including the unification algorithm.
 
 **** Absurd patterns
-**** Universes
 **** Unreachable patterns
+**** Universes
 *** Syntax sugar
 
 ** Agda tutorial
