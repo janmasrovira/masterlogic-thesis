@@ -1010,9 +1010,22 @@ thanks
     {{{endproof}}}
 
 ** The principle \prin{P₀}
-
    The \prin{P₀} principle reads as follows:
    \[A ▷ ♢ B → □ (A ▷ B).\]
+
+   We give some context borrowed from cite:joosten2020interpretability. The
+   principle \prin{P₀} appeared in 1998 and is due to Albert Visser. It appeared
+   during the search the modal completeness proof of \prin{ILM_0}. In an attempt
+   to strengthen the logic, Visser modified the frame condition of
+   $\prin{ILM_0}$ to make it stronger and arrive at a stronger principle, which
+   was coined as $\prin{P_0}$. Since the frame condition of $\prin{P_0}$ implies
+   the frame condition of $\prin{M_0}$ every $\text{\prin{ILP_0}-frame}$ is also
+   an $\text{\prin{ILM_0}-frame}$. In cite:joosten-master it is proven that
+   $\prin{ILP_0}⊬\prin{ILM_0}$ and thus we can conclude that $\prin{ILP_0}$ is
+   modally incomplete.
+
+   TODO: mention that ILP0 is in IL(ALL).
+
 *** Ordinary semantics
     The $\kord{P₀}$ condition reads as follows:
 
