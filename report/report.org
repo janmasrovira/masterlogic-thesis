@@ -63,6 +63,7 @@
 #+latex_header: \newtheorem{remark}[theorem]{Remark}
 
 #+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A proof formalized in Agda}}
+#+latex_header: \newglossaryentry{coqprf}{name={\includegraphics[height=\baselineskip]{img/coq}},description={A proof formalized in Coq}}
 
 #+macro: beginmulticols @@latex:\begin{multicols}{$1}@@
 #+macro: endmulticols @@latex:\end{multicols}@@
@@ -91,11 +92,14 @@
 #+latex_header: \newglossaryentry{Pred}{name={\texttt{Pred}},description={A predicate or a subset}}
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
+#+macro: coq @@latex:\gls{coqprf}\glsadd{coqprf}@@
 #+latex_header: \newcommand{\prin}[1]{\text{$\mathsf{#1}$}}
 #+latex_header: \newcommand{\il}[0]{\text{$\mathsf{IL}$}}
 #+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
-# #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)\textsubscript{ord}}}
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
+#+latex_header: \newcommand{\ilall}[0]{\ensuremath{\mathsf{IL}}(All)}
+# remember to invoke with \ilall{} and not \ilall so that the space at the end
+# is inserted if needed.
 
 
 # Missing monospaced characters
@@ -211,7 +215,8 @@ thanks
    3. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
    4. $⟦A⟧≔\{w:w⊩A\}$;
    5. {{{agda}}} this is Agda's logo. Each proof that is formalized in Agda
-    ll
+      has been tagged with it;
+   5. {{{coq}}} this is Coq's logo. Each proof that is formalized in Coq
       has been tagged with it;
    6. When we write a dot after the quantification of some variables, the scope of
       the variables extends to the rightmost part of what follows. Hence the
@@ -253,7 +258,7 @@ thanks
 
    {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
    $Π⊢_{\il}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
-   then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
+   then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{coq}}} {{{endproof}}}
 
    {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
    semantics*. That is, if $Π⊢_{\il}A$ and $M$ is a generalized model with a world
@@ -360,6 +365,7 @@ thanks
     {{{endcoro}}}
     {{{beginproof}}}
     {{{agda}}}
+    {{{coq}}}
     {{{endproof}}}
 
     {{{begintheorem}}} *Decidability* If $W$ is finite and $R,S,V$ are decidable relations,
@@ -814,9 +820,6 @@ thanks
   <<sec:frame-condition>> An interpretability principle is a schema of modal
   formulas that carries some special significance.
 
-  {{{joost(OF COURSE\, YOU WILL NEED SOME GENERAL BACKGROUND. WHAT DOES FRAME
-  VALIDITY MEAN\, WHAT ARE FRAME CONDITIONS\, ETC.)}}}
-
   In this section we present a number of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
   semantics.
@@ -1015,16 +1018,17 @@ thanks
 
    We give some context borrowed from cite:joosten2020interpretability. The
    principle \prin{P₀} appeared in 1998 and is due to Albert Visser. It appeared
-   during the search the modal completeness proof of \prin{ILM_0}. In an attempt
+   during the search of the modal completeness proof of \prin{ILM_0}. In an attempt
    to strengthen the logic, Visser modified the frame condition of
    $\prin{ILM_0}$ to make it stronger and arrive at a stronger principle, which
    was coined as $\prin{P_0}$. Since the frame condition of $\prin{P_0}$ implies
    the frame condition of $\prin{M_0}$ every $\text{\prin{ILP_0}-frame}$ is also
    an $\text{\prin{ILM_0}-frame}$. In cite:joosten-master it is proven that
-   $\prin{ILP_0}⊬\prin{ILM_0}$ and thus we can conclude that $\prin{ILP_0}$ is
+   $\prin{ILP_0}⊬\prin{ILM_0}$ and thus we have that $\prin{ILP_0}$ is
    modally incomplete.
 
-   TODO: mention that ILP0 is in IL(ALL).
+   The principle \prin{P_0} is valid in all reasonable arithmetical theories and
+   thus it should be in \ilall{}.
 
 *** Ordinary semantics
     The $\kord{P₀}$ condition reads as follows:
@@ -1108,11 +1112,15 @@ thanks
 
    \[A ▷ B → ¬ (A ▷ ¬C) ▷ (B ∧ □ C)\ .\]
 
-   IT WOULD BE NICE IF EACH PRINCIPLE HAS A SHORT DESCRIPTION: WHEN INTRODUCED,
-   WHY, BY WHOM, WHY INTERESTING, CURRENT STATUS. WE CAN THINK IF WE DO THIS IN
-   ONE SECTION FOR ALL OR EACH TIME WHEN THE PRINCIPLE IS INTRODUCED. OR
-   POSSIBLY EVEN A MIXTURE OF BOTH
+   The principle \prin{R} is due to Goris and Joosten. In cite:a-new-principle
+   they show that \prin{R} does follow semantically but not syntactically from
+   \prin{ILP_0W^*}, which was the best known lower bound for \ilall{} in 2011.
+   They also show that \prin{R} is valid in all reasonable arithmetical theories
+   and thus giving a strictly better lower bound for \ilall{}.
 
+   Note that \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
+   and \prin{R_n} series of principles which generalize \prin{R} and are
+   discussed in Sections [[sec:Rsubn]] and [[sec:Rsupn]].
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
 
@@ -1257,6 +1265,8 @@ thanks
   The $R_1$ principle reads as follows:
   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E)).\]
 
+  It is the second principle of the $\prin{R_n}$ series, which is discussed in
+  section [[sec:Rsubn]].
 *** Ordinary semantics
 
     The $\kord{R_1}$ frame condition reads as follows:
@@ -1516,6 +1526,7 @@ thanks
     {{{endproof}}}
 
 ** The principle \prin{Rⁿ}
+   <<sec:Rsupn>>
    The \prin{R^n} principle is defined thus cite:two-new-series:
    \begin{flalign*}
    U_0 &≔ ♢¬(D_0▷¬C) \\
@@ -1624,6 +1635,7 @@ thanks
     {{{endproof}}}
 
 ** The principle \prin{Rₙ}
+   <<sec:Rsubn>>
    The $R_n$ principle is defined thus cite:two-new-series:
    \begin{flalign*}
    wip
@@ -4016,7 +4028,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    16. =⊩↝⇨ : ∀ {M w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B=;
    17. =⊩▷⇨ : ∀ {M w A B} → M , w ⊩ A ▷ B → (∀ {u} → R w u → M , u ⊩ A → ∃[ v ] (S w u v × M , v ⊩ B)=.
    {{{endlemma}}}
-   {{{beginproof}}} {{{agda}}} All of the above has been proven
+   {{{beginproof}}} {{{agda}}} {{{coq}}} All of the above has been proven
    in Agda without assuming that the model is decidable. {{{endproof}}}
 
 
@@ -4028,7 +4040,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
       (∀ {u} → R w u → M , u ⊩ A → ∃[ v ] (S w u v × M , v ⊩ B))=;
    3. =⊩⇔¬⊮ : ∀ {w A} → M , w ⊩ A ⇔ (¬ M , w ⊮ A)=;
    4. =⊮⇔¬⊩ : ∀ {w A} → M , w ⊮ A ⇔ (¬ M , w ⊩ A)=.
-   {{{endlemma}}} {{{beginproof}}} {{{agda}}} Note that we only need the
+   {{{endlemma}}} {{{beginproof}}} {{{agda}}} {{{coq}}} Note that we only need the
    decidability assumption for 1 ($⇐$), 2 ($⇐$), 3 ($⇐$) and 4 ($⇐$). {{{endproof}}}
 
    From now on, we always restrict ourselves to decidable models as the usage of
