@@ -93,11 +93,17 @@
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 #+macro: coq @@latex:\gls{coqprf}\glsadd{coqprf}@@
-#+latex_header: \newcommand{\prin}[1]{\text{$\mathsf{#1}$}}
-#+latex_header: \newcommand{\il}[0]{\text{$\mathsf{IL}$}}
+#+latex_header: \newcommand{\prin}[1]{\ensuremath{\mathsf{#1}}}
+#+latex_header: \newcommand{\il}[0]{\prin{IL}}
+#+latex_header: \newcommand{\pa}[0]{\prin{PA}}
+#+latex_header: \newcommand{\gl}[0]{\prin{GL}}
 #+latex_header: \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
 #+latex_header: \newcommand{\ilall}[0]{\ensuremath{\mathsf{IL}}(All)}
+#+latex_header: \newcommand{\rep}[1]{⌜#1⌝}
+#+latex_header: \newcommand{\prov}[1]{\prin{Prov}(#1)}
+
+
 # remember to invoke with \ilall{} and not \ilall so that the space at the end
 # is inserted if needed.
 
@@ -176,6 +182,52 @@ thanks
    [[file:./jan_thesis_comments_07_07_2020.pdf][pdf-link]].
 * Introduction
 ** Overview of interpretability logics
+
+   We begin by giving some context for provability logics
+   (cite:sep-logic-provability). Since Gödel's incompleteness theorems, we have
+   been interested in studying how much arithmetical theories like Peano
+   Arithmetic can say about themselves, more precisely, about their provability
+   capacity. As we know, sufficiently strong arithmetical theories like \pa{}
+   can represent, by means of a clever syntactical encoding, their provability
+   predicate, \prin{Prov}, which states ``this formula is provable in $T$''. We
+   call this predicate \prin{Prov}. A landmark result on this predicate is known
+   as Löb's theorem, which states that \pa{} shows $\prov{\rep{A}}→A$ only if
+   \pa{} shows $A$. Löb's theorem can be expressed in the language of \pa{}
+   thus: \[\prov{\prov{\rep{A}} →A}→\prov{\rep{A}}.\] This result sparked an
+   interest in studying provability logic from a modal centered point of view
+   which birthed the axiomatization of the propositional provability logic
+   \gl{}, named after Gödel and Löb. The logic \gl{} extends propositional
+   classical logic and its language consists in the language of propositional
+   logic $⟨→,⊥⟩$ plus the $□$ modal operator, which stands for the provability
+   predicate. In this language Löb's theorem reads as \[□(□A→A)→□A.\] The above
+   principle is in fact one of the axioms of \gl{}. The value of \gl{} directly
+   depends on the arithmetical soundness and completeness theorems that we will
+   present shortly, but first we need to introduce the concept of arithmetical
+   realization. A realization $*$ is a map from modal formulas in the language
+   of \gl{} to arithmetical sentences such that it satisfies the following:
+   \begin{flalign*}
+   ⊥^* &= ⊥; \\
+   (A → B)^* &= A^*→B^*; \\
+   (□A)^* &= \prov{\rep{A}}.
+   \end{flalign*}
+   Arithmetical soundness states that if $\gl{}⊢A$ then $\pa{}⊢A^*$ for any
+   realization $*$. Solovay proved that arithmetical completeness, which is the
+   converse of soundness, also holds.
+
+   Provability logics have Kripke (relational) semantics. As a remainder a
+   Kripke model is a tuple $⟨W,R,V⟩$ where $W$ is a non-empty set of worlds, $R$
+   is a binary relation on worlds and $V⊆W×Var$ is a valuation. Then we define a
+   forcing relation $⊩\ ⊆W×Fm$ thus:
+   1. $w⊮⊥$;
+   2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
+   3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+   4. if $A,B∈Fm$, then $w⊩□A$ iff if $wRu$ then $u⊩A$.
+    
+
+   Provability logics study the behaviour
+
+   Interpretability logics
+
    mention $M$, $P$ and $R$.
 ** Original contributions
    This work includes the following original contributions:
@@ -926,6 +978,7 @@ thanks
    The \prin{M₀} principle reads as follows:
    \[A ▷ B → ♢ A ∧ □ C ▷ B ∧ □ C.\]
 
+   The logic \prin{ILM_0} is complete (cite:modal-matters).
 *** TODO Ordinary semantics
     {{{jan(update drawing)}}}
 
@@ -1527,7 +1580,7 @@ thanks
 
 ** The principle \prin{Rⁿ}
    <<sec:Rsupn>>
-   The \prin{R^n} principle is defined thus cite:two-new-series:
+   The \prin{R^n} principle is defined thus:
    \begin{flalign*}
    U_0 &≔ ♢¬(D_0▷¬C) \\
    U_{r+1} &≔ ♢((Dᵣ▷D_{r+1}) ∧ Uᵣ) \\
@@ -1535,30 +1588,20 @@ thanks
    R⁰& ≔ A ▷ B → ¬ (A ▷ ¬ C) ▷ B ∧ □ C \\
    R^{n+1}& ≔ A ▷ B → ((D_{n}▷A) ∧ U_{n}) ▷ B ∧ □ C
    \end{flalign*}
+
+   The \prin{R^n} and \prin{R_n} series of principles are due to Goris and
+   Joosten. Both series are presented in cite:two-new-series. In their article
+   they generalize the principle \prin{R} in two series of principles which they
+   use to give the best known lower bound for the logic \ilall{}, which is
+   $\prin{ILWR^nR_n}$.
+
+   The \prin{R^n} series is also referred to as the /broad/ series, whereas
+   \prin{R^n} is referred to as the /slim/ series.
 *** Ordinary semantics
     The frame condition for ordinary semantics $\kord{R^n}$ can be found in
     cite:two-new-series.
 
 *** Generalized semantics
-
-  # Rⁿ-condition : Nat → Set _
-  # Rⁿ-condition zero = R-condition F
-  # Rⁿ-condition (suc n) =
-  #   ∀ {w y z : W} {𝔸 𝔹 ℂ : 𝕎} (x : (i : Nat) → {i < suc n} → W) (𝔻 : (i : Nat) → i ≤ n → 𝕎)
-  #   → R w (x n {s≤s (≤-reflexive refl)})
-  #   → R (x 0 {s≤s z≤n}) y
-  #   → R y z
-  #   → z ∈ 𝔻 zero z≤n
-  #   → ((i : Nat) → (i<n : i < n) → R (x (suc i) {s≤s i<n}) (x i {s≤s (<⇒≤ i<n)}))
-  #   → (∀ {u} → R w u → u ∈ 𝔸 → ∃[ V ] (S w u V × V ⊆ 𝔹))
-  #   → (∀ {u} → R (x n {s≤s (≤-reflexive refl)}) u → u ∈ 𝔻 n (≤-reflexive refl)
-  #       → Σ 𝕎 λ V → S (x n {s≤s (≤-reflexive refl)}) u V × V ⊆ 𝔸)
-  #   → ((i : Nat) → (i<n : i < n) → {u : W} → R (x i {s≤s (<⇒≤ i<n)}) u
-  #     → u ∈ 𝔻 i (<⇒≤ i<n)
-  #     → ∃[ V ] (S (x i {s≤s (<⇒≤ i<n)}) u V × V ⊆ 𝔻 (suc i) i<n))
-  #   → (∀ {V} → S y z V → Satisfiable (V ∩ ℂ))
-  #     → ∃[ V ] (V ⊆ 𝔹 × S w (x n {s≤s (≤-reflexive refl)}) V × R[ V ] ⊆ ℂ)
-
 
     The $\kgen{Rⁿ}$ condition reads as follows:
     \begin{flalign*}
@@ -1636,12 +1679,8 @@ thanks
 
 ** The principle \prin{Rₙ}
    <<sec:Rsubn>>
-   The $R_n$ principle is defined thus cite:two-new-series:
-   \begin{flalign*}
-   wip
-   \end{flalign*}
+   The $R_n$ principle is defined in cite:two-new-series:
 
-   \newpage
 ** Generic generalized frame condition
    In this section we present a method that given a formula $A$, builds a second
    order formula that is a generalized frame condition for $A$.
@@ -4028,8 +4067,8 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    16. =⊩↝⇨ : ∀ {M w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B=;
    17. =⊩▷⇨ : ∀ {M w A B} → M , w ⊩ A ▷ B → (∀ {u} → R w u → M , u ⊩ A → ∃[ v ] (S w u v × M , v ⊩ B)=.
    {{{endlemma}}}
-   {{{beginproof}}} {{{agda}}} {{{coq}}} All of the above has been proven
-   in Agda without assuming that the model is decidable. {{{endproof}}}
+   {{{beginproof}}} {{{agda}}} {{{coq}}} The above properties have been proven
+   in Agda and Coq without assuming that the model is decidable. {{{endproof}}}
 
 
    {{{beginlemma}}} <<lemma:ord-equiv-dec>> The following series of equivalences
