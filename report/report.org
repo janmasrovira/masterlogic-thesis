@@ -182,23 +182,28 @@ thanks
    [[file:./jan_thesis_comments_07_07_2020.pdf][pdf-link]].
 * Introduction
 ** Overview of interpretability logics
+   We begin by giving a short introduction on provability logics
+   (cite:sep-logic-provability). The reason is that interpretability logics
+   extend provability logics. Furthermore the ecosystem of interpretability
+   logics is similar to the one of provability logics, albeit more complex, thus
+   it will help establish an idea of the problems that we will tackle further in
+   the report.
 
-   We begin by giving some context for provability logics
-   (cite:sep-logic-provability). Since Gödel's incompleteness theorems, we have
-   been interested in studying how much arithmetical theories like Peano
-   Arithmetic can say about themselves, more precisely, about their provability
-   capacity. As we know, sufficiently strong arithmetical theories like \pa{}
-   can represent, by means of a clever syntactical encoding, their provability
-   predicate, \prin{Prov}, which states ``this formula is provable in $T$''. We
-   call this predicate \prin{Prov}. A landmark result on this predicate is known
-   as Löb's theorem, which states that \pa{} shows $\prov{\rep{A}}→A$ only if
-   \pa{} shows $A$. Löb's theorem can be expressed in the language of \pa{}
-   thus: \[\prov{\prov{\rep{A}} →A}→\prov{\rep{A}}.\] This result sparked an
-   interest in studying provability logic from a modal centered point of view
-   which birthed the axiomatization of the propositional provability logic
-   \gl{}, named after Gödel and Löb. The logic \gl{} extends propositional
-   classical logic and its language consists in the language of propositional
-   logic $⟨→,⊥⟩$ plus the $□$ modal operator, which stands for the provability
+   Since Gödel's incompleteness theorems, we have been interested in studying
+   how much arithmetical theories like Peano Arithmetic can say about
+   themselves, more precisely, about their provability capacity. As we know,
+   sufficiently strong arithmetical theories like \pa{} can represent, by means
+   of a clever syntactical encoding, their provability predicate, \prin{Prov},
+   which states ``this formula is provable in $T$''. We call this predicate
+   \prin{Prov}. A landmark result on this predicate is known as Löb's theorem,
+   which states that \pa{} shows $\prov{\rep{A}}→A$ only if \pa{} shows $A$.
+   Löb's theorem can be expressed in the language of \pa{} thus:
+   \[\prov{\prov{\rep{A}} →A}→\prov{\rep{A}}.\] This result sparked an interest
+   in studying provability logic from a modal centered point of view which
+   birthed the axiomatization of the propositional provability logic \gl{},
+   named after Gödel and Löb. The logic \gl{} extends propositional classical
+   logic and its language consists in the language of propositional logic
+   $⟨→,⊥⟩$ plus the $□$ modal operator, which stands for the provability
    predicate. In this language Löb's theorem reads as \[□(□A→A)→□A.\] The above
    principle is in fact one of the axioms of \gl{}. The value of \gl{} directly
    depends on the arithmetical soundness and completeness theorems that we will
@@ -210,9 +215,9 @@ thanks
    (A → B)^* &= A^*→B^*; \\
    (□A)^* &= \prov{\rep{A}}.
    \end{flalign*}
-   Arithmetical soundness states that if $\gl{}⊢A$ then $\pa{}⊢A^*$ for any
-   realization $*$. Solovay proved that arithmetical completeness, which is the
-   converse of soundness, also holds.
+   The arithmetical soundness theorem states that if $\gl{}⊢A$ then $\pa{}⊢A^*$
+   for any realization $*$. Solovay proved that arithmetical completeness, which
+   is the converse of soundness, also holds.
 
    Provability logics have Kripke (relational) semantics. As a remainder a
    Kripke model is a tuple $⟨W,R,V⟩$ where $W$ is a non-empty set of worlds, $R$
@@ -222,11 +227,26 @@ thanks
    2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
    3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
    4. if $A,B∈Fm$, then $w⊩□A$ iff if $wRu$ then $u⊩A$.
-    
+   In order to have modal soundness and completeness we ought to restrict the
+   class of frames that we consider. We say that a frame $⟨W,R⟩$ is a
+   $\text{\gl{}-frame}$ if $R$ is transitive and conversely well-founded, that
+   is, there are no infinite ascending chains $w₀Rw₁…$. Then we have that
+   \[\gl{}⊢A⇔⟨W,R,V⟩⊩A \text{ for any \gl{}-frame $⟨W,R⟩$ and valuation $V$.} \]
+   With this we conclude the introduction to provability logics.
 
-   Provability logics study the behaviour
+   We now describe what we mean by an interpretation. Given two theories $V$ and
+   $U$, an interpretation of $V$ into $U$ is a translation $f$ from
+   \text{$V$-formulas} to \text{$U$-formulas} such that if $V⊢A$ then $U⊢f(A)$.
+   In the history of mathematics we find numerous examples
+   (cite:visser1997overview) of theorems that use interpretations as a
+   cornerstone in their proofs. For instance, Gödel's incompleteness theorems
+   translate syntactical constructions into natural numbers. As another example
+   we have that Gödel's interpretation of \prin{ZF} plus the axiom of
+   constructibility ($V=L$) serves as a proof of relative consistency of
+   the continuum hypothesis with respect to \prin{ZF}.
 
-   Interpretability logics
+   Interpretability logics logics study the behaviour
+
 
    mention $M$, $P$ and $R$.
 ** Original contributions
@@ -245,7 +265,6 @@ thanks
    refer to variables.
 
    We define the usual operators and constants in the following way:
-
    1. $¬ A ≔ A → ⊥$;
    2. $⊤ ≔ ¬ ⊥$;
    3. $A ∨ B ≔ ¬ A → B$;
@@ -254,7 +273,8 @@ thanks
    6. $□ A ≔ ¬ A ▷ ⊥$;
    7. $♢ A ≔ ¬ □ ¬ A$.
 
-   The precedence of the operators is in the following order: $∧,▷,∨,→$.
+   The precedence (from higher to lower) of the operators is in the following
+   order: $∧,▷,∨,→$.
 
    The scope of unary symbols ($□,♢,¬$) is as small as possible. Thus $□A∧¬¬B$ is
    the same as $(□A)∧(¬¬B)$.
@@ -1731,7 +1751,158 @@ thanks
   author of Agda, Ulf Norell, has suggested[fn::In correspondence via email.]
   cite:cockx2018elaborating as a good reference for that purpose.
 ** Introduction to types
-   what are types? give historical context.
+   We borrow an introduction to type theory from (cite:nlab:type_theory). Type
+   theory is a branch of mathematical symbolic logic, which derives its name
+   from the fact that it formalizes not only mathematical terms (such as a
+   variable $x$, or a function $f$) and operations on them, but also formalizes
+   the idea that each such term is of some definite type, for instance that the
+   type $ℕ$ of a natural number $x:ℕ$ is different from the type $ℕ→ℕ$ of a
+   function $f:ℕ→ℕ$ between natural numbers.
+
+   # Explicitly, type theory is a formal language, essentially a set of rules for
+   # rewriting certain strings of symbols, that describes the introduction of
+   # types and their terms, and computations with these, in a sensible way.
+
+   # What may seem like a triviality on first sight turns out to have deep
+   # implications:
+
+   - *Foundations of mathematics*. On the one hand, logic itself is subsumed in the
+     plain idea of operations on terms of types, by observing that any type $X$ may
+     be thought of as the type of terms satisfying some proposition. Under this
+     propositions are types-paradigm a proof of the proposition is nothing but a
+     term of the corresponding type. This identification leads to a very fruitful
+     identification of operations on types with logical operations.
+
+   - *Programming language*. Since such a proof is constructive, the term
+     witnessing it being a concrete implementation, and since type theory
+     strictly works by rewriting rules, one may identify the construction of a
+     term in type theory as a program whose output is a certain type. Under this
+     proofs as programs-paradigm, type theory is a mathematical formalization of
+     a programming language. (For instance, Coq and Agda are concrete machine
+     implementations of such a language. They are used both in computer science,
+     where the typing provides certified programming, and may one day be usable
+     in industry.)
+
+   - *Calculus for category theory*. On the other hand, if one regards, as is
+     natural, any term $t:X$ to exist in a context $Γ$ of other terms $x:Γ$,
+     then $t$ is naturally identified with a map $t:Γ→X$, hence: with a
+     morphism. Viewed this way the types and terms of type theory are
+     identified, respectively, with the objects and morphisms of category
+     theory. From this perspective, type theory provides a formal language for
+     speaking about categories.
+
+   *The origins of types* (cite:sep-type-theory). Types were first introduced by
+   Russel in 1903 in ``Apendix B: The Doctrine of Types, from Principia
+   Mathematica'' while trying to avoid a contradiction in set theory, namely
+   Russel's paradox. In Principia Mathematica types are defined as follows.
+    1. $i$ is the type of individuals (elements of some fixed domain).
+    2. if $A_1,…,A_n$ (for $n≥0$) are types then $(A_1,…,A_n)$ is the type of
+       n-ary relations over objects of respective types $A_1,…,A_n$. Note that
+       for $n=0$ we have that $()$ is the type of propositions.
+    For instance, the type of binary relations over individuals is $(i,i)$, the
+    type of binary propositional connectives is $((),())$, the type of
+    quantifiers over individuals is $((i))$. Observe that this formulation
+    prevents a proposition of the form $R(R)$. Assume for a contradiction that
+    $R(R)$ is a proposition, then we have that (by looking at the outer
+    occurrence) $R$ has type $(A)$ for some type $A$ and thus (by looking at the
+    inner occurrence) $R$ has type $A$ but $A≠(A)$. This observation is the key
+    for avoiding Russel's paradox using types.
+
+    The more habitual definition of types is the one that stems from Church's
+    formalization of lambda calculus which includes functions as primitive
+    objects.
+    1. $i$ is the type of individuals.
+    2. $o$ is the type of propositions.
+    3. If $A$ and $B$ are types then $A→B$ is the type of functions from $A$ to $B$.
+    We may observe that $i→o$ is the type of predicates on individuals, $i→i$ is
+    the type of functions on individuals and $\underbrace{i→(i→…→(i}_{n}→o))$ is
+    an \text{$n$-ary} relation. Although this definition of types is relevant
+    for historical reasons, it has become obsolete and we proceed by giving a
+    short introduction to three (out of many) versions of lambda calculus
+    available today.
+
+**** Untyped lambda calculus
+      For the language of terms we present a refinement of Church's version due to
+      Curry:
+      1. Variable: every variable is a term.
+      2. Function application: If $A$ and $B$ are terms then $A\ B$ is a term.
+      3. Lambda abstraction: If $x$ is a variable and $A$ is a term then $λx.A$ is a term.
+      This can be more succinctly expressed in Backus-Naur form: \[T≔x\ |\ T\
+      T\ |\ λx.T\] In lambda calculus we have the following equation known as
+      \text{$β$-reduction}. \[(λx.T)\ A=T[x↦A]\] This equation is often given as
+      a reduction rule from left to right, giving computational value to lambda
+      terms. In other words, \text{$β$-reduction} gives an algorithm based on a
+      rewrite rule that /reduces/, /evaluates/ or /computes/ a lambda term until
+      it can no longer be reduced. When a term cannot be reduced we say that it
+      is in /normal form/. Note that not every term can be reduced to a normal
+      form term as showcased by the following term, which reduces to itself:
+      \[(λx.x\ x)\ (λx.x\ x) \] Notice how this term is of the form $R(R)$ (or
+      $R\ R$, in the new syntax), which we were able to rule out before by using
+      types.
+
+      Church showed that untyped lambda calculus is equivalent in terms of
+      computability to Turing machines, therefore any computable function has a
+      lambda term that computes it.
+**** Simply typed lambda calculus
+      Let us introduce the idea of types in lambda calculus due to Curry. We view
+      types as predicates on lambda terms. We write $T:A$ to say that term $T$
+      satisfies predicate $A$, or synonymously, that term $T$ has type $A$.
+
+      We fix a set of base types $𝐁$ and a set of term constants
+      $Γ=\{⟨c₁:B₁⟩,⟨c₁:B₁⟩,…\}$, where for each $⟨c_i,B_i⟩$ we have $B_i∈𝐁$.
+
+      The syntax of terms is defined thus. \[T≔x\ |\ T\ T\ |\ λ(x:S).T\ |\ c\]
+      Where $S$ is a type, $c$ a term constant and $x$ a variable.
+
+      The syntax of types is defined thus. \[S≔B\ |\ S→S\] With $B∈𝐁$.
+
+      Then we define typing rules to assign a type to suitable terms.
+      We call $Γ$ the context and we write $Γ⊢t:A$ to mean that $y$ has type $A$
+      in context $Γ$. When a term can be assigned a type we say that it is
+      well-typed.
+      #+caption: Typing rules for simply typed lambda calculus.
+      #+name: fig:simply_typed
+      #+attr_latex: :float
+      \begin{figure}[H]
+      \begin{mathpar}
+      \inferrule[Id]{c : A ∈ Γ}{Γ ⊢ c : A}
+      \and
+      \inferrule[App]{Γ ⊢ f : A → B \\ Γ ⊢ t : A}{Γ⊢f\ t : B}
+      \and
+      \inferrule[Abstraction]{Γ∪\{⟨x:A⟩\} ⊢ t : B}{Γ⊢λ(x:S).t :A → B}
+      \end{mathpar}
+      \end{figure}
+
+      It is a well known property that simply typed lambda calculus is /strongly
+      normalizing/, which means that every well-typed term can be reduced to a
+      normal form. Thus it must be the case, and it is easy to observe, that
+      the non-normalizing term we presented before cannot be typed for any
+      choice of $A$. \[(λ(x:A).x\ x)\ (λ(x:A).x\ x)\]
+
+      \jan{is next paragraph needed?}
+      Strong normalization is a desirable property, but it comes at the price of
+      losing equivalence to Turing machines as there are many computable
+      functions that cannot be expressed in simply typed lambda calculus.
+      To circumvent this, some versions of simply typed lambda calculus are
+      extended with Curry's $Y$ combinator defined below. The $Y$ combinator, also
+      known as the fixed-point combinator, is a primitive lambda term that can
+      be added to the language and be assigned the type $(A →A)→A$ for any type
+      $A$. \[Y≔λg.(λx.g (x x))\ (λx.g (x x))\] The $Y$ combinator gives general
+      recursion and thus the strong normalization property no longer holds.
+
+      Talk about system T and system F.
+
+**** Dependently typed lambda calculus
+     In this section we briefly describe a version of lambda calculus for
+     dependent types. For a more in depth presentation we ask the user to
+     refer to cite:loh2010tutorial.
+** Martin-Löf dependent type theory
+   Martin-Löfs type theory is also known as intuitionistic type theory, and it
+   can serve as a basis for all constructive mathematics.
+
+   The results presented in this section have been gathered from
+   cite:martin1984intuitionistic,sep-type-theory-intuitionistic,nlab:martin-löf_dependent_type_theory.
+
 ** Basic Agda
    In this section we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
