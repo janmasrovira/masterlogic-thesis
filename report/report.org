@@ -247,7 +247,6 @@ thanks
 
    Interpretability logics logics study the behaviour
 
-
    mention $M$, $P$ and $R$.
 ** Original contributions
    This work includes the following original contributions:
@@ -1740,7 +1739,6 @@ thanks
     Where $a,b$ are different variables.
    {{{endremark}}}
 * The logic of Agda
-  # Adapted from cite:norell:thesis (Section 1.3).
 
   In this part we give an informal overview of the basic Agda constructions,
   which will hopefully help the reader get an intuition of how dependent types
@@ -1750,82 +1748,97 @@ thanks
   workings of Agda, as this falls out of the scope of this project. The original
   author of Agda, Ulf Norell, has suggested[fn::In correspondence via email.]
   cite:cockx2018elaborating as a good reference for that purpose.
+
+  As for the logical basis of Agda... Quote from (cite:sep-type-theory-intuitionistic)
+  \begin{quote}
+  Agda is another proof assistant which is based on the logical framework
+  formulation of intuitionistic type theory, but adds numerous features
+  inspired by practical programming languages (\cite{norell:thesis}). It is an
+  intensional theory with decidable judgments and a type-checker similar to
+  Coq’s. However, in contrast to Coq it is based on Martin-Löf’s predicative
+  intuitionistic type theory.
+  \end{quote}
+
+
 ** Introduction to types
-   We borrow an introduction to type theory from (cite:nlab:type_theory). Type
-   theory is a branch of mathematical symbolic logic, which derives its name
-   from the fact that it formalizes not only mathematical terms (such as a
-   variable $x$, or a function $f$) and operations on them, but also formalizes
-   the idea that each such term is of some definite type, for instance that the
-   type $ℕ$ of a natural number $x:ℕ$ is different from the type $ℕ→ℕ$ of a
-   function $f:ℕ→ℕ$ between natural numbers.
+   Type theory is a branch of mathematical symbolic logic. It formalizes
+   mathematical concepts through terms, types and a typing relation between
+   them. One could think of types as predicates on terms. We write $T:A$ to say
+   that term $T$ satisfies predicate $A$, or synonymously, that term $T$ has
+   type $A$. Later in this section we will see that types in simply typed lambda
+   calculus provide a basic classification of lambda terms. For instance, a term
+   representing a natural number will have a different type from a lambda term
+   representing a Boolean value. In more expressive type theories such as
+   dependent types theory we can express complex mathematical properties such as
+   ``$2*n$ is always even'' or that ``any finite sequence of numbers can be
+   sorted''.
 
-   # Explicitly, type theory is a formal language, essentially a set of rules for
-   # rewriting certain strings of symbols, that describes the introduction of
-   # types and their terms, and computations with these, in a sensible way.
+   Type theory has become especially relevant in the following areas.
+   - *Programming languages and proof assistants*. Simple (non-dependent) types
+     are present in almost every modern programming language. Programming
+     languages use types to classify its objects and functions with the goal of
+     minimizing the amount of errors caused by misusing them. For instance, the
+     term $1 + true$ does not make sense and types are used to rule out the
+     validity of such term.
 
-   # What may seem like a triviality on first sight turns out to have deep
-   # implications:
+     Furthermore, the expressiveness of type theories with dependent types make
+     them an adequate basis for modern proof assistants. Due to the constructive
+     nature of the theory the proof assistants can be used as programming
+     languages too. Agda and Coq are examples of that.
+   - *Foundations of mathematics*. (This paragraph is a paraphrase from
+     cite:sep-type-theory-intuitionistic) A sufficiently expressive type theory
+     such as Martin-Löf type theory is a formal logical system and philosophical
+     foundation for constructive mathematics. It is a full-scale system which is
+     based on the /propositions-as-types/ principle and aims to play a similar
+     role for constructive mathematics as Zermelo-Fraenkel set theory does for
+     classical mathematics.
 
-   - *Foundations of mathematics*. On the one hand, logic itself is subsumed in the
-     plain idea of operations on terms of types, by observing that any type $X$ may
-     be thought of as the type of terms satisfying some proposition. Under this
-     propositions are types-paradigm a proof of the proposition is nothing but a
-     term of the corresponding type. This identification leads to a very fruitful
-     identification of operations on types with logical operations.
+     (This paragraph is a quote from cite:hottbook) Univalent Foundations
+     of Mathematics is Vladimir Voevodsky’s new program for a comprehensive,
+     computational foundation for mathematics based on the homotopical
+     interpretation of type theory. The type theoretic univalence axiom relates
+     propositional equality on the universe with homotopy equivalence of small
+     types. The program is currently being implemented with the help of the
+     automated proof assistant Coq. The Univalent Foundations program is closely
+     tied to homotopy type theory.
+   # - *Category theory*. 
+**** The origins of types
+       (cite:sep-type-theory) Types were first introduced by Russel in 1903 in
+      ``Apendix B: The Doctrine of Types, from Principia Mathematica'' while
+      trying to avoid a contradiction in set theory, namely Russel's paradox. In
+      Principia Mathematica types are defined as follows.
+       1. $i$ is the type of individuals (elements of some fixed domain).
+       2. if $A_1,…,A_n$ (for $n≥0$) are types then $(A_1,…,A_n)$ is the type of
+          n-ary relations over objects of respective types $A_1,…,A_n$. Note that
+          for $n=0$ we have that $()$ is the type of propositions.
+       For instance, the type of binary relations over individuals is $(i,i)$, the
+       type of binary propositional connectives is $((),())$, the type of
+       quantifiers over individuals is $((i))$. Observe that this formulation
+       prevents a proposition of the form $R(R)$. Assume for a contradiction that
+       $R(R)$ is a proposition, then we have that (by looking at the outer
+       occurrence) $R$ has type $(A)$ for some type $A$ and thus (by looking at the
+       inner occurrence) $R$ has type $A$ but $A≠(A)$. This observation is the key
+       for avoiding Russel's paradox using types.
 
-   - *Programming language*. Since such a proof is constructive, the term
-     witnessing it being a concrete implementation, and since type theory
-     strictly works by rewriting rules, one may identify the construction of a
-     term in type theory as a program whose output is a certain type. Under this
-     proofs as programs-paradigm, type theory is a mathematical formalization of
-     a programming language. (For instance, Coq and Agda are concrete machine
-     implementations of such a language. They are used both in computer science,
-     where the typing provides certified programming, and may one day be usable
-     in industry.)
-
-   - *Calculus for category theory*. On the other hand, if one regards, as is
-     natural, any term $t:X$ to exist in a context $Γ$ of other terms $x:Γ$,
-     then $t$ is naturally identified with a map $t:Γ→X$, hence: with a
-     morphism. Viewed this way the types and terms of type theory are
-     identified, respectively, with the objects and morphisms of category
-     theory. From this perspective, type theory provides a formal language for
-     speaking about categories.
-
-   *The origins of types* (cite:sep-type-theory). Types were first introduced by
-   Russel in 1903 in ``Apendix B: The Doctrine of Types, from Principia
-   Mathematica'' while trying to avoid a contradiction in set theory, namely
-   Russel's paradox. In Principia Mathematica types are defined as follows.
-    1. $i$ is the type of individuals (elements of some fixed domain).
-    2. if $A_1,…,A_n$ (for $n≥0$) are types then $(A_1,…,A_n)$ is the type of
-       n-ary relations over objects of respective types $A_1,…,A_n$. Note that
-       for $n=0$ we have that $()$ is the type of propositions.
-    For instance, the type of binary relations over individuals is $(i,i)$, the
-    type of binary propositional connectives is $((),())$, the type of
-    quantifiers over individuals is $((i))$. Observe that this formulation
-    prevents a proposition of the form $R(R)$. Assume for a contradiction that
-    $R(R)$ is a proposition, then we have that (by looking at the outer
-    occurrence) $R$ has type $(A)$ for some type $A$ and thus (by looking at the
-    inner occurrence) $R$ has type $A$ but $A≠(A)$. This observation is the key
-    for avoiding Russel's paradox using types.
-
-    The more habitual definition of types is the one that stems from Church's
-    formalization of lambda calculus which includes functions as primitive
-    objects.
-    1. $i$ is the type of individuals.
-    2. $o$ is the type of propositions.
-    3. If $A$ and $B$ are types then $A→B$ is the type of functions from $A$ to $B$.
-    We may observe that $i→o$ is the type of predicates on individuals, $i→i$ is
-    the type of functions on individuals and $\underbrace{i→(i→…→(i}_{n}→o))$ is
-    an \text{$n$-ary} relation. Although this definition of types is relevant
-    for historical reasons, it has become obsolete and we proceed by giving a
-    short introduction to three (out of many) versions of lambda calculus
-    available today.
+       The more habitual definition of types is the one that stems from Church's
+       formalization of lambda calculus which includes functions as primitive
+       objects.
+       1. $i$ is the type of individuals.
+       2. $o$ is the type of propositions.
+       3. If $A$ and $B$ are types then $A→B$ is the type of functions from $A$ to $B$.
+       We may observe that $i→o$ is the type of predicates on individuals, $i→i$ is
+       the type of functions on individuals and $\underbrace{i→(i→…→(i}_{n}→o))$ is
+       an \text{$n$-ary} relation. Although this definition of types is relevant
+       for historical reasons, it has become obsolete and we proceed by giving a
+       short introduction to three (out of many) versions of lambda calculus
+       available today.
 
 **** Untyped lambda calculus
       For the language of terms we present a refinement of Church's version due to
       Curry:
       1. Variable: every variable is a term.
       2. Function application: If $A$ and $B$ are terms then $A\ B$ is a term.
+         Note that application associates to the left, thus $A\ B\ C=(A\ B)\ C$.
       3. Lambda abstraction: If $x$ is a variable and $A$ is a term then $λx.A$ is a term.
       This can be more succinctly expressed in Backus-Naur form: \[T≔x\ |\ T\
       T\ |\ λx.T\] In lambda calculus we have the following equation known as
@@ -1840,13 +1853,46 @@ thanks
       $R\ R$, in the new syntax), which we were able to rule out before by using
       types.
 
-      Church showed that untyped lambda calculus is equivalent in terms of
-      computability to Turing machines, therefore any computable function has a
-      lambda term that computes it.
+      Turing showed that untyped lambda calculus is equivalent in terms of
+      computability to Turing machines (cite:turing1937computability) (therefore
+      any computable function has a lambda term that computes it).
+
+      It might be difficult to imagine how we could express every computable
+      function in a lambda term. We believe that showing some practical examples
+      will be enlightening, thus we will briefly introduce the /Church
+      encoding/ for Booleans and natural numbers.
+      - *Booleans*. We define /true/ and /false/ thus: \[true:=λa.λb.a;\ \ \
+        false≔λa.λb.b\] As we can see, both /true/ and /false/ are defined as a
+        function that takes two arguments. The former returns the first argument
+        while the latter returns the second. Thus, this encoding of Booleans
+        conveniently allows us to use them as an /if then else/ expression. We
+        can use this concept to encode the /and/ and /or/ operators. It may help
+        to read the /and/ as ``if the first argument is true return the second
+        argument else return false''. Likewise for the /or/. \[and:=λa.λb.a\ b\
+        false;\ \ \ or≔λa.λb. a\ true\ b\]
+      - *Natural numbers*. The natural number $n$ is encoded as a lambda term
+        that applies $n$ times some parameter function $f$.
+        \[0:=λf.λa.a;\ \ \ 1≔λf.λa.f\ a;\ \ \ 2≔λf.λa.f\ (f\ a); \ \ \ …\]
+        Then we can define the successor function:
+        \[suc≔λn.λf.λa.f\ (n\ f\ a)\]
+        Let us show that the successor of 1 is indeed 2.
+        \begin{flalign*}
+        suc\ 1 &= (λn.λf.λa.f\ (n\ f\ a))\ (λf.λa.f\ a) & \text{Def}\\
+         &= λf.λa.f\ ((λf.λa.f\ a)\ f\ a)  & \text{$β$-reduction for $n$}\\
+         &= λf.λa.f\ (λa.f\ a)\ a  & \text{$β$-reduction for $f$}\\
+         &= λf.λa.f\ (f\ a)  & \text{$β$-reduction for $a$}\\
+         &= 2 & \text{Def}
+        \end{flalign*}
+        It is also easy to define addition and multiplication. It may help to
+        read /add n m/ as ``apply $m$ times $f$, then apply $n$ times $f$'' and
+        /mul n m/ as ``apply $n$ times (apply $m$ times)''. \[add≔λn.λm.λf.λa.n\ f\ (m\ f\
+        a);\ \ \ mul≔λn.λm.λf.λa.n\ (m\ f)\ a \]
+
+
 **** Simply typed lambda calculus
-      Let us introduce the idea of types in lambda calculus due to Curry. We view
-      types as predicates on lambda terms. We write $T:A$ to say that term $T$
-      satisfies predicate $A$, or synonymously, that term $T$ has type $A$.
+      Let us introduce the idea of types in lambda calculus due to Curry. We
+      view types as predicates on lambda terms. We write $T:A$ to say that the
+      term $T$ has type $A$.
 
       We fix a set of base types $𝐁$ and a set of term constants
       $Γ=\{⟨c₁:B₁⟩,⟨c₁:B₁⟩,…\}$, where for each $⟨c_i,B_i⟩$ we have $B_i∈𝐁$.
@@ -1854,12 +1900,14 @@ thanks
       The syntax of terms is defined thus. \[T≔x\ |\ T\ T\ |\ λ(x:S).T\ |\ c\]
       Where $S$ is a type, $c$ a term constant and $x$ a variable.
 
-      The syntax of types is defined thus. \[S≔B\ |\ S→S\] With $B∈𝐁$.
+      The syntax of types is defined thus. \[S≔B\ |\ S→S\] With $B∈𝐁$. The $→$
+      symbol has right associativity, so $A→B→C=A→(B→C)$.
 
-      Then we define typing rules to assign a type to suitable terms.
-      We call $Γ$ the context and we write $Γ⊢t:A$ to mean that $y$ has type $A$
-      in context $Γ$. When a term can be assigned a type we say that it is
-      well-typed.
+      Then we define typing rules to assign a type to suitable terms. We define
+      a context to be a set of tuples $⟨x:A⟩$ where $x$ is either a variable or
+      a constant and $A$ is a type. If $Γ$ is a context write $Γ⊢t:A$ to mean
+      that $y$ has type $A$ in context $Γ$. When a term can be assigned a type
+      in a context we say that it is well-typed in that context.
       #+caption: Typing rules for simply typed lambda calculus.
       #+name: fig:simply_typed
       #+attr_latex: :float
@@ -1873,6 +1921,35 @@ thanks
       \end{mathpar}
       \end{figure}
 
+      Let us now see how we can give types to Booleans and natural numbers
+      following the encoding given in the previous section considering a singleton
+      set of base types $B≔\{α\}$.
+      - *Booleans*. We define the type of Booleans thus: \[𝔹≔α→α→α\]
+        \[true:=λ(a:α).λ(b:α).a;\ \ \ false≔λ(a:α).λ(b:α).b\]
+        We proceed by showing that $∅⊢true:𝔹$.
+        \begin{figure}[H]
+        \begin{mathpar}
+        \inferrule*[Left=Def]{
+        \inferrule*[Left=Abs]{
+        \inferrule*[Left=Abs]{
+        \inferrule*[Left=Id]
+        {\ }
+        {\{⟨a:α⟩,⟨b:α⟩\} ⊢a:α}}
+        {\{⟨a:α⟩\} ⊢λ(b:α).a:α→α}}
+        {∅ ⊢λ(a:α).λ(b:α).a:α→α→α}}{∅ ⊢ true : 𝔹}
+        \end{mathpar}
+        \end{figure}
+        Likewise we can show that $∅⊢false:𝔹$. It is routine to check that
+        $∅⊢and:𝔹→𝔹$ and that $∅⊢or:𝔹→𝔹$. As we can see, types give us
+        information about the nature of the term. For instance, $and:𝔹→𝔹$ tells
+        us that $and$ is a lambda term that expects a Boolean as an argument and
+        returns a Boolean.
+
+      - *Natural numbers*. We define the type of natural numbers thus:
+        \[ℕ≔(α→α)→α→α\] \[0:=λ(f:α→α).λ(a:α).a;\ \ \ 1≔λ(f:α→α).λ(a:α).f\ a; \ \
+        \ …\] We can routinely check that for any natural number $n$ we have
+        $∅⊢n:ℕ$ and $∅⊢add:ℕ→ℕ→ℕ$ and $∅⊢mul:ℕ→ℕ→ℕ$.
+
       It is a well known property that simply typed lambda calculus is /strongly
       normalizing/, which means that every well-typed term can be reduced to a
       normal form. Thus it must be the case, and it is easy to observe, that
@@ -1883,26 +1960,24 @@ thanks
       Strong normalization is a desirable property, but it comes at the price of
       losing equivalence to Turing machines as there are many computable
       functions that cannot be expressed in simply typed lambda calculus.
-      To circumvent this, some versions of simply typed lambda calculus are
+      To circumvent this, some extensions of simply typed lambda calculus are
       extended with Curry's $Y$ combinator defined below. The $Y$ combinator, also
       known as the fixed-point combinator, is a primitive lambda term that can
       be added to the language and be assigned the type $(A →A)→A$ for any type
-      $A$. \[Y≔λg.(λx.g (x x))\ (λx.g (x x))\] The $Y$ combinator gives general
+      $A$. \[Y≔λg.(λx.g\ (x\ x))\ (λx.g\ (x\ x))\] The $Y$ combinator gives general
       recursion and thus the strong normalization property no longer holds.
 
-      Talk about system T and system F.
-
 **** Dependently typed lambda calculus
-     In this section we briefly describe a version of lambda calculus for
-     dependent types. For a more in depth presentation we ask the user to
-     refer to cite:loh2010tutorial.
+     Briefly touch on $LF$.  (cite:loh2010tutorial).
 ** Martin-Löf dependent type theory
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
-   can serve as a basis for all constructive mathematics.
+   can serve as the basis for constructive mathematics, furthermore, it can be
+   used as the specification of a programming language.
 
    The results presented in this section have been gathered from
    cite:martin1984intuitionistic,sep-type-theory-intuitionistic,nlab:martin-löf_dependent_type_theory.
 
+   
 ** Basic Agda
    In this section we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
