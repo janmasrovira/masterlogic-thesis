@@ -397,13 +397,13 @@ thanks
     write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$ instead of $⟨w,u,v⟩∈S$. The
     structure must satisfy the following conditions:
 
-    1. $R$ is a transitive;
+    1. $R$ is transitive;
     2. $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
     3. if $uS_wv$ then $wRu$ and $wRv$;
     4. if $wRu$ then $uS_wu$;
-    5. if $wRu$ and $uRv$ then $uS_wv$.
-    6. for every $w$, $S_w$ is transitive;
+    5. if $wRu$ and $uRv$ then $uS_wv$;
+    6. for every $w$, $S_w$ is transitive.
     {{{enddef}}}
 
 
@@ -510,16 +510,16 @@ thanks
 #+name: fig:table-trans
 #+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
-| Nr. | Semantic requirement for transitivity                                                  | Mentioned in                              |
-|-----+----------------------------------------------------------------------------------------+-------------------------------------------|
-| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | how to cite? \cite{joosten2020overview}   |
-| (2) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 \cite{Verbrugge}            |
-| (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | \cite{joosten2020overview}                |
-| (4) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}         |
-| (5) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | \cite{joosten2020overview}                |
-| (6) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}            |
-| (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | \cite{joosten2020overview}                |
-| (8) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle} |
+| Nr. | Semantic requirement for transitivity                                                  | Mentioned in                                  |
+|-----+----------------------------------------------------------------------------------------+-----------------------------------------------|
+| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | Joosten et al. '20 \cite{joosten2020overview} |
+| (2) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 '20 \cite{Verbrugge}            |
+| (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. \cite{joosten2020overview}     |
+| (4) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}             |
+| (5) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. '20 \cite{joosten2020overview} |
+| (6) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}                |
+| (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | Joosten et al. '20 \cite{joosten2020overview} |
+| (8) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle}     |
 
    #+caption: Diagrams for conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
@@ -695,7 +695,26 @@ thanks
   was suggested by Luka Mikec during online correspondence.
 
 ** From ordinary to generalized
-   <<sec:ord-to-gen>>
+   <<sec:ord-to-gen>> The transformation from an ordinary to a generalized
+   Veltman frame is immediate.
+
+   {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be an ordinary Veltman model. We define
+   $M'≔⟨W,R,S',V⟩$ where $S'≔⟨⟨w,u,\{v\}:⟨w,u,v⟩∈S⟩⟩$. Then M' is a generalized
+   Veltman frame. Furthermore, for any world $w$ and formula $A$ we have that
+   \[M,w⊩A⇔M',w⊩A.\]{{{endtheorem}}} {{{beginproof}}} We observe that the
+   quasi-transitivity condition for ordinary models entails the
+   quasi-transitivity Condition (6) for our $M'$ model. Keep in mind that by
+   definition of $M'$ we only have singleton sets in the third component of
+   $S'$. Now assume that $uS'_x\{y\}$ and $yS'_x\{y'\}$. By definition of $S'$
+   it follows that $uS_xyS_xy'$ and by quasi-transitivity of $M$ we have
+   $uS_xy'$ and thus $uS_x\{y'\}$. Then, by theorem [[theorem:trans]] we know that
+   quasi-transitivity Condition (6) implies Conditions (1), (3)-(8), thus, the
+   presented transformation works for any of those notions of
+   quasi-transitivity. Moreover, if we wish to obtain a generalized Veltman
+   frame with quasi-transitivity Condition (2) we take monotone closure of $S'$
+   as described in theorem [[theorem:mono]]. We leave the rest of the details to be
+   worked out by the reader. {{{endproof}}}
+
 ** From generalized to ordinary (Verbrugge)
    <<sec:verbrugge>>
    In this section we proof that given a generalized Veltman model that satisfies
@@ -869,24 +888,43 @@ thanks
      Finally by $xS_b\{v\}$ and [[eq:verb-Sbwx]] we get $wS_b\{v\}$.
    {{{endproof}}}
 ** From generalized to ordinary (Luka)
-   <<sec:gen-to-ord-luka>>
+   <<sec:gen-to-ord-luka>> In this section we present a transformation that
+   achieves the same as the one presented in Section [[sec:verbrugge]], however, it
+   is much simpler. This transformation was described by Mikec in an online
+   conversation during the development of this project.
 
-   I tried reconstructing the remainder of Mladen's proof and got stuck on
-   another issue. Instead of trying to fix it, I started playing with another
-   formulation of the same (or similar) construction which I think is much more
-   convenient:
+   {{{begintheorem}}} Let $M$ a generalized Veltman model with
+   quasi-transitivity Condition 3, 4, 5 or 6. By theorem [[theorem:trans]] we shall
+   assume without loss of generality that $M$ satisfies quasi-transitivity
+   Condition 3. We remind the reader that the condition reads thus: \[uS_xY ⇒
+   ∃\, \textcolor{blue}{y}∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'').\] For
+   every $⟨x,u,Y⟩$ such that $uS_xY$ we fix the $y$ that is highlighted in blue
+   and name it $y_{xuY}$.
 
-   For every $u S_w V$ and $v \in V$, put $u_{(w, v)} S_w \{v\}$,
-   where $u_{(w, v)}$ is a fresh world that inherits transitions that the world
-   $u$ was a part of. The construction should be performed recursively, starting
-   with R-leaves $w$, then proceeding with their direct R-ancestors etc. Finally,
-   remove all transition $u S_w V$ where $|V| > 1$.
+   We define $M'≔⟨W,R,S',V⟩$ with $S'≔\{⟨w,x,v⟩:∃V.wS_xV∧ y_{xwV}=v\}$. Then
+   $M'$ is an ordinary Veltman frame and it holds that for every $w∈W$ and
+   $A∈Fm$ we have \[M,w⊩A⇔M',w⊩A.\]
 
-   Unless I'm missing something, it is almost obvious that this preserves truth
-   values. There are details to be spelled out though, for example what does
-   $u_{(w, v)}$ inherit exactly (it shouldn't be too hard, I actually did
-   something similar in the old version of the IL complexity paper).
+   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} It is not hard to check that all
+   the conditions hold. {{{endproof}}}
+   # I tried reconstructing the remainder of Mladen's proof and got stuck on
+   # another issue. Instead of trying to fix it, I started playing with another
+   # formulation of the same (or similar) construction which I think is much more
+   # convenient:
 
+   # For every $u S_w V$ and $v \in V$, put $u_{(w, v)} S_w \{v\}$,
+   # where $u_{(w, v)}$ is a fresh world that inherits transitions that the world
+   # $u$ was a part of. The construction should be performed recursively, starting
+   # with R-leaves $w$, then proceeding with their direct R-ancestors etc. Finally,
+   # remove all transition $u S_w V$ where $|V| > 1$.
+
+   # Unless I'm missing something, it is almost obvious that this preserves truth
+   # values. There are details to be spelled out though, for example what does
+   # $u_{(w, v)}$ inherit exactly (it shouldn't be too hard, I actually did
+   # something similar in the old version of the IL complexity paper).
+
+** A false theorem in disguise
+   comment on Mladen's "theorem".
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
   formulas that carries some special significance.
@@ -1765,13 +1803,13 @@ thanks
    mathematical concepts through terms, types and a typing relation between
    them. One could think of types as predicates on terms. We write $T:A$ to say
    that term $T$ satisfies predicate $A$, or synonymously, that term $T$ has
-   type $A$. Later in this section we will see that types in simply typed lambda
-   calculus provide a basic classification of lambda terms. For instance, a term
-   representing a natural number will have a different type from a lambda term
-   representing a Boolean value. In more expressive type theories such as
-   dependent types theory we can express complex mathematical properties such as
-   ``$2*n$ is always even'' or that ``any finite sequence of numbers can be
-   sorted''.
+   type $A$. Later in this section we will see that types in /simply typed
+   lambda calculus/ provide a basic classification of lambda terms. For
+   instance, a term representing a natural number will have a different type
+   from a lambda term representing a Boolean value. In more expressive type
+   theories which feature dependent types, such as /intuitionistic type theory/,
+   we can express complex mathematical properties such as ``$2*n$ is
+   always even'' or that ``any finite sequence of numbers can be sorted''.
 
    Type theory has become especially relevant in the following areas.
    - *Programming languages and proof assistants*. Simple (non-dependent) types
@@ -1793,39 +1831,37 @@ thanks
      role for constructive mathematics as Zermelo-Fraenkel set theory does for
      classical mathematics.
 
-     (This paragraph is a quote from cite:hottbook) Univalent Foundations
-     of Mathematics is Vladimir Voevodsky’s new program for a comprehensive,
+     (This paragraph is a quote from cite:hottbook) /Univalent Foundations
+     of Mathematics/ is Vladimir Voevodsky’s new program for a comprehensive,
      computational foundation for mathematics based on the homotopical
      interpretation of type theory. The type theoretic univalence axiom relates
      propositional equality on the universe with homotopy equivalence of small
      types. The program is currently being implemented with the help of the
      automated proof assistant Coq. The Univalent Foundations program is closely
      tied to homotopy type theory.
-   # - *Category theory*. 
 **** The origins of types
        (cite:sep-type-theory) Types were first introduced by Russel in 1903 in
       ``Apendix B: The Doctrine of Types, from Principia Mathematica'' while
       trying to avoid a contradiction in set theory, namely Russel's paradox. In
       Principia Mathematica types are defined as follows.
-       1. $i$ is the type of individuals (elements of some fixed domain).
+       1. $i$ is the type of individuals (elements of some fixed domain);
        2. if $A_1,…,A_n$ (for $n≥0$) are types then $(A_1,…,A_n)$ is the type of
           n-ary relations over objects of respective types $A_1,…,A_n$. Note that
           for $n=0$ we have that $()$ is the type of propositions.
-       For instance, the type of binary relations over individuals is $(i,i)$, the
-       type of binary propositional connectives is $((),())$, the type of
-       quantifiers over individuals is $((i))$. Observe that this formulation
-       prevents a proposition of the form $R(R)$. Assume for a contradiction that
-       $R(R)$ is a proposition, then we have that (by looking at the outer
-       occurrence) $R$ has type $(A)$ for some type $A$ and thus (by looking at the
-       inner occurrence) $R$ has type $A$ but $A≠(A)$. This observation is the key
-       for avoiding Russel's paradox using types.
+       For instance, the type of binary relations over individuals is $(i,i)$,
+       the type of binary propositional connectives is $((),())$. Observe that
+       this formulation prevents a proposition of the form $R(R)$. Assume for a
+       contradiction that $R(R)$ is a proposition, then we have that (by looking
+       at the outer occurrence) $R$ has type $(A)$ for some type $A$ and thus
+       (by looking at the inner occurrence) $R$ has type $A$ but $A≠(A)$. This
+       observation is the key for avoiding Russel's paradox using types.
 
        The more habitual definition of types is the one that stems from Church's
        formalization of lambda calculus which includes functions as primitive
        objects.
-       1. $i$ is the type of individuals.
-       2. $o$ is the type of propositions.
-       3. If $A$ and $B$ are types then $A→B$ is the type of functions from $A$ to $B$.
+       1. $i$ is the type of individuals;
+       2. $o$ is the type of propositions;
+       3. if $A$ and $B$ are types then $A→B$ is the type of functions from $A$ to $B$.
        We may observe that $i→o$ is the type of predicates on individuals, $i→i$ is
        the type of functions on individuals and $\underbrace{i→(i→…→(i}_{n}→o))$ is
        an \text{$n$-ary} relation. Although this definition of types is relevant
@@ -1836,10 +1872,12 @@ thanks
 **** Untyped lambda calculus
       For the language of terms we present a refinement of Church's version due to
       Curry:
-      1. Variable: every variable is a term.
-      2. Function application: If $A$ and $B$ are terms then $A\ B$ is a term.
+      1. /variable/: every variable is a term;
+      2. /function application/: If $A$ and $B$ are terms then $A\ B$ is a term.
          Note that application associates to the left, thus $A\ B\ C=(A\ B)\ C$.
-      3. Lambda abstraction: If $x$ is a variable and $A$ is a term then $λx.A$ is a term.
+      3. /lambda abstraction/: If $x$ is a variable and $A$ is a term then $λx.A$
+         is a term. The body of a lambda abstraction (the expression after the
+         .) extends to the rightmost part. Thus $λx.λy.x\ y=λx.(λy.x\ y)$.
       This can be more succinctly expressed in Backus-Naur form: \[T≔x\ |\ T\
       T\ |\ λx.T\] In lambda calculus we have the following equation known as
       \text{$β$-reduction}. \[(λx.T)\ A=T[x↦A]\] This equation is often given as
@@ -1851,11 +1889,12 @@ thanks
       form term as showcased by the following term, which reduces to itself:
       \[(λx.x\ x)\ (λx.x\ x) \] Notice how this term is of the form $R(R)$ (or
       $R\ R$, in the new syntax), which we were able to rule out before by using
-      types.
+      types. In fact, in the next section we will see how this term cannot be
+      assigned a type.
 
       Turing showed that untyped lambda calculus is equivalent in terms of
-      computability to Turing machines (cite:turing1937computability) (therefore
-      any computable function has a lambda term that computes it).
+      computability to Turing machines (cite:turing1937computability), therefore
+      any computable function has a lambda term that computes it.
 
       It might be difficult to imagine how we could express every computable
       function in a lambda term. We believe that showing some practical examples
@@ -1865,11 +1904,14 @@ thanks
         false≔λa.λb.b\] As we can see, both /true/ and /false/ are defined as a
         function that takes two arguments. The former returns the first argument
         while the latter returns the second. Thus, this encoding of Booleans
-        conveniently allows us to use them as an /if then else/ expression. We
-        can use this concept to encode the /and/ and /or/ operators. It may help
-        to read the /and/ as ``if the first argument is true return the second
-        argument else return false''. Likewise for the /or/. \[and:=λa.λb.a\ b\
-        false;\ \ \ or≔λa.λb. a\ true\ b\]
+        conveniently allows us to define an /if then else/ expression.
+        \[ite≔λb.λx.λy.b\ x\ y\] It is immediate to see by means of
+        \text{$β$-reduction} that \[ite\ b\ x\ y=b\ x\ y\] hence, we will
+        usually prefer to write $b\ x\ y$ instead of $ite\ b\ x\ y$. We can use
+        the /if then else/ concept to encode the /and/ and /or/ operators. It
+        may help to read the /and/ as ``if the first argument is true return the
+        second argument else return false''. Likewise for the /or/.
+        \[and:=λa.λb.a\ b\ false;\ \ \ or≔λa.λb. a\ true\ b\]
       - *Natural numbers*. The natural number $n$ is encoded as a lambda term
         that applies $n$ times some parameter function $f$.
         \[0:=λf.λa.a;\ \ \ 1≔λf.λa.f\ a;\ \ \ 2≔λf.λa.f\ (f\ a); \ \ \ …\]
@@ -1895,7 +1937,7 @@ thanks
       term $T$ has type $A$.
 
       We fix a set of base types $𝐁$ and a set of term constants
-      $Γ=\{⟨c₁:B₁⟩,⟨c₁:B₁⟩,…\}$, where for each $⟨c_i,B_i⟩$ we have $B_i∈𝐁$.
+      \[Γ=\{⟨c₀^0:B₀⟩,⟨c₀^1:B₀⟩,…,⟨c₁^0:B₁⟩,⟨c₁^1:B₁⟩,…\},\], where each $B_i∈𝐁$.
 
       The syntax of terms is defined thus. \[T≔x\ |\ T\ T\ |\ λ(x:S).T\ |\ c\]
       Where $S$ is a type, $c$ a term constant and $x$ a variable.
@@ -1922,8 +1964,8 @@ thanks
       \end{figure}
 
       Let us now see how we can give types to Booleans and natural numbers
-      following the encoding given in the previous section considering a singleton
-      set of base types $B≔\{α\}$.
+      following the encoding given in the previous section. For that, we
+      consider a singleton set of base types $B≔\{α\}$.
       - *Booleans*. We define the type of Booleans thus: \[𝔹≔α→α→α\]
         \[true:=λ(a:α).λ(b:α).a;\ \ \ false≔λ(a:α).λ(b:α).b\]
         We proceed by showing that $∅⊢true:𝔹$.
@@ -1940,9 +1982,9 @@ thanks
         \end{mathpar}
         \end{figure}
         Likewise we can show that $∅⊢false:𝔹$. It is routine to check that
-        $∅⊢and:𝔹→𝔹$ and that $∅⊢or:𝔹→𝔹$. As we can see, types give us
-        information about the nature of the term. For instance, $and:𝔹→𝔹$ tells
-        us that $and$ is a lambda term that expects a Boolean as an argument and
+        $∅⊢and:𝔹→𝔹→𝔹$ and that $∅⊢or:𝔹→𝔹→𝔹$. As we can see, types give us
+        information about the nature of the term. For instance, $and:𝔹→𝔹→𝔹$ tells
+        us that $and$ is a lambda term that expects two Booleans as arguments and
         returns a Boolean.
 
       - *Natural numbers*. We define the type of natural numbers thus:
@@ -1967,8 +2009,62 @@ thanks
       $A$. \[Y≔λg.(λx.g\ (x\ x))\ (λx.g\ (x\ x))\] The $Y$ combinator gives general
       recursion and thus the strong normalization property no longer holds.
 
-**** Dependently typed lambda calculus
-     Briefly touch on $LF$.  (cite:loh2010tutorial).
+**** Type theory with dependent types
+     In this section we will present the intuitionistic type theory presented in
+     cite:nordstrom1990programming.
+
+     In this logic we have four types of judgment:
+     1. $a$ has type $A$. We write $a:A$. Crucially, in a type theory that
+        follows the paradigm of /propositions as types/ we may interpret the
+        statement $a:A$ in several ways, all of them equivalent in such paradigm:
+        - The term $a$ has type $A$;
+        - the term $a$ satisfies the proposition $A$;
+        - the term $a$ is a proof of the proposition $A$;
+        - the term $a$ is a program that satisfies the specification $A$.
+     2. $A$ is a type. We write $A:Type$.
+     3. $A_1$ and $A_2$ are equal types. We write $A_1=A_2:Type$.
+     4. $a_1$ and $a_2$ are equal elements of the type $A$. We write $a_1=a_2:A$.
+
+     We say that some proposition (or type) $A$ is true if there exists some $t$
+     such that $t:A$.
+
+     We will proceed by introducing the syntax of types:
+     - /top/. The constant $⊤$ is a type;
+     - /bottom/. The constant $⊥$ is a type;
+     - /disjoint sum/. If $A$ and $B$ are types then $A⊎B$ is a type;
+     - /dependent product/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
+       type that may depend on $x$, then $Σ\ (x: A)\ B(x)$ is a type. When
+       $B$ is independent of $x$ we may write $A × B$ instead;
+     - /dependent function/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
+       type that may depend on $x$, then $(x: A) → B(x)$ is a type. When $B$
+       is independent of $x$ we may write $A → B$ instead.
+     Summarizing in BNF we have: \[⊤\ |\ ⊥ \ |\ S⊎S\ |\ Σ\ (x : S)\ S(x)\ |\
+     (x:S)→S(x)\]
+
+     while
+     identifying in the sense of Heyting (cite:heyting1966intuitionism) the
+     types with the logical constants and operators, namely $∧,∨,→,⊤,⊥$.
+     1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of
+        $A$ into a proof of $B$.
+     2. A proof of $A×B$ is a proof of $A$ and a proof of $B$. Terms
+     3. A proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we
+        commit to and according to that, a proof of $A$ or a proof of $B$;
+     4. Nothing is a proof of $⊥$;
+     5. $⊤$ is always true and provable.
+
+     The syntax of terms is introduced in conjunction with the introduction
+     typing rules:
+     \begin{mathpar}
+     \inferrule[$⊤$-intro]{\ }{Γ⊢\texttt{tt}:⊤}
+     \end{mathpar}
+
+     - $a , b$
+
+***** pend
+         define sets
+         define arity: Arities are defined inductively in the following way:
+           - $𝟬$
+         - define expressions
 ** Martin-Löf dependent type theory
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
    can serve as the basis for constructive mathematics, furthermore, it can be
@@ -1977,7 +2073,7 @@ thanks
    The results presented in this section have been gathered from
    cite:martin1984intuitionistic,sep-type-theory-intuitionistic,nlab:martin-löf_dependent_type_theory.
 
-   
+   See chapter 5 and 14 of cite:nordstrom1990programming.
 ** Basic Agda
    In this section we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
