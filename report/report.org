@@ -19,6 +19,7 @@
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 #+latex_header: \usepackage{multicol}
+#+latex_header: \usepackage{spverbatim}
 
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
@@ -924,7 +925,38 @@ thanks
    # something similar in the old version of the IL complexity paper).
 
 ** A false theorem in disguise
-   comment on Mladen's "theorem".
+
+   In this section we give an example that shows the importance of verified proofs.
+
+   The transformations from a generalized to an ordinary Veltman model given in
+   Sections [[sec:verbrugge]] and [[sec:gen-to-ord-luka]] work for simple notions of
+   quasi-transitivity but does not work for Condition (2), which is the one
+   which we have picked as standard in this report. In
+   cite:vukovic2008bisimulations a transformation which is supposed to work for
+   Condition (2) is presented. We studied the transformation and started to
+   formalize in Agda the proof of its correctness following the proof of
+   Proposition 2.8 of cite:vukovic2008bisimulations. Despite of our best efforts
+   we could not follow some steps which are claimed to be obvious in the
+   original paper. After that, we decided to ask the original author for a
+   clarification. He kindly replied but was unable to find a satisfying fix for
+   the holes in the proof. After further investigation we realized that the
+   proof had fundamental flaws which could not be fixed easily. Sadly, we have
+   to conclude that Proposition 2.8 of cite:vukovic2008bisimulations is no
+   longer a proven theorem. Thus, the problem of finding transformation from a
+   generalized model (with Condition (2)) to an ordinary model such that it
+   preserves some structure of the original model remains an open question. By
+   ``preserves some structure'' we mean that we should have a property similar
+   to \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈Fm.\]
+
+   We believe that this example should be taken as a humbling remainder that we
+   are humans and we make mistakes. Even if a proof has been through skilled
+   reviewers from a well established journal it is still suspect of being flawed
+   in some subtle way. For this reason, we believe that computer checked proofs
+   should gain relevance in all fields of logic. We know that nowadays proof
+   assistants are far from perfect and usually require a lot of time investment
+   both on learning and in formalizing big scale mathematical proofs. However,
+   the confidence level that they offer certainly outweighs their negatives in
+   some situations.
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
   formulas that carries some special significance.
@@ -4928,8 +4960,7 @@ heading=bibintoc,
 title=Bibliography
 ]
 
-* Appendix
-  All the Agda code goes here.
+* TODO Appendix
+  TODO: include all the necessary unicode characters.
 
-  # #+INCLUDE: "./all.org" example
-  # #+INCLUDE: "./latex/Base.tex" export latex
+  # #+INCLUDE: "./latex/all.tex" export latex
