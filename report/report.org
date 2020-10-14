@@ -727,11 +727,23 @@ thanks
    worked out by the reader. {{{endproof}}}
 
 ** From generalized to ordinary
-   <<sec:verbrugge>>
-   In this section we proof that given a generalized Veltman model that satisfies
-   a certain property, we can build an ordinary Veltman model with the same
-   associated forcing relation. For the rest of this section we fix a generalized
-   Veltman model $M≔⟨W, R, S, V⟩$.
+   <<sec:verbrugge>> In this section we show that given a generalized Veltman
+   model $M$ with quasi-transitivity condition $(i)∈\{3,4,5,6\}$, we can build
+   an ordinary Veltman model $M'$ such that for every world in $M$ we can find a
+   world in $M'$ with the same truth value.
+
+   It is worth mentioning that there exists a much simpler transformation which
+   we present in the next Section ([[sec:gen-to-ord-luka]]) and works for the same
+   quasi-transitivity Conditions as the transformation presented here. We still
+   believe that this transformation holds value for historical reasons as it was
+   the first to be sketched by Verbrugge in an unpublished manuscript
+   (cite:Verbrugge). In the manuscript there is a comment where the author says
+   that the transformation may also hold for Condition (2) but she has not
+   checked it yet. Unfortunately some steps in the proof do not work if we take
+   a generalized model with quasi-transitivity Condition (2).
+
+   For the rest of this section we fix a generalized Veltman model $M≔⟨W, R, S,
+   V⟩$.
 
    We define an ordinary Veltman model $M'≔⟨W',R',S',V'⟩$ where
    \begin{flalign*}
