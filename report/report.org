@@ -103,6 +103,8 @@
 #+latex_header: \newcommand{\ilall}[0]{\ensuremath{\mathsf{IL}}(All)}
 #+latex_header: \newcommand{\rep}[1]{⌜#1⌝}
 #+latex_header: \newcommand{\prov}[1]{\prin{Prov}(#1)}
+#+latex_header: \newcommand{\fm}[0]{\ensuremath{\mathsf{Fm}}}
+#+latex_header: \newcommand{\var}[0]{\ensuremath{\mathsf{Var}}}
 
 
 # remember to invoke with \ilall{} and not \ilall so that the space at the end
@@ -220,14 +222,14 @@ thanks
    for any realization $*$. Solovay proved that arithmetical completeness, which
    is the converse of soundness, also holds.
 
-   Provability logics have Kripke (relational) semantics. As a remainder a
+   Provability logics have Kripke (relational) semantics. As a reminder a
    Kripke model is a tuple $⟨W,R,V⟩$ where $W$ is a non-empty set of worlds, $R$
-   is a binary relation on worlds and $V⊆W×Var$ is a valuation. Then we define a
-   forcing relation $⊩\ ⊆W×Fm$ thus:
+   is a binary relation on worlds and $V⊆W×\var{}$ is a valuation. Then we define a
+   forcing relation $⊩\ ⊆W×\fm{}$ thus:
    1. $w⊮⊥$;
-   2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
-   3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-   4. if $A,B∈Fm$, then $w⊩□A$ iff if $wRu$ then $u⊩A$.
+   2. if $p∈\var{}$, then $w⊩p$ iff $⟨w,p⟩∈V$;
+   3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+   4. if $A,B∈\fm{}$, then $w⊩□A$ iff if $wRu$ then $u⊩A$.
    In order to have modal soundness and completeness we ought to restrict the
    class of frames that we consider. We say that a frame $⟨W,R⟩$ is a
    $\text{\gl{}-frame}$ if $R$ is transitive and conversely well-founded, that
@@ -259,11 +261,13 @@ thanks
 
 ** Language
    <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
-   Formulas are defined recursively thus:
-   \[Fm≔Var\ |\ ⊥\ |\ Fm→Fm \ |\  Fm▷Fm.\]
-
-   We define $Var≔ℕ$. However, we use non-capital letters $a,b,c,x,y,z…$ to
-   refer to variables.
+   Formulas are defined recursively as usual:
+   1. /Variable/. If $x$ is a variable, then $x$ is a formula;
+   2. /Bottom/. The constant $⊥$ is a formula;
+   3. /Implication/. If $A$ and $B$ are formulas, then $A→B$ is a formula;
+   4. /Interprets/. If $A$ and $B$ are formulas, then $A▷B$ is a formula.
+   We denote the set of valid formulas as \fm{}. We define $\var{}≔ℕ$. However, we
+   use non-capital letters $a,b,c,x,y,z…$ to refer to variables.
 
    We define the usual operators and constants in the following way:
    1. $¬ A ≔ A → ⊥$;
@@ -275,9 +279,9 @@ thanks
    7. $♢ A ≔ ¬ □ ¬ A$.
 
    The precedence (from higher to lower) of the operators is in the following
-   order: $∧,▷,∨,→$.
+   order: \[∧,▷,∨,→\]
 
-   The scope of unary symbols ($□,♢,¬$) is as small as possible. Thus $□A∧¬¬B$ is
+   The scope of unary symbols $□,♢,¬$ is as small as possible. Thus $□A∧¬¬B$ is
    the same as $(□A)∧(¬¬B)$.
 ** Notation
    Some notation that we use throughout the report:
@@ -410,17 +414,17 @@ thanks
 
 
     {{{begindef}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$ is a structure
-    constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×Var$. If
+    constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×\var{}$. If
     $F=⟨W,R,S⟩$ we will write $M=⟨W,R,S,V⟩$ instead of $M=⟨⟨W,R,S⟩,V⟩$. {{{enddef}}}
 
     {{{begindef}}} <<def:ord-forcing>> Given a model $M$, we define a forcing
-    relation $\gls{forcing-ord}⊆W × Fm$. We write $M,w⊩A$ instead of
+    relation $\gls{forcing-ord}⊆W × \fm{}$. We write $M,w⊩A$ instead of
     $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear from the
     context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
     1. $w⊮⊥$;
-    2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
-    3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $v$ such
+    2. if $p∈\var{}$, then $w⊩p$ iff $⟨w,p⟩∈V$;
+    3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+    4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $v$ such
        that $v⊩B$ and $uS_wv$.
     {{{enddef}}}
 
@@ -430,11 +434,11 @@ thanks
     {{{begincoro}}}
     <<coro:ord-semantics>>
     It can be shown that:
-    1. If $A,B∈Fm$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
-    1. If $A,B∈Fm$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
-    2. if $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
-    3. if $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
-    4. if $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+    1. If $A,B∈\fm{}$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
+    1. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
+    2. if $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
+    3. if $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
+    4. if $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
     {{{endcoro}}}
     {{{beginproof}}}
     {{{agda}}}
@@ -471,15 +475,15 @@ thanks
     {{{begindef}}}
     <<def:gen-frame>>
     A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
-    constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×Var$.
+    constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×\var{}$.
     {{{enddef}}}
     {{{begindef}}}
     Given a model $M$, we define a forcing relation $\gls{forcing-gen}⊆W ×
-    Fm$. We use the same notational conventions as in the ordinary semantics.
+    \fm{}$. We use the same notational conventions as in the ordinary semantics.
     1. $w⊮⊥$;
-    2. if $p∈Var$, then $w⊩p$ iff $⟨w,p⟩∈V$;
-    3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $Y$ such
+    2. if $p∈\var{}$, then $w⊩p$ iff $⟨w,p⟩∈V$;
+    3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+    4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $Y$ such
        that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
        have $y⊩B$;
     {{{enddef}}}
@@ -489,11 +493,11 @@ thanks
 
     {{{begincoro}}} We can show the same results in Corollary [[coro:ord-semantics]]
     for generalized semantics:
-    1. If $A,B∈Fm$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
-    1. If $A,B∈Fm$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
-    2. If $A∈Fm$, then $w⊩¬A$ iff $w⊮A$;
-    3. If $A∈Fm$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
-    4. If $A∈Fm$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+    1. If $A,B∈\fm{}$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
+    1. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
+    2. If $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
+    3. If $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
+    4. If $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
     {{{endcoro}}}
     {{{beginproof}}}
     {{{agda}}}
@@ -681,9 +685,11 @@ thanks
   {{{endremark}}}
 
 * Generalized vs ordinary models
-  In this section we discuss how we can transform an ordinary model into a
-  generalized model and vice versa. Of course, we want the transformation to
-  maintain the forcing relation associated with the models.
+  In this section we explore the expressiveness of ordinary and generalized
+  Veltman semantics. In particular, we discuss how we can transform an ordinary
+  model into a generalized model and vice versa. Needless to say, we have the
+  requirement that the transformation preserves the truth value of the original
+  model.
 
   In Section [[sec:ord-to-gen]] we see a straightforward transformation from an
   ordinary Veltman model into a generalized Veltman model. In Section
@@ -694,21 +700,24 @@ thanks
   showing that the same transformation also works for Conditions (3), (4) and
   (5). In Section [[sec:gen-to-ord-luka]] we show a transformation that achieves the
   same as Verbrugge's transformation but it is much simpler. This transformation
-  was suggested by Luka Mikec during online correspondence.
+  was suggested by Mikec during online correspondence.
 
 ** From ordinary to generalized
-   <<sec:ord-to-gen>> The transformation from an ordinary to a generalized
-   Veltman frame is immediate.
+   <<sec:ord-to-gen>> In this section we present a theorem that shows how we can
+   easily transform an ordinary model to a generalized model for any of the
+   presented quasi-transitivity conditions. The resulting generalized model has
+   the same set of worlds as the original and truth value is preserved.
 
    {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be an ordinary Veltman model. We define
    $M'≔⟨W,R,S',V⟩$ where $S'≔⟨⟨w,u,\{v\}:⟨w,u,v⟩∈S⟩⟩$. Then M' is a generalized
-   Veltman frame. Furthermore, for any world $w$ and formula $A$ we have that
+   Veltman frame with quasi-transitivity condition $(i)∈\{(1),…,(8)\}$.
+   Furthermore, for any world $w$ and formula $A$ we have that
    \[M,w⊩A⇔M',w⊩A.\]{{{endtheorem}}} {{{beginproof}}} We observe that the
-   quasi-transitivity condition for ordinary models entails the
-   quasi-transitivity Condition (6) for our $M'$ model. Keep in mind that by
-   definition of $M'$ we only have singleton sets in the third component of
-   $S'$. Now assume that $uS'_x\{y\}$ and $yS'_x\{y'\}$. By definition of $S'$
-   it follows that $uS_xyS_xy'$ and by quasi-transitivity of $M$ we have
+   transitivity condition for the ordinary models $M$ entails the
+   quasi-transitivity Condition (6) for the $M'$ generalized model. Keep in mind
+   that by definition of $M'$ we only have singleton sets in the third component
+   of $S'$. Now assume that $uS'_x\{y\}$ and $yS'_x\{y'\}$. By definition of
+   $S'$ it follows that $uS_xyS_xy'$ and by quasi-transitivity of $M$ we have
    $uS_xy'$ and thus $uS_x\{y'\}$. Then, by theorem [[theorem:trans]] we know that
    quasi-transitivity Condition (6) implies Conditions (1), (3)-(8), thus, the
    presented transformation works for any of those notions of
@@ -717,7 +726,7 @@ thanks
    as described in theorem [[theorem:mono]]. We leave the rest of the details to be
    worked out by the reader. {{{endproof}}}
 
-** From generalized to ordinary (Verbrugge)
+** From generalized to ordinary
    <<sec:verbrugge>>
    In this section we proof that given a generalized Veltman model that satisfies
    a certain property, we can build an ordinary Veltman model with the same
@@ -889,11 +898,10 @@ thanks
      \end{equation}
      Finally by $xS_b\{v\}$ and [[eq:verb-Sbwx]] we get $wS_b\{v\}$.
    {{{endproof}}}
-** From generalized to ordinary (Luka)
+** From generalized to ordinary (a simpler approach)
    <<sec:gen-to-ord-luka>> In this section we present a transformation that
-   achieves the same as the one presented in Section [[sec:verbrugge]], however, it
-   is much simpler. This transformation was described by Mikec in an online
-   conversation during the development of this project.
+   achieves the same as the one presented in Section [[sec:verbrugge]]. However, the
+   process described here is much simpler as it does not modify the set of worlds.
 
    {{{begintheorem}}} Let $M$ a generalized Veltman model with
    quasi-transitivity Condition 3, 4, 5 or 6. By theorem [[theorem:trans]] we shall
@@ -903,9 +911,9 @@ thanks
    every $⟨x,u,Y⟩$ such that $uS_xY$ we fix the $y$ that is highlighted in blue
    and name it $y_{xuY}$.
 
-   We define $M'≔⟨W,R,S',V⟩$ with $S'≔\{⟨w,x,v⟩:∃V.wS_xV∧ y_{xwV}=v\}$. Then
+   We define $M'≔⟨W,R,S',V⟩$ with $S'≔\{⟨w,x,v⟩:∃Y.wS_xY∧ y_{xwY}=v\}$. Then
    $M'$ is an ordinary Veltman frame and it holds that for every $w∈W$ and
-   $A∈Fm$ we have \[M,w⊩A⇔M',w⊩A.\]
+   $A∈\fm$ we have \[M,w⊩A⇔M',w⊩A.\]
 
    {{{endtheorem}}} {{{beginproof}}} {{{agda}}} It is not hard to check that all
    the conditions hold. {{{endproof}}}
@@ -925,18 +933,27 @@ thanks
    # $u_{(w, v)}$ inherit exactly (it shouldn't be too hard, I actually did
    # something similar in the old version of the IL complexity paper).
 
-** A false theorem in disguise
-
-   In this section we give an example that shows the importance of verified proofs.
+** A flawed proof in disguise
+   As we all know, mathematical proofs can get long and tedious to follow. It is
+   an art to guide the reader through the key steps of the proof and prevent
+   them from getting lost in the details. In order to achieve that, a resource
+   that is often used is to omit details of trivial claims during the proof.
+   Omitting details saves a lot of time and usually there is no harm in it.
+   However, we may mistakenly believe that something is trivial, whereas in
+   reality it may not be trivial, or in the worst case, it may not even be true.
+   If the mistake is overlooked, we may end up building on top of an
+   inconsistent basis. Needless to say, this is an unacceptable situation which
+   we should try to avoid at all costs. In this section we present an example of
+   a published flawed proof. We discovered the flaw while trying to formalize
+   the proof in Agda. We proceed by giving some context to the proof.
 
    The transformations from a generalized to an ordinary Veltman model given in
    Sections [[sec:verbrugge]] and [[sec:gen-to-ord-luka]] work for simple notions of
-   quasi-transitivity but does not work for Condition (2), which is the one
-   which we have picked as standard in this report. In
-   cite:vukovic2008bisimulations a transformation which is supposed to work for
-   Condition (2) is presented. We studied the transformation and started to
-   formalize in Agda the proof of its correctness following the proof of
-   Proposition 2.8 of cite:vukovic2008bisimulations. Despite of our best efforts
+   quasi-transitivity but do not work for Condition (2), which is the standard.
+   In cite:vukovic2008bisimulations a transformation which is supposed to work
+   for Condition (2) is presented. We studied the transformation and started to
+   formalize the proof in Agda of its correctness following the proof of
+   Proposition 2.8 in cite:vukovic2008bisimulations. Despite of our best efforts
    we could not follow some steps which are claimed to be obvious in the
    original paper. After that, we decided to ask the original author for a
    clarification. He kindly replied but was unable to find a satisfying fix for
@@ -947,17 +964,17 @@ thanks
    generalized model (with Condition (2)) to an ordinary model such that it
    preserves some structure of the original model remains an open question. By
    ``preserves some structure'' we mean that we should have a property similar
-   to \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈Fm.\]
+   to \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈\fm{}.\]
 
-   We believe that this example should be taken as a humbling remainder that we
+   We believe that this example should be taken as a humbling reminder that we
    are humans and we make mistakes. Even if a proof has been through skilled
    reviewers from a well established journal it is still suspect of being flawed
    in some subtle way. For this reason, we believe that computer checked proofs
-   should gain relevance in all fields of logic. We know that nowadays proof
-   assistants are far from perfect and usually require a lot of time investment
-   both on learning and in formalizing big scale mathematical proofs. However,
-   the confidence level that they offer certainly outweighs their negatives in
-   some situations.
+   should gain relevance in all fields of logic and mathematics. We know that
+   nowadays proof assistants are far from perfect and usually require a lot of
+   time investment both on learning and in formalizing big scale mathematical
+   proofs. However, the confidence level that they offer certainly outweighs
+   their negatives in some situations.
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
   formulas that carries some special significance.
@@ -1007,7 +1024,7 @@ thanks
      follows that $xRu$ and we know $x⊩□C$ hence $u⊩C$ and thus $z⊩□C$. Hence
      $z$ is the desired world.
 
-   - \boxed{⇐} Let $a,b,c∈Var$, assume $F⊩a▷b→(a∧□c)▷(b∧□c)$. Assume also that
+   - \boxed{⇐} Let $a,b,c∈\var{}$, assume $F⊩a▷b→(a∧□c)▷(b∧□c)$. Assume also that
      for some $x,w,u$ we have $xS_wzRu$. Our goal is to prove $xRu$. Consider a
      model such that the following holds.
      \begin{flalign*}
@@ -1051,7 +1068,7 @@ thanks
      $∀v∈Z'∀z(vRz⇒xRz)$. Now we show $Z'⊩□C$. Let $v∈Z'$ and $u$ such that
      $vRu$, by the condition above it follows $xRu$ and since $x⊩□C$ we have
      $u⊩C$. Hence $Z'$ is the desired set.
-   - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (a ∧ □ c) ▷ (b ∧ □ c)$ and
+   - \boxed{⇐} Let $a,b,c∈\var{}$ and assume $F⊩a ▷ b → (a ∧ □ c) ▷ (b ∧ □ c)$ and
      $uS_wV$. Consider a model satisfying the following
      \begin{flalign*}
      ⟦a⟧ &= \{u\}; \\
@@ -1098,7 +1115,7 @@ thanks
       such that $zRu$, then by the $\kord{M₀}$ condition we have that
       $∀u(zRu⇒xRu)$ and thus it follows that $xRu$ and since $x⊩□C$ we also have
       $u⊩C$.
-    - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$ and
+    - \boxed{⇐} Let $a,b,c∈\var{}$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$ and
       assume that for some $w,x,y,z$ we have $wRxRyS_wz$. Consider a model based
       on $F$ such that the following holds:
       \begin{flalign*}
@@ -1139,7 +1156,7 @@ thanks
       $(⋆)\ ∀y'∈Y'∀z(y'Rz⇒xRz)$. Clearly $Y'⊩B$ since $Y'⊆Y$. To show that
       $Y'⊩□C$ consider some $y'∈Y'$ and some $z$ such that $y'Rz$. Then, by
       $(⋆)$ it follows that $xRz$ and since $x⊩□C$ we also have $x⊩C$.
-    - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$
+    - \boxed{⇐} Let $a,b,c∈\var{}$ and assume $F⊩a ▷ b → (♢ a ∧ □ c) ▷ (b ∧ □ c)$
       and assume that for some $w,x,y,Y$ we have $wRxRyS_wY$. Then consider a
       model based on $F$ such that.
       \begin{flalign*}
@@ -1196,7 +1213,7 @@ thanks
      show that $x⊩A▷B$. Consider a world $y$ such that $xRy⊩A$. As $wRy$ and
      $w⊩A▷♢B$ then there exist some worlds $z,u$ such that $yS_wzRu⊩B$. By the
      $\kord{P₀}$ condition it follows that $yS_xu$ and thus $x⊩A▷B$.
-   - \boxed{⇐} Let $a,b∈Var$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume that
+   - \boxed{⇐} Let $a,b∈\var{}$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume that
      $wRxRyS_wzRu$. We want to show $yS_xu$. Consider a model based on $F$ such
      that:
      \begin{flalign*}
@@ -1236,7 +1253,7 @@ thanks
      exists some $z∈𝔹$ such that $vRz$. Hence by the $\kgen{P₀}$ condition
      there exists some $𝔹'⊆𝔹$ such that $yS_x𝔹'$. Clearly $𝔹'⊩B$, therefore
      $x⊩A▷B$.
-   - \boxed{⇐} Let $a,b∈Var$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume
+   - \boxed{⇐} Let $a,b∈\var{}$ and assume $F⊩a ▷ ♢ b → □ (a ▷ b)$ and assume
      that for some $w,x,y,V,Z$ we have $wRxRyS_wY$ and $(⋆)\ ∀v∈V∃z∈Z(vRz)$.
      Consider a model based on $F$ such that:
      \begin{flalign*}
@@ -1326,7 +1343,7 @@ thanks
    AFTER)}}}
 
 
-   - \boxed{⇐} Let $a,b,c∈Var$ and assume that for some $w,x,y,z$ we have
+   - \boxed{⇐} Let $a,b,c∈\var{}$ and assume that for some $w,x,y,z$ we have
      $wRxRyS_wz$ . Consider a model
      based on $F$ that satisfies the following.
     \begin{flalign*}
@@ -1387,7 +1404,7 @@ thanks
      desired set it remains to see that $Y'⊩B∧□C$. From the fact that $Y'⊆Y⊩B$
      it easily follows that $Y'⊩B$. Now, let $y'∈Y'$ and $u$ such that $y'Ru$,
      from $(†)$ we get $u∈K$ and by definition of $K$ we have $u⊩C$.
-   - \boxed{⇐} Let $a,b,c∈Var$ and assume $F⊩ a ▷ b → ¬ (a ▷ ¬c) ▷ (b ∧ □ c)$.
+   - \boxed{⇐} Let $a,b,c∈\var{}$ and assume $F⊩ a ▷ b → ¬ (a ▷ ¬c) ▷ (b ∧ □ c)$.
      Assume also that for some $w,x,y,Y,K$ we have $wRxRyS_wY,K∈𝒞(x,y)$. Now
      consider a model based on $F$ that satisfies the following:
     \begin{flalign*}
@@ -1430,7 +1447,7 @@ thanks
 
     {{{beginproof}}}
     The details of the proof can be found in cite:two-new-series.
-    # - \boxed{⇐} Let $a,b,c,d,e∈Var$ and assume $F⊩ a ▷ b → ((¬ (a ▷ ¬c) ∧(d▷♢e))
+    # - \boxed{⇐} Let $a,b,c,d,e∈\var{}$ and assume $F⊩ a ▷ b → ((¬ (a ▷ ¬c) ∧(d▷♢e))
     #   ▷ (b ∧ □ c ∧ (d▷e)))$. Consider some worlds $w,x,y,z,u,v,m$ and assume for
     #   a contradiction that $wRxRyS_wzRu,yS_xu⇒(uS_xv,vRm,u\cancel{S}_zm)$. Now
     #   consider a model based on $F$ that satisfies the following:
@@ -1778,7 +1795,7 @@ thanks
    {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$ with
    $Var(A)=\{x₁,…,xₙ\}$. Let $ℱ$ be defined by (we write $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$).
  \begin{flalign*}
-   ℱ&:\underbrace{𝒫(W)×⋯×𝒫(W)}_n×Fm→𝒫(W) \\
+   ℱ&:\underbrace{𝒫(W)×⋯×𝒫(W)}_n×\fm{}→𝒫(W) \\
    ℱ(𝕏_*,xᵢ) &≔  𝕏ᵢ;\\
    ℱ(𝕏_*,⊥) &≔ ∅; \\
    ℱ(𝕏_*,A→B) &≔ \{w:w ∈ ℱ(𝕏_*,A) ⇒ w ∈ ℱ(𝕏_*,B)\}; \\
@@ -1911,19 +1928,20 @@ thanks
       3. /lambda abstraction/: If $x$ is a variable and $A$ is a term then $λx.A$
          is a term. The body of a lambda abstraction (the expression after the
          .) extends to the rightmost part. Thus $λx.λy.x\ y=λx.(λy.x\ y)$.
-      This can be more succinctly expressed in Backus-Naur form: \[T≔x\ |\ T\
-      T\ |\ λx.T\] In lambda calculus we have the following equation known as
-      \text{$β$-reduction}. \[(λx.T)\ A=T[x↦A]\] This equation is often given as
-      a reduction rule from left to right, giving computational value to lambda
-      terms. In other words, \text{$β$-reduction} gives an algorithm based on a
-      rewrite rule that /reduces/, /evaluates/ or /computes/ a lambda term until
-      it can no longer be reduced. When a term cannot be reduced we say that it
-      is in /normal form/. Note that not every term can be reduced to a normal
-      form term as showcased by the following term, which reduces to itself:
-      \[(λx.x\ x)\ (λx.x\ x) \] Notice how this term is of the form $R(R)$ (or
-      $R\ R$, in the new syntax), which we were able to rule out before by using
-      types. In fact, in the next section we will see how this term cannot be
-      assigned a type.
+      This can be more succinctly expressed in the so-called Backus-Naur form
+      (BNF for short): \[T≔x\ |\ T\ T\ |\ λx.T\] In lambda calculus we have the
+      following equation known as \text{$β$-reduction}. \[(λx.T)\ A=T[x↦A]\]
+      This equation is often given as a reduction rule from left to right,
+      giving computational value to lambda terms. In other words,
+      \text{$β$-reduction} gives an algorithm based on a rewrite rule that
+      /reduces/, /evaluates/ or /computes/ a lambda term until it can no longer
+      be reduced. When a term cannot be reduced we say that it is in /normal
+      form/. Note that not every term can be reduced to a normal form term as
+      showcased by the following term, which reduces to itself: \[(λx.x\ x)\
+      (λx.x\ x) \] Notice how this term is of the form $R(R)$ (or $R\ R$, in the
+      new syntax), which we were able to rule out before by using types. In
+      fact, in the next section we will see how this term cannot be assigned a
+      type.
 
       Turing showed that untyped lambda calculus is equivalent in terms of
       computability to Turing machines (cite:turing1937computability), therefore
@@ -2105,7 +2123,7 @@ thanks
      parentheses by setting $⊗$ to have higher precedence than $↠$. Also, $↠$
      has right associativity. Thus, $𝟬↠ 𝟬↠ 𝟬⊕𝟬=(𝟬↠ (𝟬↠ (𝟬⊕𝟬)))$.
 
-     We proceed by defining terms and their arities.
+     We proceed by defining terms in conjunction with their arities.
      1. /Variable/. If $x$ is a variable of arity $α$, then $x$ is term of arity
         $α$;
      2. /Constant/. If $c$ is a constant of arity $α$, then $c$ is a term of arity $α$;
@@ -4321,15 +4339,15 @@ data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
    in definition [[def:ord-forcing]]:
    1. We do not need a constructor for =⊥'= as its absence implicitly implies that
       we can never build an instance of =M , w ⊩ ⊥'= regardless of =M= and =w=.
-   2. if $x∈Var$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+   2. if $x∈\var{}$, then $w⊩x$ iff $⟨w,x⟩∈V$;
       #+begin_src text
   var : {p : Var} → p ∈ V w → M , w ⊩ var p
       #+end_src
-   3. if $A,B∈Fm$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+   3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
       #+begin_src text
   impl : {A B : Fm} → ((M , w ⊩ A) → (M , w ⊩ B)) → M , w ⊩ (A ↝ B)
       #+end_src
-   4. if $A,B∈Fm$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+   4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
       that $v⊩B$ and $uS_wv$.
       #+begin_src text
    rhd : {A B : Fm} →
