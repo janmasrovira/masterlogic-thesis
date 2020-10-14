@@ -703,14 +703,14 @@ thanks
   was suggested by Mikec during online correspondence.
 
 ** From ordinary to generalized
-   <<sec:ord-to-gen>> In this section we present a theorem that shows how we can
-   easily transform an ordinary model to a generalized model for any of the
+   <<sec:ord-to-gen>> In this section we present a theorem that shows how an
+   ordinary model naturally gives rise to a generalized model for any of the
    presented quasi-transitivity conditions. The resulting generalized model has
    the same set of worlds as the original and truth value is preserved.
 
    {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be an ordinary Veltman model. We define
-   $M'≔⟨W,R,S',V⟩$ where $S'≔⟨⟨w,u,\{v\}:⟨w,u,v⟩∈S⟩⟩$. Then M' is a generalized
-   Veltman frame with quasi-transitivity condition $(i)∈\{(1),…,(8)\}$.
+   $M'≔⟨W,R,S',V⟩$ where $S'≔\{⟨w,u,\{v\}:⟨w,u,v⟩∈S⟩\}$. Then M' is a generalized
+   Veltman frame with quasi-transitivity condition $(i)∈\{1,…,8\}$.
    Furthermore, for any world $w$ and formula $A$ we have that
    \[M,w⊩A⇔M',w⊩A.\]{{{endtheorem}}} {{{beginproof}}} We observe that the
    transitivity condition for the ordinary models $M$ entails the
@@ -738,11 +738,11 @@ thanks
    believe that this transformation holds value for historical reasons as it was
    the first to be sketched by Verbrugge in an unpublished manuscript
    (cite:Verbrugge). In the manuscript there is a comment where the author says
-   that the transformation may also hold for Condition (2) but she has not
+   that the transformation may also hold for Condition (2) although she has not
    checked it yet. Unfortunately some steps in the proof do not work if we take
    a generalized model with quasi-transitivity Condition (2). In
    cite:vukovic2008bisimulations a variation of this transformation is presented
-   with the claim that it works for Condition (2). However, as we will see
+   with the claim that it works for Condition (2). However, as we will comment
    in section [[sec:flawed-proof]], the proof of the claim is flawed.
 
    For the rest of this section we fix a generalized Veltman model $M≔⟨W, R, S,
@@ -915,8 +915,9 @@ thanks
    {{{endproof}}}
 ** From generalized to ordinary (a simpler approach)
    <<sec:gen-to-ord-luka>> In this section we present a transformation that
-   achieves the same as the one presented in Section [[sec:verbrugge]]. However, the
-   process described here is much simpler as it does not modify the set of worlds.
+   achieves the same effect as the one presented in Section [[sec:verbrugge]].
+   However, the process described here is much simpler as it does not modify the
+   set of worlds.
 
    {{{begintheorem}}} Let $M$ a generalized Veltman model with
    quasi-transitivity Condition 3, 4, 5 or 6. By theorem [[theorem:trans]] we shall
@@ -966,9 +967,9 @@ thanks
    The transformations from a generalized to an ordinary Veltman model given in
    Sections [[sec:verbrugge]] and [[sec:gen-to-ord-luka]] work for simple notions of
    quasi-transitivity but do not work for Condition (2), which is the standard.
-   In cite:vukovic2008bisimulations a transformation which is supposed to work
+   In cite:vukovic2008bisimulations a transformation which is claimed to work
    for Condition (2) is presented. We studied the transformation and started to
-   formalize the proof in Agda of its correctness following the proof of
+   formalize in Agda the proof of its correctness following the proof of
    Proposition 2.8 in cite:vukovic2008bisimulations. Despite of our best efforts
    we could not follow some steps which are claimed to be obvious in the
    original paper. After that, we decided to ask the original author for a
@@ -979,8 +980,9 @@ thanks
    longer a proven theorem. Thus, the problem of finding transformation from a
    generalized model (with Condition (2)) to an ordinary model such that it
    preserves some structure of the original model remains an open question. By
-   ``preserves some structure'' we mean that we should have a property similar
-   to \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈\fm{}.\]
+   ``preserves some structure'' we mean that we should have a property of the form:
+   \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈\fm{}.\]
+   Where $f$ is a map from the set of worlds of $M$ to the set of worlds of $M'$.
 
    We believe that this example should be taken as a humbling reminder that we
    are humans and we make mistakes. Even if a proof has been through skilled
