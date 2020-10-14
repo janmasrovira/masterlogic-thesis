@@ -740,7 +740,10 @@ thanks
    (cite:Verbrugge). In the manuscript there is a comment where the author says
    that the transformation may also hold for Condition (2) but she has not
    checked it yet. Unfortunately some steps in the proof do not work if we take
-   a generalized model with quasi-transitivity Condition (2).
+   a generalized model with quasi-transitivity Condition (2). In
+   cite:vukovic2008bisimulations a variation of this transformation is presented
+   with the claim that it works for Condition (2). However, as we will see
+   in section [[sec:flawed-proof]], the proof of the claim is flawed.
 
    For the rest of this section we fix a generalized Veltman model $M≔⟨W, R, S,
    V⟩$.
@@ -946,6 +949,7 @@ thanks
    # something similar in the old version of the IL complexity paper).
 
 ** A flawed proof in disguise
+   <<sec:flawed-proof>>
    As we all know, mathematical proofs can get long and tedious to follow. It is
    an art to guide the reader through the key steps of the proof and prevent
    them from getting lost in the details. In order to achieve that, a resource
