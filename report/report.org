@@ -105,6 +105,7 @@
 #+latex_header: \newcommand{\prov}[1]{\prin{Prov}(#1)}
 #+latex_header: \newcommand{\fm}[0]{\ensuremath{\mathsf{Fm}}}
 #+latex_header: \newcommand{\var}[0]{\ensuremath{\mathsf{Var}}}
+#+latex_header: \renewcommand{\sf}[1]{\ensuremath{\mathsf{#1}}}
 
 
 # remember to invoke with \ilall{} and not \ilall so that the space at the end
@@ -1907,224 +1908,678 @@ thanks
      types. The program is currently being implemented with the help of the
      automated proof assistant Coq. The Univalent Foundations program is closely
      tied to homotopy type theory.
-**** The origins of types
-       (cite:sep-type-theory) Types were first introduced by Russel in 1903 in
-      ``Apendix B: The Doctrine of Types, from Principia Mathematica'' while
-      trying to avoid a contradiction in set theory, namely Russel's paradox. In
-      Principia Mathematica types are defined as follows.
-       1. $i$ is the type of individuals (elements of some fixed domain);
-       2. if $A_1,…,A_n$ (for $n≥0$) are types then $(A_1,…,A_n)$ is the type of
-          n-ary relations over objects of respective types $A_1,…,A_n$. Note that
-          for $n=0$ we have that $()$ is the type of propositions.
-       For instance, the type of binary relations over individuals is $(i,i)$,
-       the type of binary propositional connectives is $((),())$. Observe that
-       this formulation prevents a proposition of the form $R(R)$. Assume for a
-       contradiction that $R(R)$ is a proposition, then we have that (by looking
-       at the outer occurrence) $R$ has type $(A)$ for some type $A$ and thus
-       (by looking at the inner occurrence) $R$ has type $A$ but $A≠(A)$. This
-       observation is the key for avoiding Russel's paradox using types.
+*** The origins of types
+      (cite:sep-type-theory) Types were first introduced by Russel in 1903 in
+     ``Apendix B: The Doctrine of Types, from Principia Mathematica'' while
+     trying to avoid a contradiction in set theory, namely Russel's paradox. In
+     Principia Mathematica types are defined as follows.
+      1. $i$ is the type of individuals (elements of some fixed domain);
+      2. if $A_1,…,A_n$ (for $n≥0$) are types then $(A_1,…,A_n)$ is the type of
+         n-ary relations over objects of respective types $A_1,…,A_n$. Note that
+         for $n=0$ we have that $()$ is the type of propositions.
+      For instance, the type of binary relations over individuals is $(i,i)$,
+      the type of binary propositional connectives is $((),())$. Observe that
+      this formulation prevents a proposition of the form $R(R)$. Assume for a
+      contradiction that $R(R)$ is a proposition, then we have that (by looking
+      at the outer occurrence) $R$ has type $(A)$ for some type $A$ and thus
+      (by looking at the inner occurrence) $R$ has type $A$ but $A≠(A)$. This
+      observation is the key for avoiding Russel's paradox using types.
 
-       The more habitual definition of types is the one that stems from Church's
-       formalization of lambda calculus which includes functions as primitive
-       objects.
-       1. $i$ is the type of individuals;
-       2. $o$ is the type of propositions;
-       3. if $A$ and $B$ are types then $A→B$ is the type of functions from $A$ to $B$.
-       We may observe that $i→o$ is the type of predicates on individuals, $i→i$ is
-       the type of functions on individuals and $\underbrace{i→(i→…→(i}_{n}→o))$ is
-       an \text{$n$-ary} relation. Although this definition of types is relevant
-       for historical reasons, it has become obsolete and we proceed by giving a
-       short introduction to three (out of many) versions of lambda calculus
-       available today.
+      The more habitual definition of types is the one that stems from Church's
+      formalization of lambda calculus which includes functions as primitive
+      objects.
+      1. $i$ is the type of individuals;
+      2. $o$ is the type of propositions;
+      3. if $A$ and $B$ are types then $A→B$ is the type of functions from $A$ to $B$.
+      We may observe that $i→o$ is the type of predicates on individuals, $i→i$ is
+      the type of functions on individuals and $\underbrace{i→(i→…→(i}_{n}→o))$ is
+      an \text{$n$-ary} relation. Although this definition of types is relevant
+      for historical reasons, it has become obsolete and we proceed by giving a
+      short introduction to three (out of many) versions of lambda calculus
+      available today.
 
-**** Untyped lambda calculus
-      For the language of terms we present a refinement of Church's version due to
-      Curry:
-      1. /variable/: every variable is a term;
-      2. /function application/: If $A$ and $B$ are terms then $A\ B$ is a term.
-         Note that application associates to the left, thus $A\ B\ C=(A\ B)\ C$.
-      3. /lambda abstraction/: If $x$ is a variable and $A$ is a term then $λx.A$
-         is a term. The body of a lambda abstraction (the expression after the
-         .) extends to the rightmost part. Thus $λx.λy.x\ y=λx.(λy.x\ y)$.
-      This can be more succinctly expressed in the so-called Backus-Naur form
-      (BNF for short): \[T≔x\ |\ T\ T\ |\ λx.T\] In lambda calculus we have the
-      following equation known as \text{$β$-reduction}. \[(λx.T)\ A=T[x↦A]\]
-      This equation is often given as a reduction rule from left to right,
-      giving computational value to lambda terms. In other words,
-      \text{$β$-reduction} gives an algorithm based on a rewrite rule that
-      /reduces/, /evaluates/ or /computes/ a lambda term until it can no longer
-      be reduced. When a term cannot be reduced we say that it is in /normal
-      form/. Note that not every term can be reduced to a normal form term as
-      showcased by the following term, which reduces to itself: \[(λx.x\ x)\
-      (λx.x\ x) \] Notice how this term is of the form $R(R)$ (or $R\ R$, in the
-      new syntax), which we were able to rule out before by using types. In
-      fact, in the next section we will see how this term cannot be assigned a
-      type.
+*** Untyped lambda calculus
+     For the language of terms we present a refinement of Church's version due to
+     Curry:
+     1. /variable/: every variable is a term;
+     2. /function application/: If $A$ and $B$ are terms then $A\ B$ is a term.
+        Note that application associates to the left, thus $A\ B\ C=(A\ B)\ C$.
+     3. /lambda abstraction/: If $x$ is a variable and $A$ is a term then $λx.A$
+        is a term. The body of a lambda abstraction (the expression after the
+        .) extends to the rightmost part. Thus $λx.λy.x\ y=λx.(λy.x\ y)$.
+     This can be more succinctly expressed in the so-called Backus-Naur form
+     (BNF for short): \[T≔x\ |\ T\ T\ |\ λx.T\] In lambda calculus we have the
+     following equation known as \text{$β$-reduction}. \[(λx.T)\ A=T[x↦A]\]
+     This equation is often given as a reduction rule from left to right,
+     giving computational value to lambda terms. In other words,
+     \text{$β$-reduction} gives an algorithm based on a rewrite rule that
+     /reduces/, /evaluates/ or /computes/ a lambda term until it can no longer
+     be reduced. When a term cannot be reduced we say that it is in /normal
+     form/. Note that not every term can be reduced to a normal form term as
+     showcased by the following term, which reduces to itself: \[(λx.x\ x)\
+     (λx.x\ x) \] Notice how this term is of the form $R(R)$ (or $R\ R$, in the
+     new syntax), which we were able to rule out before by using types. In
+     fact, in the next section we will see how this term cannot be assigned a
+     type.
 
-      Turing showed that untyped lambda calculus is equivalent in terms of
-      computability to Turing machines (cite:turing1937computability), therefore
-      any computable function has a lambda term that computes it.
+     Turing showed that untyped lambda calculus is equivalent in terms of
+     computability to Turing machines (cite:turing1937computability), therefore
+     any computable function has a lambda term that computes it.
 
-      It might be difficult to imagine how we could express every computable
-      function in a lambda term. We believe that showing some practical examples
-      will be enlightening, thus we will briefly introduce the /Church
-      encoding/ for Booleans and natural numbers.
-      - *Booleans*. We define /true/ and /false/ thus: \[true:=λa.λb.a;\ \ \
-        false≔λa.λb.b\] As we can see, both /true/ and /false/ are defined as a
-        function that takes two arguments. The former returns the first argument
-        while the latter returns the second. Thus, this encoding of Booleans
-        conveniently allows us to define an /if then else/ expression.
-        \[ite≔λb.λx.λy.b\ x\ y\] It is immediate to see by means of
-        \text{$β$-reduction} that \[ite\ b\ x\ y=b\ x\ y\] hence, we will
-        usually prefer to write $b\ x\ y$ instead of $ite\ b\ x\ y$. We can use
-        the /if then else/ concept to encode the /and/ and /or/ operators. It
-        may help to read the /and/ as ``if the first argument is true return the
-        second argument else return false''. Likewise for the /or/.
-        \[and:=λa.λb.a\ b\ false;\ \ \ or≔λa.λb. a\ true\ b\]
-      - *Natural numbers*. The natural number $n$ is encoded as a lambda term
-        that applies $n$ times some parameter function $f$.
-        \[0:=λf.λa.a;\ \ \ 1≔λf.λa.f\ a;\ \ \ 2≔λf.λa.f\ (f\ a); \ \ \ …\]
-        Then we can define the successor function:
-        \[suc≔λn.λf.λa.f\ (n\ f\ a)\]
-        Let us show that the successor of 1 is indeed 2.
-        \begin{flalign*}
-        suc\ 1 &= (λn.λf.λa.f\ (n\ f\ a))\ (λf.λa.f\ a) & \text{Def}\\
-         &= λf.λa.f\ ((λf.λa.f\ a)\ f\ a)  & \text{$β$-reduction for $n$}\\
-         &= λf.λa.f\ (λa.f\ a)\ a  & \text{$β$-reduction for $f$}\\
-         &= λf.λa.f\ (f\ a)  & \text{$β$-reduction for $a$}\\
-         &= 2 & \text{Def}
-        \end{flalign*}
-        It is also easy to define addition and multiplication. It may help to
-        read /add n m/ as ``apply $m$ times $f$, then apply $n$ times $f$'' and
-        /mul n m/ as ``apply $n$ times (apply $m$ times)''. \[add≔λn.λm.λf.λa.n\ f\ (m\ f\
-        a);\ \ \ mul≔λn.λm.λf.λa.n\ (m\ f)\ a \]
+     It might be difficult to imagine how we could express every computable
+     function in a lambda term. We believe that showing some practical examples
+     will be enlightening, thus we will briefly introduce the /Church
+     encoding/ for Booleans and natural numbers.
+     - *Booleans*. We define /true/ and /false/ thus: \[true:=λa.λb.a;\ \ \
+       false≔λa.λb.b\] As we can see, both /true/ and /false/ are defined as a
+       function that takes two arguments. The former returns the first argument
+       while the latter returns the second. Thus, this encoding of Booleans
+       conveniently allows us to define an /if then else/ expression.
+       \[ite≔λb.λx.λy.b\ x\ y\] It is immediate to see by means of
+       \text{$β$-reduction} that \[ite\ b\ x\ y=b\ x\ y\] hence, we will
+       usually prefer to write $b\ x\ y$ instead of $ite\ b\ x\ y$. We can use
+       the /if then else/ concept to encode the /and/ and /or/ operators. It
+       may help to read the /and/ as ``if the first argument is true return the
+       second argument else return false''. Likewise for the /or/.
+       \[and:=λa.λb.a\ b\ false;\ \ \ or≔λa.λb. a\ true\ b\]
+     - *Natural numbers*. The natural number $n$ is encoded as a lambda term
+       that applies $n$ times some parameter function $f$.
+       \[0:=λf.λa.a;\ \ \ 1≔λf.λa.f\ a;\ \ \ 2≔λf.λa.f\ (f\ a); \ \ \ …\]
+       Then we can define the successor function:
+       \[suc≔λn.λf.λa.f\ (n\ f\ a)\]
+       Let us show that the successor of 1 is indeed 2.
+       \begin{flalign*}
+       suc\ 1 &= (λn.λf.λa.f\ (n\ f\ a))\ (λf.λa.f\ a) & \text{Def}\\
+        &= λf.λa.f\ ((λf.λa.f\ a)\ f\ a)  & \text{$β$-reduction for $n$}\\
+        &= λf.λa.f\ (λa.f\ a)\ a  & \text{$β$-reduction for $f$}\\
+        &= λf.λa.f\ (f\ a)  & \text{$β$-reduction for $a$}\\
+        &= 2 & \text{Def}
+       \end{flalign*}
+       It is also easy to define addition and multiplication. It may help to
+       read /add n m/ as ``apply $m$ times $f$, then apply $n$ times $f$'' and
+       /mul n m/ as ``apply $n$ times (apply $m$ times)''. \[add≔λn.λm.λf.λa.n\ f\ (m\ f\
+       a);\ \ \ mul≔λn.λm.λf.λa.n\ (m\ f)\ a \]
 
-**** Simply typed lambda calculus
-      Let us introduce the idea of types in lambda calculus due to Curry. We
-      view types as predicates on lambda terms. We write $T:A$ to say that the
-      term $T$ has type $A$.
+*** Simply typed lambda calculus
+     Let us introduce the idea of types in lambda calculus due to Curry. We
+     view types as predicates on lambda terms. We write $T:A$ to say that the
+     term $T$ has type $A$.
 
-      We fix a set of base types $𝐁$ and a set of term constants
-      \[Γ=\{⟨c₀^0:B₀⟩,⟨c₀^1:B₀⟩,…,⟨c₁^0:B₁⟩,⟨c₁^1:B₁⟩,…\},\], where each $B_i∈𝐁$.
+     We fix a set of base types $𝐁$ and a set of term constants
+     \[Γ=\{⟨c₀^0:B₀⟩,⟨c₀^1:B₀⟩,…,⟨c₁^0:B₁⟩,⟨c₁^1:B₁⟩,…\},\] where each $B_i∈𝐁$.
 
-      The syntax of terms is defined thus. \[T≔x\ |\ T\ T\ |\ λ(x:S).T\ |\ c\]
-      Where $S$ is a type, $c$ a term constant and $x$ a variable.
+     The syntax of terms is defined thus. \[T≔x\ |\ T\ T\ |\ λ(x:S).T\ |\ c\]
+     Where $S$ is a type, $c$ a term constant and $x$ a variable.
 
-      The syntax of types is defined thus. \[S≔B\ |\ S→S\] With $B∈𝐁$. The $→$
-      symbol has right associativity, so $A→B→C=A→(B→C)$.
+     The syntax of types is defined thus. \[S≔B\ |\ S→S\] With $B∈𝐁$. The $→$
+     symbol has right associativity, so $A→B→C=A→(B→C)$.
 
-      Then we define typing rules to assign a type to suitable terms. We define
-      a context to be a set of tuples $⟨x:A⟩$ where $x$ is either a variable or
-      a constant and $A$ is a type. If $Γ$ is a context write $Γ⊢t:A$ to mean
-      that $y$ has type $A$ in context $Γ$. When a term can be assigned a type
-      in a context we say that it is well-typed in that context. Only well-typed
-      terms are considered valid in simply typed lambda calculus.
-      #+caption: Typing rules for simply typed lambda calculus.
-      #+name: fig:simply_typed
-      #+attr_latex: :float
-      \begin{figure}[H]
-      \begin{mathpar}
-      \inferrule[Id]{c : A ∈ Γ}{Γ ⊢ c : A}
-      \and
-      \inferrule[App]{Γ ⊢ f : A → B \\ Γ ⊢ t : A}{Γ⊢f\ t : B}
-      \and
-      \inferrule[Abstraction]{Γ∪\{⟨x:A⟩\} ⊢ t : B}{Γ⊢λ(x:S).t :A → B}
-      \end{mathpar}
-      \end{figure}
+     Then we define typing rules to assign a type to suitable terms. We define
+     a context to be a set of tuples $⟨x:A⟩$ where $x$ is either a variable or
+     a constant and $A$ is a type. If $Γ$ is a context write $Γ⊢t:A$ to mean
+     that $y$ has type $A$ in context $Γ$. When a term can be assigned a type
+     in a context we say that it is well-typed in that context. Only well-typed
+     terms are considered valid in simply typed lambda calculus.
+     #+caption: Typing rules for simply typed lambda calculus.
+     #+name: fig:simply_typed
+     #+attr_latex: :float
+     \begin{figure}[H]
+     \begin{mathpar}
+     \inferrule[Id]{c : A ∈ Γ}{Γ ⊢ c : A}
+     \and
+     \inferrule[App]{Γ ⊢ f : A → B \\ Γ ⊢ t : A}{Γ⊢f\ t : B}
+     \and
+     \inferrule[Abstraction]{Γ∪\{⟨x:A⟩\} ⊢ t : B}{Γ⊢λ(x:S).t :A → B}
+     \end{mathpar}
+     \end{figure}
 
-      Let us now see how we can give types to Booleans and natural numbers
-      following the encoding given in the previous section. For that, we
-      consider a singleton set of base types $B≔\{α\}$.
-      - *Booleans*. We define the type of Booleans thus: \[𝔹≔α→α→α\]
-        \[true:=λ(a:α).λ(b:α).a;\ \ \ false≔λ(a:α).λ(b:α).b\]
-        We proceed by showing that $∅⊢true:𝔹$.
-        \begin{figure}[H]
+     Let us now see how we can give types to Booleans and natural numbers
+     following the encoding given in the previous section. For that, we
+     consider a singleton set of base types $B≔\{α\}$.
+     - *Booleans*. We define the type of Booleans thus: \[𝔹≔α→α→α\]
+       \[true:=λ(a:α).λ(b:α).a;\ \ \ false≔λ(a:α).λ(b:α).b\]
+       We proceed by showing that $∅⊢true:𝔹$.
+       \begin{figure}[H]
+       \begin{mathpar}
+       \inferrule*[Left=Def]{
+       \inferrule*[Left=Abs]{
+       \inferrule*[Left=Abs]{
+       \inferrule*[Left=Id]
+       {\ }
+       {\{⟨a:α⟩,⟨b:α⟩\} ⊢a:α}}
+       {\{⟨a:α⟩\} ⊢λ(b:α).a:α→α}}
+       {∅ ⊢λ(a:α).λ(b:α).a:α→α→α}}{∅ ⊢ true : 𝔹}
+       \end{mathpar}
+       \end{figure}
+       Likewise we can show that $∅⊢false:𝔹$. It is routine to check that
+       $∅⊢and:𝔹→𝔹→𝔹$ and that $∅⊢or:𝔹→𝔹→𝔹$. As we can see, types give us
+       information about the nature of the term. For instance, $and:𝔹→𝔹→𝔹$ tells
+       us that $and$ is a lambda term that expects two Booleans as arguments and
+       returns a Boolean.
+
+     - *Natural numbers*. We define the type of natural numbers thus:
+       \[ℕ≔(α→α)→α→α\] \[0:=λ(f:α→α).λ(a:α).a;\ \ \ 1≔λ(f:α→α).λ(a:α).f\ a; \ \
+       \ …\] We can routinely check that for any natural number $n$ we have
+       $∅⊢n:ℕ$ and $∅⊢add:ℕ→ℕ→ℕ$ and $∅⊢mul:ℕ→ℕ→ℕ$.
+
+     It is a well known property that simply typed lambda calculus is /strongly
+     normalizing/, which means that every well-typed term can be reduced to a
+     normal form. Thus it must be the case, and it is easy to observe, that
+     the non-normalizing term we presented before cannot be typed for any
+     choice of $A$. \[(λ(x:A).x\ x)\ (λ(x:A).x\ x)\]
+
+     \jan{is next paragraph needed?}
+     Strong normalization is a desirable property, but it comes at the price of
+     losing equivalence to Turing machines as there are many computable
+     functions that cannot be expressed in simply typed lambda calculus.
+     To circumvent this, some extensions of simply typed lambda calculus are
+     extended with Curry's $Y$ combinator defined below. The $Y$ combinator, also
+     known as the fixed-point combinator, is a primitive lambda term that can
+     be added to the language and be assigned the type $(A →A)→A$ for any type
+     $A$. \[Y≔λg.(λx.g\ (x\ x))\ (λx.g\ (x\ x))\] The $Y$ combinator gives general
+     recursion and thus the strong normalization property no longer holds.
+
+** Martin Löf's logical framework
+   In this section we will present the intuitionistic type theory presented in
+   cite:nordstrom1990programming. \jan{needs a longer intro.}
+
+   In this logic we have four types of judgment:
+   1. ``$a$ has type $A$''. We write $a:A$. Crucially, in a type theory that
+      follows the paradigm of /propositions as types/ we may interpret the
+      statement $a:A$ in several ways, all of them equivalent in such paradigm:
+      - The term $a$ has type $A$;
+      - the term $a$ satisfies the proposition $A$;
+      - the term $a$ is a proof of the proposition $A$;
+      - the term $a$ is a program that satisfies the specification $A$.
+   2. ``$A$ is a type''. We write $A:\mathsf{Type}$.
+   3. ``$A_1$ and $A_2$ are equal types''. We write $A_1≡A_2:\mathsf{Type}$.
+   4. ``$a_1$ and $a_2$ are equal elements of the type $A$''. We write $a_1≡a_2:A$.
+
+   We say that some proposition (or type) $A$ is true if there exists some $t$
+   such that $t:A$.
+
+   The concept of /type/. We say that $A$ is a type if we have a precise
+   definition of the objects in that type and a decidable equivalence relation
+   for the objects of the type.
+
+   The first type that we define is the type /Set/[fn::The concept of /set/ used
+   here differs from the one in set theory.]. The objects of the type /Set/ are
+   /sets/. A /set/ $A$ is an inductive description of how the /canonical
+   elements/ of $A$ are built, plus a decidable equality relation between canonical
+   elements. Two sets are equal if a canonical element of one set is a canonical
+   element of the other set and moreover, if two equal canonical elements in one
+   set also are equal in the other set.
+
+   For instance, if we want to define the set of natural numbers, we have two
+   canonical elements: /zero/ and the /successor/ of a natural number. The
+   equality relation can be defined as expected. In section [[sec:def-new-types]] we
+   will see how we can define the natural numbers, among other sets, in more
+   detail.
+
+   Hence we have the axiom:
+   \begin{mathpar}
+   \inferrule[]{\ }{\mathsf{Set}:\mathsf{Type}}
+   \end{mathpar}
+
+   If $A$ is a set, then the elements of $A$ in conjunction with their
+   equivalence relation forms a type.
+   \begin{mathpar}
+   \inferrule[]{A:\sf{Set} }{\sf{El}(A):\sf{Type}}
+   \and
+   \inferrule[]{A=B:\sf{Set} }{\sf{El}(A)=\sf{El}(B):\sf{Type}}
+   \end{mathpar}
+
+
+*** Syntax of types old :noexport:
+      We will proceed by introducing the syntax of types:
+      1. /Bottom/. The constant $⊥$ is a type;
         \begin{mathpar}
-        \inferrule*[Left=Def]{
-        \inferrule*[Left=Abs]{
-        \inferrule*[Left=Abs]{
-        \inferrule*[Left=Id]
-        {\ }
-        {\{⟨a:α⟩,⟨b:α⟩\} ⊢a:α}}
-        {\{⟨a:α⟩\} ⊢λ(b:α).a:α→α}}
-        {∅ ⊢λ(a:α).λ(b:α).a:α→α→α}}{∅ ⊢ true : 𝔹}
+        \inferrule{\ }{⊥:\mathsf{Type}}
         \end{mathpar}
-        \end{figure}
-        Likewise we can show that $∅⊢false:𝔹$. It is routine to check that
-        $∅⊢and:𝔹→𝔹→𝔹$ and that $∅⊢or:𝔹→𝔹→𝔹$. As we can see, types give us
-        information about the nature of the term. For instance, $and:𝔹→𝔹→𝔹$ tells
-        us that $and$ is a lambda term that expects two Booleans as arguments and
-        returns a Boolean.
+      2. /Disjoint sum/. If $A$ and $B$ are types then $A⊎B$ is a type;
+        \begin{mathpar}
+        \inferrule{A:\mathsf{Type} \\  B:\mathsf{Type}}{A⊎B:\mathsf{Type}}
+        \end{mathpar}
+      3. /Dependent product/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
+         type that may depend on $x$, then $Σ\ (x: A)\ B(x)$ is a type. When
+         $B$ is independent of $x$ we may write $A × B$ instead;
+        \begin{mathpar}
+        \inferrule{x∈\mathsf{Var} \\ A:\mathsf{Type} \\  B(x):\mathsf{Type}}{Σ\ (x: A)\ B(x):\mathsf{Type}}
+        \end{mathpar}
+      4. /Dependent function/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
+         type that may depend on $x$, then $(x: A) → B(x)$ is a type. When $B$
+         is independent of $x$ we may write $A → B$ instead.
+        \begin{mathpar}
+        \inferrule{x∈\mathsf{Var} \\ A:\mathsf{Type} \\  B(x):\mathsf{Type}}{(x: A)→ B(x):\mathsf{Type}}
+        \end{mathpar}
+      Summarizing in BNF we have: \[S≔ ⊥ \ |\ S⊎S\ |\ Σ\ (x : S)\ S(x)\ |\
+      (x:S)→S(x)\]
 
-      - *Natural numbers*. We define the type of natural numbers thus:
-        \[ℕ≔(α→α)→α→α\] \[0:=λ(f:α→α).λ(a:α).a;\ \ \ 1≔λ(f:α→α).λ(a:α).f\ a; \ \
-        \ …\] We can routinely check that for any natural number $n$ we have
-        $∅⊢n:ℕ$ and $∅⊢add:ℕ→ℕ→ℕ$ and $∅⊢mul:ℕ→ℕ→ℕ$.
+      while identifying in the sense of Heyting (cite:heyting1966intuitionism)
+      the types with the logical constants and operators, namely $∧,∨,→,⊥$.
+      1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of
+         $A$ into a proof of $B$;
+      2. a proof of $A×B$ is a proof of $A$ and a proof of $B$;
+      3. a proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we
+         commit to and according to that, a proof of $A$ or a proof of $B$;
+      4. nothing is a proof of $⊥$;
+      5. $⊤$ is always true and provable.
 
-      It is a well known property that simply typed lambda calculus is /strongly
-      normalizing/, which means that every well-typed term can be reduced to a
-      normal form. Thus it must be the case, and it is easy to observe, that
-      the non-normalizing term we presented before cannot be typed for any
-      choice of $A$. \[(λ(x:A).x\ x)\ (λ(x:A).x\ x)\]
+*** Syntax of types and terms (new)
+    In a theory that features dependent types, presenting types and terms
+    separately is not possible as they are tightly intertwined. In fact, terms
+    may appear inside types and vice versa. We will first give a short intuitive
+    presentation of the syntax that will give an overall idea and hopefully make
+    the rest of the section easier to follow.
 
-      \jan{is next paragraph needed?}
-      Strong normalization is a desirable property, but it comes at the price of
-      losing equivalence to Turing machines as there are many computable
-      functions that cannot be expressed in simply typed lambda calculus.
-      To circumvent this, some extensions of simply typed lambda calculus are
-      extended with Curry's $Y$ combinator defined below. The $Y$ combinator, also
-      known as the fixed-point combinator, is a primitive lambda term that can
-      be added to the language and be assigned the type $(A →A)→A$ for any type
-      $A$. \[Y≔λg.(λx.g\ (x\ x))\ (λx.g\ (x\ x))\] The $Y$ combinator gives general
-      recursion and thus the strong normalization property no longer holds.
+    The syntax of terms is the same as the one presented in simply typed
+    lambda calculus:
+    \[T≔x\ |\ T\ T\ |\ λ(x:A).T\ |\ c\]
 
-**** Type theory with dependent types
-     In this section we will present the intuitionistic type theory presented in
-     cite:nordstrom1990programming.
+    Recall the syntax of types in simply typed lambda calculus:
+    \[S≔B\ |\ S→S\]
 
-     In this logic we have four types of judgment:
-     1. $a$ has type $A$. We write $a:A$. Crucially, in a type theory that
-        follows the paradigm of /propositions as types/ we may interpret the
-        statement $a:A$ in several ways, all of them equivalent in such paradigm:
-        - The term $a$ has type $A$;
-        - the term $a$ satisfies the proposition $A$;
-        - the term $a$ is a proof of the proposition $A$;
-        - the term $a$ is a program that satisfies the specification $A$.
-     2. $A$ is a type. We write $A:Type$.
-     3. $A_1$ and $A_2$ are equal types. We write $A_1=A_2:Type$.
-     4. $a_1$ and $a_2$ are equal elements of the type $A$. We write $a_1=a_2:A$.
-
-     We say that some proposition (or type) $A$ is true if there exists some $t$
-     such that $t:A$.
-
-     We will proceed by introducing the syntax of types:
-     - /top/. The constant $⊤$ is a type;
-     - /bottom/. The constant $⊥$ is a type;
-     - /disjoint sum/. If $A$ and $B$ are types then $A⊎B$ is a type;
-     - /dependent product/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
-       type that may depend on $x$, then $Σ\ (x: A)\ B(x)$ is a type. When
-       $B$ is independent of $x$ we may write $A × B$ instead;
-     - /dependent function/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
-       type that may depend on $x$, then $(x: A) → B(x)$ is a type. When $B$
-       is independent of $x$ we may write $A → B$ instead.
-     Summarizing in BNF we have: \[⊤\ |\ ⊥ \ |\ S⊎S\ |\ Σ\ (x : S)\ S(x)\ |\
-     (x:S)→S(x)\]
-
-     while
-     identifying in the sense of Heyting (cite:heyting1966intuitionism) the
-     types with the logical constants and operators, namely $∧,∨,→,⊤,⊥$.
-     1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of
-        $A$ into a proof of $B$;
-     2. a proof of $A×B$ is a proof of $A$ and a proof of $B$;
-     3. a proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we
-        commit to and according to that, a proof of $A$ or a proof of $B$;
-     4. nothing is a proof of $⊥$;
-     5. $⊤$ is always true and provable.
+    In this theory we expand the syntax of types in a way that resembles the
+    syntax of terms: \[S≔x\ |\ S\ S\ |\ (x:S)↠S\ |\ c\] We want to highlight the
+    construction $(x:S)↠S$. This is the type of dependent functions. If we have
+    $(a:A)↠B$ then this is the type of functions from $A$ to $B$. However, in
+    this case the type $B$ may depend on $a$. As we will see, this is the
+    cornerstone and gives the name to /dependent types/.
 
 
-     We now introduce the concept of /arity/. Arities are used to enforce some
-     structure to the terms that we consider valid. For instance, arities reject
-     terms such as $R(R)$.
+    As we did with simply typed lambda calculus, we introduce the concept of a
+    /context/. Intuitively, a context, is a sequence of typed variables, where
+    each type may depend on the preceding variables in the sequence.
+
+    More precisely, a context is a finite sequence of the form \[x₁:S₁,…,xₙ:Sₙ\]
+    Where $xᵢ$ denotes a variable[fn::Every variable must be different than the
+    rest, that is, for every $i,j$ such that $i≠j$ we have $xᵢ≠xⱼ$.].
+    Furthermore, for every $1≤i≤ n$ we have that given arbitrary terms
+    $a₁,…,a_{i-1}$ such that
+    \begin{flalign*}
+   \label{context-cond}
+   S₁:\sf{Type} &\text{ and } a₁:S₁ \\
+   S₂[x₁↦a₁]:\sf{Type} &\text{ and } a₂:S₂[x₁↦a₁] \\
+   & … \\
+   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\sf{Type} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]
+    \end{flalign*}
+    then
+    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\sf{Type}\].
+    Then, if $Γ$ is a context, we write:
+    1. $Γ⊢t:A$ to say that term $t$ has type
+      $A$ in the context $Γ$. We write $t:A$ instead of $∅⊢t:A$. As expected, we
+    2. $Γ⊢S:\sf{Type}$ to say that $S$ is a type in context $Γ$.
+    3. $Γ⊢a=b:S$ to say that $a$ and $b$ are equal terms of type $S$ in context $Γ$.
+    4. $Γ⊢A=B:\sf{Type}$ to say that $A$ and $B$ are equal types in context $Γ$.
+    In any case, in order to avoid cluttered rules, if the context is the same
+    for all the parts of a rule, we will not mention it explicitly. For
+    instance, we will prefer to use the notation of the right rule over the
+    notation used in the left rule when possible:
+    \begin{mathpar}
+    \inferrule[Refl]{Γ⊢A:\sf{Type} \\ Γ⊢a:A}{Γ⊢a=a:A} \and
+    \inferrule[Refl]{A:\sf{Type} \\ a:A}{a=a:A}
+    \end{mathpar}
+
+
+
+    As expected, we have the following rule:
+    \begin{mathpar}
+    \inferrule[Assum]{Γ⊢A:\sf{Type}\\x:A∈Γ}
+    {Γ⊢x:A}
+    \end{mathpar}
+
+    Since equality is an equivalence relation we have the corresponding rules
+    for equality on types and on terms.
+    For terms we have:
+    \begin{mathpar}
+    \inferrule[Refl]{A:\sf{Type} \\ a:A}{a=a:A} \and
+    \inferrule[Sym]{A:\sf{Type} \\ a=b:A}{b=a:A} \and
+    \inferrule[Trans]{A:\sf{Type} \\ a=b:A \\ b=c:A}{a=c:A}
+    \end{mathpar}
+    Analogously, for types we have:
+    \begin{mathpar}
+    \inferrule[Refl]{A:\sf{Type}}{A=A} \and
+    \inferrule[Sym]{ A=B:\sf{Type} }{B=A:\sf{Type}} \and
+    \inferrule[Trans]{A,B:\sf{Type} \\ A=B:\sf{Type} \\ B=C:\sf{Type}}{A=C:\sf{Type}}
+    \end{mathpar}
+    Furthermore we can substitute equal types.
+    \begin{mathpar}
+    \inferrule[Id1]{A,B:\sf{Type} \\a:A \\ A=B}{a:B} \and
+    \inferrule[Id2]{A,B:\sf{Type} \\a=b:A\\A=B}{a=b:B}
+    \end{mathpar}
+
+
+    We say that $A$ is a /family of types/ in the context \[Γ≔x₁:A₁,…,xₙ:Aₙ\] if
+    $Γ⊢A:\sf{Type}$.
+
+    We proceed by giving some rules for type families.
+
+    Instantiation of a type family:
+    \begin{mathpar}
+    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\sf{Type}\\\\
+    a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {C[x₁↦a₁,…,xₙ↦aₙ]:\sf{Type}}
+    \end{mathpar}
+    Substitution in a type family:
+    \begin{mathpar}
+    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\sf{Type}\\\\
+    a₁=b₁:A₁\\…\\aₙ=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {C[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦b₁,…,xₙ↦bₙ]}
+    \end{mathpar}
+    Instantiation of a term of a type family:
+    \begin{mathpar}
+    \inferrule[]{
+    x₁:A₁,…,xₙ:Aₙ⊢c:C\\\\a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {c[x₁↦a₁,…,xₙ↦aₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
+    \end{mathpar}
+    Substitution in term of a type family:
+    \begin{mathpar}
+    \inferrule[]{
+    x₁:A₁,…,xₙ:Aₙ⊢c:C\\\\
+    a₁=b₁:A₁\\…\\aₙ=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {c[x₁↦a₁,…,xₙ↦aₙ]=c[x₁↦b₁,…,xₙ↦bₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
+    \end{mathpar}
+    Substitution of a type family.
+    \begin{mathpar}
+    \inferrule[]{
+    x₁:A₁,…,xₙ:Aₙ⊢B=C:\sf{Type}
+    \\\\a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {B[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦a₁,…,xₙ↦aₙ]:B[x₁↦a₁,…,xₙ↦aₙ]}
+    \end{mathpar}
+    Substitution of a type family term.
+    \begin{mathpar}
+    \inferrule[]{
+    x₁:A₁,…,xₙ:Aₙ⊢b=c:C\\\\a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {b[x₁↦a₁,…,xₙ↦aₙ]=c[x₁↦a₁,…,xₙ↦aₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
+    \end{mathpar}
+
+
+    For now we have no primitive constants. In section [[sec:def-new-types]] we will
+    define some.
+
+    # We will proceed by introducing the syntax of
+    #   types:
+    #   1. /Dependent function/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
+    #      type that may depend on $x$, then $(x: A) ↠ B$ is a type. When $B$
+    #      is independent of $x$ we may write $A → B$ instead.
+    #     \begin{mathpar}
+    #     \inferrule{x∈\sf{Var} \\ A:\sf{Type} \\  [x:A]B:\sf{Type}}
+    #     {(x: A)→ B:\sf{Type}}
+    #     \end{mathpar}
+    #   2. /Variable/.
+    #   3. /Constant/.
+    #   3. /Application/.
+    #   Summarizing in BNF we have: \[S≔ ⊥ \ |\ S⊎S\ |\ Σ\ (x : S)\ S(x)\ |\
+    #   (x:S)→S(x)\]
+
+    #   \begin{mathpar}
+    #   \inferrule[Assum]{A:\sf{Type}}
+    #   {[x:A]⊢x:A}
+    #   \end{mathpar}
+
+      # while identifying in the sense of Heyting (cite:heyting1966intuitionism)
+      # the types with the logical constants and operators, namely $∧,∨,→,⊥$.
+      # 1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of
+      #    $A$ into a proof of $B$;
+      # 2. a proof of $A×B$ is a proof of $A$ and a proof of $B$;
+      # 3. a proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we
+      #    commit to and according to that, a proof of $A$ or a proof of $B$;
+      # 4. nothing is a proof of $⊥$;
+      # 5. $⊤$ is always true and provable.
+
+*** Function types
+    The type of functions from a type $A$ to a type $B$ indexed by a term of
+    type $A$.
+    \begin{mathpar}
+    \inferrule[]{Γ⊢A:\sf{Type}\\Γ;x:A⊢B:\sf{Type}}{Γ⊢(x:A)↠B:\sf{Type}}
+    \end{mathpar}
+    As a notational convention, when $B$ does not depend on a term of type $A$,
+    we will simply write $A↠B$ instead of $(x:A)↠B$.
+
+    Substitution in function types:
+    \begin{mathpar}
+    \inferrule[]{Γ⊢A':\sf{Type}\\ Γ⊢A':\sf{Type}\\Γ⊢A=A'\\\\
+     B[x:A]:\sf{Type}\\B'[x:A]:\sf{Type}\\B[x:A]=B'[x:A]}
+     {(x:A)↠B=(x:A')↠B'}
+    \end{mathpar}
+    Function application and substitution.
+    \begin{mathpar}
+    \inferrule[App]{c:(x:A)↠B \\ a:A}{c\ a:B[x↦a]}
+    \and \inferrule[]{c=c':(x:A)↠B \\ a=a':A}{c\ a=c'\ a'=:B[x↦a]}
+    \end{mathpar}
+    Abstraction.
+    \begin{mathpar}
+    \inferrule[Abs]{b:B[x:A]}{λx→b:(x:A)↠B}
+    \end{mathpar}
+    The rule of \text{$β$-reduction}.
+    \begin{mathpar}
+    \inferrule[$β$-$=$]{a:A \\ b:B[x:A]}{(λx→b)\ a=b[x↦a]:B[x↦a]}
+    \end{mathpar}
+    The \text{$ξ$-$=$} rule tells us that we can replace equal bodies of lambda
+    abstraction terms.
+    \begin{mathpar}
+    \inferrule[$ξ$-$=$]{b=b':B[x:A]}{λx→b=λx→b':(x:A)↠B}
+    \end{mathpar}
+    The \text{$α$-$=$} rule tells us that we can rename the abstracted variable
+    of lambda abstraction terms. In this rule we assume that $y$ does not
+    occur free in $b$.
+    \begin{mathpar}
+    \inferrule[$α$-$=$]{b:B[x:A]}{λx→b=λy→b[x↦y]:(x:A)↠B}
+    \end{mathpar}
+    The \text{$η$-$=$} rule tells us that abstraction and application cancel
+    each other. In this rule we assume that $y$ does not occur free in $b$.
+    \begin{mathpar}
+    \inferrule[$η$-$=$]{c:(x:A)↠B}{λx→b=λy→b[x↦y]:λ(x:A)↠B}
+    \end{mathpar}
+
+*** General rules
+
+*** Type constructors and constructors
+    We say that $C$ is a type constructor if it is a constant with a type of the
+    form \[C:(a₁ : A₁) ↠…↠ (aₙ:Aₙ) ↠ \sf{Type}\ \ \ \text{ for } n≥0\] As
+    examples of type constructors consider constant $ℕ:\sf{Type}$, which
+    denotes the type of natural numbers or the type of dependent products
+    $Σ:(A : \sf{Type})↠(B : A↠\sf{Type})↠\sf{Type}$. We define the
+    mentioned types, among others, in full detail in Section [[sec:def-new-types]].
+
+*** Types
+    So far we have explained the syntax of the theory, that is, how we can
+    construct terms. In this section, we will explain the semantics of the
+    theory. The semantics revolve around the concept of /type/, which plays the
+    role of a proposition. First, we will define what is a type. ....
+
+    What is a type?
+
+    To denote that $S$ is a type we write $S:\sf{Type}$.
+
+    Intuitively, a /context/, is a sequence of typed variables, where each type
+    may depend on the preceding variables in the sequence.
+
+    More precisely, a context is a finite sequence of the form
+    \[x₁:S₁,…,xₙ:Sₙ\] Where $xᵢ$ denotes a variable[fn::Every variable must be
+    different than the rest, that is, for every $i,j$ such that $i≠j$ we have
+    $xᵢ≠xⱼ$.].
+    Furthermore, for every $1≤i≤ n$ we have that given arbitrary terms
+    $a₁,…,a_{i-1}$ such that
+    \begin{flalign*}
+   \label{context-cond}
+   S₁:\sf{Type} &\text{ and } a₁:S₁ \\
+   S₂[x₁↦a₁]:\sf{Type} &\text{ and } a₂:S₂[x₁↦a₁] \\
+   & … \\
+   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\sf{Type} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]
+    \end{flalign*}
+    then
+    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\sf{Type}\].
+
+    Intuitively, a /type constructor/ (also known as /type family/),
+    generalizes the concept of type in the sense that it is parameterized by a
+    context. Note that a type constructor parameterized with an empty context is
+    simply a type.
+
+    More precisely, given a context $x₁:S₁,…,xₙ:Sₙ$ we say that $A$ is a type
+    constructor and we write \[A[x₁:A₁,…,xₙ:Aₙ]:\sf{Type}\] if the
+    following holds: Given arbitrary terms $a₁,…,aₙ$ that satisfy
+    \[a₁:S₁,…,aₙ:Sₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]\] then
+    \[A[x₁↦a₁,…,xₙ↦aₙ]:\sf{Type}\].
+
+    We require type constructors to be extensional with respect to the context.
+    That is, if we have $A[x₁↦a₁,…,xₙ↦aₙ]:\sf{Type}$ and
+    \begin{flalign*}
+    a₁&=b₁:A₁ \\
+    &… \\
+    aₙ&=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]
+    \end{flalign*}
+    then \[A[x₁↦a₁,…,xₙ↦aₙ]=A[x₁↦b₁,…,xₙ↦bₙ]\].
+
+*** Defining new types
+    <<sec:def-new-types>>
+**** Top
+     We begin by defining the singleton type. We name it $⊤$. We say that it
+     is a singleton type because there is only one term of this type, namely
+     $\sf{tt}$. The $⊤$ type represents ``true'' in this theory.
+
+     The constant that represents the type: \[⊤:\sf{Type}\] The
+     only element in the type: \[\sf{tt}:⊤\] An induction principle:
+     \[\sf{case}_{⊤}:(P : ⊤↠\sf{Type})↠P\ \sf{tt}↠(a:⊤)↠P\ a\] The
+     above type should read as follows. Given a predicate $P$, a proof that $P$
+     holds for the base case, that is, a term of type $P\ \sf{tt}$, and an
+     arbitrary term $a$ of type $⊤$, we build a term of type $P\ a$, which is a
+     proof that $a$ satisfies $P$.
+
+     We also add the following equality.
+     \begin{mathpar}
+     \inferrule[]{P:⊤↠\sf{Type} \\ p : P\ \sf{tt}}
+     {\sf{case}_{⊤}\ P\ p\ \sf{tt}=p\ \sf{tt}:P\ \sf{tt}}
+     \end{mathpar}
+
+**** Bottom
+     We define the empty type, $⊥$, as we call it. We say that it is the empty
+     type because there is no term of this type. The $⊥$ type represents
+     ``false in this theory.
+
+     We introduce the constant that represents the type: \[⊥:\sf{Type}\] We
+     do not introduce any constants of this type. We introduce an induction
+     principle:
+     \[\sf{case}_⊥:(P : ⊥↠\sf{Type})↠(a:⊥)↠P\ a\]
+     # ((Z : El ({}))Set, x : El ({})) El (Z(x))
+     Notice how we can use the presented induction principle $\sf{case}_⊥$
+     to build the type that corresponds to the principle /ex falso quodlibet/ or
+     /principle of explosion/. \[\sf{exfalso}:(A:\sf{Type})↠(a:⊥)↠A\]
+     The type of $\sf{exfalso}$ should read as follows. Given any
+     proposition $A$ and a proof of $⊥$, we can build a proof of $A$.
+     \jan{explain how}
+**** Pairs
+**** Disjoint unions
+     Disjoint unions represent the disjunction according to the BHK
+     interpretation. We introduce the type constructor: \[⊎ : Type↠Type↠Type\]
+     We will use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead
+     of $⊎\ A\ B$.
+
+     Since we want to represent two options, we introduce two constructors:
+     \begin{flalign*}
+     \sf{inj}₁ &: (A:Type)↠(B:Type)↠A↠ A\ ⊎\ B\\
+     \sf{inj}₂ &: (A:Type)↠(B:Type)↠B↠ A\ ⊎\ B
+     \end{flalign*}
+
+     We introduce the following induction principle:
+     \begin{flalign*}
+     \sf{case}_⊎ &: (A:Type)↠(B:Type)↠(P : A\ ⊎\ B ↠ \sf{Type})\\
+     &↠ ((a:A)↠P\ (\sf{inj}₁\ A\ B\ a)) \\
+     &↠ ((b:B)↠P\ (\sf{inj}₂\ A\ B\ b)) \\
+     &↠ (u:A\ ⊎\ B) \\
+     &↠ P\ u
+     \end{flalign*}
+     and the following equalities:
+
+     \begin{mathpar}
+     \inferrule[]{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₁\ A\ B\ a)=
+     p₁\ a:P\ (\sf{inj}₁\ A\ B\ a)}{}
+     \and
+     \inferrule[]{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₂\ A\ B\ b)=
+     p₂\ b:P\ (\sf{inj}₂\ A\ B\ b)}{}
+     \end{mathpar}
+
+**** Σ Pairs
+     A $Σ$ /pair/ generalizes the concept of a regular pair. In a $Σ$ pair the type
+     of the second component depends on the value of the first component.
+
+     The introduce the type constructor for $Σ$ pairs: \[Σ : (A :
+     \sf{Type})↠(B : A ↠ \sf{Type})↠\sf{Type}\] We introduce a
+     constructor: \[\sf{pair}_Σ : (A : \sf{Type})↠(B : A ↠
+     \sf{Type}) ↠ (a : A)↠(b : B\ a)↠ Σ\ A\ B\] The above constructor
+     takes four arguments: The type of the first component, the type of the
+     second component, the term for the first component, and the term for the
+     second component.
+     We add the following induction principle:
+     \begin{flalign*}
+     \sf{case}_Σ:&(A:\sf{Type}) ↠ (B : A↠\sf{Type})↠ (P : Σ\ A\ B↠\sf{Type}) \\
+       &↠ ((a:A) ↠ (b:B\ a')↠P\ (\sf{pair}_Σ\ A\ B\ a\ b)) \\
+       &↠ (u : Σ\ A\ B)\\
+       &↠ P\ u
+     \end{flalign*}
+     We also add this equality.
+     \begin{mathpar}
+     \inferrule[]{A:\sf{Type}\\ B:A↠\sf{Type}\\P:Σ\ A\ B↠\sf{Type}\\\\
+     p:(a':A)↠(b':B\ a')↠P\ (\sf{pair}_Σ\ A\ B\ a'\ b')\\\\
+     a : A \\ b : B\ a
+     }{
+     \sf{case}_Σ\ A\ B\ P\ p\ (\sf{pair}_Σ\ A\ B\ a\ b)=
+      p\ a\ b:P\ (\sf{pair}_Σ\ A\ B\ a\ b)}
+     \end{mathpar}
+
+**** Natural numbers
+**** Equality type
+*** Equality of terms                                              :noexport:
+     We now define when we consider two terms to be equal. We write $a≡b∼α$ to
+     say that $a$ and $b$ are equal terms of arity $α$.
+     1. /Equivalence/.
+       \begin{mathpar}
+       \inferrule[$≡$-Refl]{a∼α}{a≡a∼α}
+       \and \inferrule[$≡$-Sym]{a≡b∼α}{b≡a∼α}
+       \and \inferrule[$≡$-Trans]{a≡b∼α \\ b≡c∼α}{a≡c∼α}
+       \end{mathpar}
+     2. /Application/.
+       \begin{mathpar}
+       \inferrule[$≡$-App]{a≡a'∼α↠β \\ b≡b'∼α}{a\ b ≡ a'\ b'∼β}
+       \and \inferrule[$≡$-$β$]{x∈\sf{Var}∼α \\  a∼α \\b∼β}{(λx→b)\ a≡b[x↦a]∼β}
+       \end{mathpar}
+       The \text{$≡$-App} tells us that we can replace equal terms in an
+        application. The \text{$≡$-$β$} corresponds to the \text{$β$-reduction} rule
+        in lambda calculus. In the \text{$≡$-$β$} rule we assume that no free
+        variable in $a$ becomes bound in $b[x↦a]$.
+     3. /Abstraction/.
+       \begin{mathpar}
+       \inferrule[$≡$-$ξ$]{x∈\sf{Var}∼α\\b≡b'∼β}{(λx→b)≡(λx→b')∼α↠β}
+       \and \inferrule[$≡$-$α$]{x,y∈\sf{Var}∼ α \\ b∼β}{(λx→b)≡(λy→b[x↦y])∼α↠β}
+       \\ \inferrule[$≡$-$η$]{x∈\sf{Var}∼ α \\ b∼α↠β}{(λx→b\ x)≡b∼α↠β}
+       \end{mathpar}
+       The \text{$≡$-$ξ$} rule tells us that we can replace equal bodies of
+        lambda abstraction terms. The \text{$≡$-$α$} rule tells us that we can
+        rename arguments of lambda abstraction terms. In this rule, we assume
+        that $y$ does not occur free in $b$. The \text{$≡$-$η$} rule tells us
+        that abstraction and application cancel each other. In this rule we
+        assume that $x$ does not occur free in $b$.
+     4. /Combination/.
+       \begin{mathpar}
+       \inferrule[$≡$-Comb1]{a₁≡a₁'∼α₁ \\ … \\ aₙ≡aₙ'∼αₙ}{a₁,…,aₙ≡a₁',…,aₙ'∼α₁⊗…⊗αₙ}
+       \and \inferrule[$≡$-Comb2]{e∼α₁⊗…⊗αₙ}{π₁\ e,…,πₙ\ e≡e∼α₁⊗…⊗αₙ}
+       \end{mathpar}
+       The \text{$≡$-Comb1} rule tells us that we can replace equal terms in a
+        combination. The \text{$≡$-Comb2} rule tells us that selection and
+        combination cancel each other.
+     5. /Selection/.
+       \begin{mathpar}
+       \inferrule[$≡$-Sel1]{a≡a'∼α₁⊗…⊗αₙ \\ 1≤i≤n}{πᵢ\ a≡πᵢ\ a'∼αᵢ}
+       \and \inferrule[$≡$-Sel2]{a₁∼α₁ \\ … \\ aₙ∼αₙ \\ 1≤i≤n}{πᵢ\ (a₁,…,aₙ)≡aᵢ∼αᵢ}
+       \end{mathpar}
+        The \text{$≡$-Sel1} rule tells us that we can replace equal terms in a
+        selection. The \text{$≡$-Sel2} rule tells us that selection projects the
+        indicated component of a combination.
+
+*** Arities                                                       :noexport:
+    We now introduce the concept of /arity/. Arities are used to enforce some
+    structure to the terms that we consider valid. For instance, arities reject
+     terms such as $R(R)$. \jan{replace the quote with some explanation.}
      \begin{quote}
      Per Martin-Löf has suggested that with
      each expression there should be associated an arity, showing the “functionality”
@@ -2135,37 +2590,59 @@ thanks
      \end{quote}
      We define arities recursively as follows:
      1. $𝟬$ is an arity;
+        \begin{mathpar}
+        \inferrule{\ }{𝟬∈\sf{Arity}}
+        \end{mathpar}
      2. if $α₁,…,αₙ$ (for $n≥2$) are arities, then $(α₁⊗…⊗αₙ)$ is an arity;
+        \begin{mathpar}
+        \inferrule{α₁∈\sf{Arity} \\ … \\αₙ ∈\sf{Arity}}{(α₁⊗…⊗αₙ)∈\sf{Arity}}
+        \end{mathpar}
      3. if $α$ and $β$ are arities, then $(α↠β)$ is an arity.
-     In BNF we have: \[A≔𝟬\ |\ (A⊗…⊗A)\ |\ (A↠A)\] We usually can avoid
+        \begin{mathpar}
+        \inferrule{α∈\sf{Arity} \\ β ∈\sf{Arity}}{(α↠β)∈\sf{Arity}}
+        \end{mathpar}
+     In BNF we have: \[A≔𝟬\ |\ (A⊗…⊗A)\ |\ (A↠A)\] We usually avoid
      parentheses by setting $⊗$ to have higher precedence than $↠$. Also, $↠$
      has right associativity. Thus, $𝟬↠ 𝟬↠ 𝟬⊕𝟬=(𝟬↠ (𝟬↠ (𝟬⊕𝟬)))$.
 
-     We proceed by defining terms in conjunction with their arities.
+*** Syntax of terms :noexport:
+     We proceed by defining terms in conjunction with their arities. We assume
+     that every variable and every constant has a unique arity associated with
+     it. We write $x∈\sf{Var}∼α$ to say that $x$ is variable of arity $α$.
+     Likewise with constants.
      1. /Variable/. If $x$ is a variable of arity $α$, then $x$ is term of arity
-        $α$;
+       $α$;
+       \begin{mathpar}
+       \inferrule{x∈\sf{Var}∼α}{x∼α}
+       \end{mathpar}
      2. /Constant/. If $c$ is a constant of arity $α$, then $c$ is a term of arity $α$;
-     3. /Defined identifier/. If $i$ is an identifier defined as $t$ and $t$ has
-        arity $α$, then $i$ is a term of arity $α$;
-     4. /Application/. If $d$ is term of arity $α↠β$ and $α$ is a term of
-        arity $α$, then $d\ a$ is a term of arity $β$;
-     5. /Combination/. If $t₁,…,tₙ$ (for $n≥1$) are terms of arities $α₁,…,αₙ$
+       \begin{mathpar}
+       \inferrule{c∈\sf{Const}∼α}{c∼α}
+       \end{mathpar}
+     # 3. /Defined identifier/. If $i$ is an identifier defined as $t$ and $t$ has
+     #    arity $α$, then $i$ is a term of arity $α$;
+     4. /Application/. If $f$ is term of arity $α↠β$ and $a$ is a term of
+       arity $α$, then $f\ a$ is a term of arity $β$;
+       \begin{mathpar}
+       \inferrule{f∼α↠β \\ a∼α }{f\ a∼β}
+       \end{mathpar}
+     5. /Abstraction/. If $b$ is a term of arity $β$ and $x$ is a variable of
+       arity $α$, then $(λx→b)$ is a term of arity $α↠β$. We may drop the
+       parentheses when no ambiguity can occur;
+       \begin{mathpar}
+       \inferrule{x∈\sf{Var}∼α \\ b∼β}{(λx→b)∼α↠β}
+       \end{mathpar}
+     6. /Combination/. If $t₁,…,tₙ$ (for $n≥1$) are terms of arities $α₁,…,αₙ$
         respectively, then $⟨t₁,…,tₙ⟩$ is a term of arity $α₁⊗…⊗αₙ$;
-     6. /Selection/. If $t$ is a term of arity $α₁⊗…⊗αₙ$ (for $n≥1$), then
-        $selᵢ\ t$ is a term of arity $αᵢ$.
-     The syntax of terms is introduced in conjunction with the introduction
-     typing rules:
-     \begin{mathpar}
-     \inferrule[$⊤$-intro]{\ }{Γ⊢\texttt{tt}:⊤}
-     \end{mathpar}
+       \begin{mathpar}
+       \inferrule{t₁∼α₁\\ …\\ tₙ∼αₙ \\ n≥1}{⟨t₁,…,tₙ⟩∼α₁⊗…⊗αₙ}
+       \end{mathpar}
+     7. /Selection/. If $t$ is a term of arity $α₁⊗…⊗αₙ$ (for $n≥1$), then
+       $πᵢ\ t$ is a term of arity $αᵢ$.
+       \begin{mathpar}
+       \inferrule{t∼α₁⊗…⊗αₙ \\ 1≤i≤n}{πᵢ\ t∼αᵢ}
+       \end{mathpar}
 
-     - $a , b$
-
-***** pend
-         define sets
-         define arity: Arities are defined inductively in the following way:
-           - $𝟬$
-         - define expressions
 ** Martin-Löf dependent type theory
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
    can serve as the basis for constructive mathematics, furthermore, it can be
@@ -2449,7 +2926,7 @@ thanks
    \and
    \inferrule[Level]{\ }{Γ⊢Set\ i : Set\ (i+1)}
    \and
-   \inferrule[Arrow]{Γ ⊢ A:Set\ i \\ Γ; x:A ⊢ B : Set\ i}{Γ ⊢ (x:A)→B:Set\ i}
+   \inferrule[Arrow]{Γ ⊢ A:Set\ i \\ Γ; x:A ⊢ B : Set\ j}{Γ ⊢ (x:A)→B:Set\ (i⊔j)}
    \\
    \inferrule[Abstraction]{x:A; Γ ⊢ t:B }{Γ⊢λx→t:(x:A)→B}
    \and
