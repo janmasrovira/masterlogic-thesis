@@ -25,7 +25,7 @@
 #+latex_header: \makeglossaries
 
 #+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Firebrick4,citecolor=Green4}
-#+latex_header: \newcommand{\ie}[0]{i.e.\ }
+#+latex_header: \newcommand{\ie}[0]{i.e.}
 #+latex_header: \newcommand{\todo}[0]{\textcolor{red}{pending}}
 #+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
 #+latex_header: \newcommand{\red}[1]{\textcolor{red}{#1 }}
@@ -2079,9 +2079,17 @@ thanks
      $A$. \[Y≔λg.(λx.g\ (x\ x))\ (λx.g\ (x\ x))\] The $Y$ combinator gives general
      recursion and thus the strong normalization property no longer holds.
 
+*** Dependently typed lambda calculus
+    There is no way to briefly present a description of a type system with
+    dependent types in an analogous from to untyped and simply typed lambda
+    calculus. For this reason, we prefer to dedicate a longer section to it. In
+    the next Section ([[sec:martin-lof]]) we present a full description of a theory
+    which is based on dependent types and is the logical basis of Agda.
 ** Martin Löf's logical framework
-   In this section we will present the intuitionistic type theory presented in
-   cite:nordstrom1990programming. \jan{needs a longer intro.}
+   <<sec:martin-lof>> In this section we will present the intuitionistic type
+   theory presented in cite:nordstrom1990programming. We will refer to this
+   logic as /Martin Löf's logical framework/ or LF for short. {{{jan(needs a
+   longer intro.)}}}
 
    In this logic we have four types of judgment:
    1. ``$a$ has type $A$''. We write $a:A$. Crucially, in a type theory that
@@ -2118,15 +2126,15 @@ thanks
 
    Hence we have the axiom:
    \begin{mathpar}
-   \inferrule[]{\ }{\mathsf{Set}:\mathsf{Type}}
+   \inferrule[Set]{\ }{\mathsf{Set}:\mathsf{Type}}
    \end{mathpar}
 
    If $A$ is a set, then the elements of $A$ in conjunction with their
    equivalence relation forms a type.
    \begin{mathpar}
-   \inferrule[]{A:\sf{Set} }{\sf{El}(A):\sf{Type}}
+   \inferrule[El]{A:\sf{Set} }{\sf{El}(A):\sf{Type}}
    \and
-   \inferrule[]{A=B:\sf{Set} }{\sf{El}(A)=\sf{El}(B):\sf{Type}}
+   \inferrule[El=]{A=B:\sf{Set} }{\sf{El}(A)=\sf{El}(B):\sf{Type}}
    \end{mathpar}
 
 
@@ -2180,7 +2188,7 @@ thanks
     \[S≔B\ |\ S→S\]
 
     In this theory we expand the syntax of types in a way that resembles the
-    syntax of terms: \[S≔x\ |\ S\ S\ |\ (x:S)↠S\ |\ c\] We want to highlight the
+    syntax of terms: \[S≔x\ |\ (x:S)↠S\ |\ c\] We want to highlight the
     construction $(x:S)↠S$. This is the type of dependent functions. If we have
     $(a:A)↠B$ then this is the type of functions from $A$ to $B$. However, in
     this case the type $B$ may depend on $a$. As we will see, this is the
@@ -2219,14 +2227,17 @@ thanks
     \inferrule[Refl]{Γ⊢A:\sf{Type} \\ Γ⊢a:A}{Γ⊢a=a:A} \and
     \inferrule[Refl]{A:\sf{Type} \\ a:A}{a=a:A}
     \end{mathpar}
+    Additionally, when the judgment does not depend on the context (\ie{} the
+    context is allowed to be empty), we will drop the ``$Γ⊢$'' part.
 
-
-
+*** General rules
     As expected, we have the following rule:
     \begin{mathpar}
-    \inferrule[Assum]{Γ⊢A:\sf{Type}\\x:A∈Γ}
-    {Γ⊢x:A}
+    \inferrule[Assum]{Γ⊢A:\sf{Type}}
+    {Γ,x:A⊢x:A}
     \end{mathpar}
+    Note that $x:A$ does not necessarily need to be at the rightmost position in
+    the context.
 
     Since equality is an equivalence relation we have the corresponding rules
     for equality on types and on terms.
@@ -2238,17 +2249,17 @@ thanks
     \end{mathpar}
     Analogously, for types we have:
     \begin{mathpar}
-    \inferrule[Refl]{A:\sf{Type}}{A=A} \and
+    \inferrule[Refl]{A:\sf{Type}}{A=A:\sf{Type}} \and
     \inferrule[Sym]{ A=B:\sf{Type} }{B=A:\sf{Type}} \and
-    \inferrule[Trans]{A,B:\sf{Type} \\ A=B:\sf{Type} \\ B=C:\sf{Type}}{A=C:\sf{Type}}
+    \inferrule[Trans]{B=C:\sf{Type}}{A=C:\sf{Type}}
     \end{mathpar}
     Furthermore we can substitute equal types.
     \begin{mathpar}
-    \inferrule[Id1]{A,B:\sf{Type} \\a:A \\ A=B}{a:B} \and
-    \inferrule[Id2]{A,B:\sf{Type} \\a=b:A\\A=B}{a=b:B}
+    \inferrule[Id1]{A=B:\sf{Type}\\a:A }{a:B} \and
+    \inferrule[Id2]{A=B:\sf{Type} \\a=b:A}{a=b:B}
     \end{mathpar}
 
-
+*** Type families rules
     We say that $A$ is a /family of types/ in the context \[Γ≔x₁:A₁,…,xₙ:Aₙ\] if
     $Γ⊢A:\sf{Type}$.
 
@@ -2327,38 +2338,39 @@ thanks
       # 4. nothing is a proof of $⊥$;
       # 5. $⊤$ is always true and provable.
 
-*** Function types
-    The type of functions from a type $A$ to a type $B$ indexed by a term of
-    type $A$.
+*** Function and application rules
+    We can form by the following rule the type of functions from a type $A$ to a
+    type $B$ indexed by a term of type $A$.
     \begin{mathpar}
-    \inferrule[]{Γ⊢A:\sf{Type}\\Γ;x:A⊢B:\sf{Type}}{Γ⊢(x:A)↠B:\sf{Type}}
+    \inferrule[Fun]{Γ⊢A:\sf{Type}\\Γ,x:A⊢B:\sf{Type}}{Γ⊢(x:A)↠B:\sf{Type}}
     \end{mathpar}
     As a notational convention, when $B$ does not depend on a term of type $A$,
-    we will simply write $A↠B$ instead of $(x:A)↠B$.
-
+    we will simply write $A↠B$ instead of $(x:A)↠B$ as shown by the following
+    (redundant) rule.
+    \begin{mathpar}
+    \inferrule[Fun']{A:\sf{Type}\\B:\sf{Type}}{A↠B:\sf{Type}}
+    \end{mathpar}
+    Application and abstraction. \jan{use $→$ or . ?}
+    \begin{mathpar}
+    \inferrule[App]{f:(x:A)↠B \\ a:A}{f\ a:B[x↦a]}
+    \and \inferrule[Abs]{Γ,x:A⊢b:B}{Γ⊢λx→b:(x:A)↠B}
+    \end{mathpar}
     Substitution in function types:
     \begin{mathpar}
-    \inferrule[]{Γ⊢A':\sf{Type}\\ Γ⊢A':\sf{Type}\\Γ⊢A=A'\\\\
-     B[x:A]:\sf{Type}\\B'[x:A]:\sf{Type}\\B[x:A]=B'[x:A]}
-     {(x:A)↠B=(x:A')↠B'}
+    \inferrule[]{Γ⊢A=A':\sf{Type}\\\\
+     Γ,x:A⊢B=B':\sf{Type}}
+     {Γ⊢(x:A)↠B=(x:A')↠B'}
     \end{mathpar}
-    Function application and substitution.
+
+    The rule of \text{$β$-reduction}. Notice how we have the substitution $x↦a$
+    also in the type $B$.
     \begin{mathpar}
-    \inferrule[App]{c:(x:A)↠B \\ a:A}{c\ a:B[x↦a]}
-    \and \inferrule[]{c=c':(x:A)↠B \\ a=a':A}{c\ a=c'\ a'=:B[x↦a]}
-    \end{mathpar}
-    Abstraction.
-    \begin{mathpar}
-    \inferrule[Abs]{b:B[x:A]}{λx→b:(x:A)↠B}
-    \end{mathpar}
-    The rule of \text{$β$-reduction}.
-    \begin{mathpar}
-    \inferrule[$β$-$=$]{a:A \\ b:B[x:A]}{(λx→b)\ a=b[x↦a]:B[x↦a]}
+    \inferrule[$β$-$=$]{Γ⊢a:A \\ Γ,x:A⊢b:B}{Γ⊢(λx→b)\ a=b[x↦a]:B[x↦a]}
     \end{mathpar}
     The \text{$ξ$-$=$} rule tells us that we can replace equal bodies of lambda
     abstraction terms.
     \begin{mathpar}
-    \inferrule[$ξ$-$=$]{b=b':B[x:A]}{λx→b=λx→b':(x:A)↠B}
+    \inferrule[$ξ$-$=$]{Γ,x:A⊢b=b':B}{Γ⊢λx→b=λx→b':(x:A)↠B}
     \end{mathpar}
     The \text{$α$-$=$} rule tells us that we can rename the abstracted variable
     of lambda abstraction terms. In this rule we assume that $y$ does not
@@ -2371,18 +2383,89 @@ thanks
     \begin{mathpar}
     \inferrule[$η$-$=$]{c:(x:A)↠B}{λx→b=λy→b[x↦y]:λ(x:A)↠B}
     \end{mathpar}
+    Substitution in a function application.
+    \begin{mathpar}
+    \inferrule[]{f=f':(x:A)↠B \\ a=a':A}{f\ a=f'\ a':B[x↦a]}
+    \end{mathpar}
 
-*** General rules
+*** Examples
+    Consider the fragment of intuitionistic logic with only implication. We
+    identify formulas in this fragment with LF's types as follows:
+    \begin{flalign*}
+    p^* &≔ \sf{El}(P) & \text{where } P:\sf{Set} \\
+    (A → B)^*&≔ A^* ↠ B^*
+    \end{flalign*}
+    # intuitionistic logic with the non-dependent
+    # version of the $↠$ function type operator. We identify variables {{{jan(with
+    # type variables??)}}}. That is we interpret $A→B$ as $A↠B$.
 
-*** Type constructors and constructors
-    We say that $C$ is a type constructor if it is a constant with a type of the
-    form \[C:(a₁ : A₁) ↠…↠ (aₙ:Aₙ) ↠ \sf{Type}\ \ \ \text{ for } n≥0\] As
-    examples of type constructors consider constant $ℕ:\sf{Type}$, which
-    denotes the type of natural numbers or the type of dependent products
-    $Σ:(A : \sf{Type})↠(B : A↠\sf{Type})↠\sf{Type}$. We define the
-    mentioned types, among others, in full detail in Section [[sec:def-new-types]].
+    # \begin{mathpar}
+    # \inferrule*[Left=Abs]
+    # {\inferrule*[Left=Assum]
+    # {A:\sf{Type}}
+    # {x:A⊢x:A}}
+    # {λx→x:A↠A}
+    # \end{mathpar}
+    # We cannot fully complete the proof as we have no means of assuming that $A$
+    # is a type within the formal derivation.
+    Let us now show that $(p→p)^*$ is a theorem in LF. In order to prove
+    that, we need to give a term with type $A↠A$. This term is in fact the
+    identity function, as shown below.
+    \begin{mathpar}
+    \inferrule*[Left=Abs]
+    {\inferrule*[Left=Assum]
+    {\inferrule*[Left=El]
+    {\inferrule*[Left=Assum]
+    {\inferrule*[Left=Set]
+    {\ }
+    {\sf{Set}:\sf{Type}}}
+    {P:\sf{Set}⊢P:\sf{Set}}}
+    {P:\sf{Set}⊢\sf{El}(P):\sf{Type}}}
+    {P:\sf{Set},x:\sf{El}(P)⊢x:\sf{El}(P)}}
+    {P:\sf{Set}⊢λx→x:\sf{El}(P)↠\sf{El}(P)}
+    \end{mathpar}
 
-*** Types
+    As another example we show that $(p → (q → p))^*$ is a theorem in LF:
+    \begin{mathpar}
+    \inferrule*[Left=Abs]
+    {\inferrule*[Left=Abs]
+    {\inferrule*[Left=Assum]
+    {\inferrule*[Left=El]
+    {\inferrule*[Left=Assum]
+    {\inferrule*[Left=Set]{\ }
+    {Q:\sf{Set},y:\sf{EL}(Q)⊢\sf{Set}:\sf{Type}}}
+    {P:\sf{Set}, Q:\sf{Set},y:\sf{EL}(Q)⊢P:\sf{Set}}}
+    {P:\sf{Set}, Q:\sf{Set},y:\sf{EL}(Q)⊢\sf{El}(P):\sf{Type}}}
+    {P:\sf{Set}, Q:\sf{Set},x:\sf{EL}(P),y:\sf{EL}(Q)⊢x:\sf{El}(P)}}
+    {P:\sf{Set}, Q:\sf{Set},x:\sf{EL}(P)⊢ λy→x:\sf{El}(Q)↠\sf{El}(P)}}
+    {P:\sf{Set}, Q:\sf{Set}⊢λx→(λ y→ x):\sf{El}(P)↠(\sf{El}(Q)↠\sf{El}(P))}
+    \end{mathpar}
+
+    We now show the last step of the proof for $((p→(q→r)) → ((p→q)→(p→r))^*$.
+    It should not be hard for the reader to see how the proof can be finished.
+    \begin{mathpar}
+    \inferrule*[Left=Abs]
+    {…}
+    {P:\sf{Set}, Q:\sf{Set}, R:\sf{Set}⊢λf→(λ g→ (λx→f\ x\ (g\ x))):\\\\
+      (\sf{El}(P)↠(\sf{El}(Q)↠\sf{El}(R)))↠((\sf{El}(P)↠\sf{El}(Q))↠(\sf{El}(P)↠\sf{El}(R)))}
+    \end{mathpar}
+
+    Observe now that if $(p→q)^*$ and $p^*$ are theorems in LF, then $q^*$ is
+    also a theorem. From the assumption it follows that there are terms
+    $f:\sf{El}(P)↠\sf{El}(Q)$ and $a:\sf{EL}(P)$. Then we have that $f\ a$ is
+    the desired term.
+    \begin{mathpar}
+    \inferrule*[Left=App]
+    {\inferrule*[]{\ }{P:\sf{Set}, Q:\sf{Set}⊢f:\sf{El}(P)↠\sf{El}(Q)}
+    \\ \inferrule*[]{\ }{P:\sf{Set}, Q:\sf{Set}⊢a:\sf{El}(P)}}
+    {P:\sf{Set}, Q:\sf{Set}⊢f\ a: \sf{El}(Q) }
+    \end{mathpar}
+
+    {{{begintheorem}}} {{{endtheorem}}} If $A$ is a theorem in the fragment of
+    propositional intuitionistic logic with only implication, then
+    $A^*$ is a theorem in LF.
+    {{{beginproof}}} By induction on $A$ and using the previous facts. {{{endproof}}}
+*** Types                                                         :noexport:
     So far we have explained the syntax of the theory, that is, how we can
     construct terms. In this section, we will explain the semantics of the
     theory. The semantics revolve around the concept of /type/, which plays the
@@ -2431,7 +2514,7 @@ thanks
     \end{flalign*}
     then \[A[x₁↦a₁,…,xₙ↦aₙ]=A[x₁↦b₁,…,xₙ↦bₙ]\].
 
-*** Defining new types
+*** Defining new sets
     <<sec:def-new-types>>
 **** Top
      We begin by defining the singleton type. We name it $⊤$. We say that it
