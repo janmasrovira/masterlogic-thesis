@@ -262,6 +262,9 @@ thanks
    2. generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]];
    3. analysis of transitivity. [[theorem:trans][Link]];
    4. every Agda proof.
+   5. Embedding of intuitionistic logic into Martin Löf's logical framework.
+      This result is expected. Our contribution has been to provide detailed
+      definitions and proofs, which we were unable to find somewhere else.
 
 ** Language
    <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
@@ -2140,7 +2143,6 @@ thanks
    \inferrule[El=]{A=B:\set{} }{\sf{El}(A)=\sf{El}(B):\sf{Type}}
    \end{mathpar}
 
-
 *** Syntax of types old :noexport:
       We will proceed by introducing the syntax of types:
       1. /Bottom/. The constant $⊥$ is a type;
@@ -2394,84 +2396,323 @@ thanks
     \inferrule[]{f=f':(x:A)↠B \\ a=a':A}{f\ a=f'\ a':B[x↦a]}
     \end{mathpar}
 
-*** Examples
-    Consider the fragment of intuitionistic logic with only implication. We
-    identify formulas in this fragment with LF's types as follows:
-    \begin{flalign*}
-    p^* &≔ \sf{El}(P) & \text{where } P:\set{} \\
-    (A → B)^*&≔ A^* ↠ B^*
-    \end{flalign*}
-    # intuitionistic logic with the non-dependent
-    # version of the $↠$ function type operator. We identify variables {{{jan(with
-    # type variables??)}}}. That is we interpret $A→B$ as $A↠B$.
+*** Defining new sets
+    <<sec:def-new-types>> In this section we will define some new sets that will
+    allow us to express...
 
-    # \begin{mathpar}
-    # \inferrule*[Left=Abs]
-    # {\inferrule*[Left=Assum]
-    # {A:\sf{Type}}
-    # {x:A⊢x:A}}
-    # {λx→x:A↠A}
-    # \end{mathpar}
-    # We cannot fully complete the proof as we have no means of assuming that $A$
-    # is a type within the formal derivation.
-    Let us now show that $(p→p)^*$ is a theorem in LF. In order to prove
-    that, we need to give a term with type $A↠A$. This term is in fact the
-    identity function, as shown below.
+
+    We add the following redundant rule. On the left we show the new rule and on
+    the right we show the proof that it can be derived.
     \begin{mathpar}
-    \inferrule*[Left=Abs]
-    {\inferrule*[Left=Assum]
-    {\inferrule*[Left=El]
+    \inferrule[VarType]
+    {\ }
+    {P:\set{}⊢\sf{El}(P):\sf{Type}}
+    \and
+    \inferrule*[Left=El]
     {\inferrule*[Left=Assum]
     {\inferrule*[Left=Set]
     {\ }
     {\set{}:\sf{Type}}}
     {P:\set{}⊢P:\set{}}}
-    {P:\set{}⊢\sf{El}(P):\sf{Type}}}
-    {P:\set{},x:\sf{El}(P)⊢x:\sf{El}(P)}}
-    {P:\set{}⊢λx→x:\sf{El}(P)↠\sf{El}(P)}
+    {P:\set{}⊢\sf{El}(P):\sf{Type}}
     \end{mathpar}
+**** Function set
+     We introduce the constant that denotes the set of functions from elements
+     of a set $A$ to elements of a set $B$: \[↣:\set↠\set↠\set\]
+     *Notation*: We will use
+     infix notation and write $A\ ↣\ B$ instead of $↣\ A\ B$. Also, $↣$ has
+     right associativity.
 
-    As another example we show that $(p → (q → p))^*$ is a theorem in LF:
-    \begin{mathpar}
-    \inferrule*[Left=Abs]
-    {\inferrule*[Left=Abs]
-    {\inferrule*[Left=Assum]
-    {\inferrule*[Left=El]
-    {\inferrule*[Left=Assum]
-    {\inferrule*[Left=Set]{\ }
-    {Q:\set{},y:\sf{EL}(Q)⊢\set{}:\sf{Type}}}
-    {P:\set{}, Q:\set{},y:\sf{EL}(Q)⊢P:\set{}}}
-    {P:\set{}, Q:\set{},y:\sf{EL}(Q)⊢\sf{El}(P):\sf{Type}}}
-    {P:\set{}, Q:\set{},x:\sf{EL}(P),y:\sf{EL}(Q)⊢x:\sf{El}(P)}}
-    {P:\set{}, Q:\set{},x:\sf{EL}(P)⊢ λy→x:\sf{El}(Q)↠\sf{El}(P)}}
-    {P:\set{}, Q:\set{}⊢λx→(λ y→ x):\sf{El}(P)↠(\sf{El}(Q)↠\sf{El}(P))}
-    \end{mathpar}
+     We add a constant to introduce elements in this set:
+     \[Λ : (A:\set)↠(B:\set)↠(\el{A}↠\el{B})↠ \el{A\ ↣\ B} \]
 
-    We now show the last step of the proof for $((p→(q→r)) → ((p→q)→(p→r))^*$.
-    It should not be hard for the reader to see how the proof can be finished.
-    \begin{mathpar}
-    \inferrule*[Left=Abs]
-    {…}
-    {P:\set{}, Q:\set{}, R:\set{}⊢λf→(λ g→ (λx→f\ x\ (g\ x))):\\\\
-      (\sf{El}(P)↠(\sf{El}(Q)↠\sf{El}(R)))↠((\sf{El}(P)↠\sf{El}(Q))↠(\sf{El}(P)↠\sf{El}(R)))}
-    \end{mathpar}
+     We add an induction principle:
+     \[\sf{case_Λ} : (A:\set)↠(B:\set)↠(\el{A↣B})↠ \el{A}↠\el{B} \]
+     And the equality:
+     \begin{mathpar}
+     \inferrule[case$Λ$]{
+     f:\el{A}↠\el{B} }{\sf{case_Λ}\ A\ B\ (Λ\ A\ B\ f)=f:\el{A}↠\el{B}}
+     \end{mathpar}
 
-    Observe now that if $(p→q)^*$ and $p^*$ are theorems in LF, then $q^*$ is
-    also a theorem. From the assumption it follows that there are terms
-    $f:\sf{El}(P)↠\sf{El}(Q)$ and $a:\sf{EL}(P)$. Then we have that $f\ a$ is
-    the desired term.
-    \begin{mathpar}
-    \inferrule*[Left=App]
-    {\inferrule*[]{\ }{P:\set{}, Q:\set{}⊢f:\sf{El}(P)↠\sf{El}(Q)}
-    \\ \inferrule*[]{\ }{P:\set{}, Q:\set{}⊢a:\sf{El}(P)}}
-    {P:\set{}, Q:\set{}⊢f\ a: \sf{El}(Q) }
-    \end{mathpar}
+     The following rules are redundant but they help keeping proofs shorter.
+     \begin{mathpar}
+     \inferrule[Intro$Λ$]{f:\el{A}↠\el{B}}
+     {Λ\ A\ B\ f:\el{A↣B}}
+     \and \inferrule[Abs$Λ$]{Γ,x:A⊢b:B}
+     {Λ\ A\ B\ (λx→b):\el{A↣B}}
+     \and \inferrule[App$Λ$]{f:\el{A↣B} \\ a:\el{A}}
+     {\sf{case_Λ}\ f\ a : \el{B}}
+     \end{mathpar}
+     *Notation*: When we have $f:\el{A↣B}$ and $a:\el{A}$ we will write $f\ a$
+     instead of $\sf{case_Λ}\ f\ a$. Note that this notational convention is
+     very convenient and adds no ambiguity since $f\ a$ on its own would never
+     be a valid term.
 
-    {{{begintheorem}}} {{{endtheorem}}} If $A$ is a theorem in the fragment of
-    propositional intuitionistic logic with only implication, then
-    $A^*$ is a theorem in LF.
-    {{{beginproof}}} By induction on $A$ and using the previous facts. {{{endproof}}}
-*** Types                                                         :noexport:
+
+     Consider the fragment of intuitionistic logic with only implication. If $A$
+     is a propositional formula then $A^*$ is the type that identifies the
+     formula $A$ in LF, where $*$ is a map from propositional formulas to types
+     as defined below.
+     \begin{flalign*}
+     A^*&≔\el{⟦A⟧} \\
+     \\
+     ⟦p⟧ &≔ P & \text{where } P:\set{} \\
+     ⟦A → B⟧&≔ ⟦A⟧ ↣ ⟦B⟧
+     \end{flalign*}
+     We map lowercase propositional variables to the same uppercase variable of
+     type $\set$, that is, $⟦p⟧=P$ with $P:\set$, $⟦q⟧=Q$ with $Q:\set$, and so
+     on.
+
+     Let us now show that $(p→p)^*$ is a theorem in LF. In order to prove
+     that, we need to give a term with type $\el{P↣P}$. This term is in fact the
+     identity function wrapped in the function set, as shown below.
+     \begin{mathpar}
+     \inferrule*[Left=Abs$Λ$]
+     {\inferrule*[Left=Assum]
+     {\inferrule*[Left=VarType]
+     {\ }
+     {P:\set{}⊢\sf{El}(P):\sf{Type}}}
+     {P:\set{},x:\sf{El}(P)⊢x:\sf{El}(P)}}
+     {P:\set{}⊢Λ\ P\ P\ (λx→x):\el{P↣P}}
+     \end{mathpar}
+
+     As another example we show that $(p → (q → p))^*$ is a theorem in LF:
+     \begin{mathpar}
+     \inferrule*[Left=Abs$Λ$]
+     {\inferrule*[Left=Abs$Λ$]
+     {\inferrule*[Left=Assum]
+     {\inferrule*[Left=VarType]
+     {\ }
+     {P:\set{}, Q:\set{},y:\sf{EL}(Q)⊢\sf{El}(P):\sf{Type}}}
+     {P:\set{}, Q:\set{},x:\sf{EL}(P),y:\sf{EL}(Q)⊢x:\sf{El}(P)}}
+     {P:\set{}, Q:\set{},x:\sf{EL}(P)⊢ Λ\ Q\ P\ (λ y→ x):Q↣P}}
+     {P:\set{}, Q:\set{}⊢Λ\ P\ (Q↣P)\ (λx→Λ\ Q\ P\ (λ y→ x)):\el{P↣Q↣P}}
+     \end{mathpar}
+     *Notation*. In order to improve readability, from now on, where we would
+     have $Λ\ A\ B\ (λx→b)$ and $A$ and $B$ are clear from the context, we will
+     write $Λx→b$ instead. For instance, the last step of the previous proof
+     would be written as
+     \begin{mathpar}
+     \inferrule*[Left=Abs$Λ$]
+     {…}
+     {P:\set{}, Q:\set{}⊢Λx→Λy→ x:\el{P↣Q↣P}}
+     \end{mathpar}
+
+     We now show the last step of the proof for $((p→(q→r)) → ((p→q)→(p→r))^*$.
+     It should not be hard for the reader to see how the proof can be finished.
+     \begin{mathpar}
+     \inferrule*[Left=Abs$Λ$]
+     {…}
+     {P:\set{}, Q:\set{}, R:\set{}⊢Λf→(Λ g→ (Λx→f\ x\ (g\ x))):\\\\
+       \el{(P↣Q↣R)↣(P↣Q)↣P↣R}}
+     \end{mathpar}
+
+     Observe now that the modus ponens rule is valid, that is, if $(p→q)^*$ and
+     $p^*$ are theorems in LF, then $q^*$ is also a theorem. From the assumption
+     it follows that there are terms $f:\el{P↣ Q}$ and $a:\sf{EL}(P)$. Then we
+     have that $\sf{case_Λ}\ f\ a$, which we write as $f\ a$, is the desired term.
+     \begin{mathpar}
+     \inferrule*[Left=App]
+     {\inferrule*[]{\ }{P:\set{}, Q:\set{}⊢f:\el{P↣ Q}}
+     \\ \inferrule*[]{\ }{P:\set{}, Q:\set{}⊢a:\sf{El}(P)}}
+     {P:\set{}, Q:\set{}⊢f\ a: \sf{El}(Q) }
+     \end{mathpar}
+
+     {{{begintheorem}}} {{{endtheorem}}} If $A$ is a theorem in the fragment of
+     propositional intuitionistic logic with only implication, then
+     $A^*$ is a theorem in LF.
+     {{{beginproof}}} By induction on $A$ and using the previous facts. {{{endproof}}}
+
+**** Top set
+      We begin by defining the singleton set. We name it $⊤$. We say that it
+      is a singleton set because it only has one element, namely
+      $\sf{tt}$. The $⊤$ set represents ``true'' in this theory.
+
+      We add the constant that represents the set: \[⊤:\set{}\] We introduce the
+      constant that is the only element in the set: \[\sf{tt}:\sf{El}(⊤)\] An
+      induction principle: \[\sf{case}_{⊤}:(P : \sf{El}(⊤)↠\set{})↠\sf{El}(P\
+      \sf{tt})↠(a:\sf{El}(⊤))↠\sf{El}(P\ a)\] The above type should read as
+      follows. Given a predicate $P$, a proof that $P$ holds for the base case,
+      that is, an element of the set $P\ \sf{tt}$, and an arbitrary element $a$
+      in the set $⊤$, we build a term in the set $P\ a$, which is a proof that
+      $a$ satisfies $P$.
+
+      We also add the following equality.
+      \begin{mathpar}
+      \inferrule[case$⊤$]{P:\el{⊤}↠\set{} \\ p : \el{ P\ \sf{tt} }}
+      {\sf{case}_{⊤}\ P\ p\ \sf{tt}=p\ \sf{tt}:\el{P\ \sf{tt}}}
+      \end{mathpar}
+
+      As expected from a set representing /true/, it is trivial to provide a term
+      of type $\el{⊤}$.
+      \begin{mathpar}
+      \inferrule[]{\ }{\sf{tt}:\el{⊤} }
+      \end{mathpar}
+**** Bottom set
+     We define the empty set, $⊥$, as we call it. We say that it is the empty
+     set because there is no term $t$ such that $t:\el{⊥}$. The $⊥$ type
+     represents ``false'' in this theory.
+
+     We introduce the constant that represents the type: \[⊥:\set{}\] We do
+     not introduce any constants as elements of this set. We introduce an
+     induction principle: \[\sf{case_⊥}:(P : \el{⊥}↠\set{})↠(a:\el{⊥})↠\el{P\ a}\]
+
+
+     We add the following equation to the map $⟦.⟧$:
+     \begin{flalign*}
+     ⟦⊥⟧ ≔ ⊥ &&
+     \end{flalign*}
+     The $⊥$ on the right of $≔$ is the constant introduced in this section.
+
+     Let us now show that the principle $(⊥→p)^*$ know as /ex falso quodlibet/
+     or /principle of explosion/ holds in LF. For that, we provide a term typed
+     $(⊥→p)^*$.
+     \begin{mathpar}
+     \inferrule*[Left=Abs$Λ$]
+     {\inferrule*[Left=App, sep=2em]
+     {\inferrule*[Left=App]
+     {\inferrule*[]{\ }{\sf{case_⊥}:…}
+        \\ \inferrule*[Left=Abs]
+            {\inferrule*[Left=Assum]{\ }{P:\set, x:\el{⊥}⊢P:\set}}
+            {P:\set(λx→P):\el{⊥}↠\set}}
+     {P:\set,y:\el{⊥}⊢\sf{case_⊥}\ (λx→P):\el{⊥}↠\el{P}}
+        \\ \inferrule*[Left=Assum]{\ }{y:\el{⊥}⊢y:\el{⊥}}}
+     {P:\set,y:\el{⊥}⊢\sf{case_⊥}\ (λx→P)\ y:\el{P}}}
+     {P:\set⊢Λy→\sf{case_⊥}\ (λx→P)\ y:\el{⊥↣P}}
+     \end{mathpar}
+**** Disjoint unions set
+      Disjoint unions represent two options.
+
+      We introduce the constant: \[⊎ : \set{}↠\set{}↠\set{}\]
+      *Notation*.We will use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead
+      of $⊎\ A\ B$.
+
+      Since we want to represent two options, we introduce two constructors:
+      \begin{flalign*}
+      \sf{inj}₁ &: (A:\set{})↠(B:\set{})↠\el{A}↠ \el{A\ ⊎\ B}\\
+      \sf{inj}₂ &: (A:\set{})↠(B:\set{})↠\el{B}↠ \el{A\ ⊎\ B}
+      \end{flalign*}
+
+      We introduce the following induction principle:
+      \begin{flalign*}
+      \sf{case}_⊎ &: (A:\set{})↠(B:\set{})↠(P : \el{A\ ⊎\ B} ↠ \set{})\\
+      &↠ ((a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)}) \\
+      &↠ ((b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)}) \\
+      &↠ (u:\el{A\ ⊎\ B}) \\
+      &↠ \el{P\ u}
+      \end{flalign*}
+      and the following equalities:
+
+      \begin{mathpar}
+      \inferrule[Case$⊎₁$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
+      p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
+      p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
+      a: \el{A}
+      }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₁\ A\ B\ a)=
+      p₁\ a:\el{P\ (\sf{inj}₁\ A\ B\ a)}}
+      \and
+      \inferrule[Case$⊎₂$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
+      p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
+      p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
+      b: \el{B} }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₂\ A\ B\ b)=
+      p₂\ b:\el{P\ (\sf{inj}₂\ A\ B\ b)}}
+      \end{mathpar}
+
+      We extend the map $⟦.⟧$ we defined with the following equation:
+      \begin{flalign*}
+      ⟦A∨B⟧≔⟦A⟧⊎⟦B⟧ & &
+      \end{flalign*}
+      We show that $(p→(p∨q))^*$ is a theorem in LF. {{{jan(should I provide a
+      full proof?)}}}
+      \begin{mathpar}
+      \inferrule[]{… }{P:\set,Q:\set⊢Λx→\sf{inj₁}\ P\ Q\ x:\el{P↣(P\ ⊎\ Q)}}
+      \end{mathpar}
+      The proof of $(q→(p∨q))^*$ is analogous.
+      \begin{mathpar}
+      \inferrule[]{… }{P:\set{},Q:\set⊢Λx→\sf{inj₂}\ P\ Q\ x:\el{Q↣(P\ ⊎\ Q)}}
+      \end{mathpar}
+      Finally we have that $((p→r)→((q→r)→((p∨q)→r)))^*$ is a theorem in LF.
+      Finishing the proof can be made mechanically.
+      \begin{mathpar}
+      \inferrule[]{… }{P:\set{},Q:\set{},R:\set{}⊢
+      Λf→Λg→Λx→\sf{case}_⊎\ P\ Q\ (λ x→ R)\ (\sf{case_Λ}\ f)\ (\sf{case_Λ}\ g)\ x:\\\\
+      \el{(P↣R)↣(Q↣R)↣(P⊎Q)↣R} }
+      \end{mathpar}
+**** Pairs set
+     The following constant which represents the set of pairs:
+     \[×:\set{}↠\set{}↠\set{}\]
+     *Notation*. We will use infix notation for $×$, hence we will write $A\ × B$ instead
+     of $× A\ B$.
+
+     We introduce one constructor:
+     \[\sf{pair} : (A:\set{})↠(B:\set{})↠\el{A}↠ \el{B}↠\el{A\ ×\ B}\]
+
+     We introduce the following induction principle:
+     \begin{flalign*}
+     \sf{case}_× &: (A:\set{})↠(B:\set{})↠(P : \el{A\ ×\ B} ↠ \set{})\\
+     &↠ ((a:\el{A})↠(b:\el{B})↠\el{P\ (\sf{pair}\ A\ B\ a\ b)}) \\
+     &↠ (u:\el{A\ × B}) \\
+     &↠ \el{P\ u}
+     \end{flalign*}
+     and the following equality:
+     \begin{mathpar}
+     \inferrule[case$×$]{P:\el{A\ ×\ B}↠\sf{Set}\\\\
+     p:(a':\el{A})↠(b':\el{B})↠\el{P\ (\sf{pair}\ A\ B\ a'\ b')}\\\\
+     a : \el{A} \\ b : \el{B}
+     }{
+     \sf{case}_×\ A\ B\ P\ p\ (\sf{pair}\ A\ B\ a\ b)=
+      p\ a\ b:P\ (\sf{pair}\ A\ B\ a\ b)}
+     \end{mathpar}
+
+     Add the following equation to the $⟦.⟧$ map:
+     \begin{flalign*}
+     ⟦A∧B⟧≔⟦A⟧×⟦B⟧&&
+     \end{flalign*}
+     We show that $(p∧q→p)^*$ is a theorem in LF.
+     \begin{mathpar}
+     \inferrule[]{… }{P:\set,Q:\set⊢Λx→\sf{case}_×\ P\ Q\ (λ v→ P)\ (λy→λz→y)\ x:\el{(P×Q)↣P}}
+     \end{mathpar}
+     Analogously, the proof for $(p∧q→q)^*$.
+     \begin{mathpar}
+     \inferrule[]{… }{P:\set,Q:\set⊢Λx→\sf{case}_×\ P\ Q\ (λ v→ Q)\ (λy→λz→z)\ x:\el{(P×Q)↣Q}}
+     \end{mathpar}
+     Lastly we show that $p→(q→(p∧q))^*$ is a theorem in LF.
+     \begin{mathpar}
+     \inferrule[]{… }{P:\set,Q:\set⊢Λx→̋Λy →\sf{pair}\ P\ Q\ x\ y: \el{P↣Q↣(P×Q)}}
+     \end{mathpar}
+
+**** Σ Pairs set
+      A $Σ$ /pair/ generalizes the concept of a regular pair. In a $Σ$ pair the type
+      of the second component depends on the value of the first component.
+
+      The introduce the type constructor for $Σ$ pairs: \[Σ : (A :
+      \sf{Set})↠(B : A ↠ \sf{Set})↠\sf{Set}\] We introduce a
+      constructor: \[\sf{pair}_Σ : (A : \sf{Set})↠(B : A ↠
+      \sf{Set}) ↠ (a : \el{A})↠(b : \el{B\ a})↠ Σ\ A\ B\] The above constructor
+      takes four arguments: The type of the first component, the type of the
+      second component, the term for the first component, and the term for the
+      second component.
+      We add the following induction principle:
+      \begin{flalign*}
+      \sf{case}_Σ:&(A:\sf{Set}) ↠ (B : \el{A}↠\sf{Set})↠ (P : Σ\ A\ B↠\sf{Set}) \\
+        &↠ ((a:\el{A}) ↠ (b:\el{B\ a})↠P\ (\sf{pair}_Σ\ A\ B\ a\ b)) \\
+        &↠ (u : \el{Σ\ A\ B})\\
+        &↠ \el{P\ u}
+      \end{flalign*}
+      We also add this equality.
+      \begin{mathpar}
+      \inferrule[]{A:\sf{Set}\\ B:\el{A}↠\sf{Set}\\P:\el{Σ\ A\ B}↠\sf{Set}\\\\
+      p:(a':\el{A})↠(b':\el{B\ a'})↠\el{P\ (\sf{pair}_Σ\ A\ B\ a'\ b')}\\\\
+      a : \el{A} \\ b : \el{B\ a}
+      }{
+      \sf{case}_Σ\ A\ B\ P\ p\ (\sf{pair}_Σ\ A\ B\ a\ b)=
+       p\ a\ b:P\ (\sf{pair}_Σ\ A\ B\ a\ b)}
+      \end{mathpar}
+
+**** Dependent functions set
+**** Natural numbers set
+**** Identity set
+*** Types                                                          :noexport:
     So far we have explained the syntax of the theory, that is, how we can
     construct terms. In this section, we will explain the semantics of the
     theory. The semantics revolve around the concept of /type/, which plays the
@@ -2520,139 +2761,6 @@ thanks
     \end{flalign*}
     then \[A[x₁↦a₁,…,xₙ↦aₙ]=A[x₁↦b₁,…,xₙ↦bₙ]\].
 
-*** Defining new sets
-    <<sec:def-new-types>> In this section we will define some new sets that will
-    allow us to express...
-**** Top
-     We begin by defining the singleton set. We name it $⊤$. We say that it
-     is a singleton set because it only has one element, namely
-     $\sf{tt}$. The $⊤$ set represents ``true'' in this theory.
-
-     The constant that represents the set: \[⊤:\set{}\] The constant that is
-     the only element in the set: \[\sf{tt}:\sf{El}(⊤)\] An induction principle:
-     \[\sf{case}_{⊤}:(P : \sf{El}(⊤)↠\set{})↠\sf{El}(P\
-     \sf{tt})↠(a:\sf{El}(⊤))↠\sf{El}(P\ a)\] The above type should read as
-     follows. Given a predicate $P$, a proof that $P$ holds for the base case,
-     that is, a term of type $P\ \sf{tt}$, and an arbitrary term $a$ of type
-     $⊤$, we build a term of type $P\ a$, which is a proof that $a$ satisfies
-     $P$.
-
-     We also add the following equality.
-     \begin{mathpar}
-     \inferrule[case$⊤$]{P:\el{⊤}↠\set{} \\ p : \el{ P\ \sf{tt} }}
-     {\sf{case}_{⊤}\ P\ p\ \sf{tt}=p\ \sf{tt}:\el{P\ \sf{tt}}}
-     \end{mathpar}
-
-     As expected from a set representing /true/, it is trivial to provide a term
-     of type $\el{⊤}$.
-     \begin{mathpar}
-     \inferrule[]{\ }{\sf{tt}:\el{⊤} }
-     \end{mathpar}
-**** Bottom
-     We define the empty set, $⊥$, as we call it. We say that it is the empty
-     set because there is no term $t$ such that $t:\el{⊥}$. The $⊥$ type
-     represents ``false'' in this theory.
-
-     We introduce the constant that represents the type: \[⊥:\set{}\] We do
-     not introduce any constants as elements of this set. We introduce an
-     induction principle: \[\sf{case}_⊥:(P : \el{⊥}↠\set{})↠(a:\el{⊥})↠\el{P\ a}\]
-     Notice how we can use the presented induction principle $\sf{case}_⊥$
-     to build the type that corresponds to the principle /ex falso quodlibet/ or
-     /principle of explosion/. \[\sf{exfalso}:(A:\set{})↠(a:\el{⊥})↠\el{A}\]
-     The type of $\sf{exfalso}$ should read as follows. Given any
-     proposition $A$ and a proof of $⊥$, we can build a proof of $A$.
-     \jan{explain how}
-**** Pairs
-**** Disjoint unions
-     Disjoint unions represent the disjunction according to the BHK
-     interpretation.
-
-     We introduce the constant: \[⊎ : \set{}↠\set{}↠\set{}\]
-     We will use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead
-     of $⊎\ A\ B$.
-
-     Since we want to represent two options, we introduce two constructors:
-     \begin{flalign*}
-     \sf{inj}₁ &: (A:\set{})↠(B:\set{})↠\el{A}↠ \el{A\ ⊎\ B}\\
-     \sf{inj}₂ &: (A:\set{})↠(B:\set{})↠\el{B}↠ \el{A\ ⊎\ B}
-     \end{flalign*}
-
-     We introduce the following induction principle:
-     \begin{flalign*}
-     \sf{case}_⊎ &: (A:\set{})↠(B:\set{})↠(P : \el{A\ ⊎\ B} ↠ \set{})\\
-     &↠ ((a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)}) \\
-     &↠ ((b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)}) \\
-     &↠ (u:\el{A\ ⊎\ B}) \\
-     &↠ \el{P\ u}
-     \end{flalign*}
-     and the following equalities:
-
-     \begin{mathpar}
-     \inferrule[Case$⊎₁$]{A:\set{} \\ B:\set{} \\ P:\el{A\ ⊎\ B}↠\set{}\\\\
-     p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
-     p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
-     a: \el{A}
-     }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₁\ A\ B\ a)=
-     p₁\ a:\el{P\ (\sf{inj}₁\ A\ B\ a)}}
-     \and
-     \inferrule[Case$⊎₂$]{A:\set{} \\ B:\set{} \\ P:\el{A\ ⊎\ B}↠\set{}\\\\
-     p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
-     p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
-     b: \el{B} }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₂\ A\ B\ b)=
-     p₂\ b:\el{P\ (\sf{inj}₂\ A\ B\ b)}}
-     \end{mathpar}
-
-     We extend the map $*$ we defined with the following equation:
-     \begin{flalign*}
-     (A∨B)^*≔A^*⊎B^* & &
-     \end{flalign*}
-     We show that $(p→(p∨q))^*$ is a theorem in LF. {{{jan(should I provide a
-     full proof?)}}}
-     \begin{mathpar}
-     \inferrule[]{… }{P:\set,Q:\set⊢\sf{inj₁}\ P\ Q:\el{P}↠\el{P\ ⊎\ Q}}
-     \end{mathpar}
-     The proof of $(q→(p∨q))^*$ is analogous.
-     \begin{mathpar}
-     \inferrule[]{… }{P:\set{},Q:\set⊢\sf{inj₂}\ P\ Q:\el{Q}↠\el{P\ ⊎\ Q}}
-     \end{mathpar}
-     Finally we have that $((p→r)→((q→r)→((p∨q)→r)))^*$ is a theorem in LF.
-     Finishing the proof can be made mechanically.
-     \begin{mathpar}
-     \inferrule[]{… }{P:\set{},Q:\set{},R:\set{}⊢
-     \sf{case}_⊎\ P\ Q\ (λ x→ R):\\\\
-     (\el{P}↠\el{R})↠(\el{Q}↠\el{R})↠\el{P⊎Q}↠\el{R} }
-     \end{mathpar}
-
-**** Σ Pairs
-     A $Σ$ /pair/ generalizes the concept of a regular pair. In a $Σ$ pair the type
-     of the second component depends on the value of the first component.
-
-     The introduce the type constructor for $Σ$ pairs: \[Σ : (A :
-     \sf{Set})↠(B : A ↠ \sf{Set})↠\sf{Set}\] We introduce a
-     constructor: \[\sf{pair}_Σ : (A : \sf{Set})↠(B : A ↠
-     \sf{Set}) ↠ (a : \el{A})↠(b : \el{B\ a})↠ Σ\ A\ B\] The above constructor
-     takes four arguments: The type of the first component, the type of the
-     second component, the term for the first component, and the term for the
-     second component.
-     We add the following induction principle:
-     \begin{flalign*}
-     \sf{case}_Σ:&(A:\sf{Set}) ↠ (B : \el{A}↠\sf{Set})↠ (P : Σ\ A\ B↠\sf{Set}) \\
-       &↠ ((a:\el{A}) ↠ (b:\el{B\ a})↠P\ (\sf{pair}_Σ\ A\ B\ a\ b)) \\
-       &↠ (u : \el{Σ\ A\ B})\\
-       &↠ \el{P\ u}
-     \end{flalign*}
-     We also add this equality.
-     \begin{mathpar}
-     \inferrule[]{A:\sf{Set}\\ B:\el{A}↠\sf{Set}\\P:\el{Σ\ A\ B}↠\sf{Set}\\\\
-     p:(a':\el{A})↠(b':\el{B\ a'})↠\el{P\ (\sf{pair}_Σ\ A\ B\ a'\ b')}\\\\
-     a : \el{A} \\ b : \el{B\ a}
-     }{
-     \sf{case}_Σ\ A\ B\ P\ p\ (\sf{pair}_Σ\ A\ B\ a\ b)=
-      p\ a\ b:P\ (\sf{pair}_Σ\ A\ B\ a\ b)}
-     \end{mathpar}
-
-**** Natural numbers
-**** Equality type
 *** Equality of terms                                              :noexport:
      We now define when we consider two terms to be equal. We write $a≡b∼α$ to
      say that $a$ and $b$ are equal terms of arity $α$.
