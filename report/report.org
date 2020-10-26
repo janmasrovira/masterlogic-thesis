@@ -2264,7 +2264,7 @@ thanks
     \inferrule[Id2]{A=B:\sf{Type} \\a=b:A}{a=b:B}
     \end{mathpar}
 
-*** Type families rules
+*** Type family rules
     We say that $A$ is a /family of types/ in the context \[Γ≔x₁:A₁,…,xₙ:Aₙ\] if
     $Γ⊢A:\sf{Type}$.
 
@@ -2685,23 +2685,22 @@ thanks
       A $Σ$ /pair/ generalizes the concept of a regular pair. In a $Σ$ pair the type
       of the second component depends on the value of the first component.
 
-      The introduce the type constructor for $Σ$ pairs: \[Σ : (A :
-      \sf{Set})↠(B : A ↠ \sf{Set})↠\sf{Set}\] We introduce a
-      constructor: \[\sf{pair}_Σ : (A : \sf{Set})↠(B : A ↠
-      \sf{Set}) ↠ (a : \el{A})↠(b : \el{B\ a})↠ Σ\ A\ B\] The above constructor
-      takes four arguments: The type of the first component, the type of the
-      second component, the term for the first component, and the term for the
-      second component.
-      We add the following induction principle:
+      We introduce the constant for the set: \[Σ : (A : \set)↠(B : \el{A} ↠
+      \set)↠\set\] We introduce a constant to build dependent paris:
+      \[\sf{pair}_Σ : (A : \set)↠(B : A ↠ \set) ↠ (a : \el{A})↠(b :
+      \el{B\ a})↠ Σ\ A\ B\] The above constructor takes four arguments: The type
+      of the first component, the type of the second component, the term for the
+      first component, and the term for the second component. We add the
+      following induction principle:
       \begin{flalign*}
-      \sf{case}_Σ:&(A:\sf{Set}) ↠ (B : \el{A}↠\sf{Set})↠ (P : Σ\ A\ B↠\sf{Set}) \\
+      \sf{case}_Σ:&(A:\set) ↠ (B : \el{A}↠\set)↠ (P : Σ\ A\ B↠\set) \\
         &↠ ((a:\el{A}) ↠ (b:\el{B\ a})↠P\ (\sf{pair}_Σ\ A\ B\ a\ b)) \\
         &↠ (u : \el{Σ\ A\ B})\\
         &↠ \el{P\ u}
       \end{flalign*}
       We also add this equality.
       \begin{mathpar}
-      \inferrule[]{A:\sf{Set}\\ B:\el{A}↠\sf{Set}\\P:\el{Σ\ A\ B}↠\sf{Set}\\\\
+      \inferrule[]{P:\el{Σ\ A\ B}↠\set\\\\
       p:(a':\el{A})↠(b':\el{B\ a'})↠\el{P\ (\sf{pair}_Σ\ A\ B\ a'\ b')}\\\\
       a : \el{A} \\ b : \el{B\ a}
       }{
