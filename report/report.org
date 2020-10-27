@@ -21,6 +21,7 @@
 #+latex_header: \usepackage{multicol}
 #+latex_header: \usepackage{spverbatim}
 
+
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
 
@@ -2448,6 +2449,7 @@ thanks
      very convenient and adds no ambiguity since $f\ a$ on its own would never
      be a valid term.
 
+     -----
 
      Consider the fragment of intuitionistic logic with only implication. If $A$
      is a propositional formula then $A^*$ is the type that identifies the
@@ -2557,6 +2559,7 @@ thanks
      not introduce any constants as elements of this set. We introduce an
      induction principle: \[\sf{case_⊥}:(P : \el{⊥}↠\set{})↠(a:\el{⊥})↠\el{P\ a}\]
 
+     -----
 
      We add the following equation to the map $⟦.⟧$:
      \begin{flalign*}
@@ -2581,63 +2584,65 @@ thanks
      {P:\set⊢Λy→\sf{case_⊥}\ (λx→P)\ y:\el{⊥↣P}}
      \end{mathpar}
 **** Disjoint unions set
-      Disjoint unions represent two options.
+     Disjoint unions represent two options.
 
-      We introduce the constant: \[⊎ : \set{}↠\set{}↠\set{}\]
-      *Notation*.We will use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead
-      of $⊎\ A\ B$.
+     We introduce the constant: \[⊎ : \set{}↠\set{}↠\set{}\]
+     *Notation*.We will use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead
+     of $⊎\ A\ B$.
 
-      Since we want to represent two options, we introduce two constructors:
-      \begin{flalign*}
-      \sf{inj}₁ &: (A:\set{})↠(B:\set{})↠\el{A}↠ \el{A\ ⊎\ B}\\
-      \sf{inj}₂ &: (A:\set{})↠(B:\set{})↠\el{B}↠ \el{A\ ⊎\ B}
-      \end{flalign*}
+     Since we want to represent two options, we introduce two constructors:
+     \begin{flalign*}
+     \sf{inj}₁ &: (A:\set{})↠(B:\set{})↠\el{A}↠ \el{A\ ⊎\ B}\\
+     \sf{inj}₂ &: (A:\set{})↠(B:\set{})↠\el{B}↠ \el{A\ ⊎\ B}
+     \end{flalign*}
 
-      We introduce the following induction principle:
-      \begin{flalign*}
-      \sf{case}_⊎ &: (A:\set{})↠(B:\set{})↠(P : \el{A\ ⊎\ B} ↠ \set{})\\
-      &↠ ((a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)}) \\
-      &↠ ((b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)}) \\
-      &↠ (u:\el{A\ ⊎\ B}) \\
-      &↠ \el{P\ u}
-      \end{flalign*}
-      and the following equalities:
+     We introduce the following induction principle:
+     \begin{flalign*}
+     \sf{case}_⊎ &: (A:\set{})↠(B:\set{})↠(P : \el{A\ ⊎\ B} ↠ \set{})\\
+     &↠ ((a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)}) \\
+     &↠ ((b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)}) \\
+     &↠ (u:\el{A\ ⊎\ B}) \\
+     &↠ \el{P\ u}
+     \end{flalign*}
+     and the following equalities:
 
-      \begin{mathpar}
-      \inferrule[Case$⊎₁$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
-      p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
-      p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
-      a: \el{A}
-      }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₁\ A\ B\ a)=
-      p₁\ a:\el{P\ (\sf{inj}₁\ A\ B\ a)}}
-      \and
-      \inferrule[Case$⊎₂$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
-      p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
-      p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
-      b: \el{B} }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₂\ A\ B\ b)=
-      p₂\ b:\el{P\ (\sf{inj}₂\ A\ B\ b)}}
-      \end{mathpar}
+     \begin{mathpar}
+     \inferrule[Case$⊎₁$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
+     p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
+     p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
+     a: \el{A}
+     }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₁\ A\ B\ a)=
+     p₁\ a:\el{P\ (\sf{inj}₁\ A\ B\ a)}}
+     \and
+     \inferrule[Case$⊎₂$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
+     p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
+     p₂:(b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)} \\\\
+     b: \el{B} }{\sf{case}_⊎\ A\ B\ P\ p₁\ p₂\ (\sf{inj}₂\ A\ B\ b)=
+     p₂\ b:\el{P\ (\sf{inj}₂\ A\ B\ b)}}
+     \end{mathpar}
 
-      We extend the map $⟦.⟧$ we defined with the following equation:
-      \begin{flalign*}
-      ⟦A∨B⟧≔⟦A⟧⊎⟦B⟧ & &
-      \end{flalign*}
-      We show that $(p→(p∨q))^*$ is a theorem in LF. {{{jan(should I provide a
-      full proof?)}}}
-      \begin{mathpar}
-      \inferrule[]{… }{P:\set,Q:\set⊢Λx→\sf{inj₁}\ P\ Q\ x:\el{P↣(P\ ⊎\ Q)}}
-      \end{mathpar}
-      The proof of $(q→(p∨q))^*$ is analogous.
-      \begin{mathpar}
-      \inferrule[]{… }{P:\set{},Q:\set⊢Λx→\sf{inj₂}\ P\ Q\ x:\el{Q↣(P\ ⊎\ Q)}}
-      \end{mathpar}
-      Finally we have that $((p→r)→((q→r)→((p∨q)→r)))^*$ is a theorem in LF.
-      Finishing the proof can be made mechanically.
-      \begin{mathpar}
-      \inferrule[]{… }{P:\set{},Q:\set{},R:\set{}⊢
-      Λf→Λg→Λx→\sf{case}_⊎\ P\ Q\ (λ x→ R)\ (\sf{case_Λ}\ f)\ (\sf{case_Λ}\ g)\ x:\\\\
-      \el{(P↣R)↣(Q↣R)↣(P⊎Q)↣R} }
-      \end{mathpar}
+     -----
+
+     We extend the map $⟦.⟧$ we defined with the following equation:
+     \begin{flalign*}
+     ⟦A∨B⟧≔⟦A⟧⊎⟦B⟧ & &
+     \end{flalign*}
+     We show that $(p→(p∨q))^*$ is a theorem in LF. {{{jan(should I provide a
+     full proof?)}}}
+     \begin{mathpar}
+     \inferrule[]{… }{P:\set,Q:\set⊢Λx→\sf{inj₁}\ P\ Q\ x:\el{P↣(P\ ⊎\ Q)}}
+     \end{mathpar}
+     The proof of $(q→(p∨q))^*$ is analogous.
+     \begin{mathpar}
+     \inferrule[]{… }{P:\set{},Q:\set⊢Λx→\sf{inj₂}\ P\ Q\ x:\el{Q↣(P\ ⊎\ Q)}}
+     \end{mathpar}
+     Finally we have that $((p→r)→((q→r)→((p∨q)→r)))^*$ is a theorem in LF.
+     Finishing the proof can be made mechanically.
+     \begin{mathpar}
+     \inferrule[]{… }{P:\set{},Q:\set{},R:\set{}⊢
+     Λf→Λg→Λx→\sf{case}_⊎\ P\ Q\ (λ x→ R)\ (\sf{case_Λ}\ f)\ (\sf{case_Λ}\ g)\ x:\\\\
+     \el{(P↣R)↣(Q↣R)↣(P⊎Q)↣R} }
+     \end{mathpar}
 **** Pairs set
      The following constant which represents the set of pairs:
      \[×:\set{}↠\set{}↠\set{}\]
@@ -2664,6 +2669,8 @@ thanks
       p\ a\ b:P\ (\sf{pair}\ A\ B\ a\ b)}
      \end{mathpar}
 
+     -----
+
      Add the following equation to the $⟦.⟧$ map:
      \begin{flalign*}
      ⟦A∧B⟧≔⟦A⟧×⟦B⟧&&
@@ -2680,6 +2687,38 @@ thanks
      \begin{mathpar}
      \inferrule[]{… }{P:\set,Q:\set⊢Λx→̋Λy →\sf{pair}\ P\ Q\ x\ y: \el{P↣Q↣(P×Q)}}
      \end{mathpar}
+
+**** Dependent functions set
+     Dependent functions generalize regular functions in the way that the type
+     of the return type depends on the argument value. More precisely, a
+     dependent function is a map from elements of a set $A$ to elements of a set
+     $B$ indexed by elements of $A$. Thus we introduce the following constant:
+     \[⇝:(A:\set)↠(B:\el{A}↠\set)↠\set\] *Notation*: We will use infix notation
+     and write $A\ ⇝\ B$ instead of $⇝\ A\ B$. Also, $⇝$ has right
+     associativity.
+
+     We add a constant to introduce elements in this set:
+     \[Λ' : (A:\set)↠(B:\el{A}↠\set)↠((a:\el{A})↠\el{B\ a})↠ \el{A\ ⇝\ B} \]
+
+     We add an induction principle:
+     \[\sf{case_Λ}' : (A:\set)↠(B:\el{A}↠\set)↠(\el{A⇝B})↠ (a:\el{A})↠\el{B\ a} \]
+     And the equality:
+     \begin{mathpar}
+     \inferrule[case$Λ$']{
+     f:\el{A}↠\el{B} }{\sf{case_Λ}'\ A\ B\ (Λ\ A\ B\ f)=f:(a:\el{A})↠\el{B\ a}}
+     \end{mathpar}
+
+     The following rules are redundant but they help keeping proofs shorter.
+     \begin{mathpar}
+     \inferrule[Intro$Λ$']{f:(a:\el{A})↠\el{B\ a}}
+     {Λ\ A\ B\ f:\el{A⇝B}}
+     \and \inferrule[Abs$Λ$']{x:A⊢b:B\ x}
+     {Λ\ A\ B\ (λx→b):\el{A⇝B}}
+     \and \inferrule[App$Λ$']{f:\el{A⇝B} \\ a:\el{A}}
+     {\sf{case_Λ}\ f\ a : \el{B\ a}}
+     \end{mathpar}
+     *Notation*: When we have $f:\el{A⇝B}$ and $a:\el{A}$ we will write $f\ a$
+     instead of $\sf{case_Λ'}\ f\ a$.
 
 **** Σ Pairs set
       A $Σ$ /pair/ generalizes the concept of a regular pair. In a $Σ$ pair the type
@@ -2708,172 +2747,8 @@ thanks
        p\ a\ b:P\ (\sf{pair}_Σ\ A\ B\ a\ b)}
       \end{mathpar}
 
-**** Dependent functions set
 **** Natural numbers set
 **** Identity set
-*** Types                                                          :noexport:
-    So far we have explained the syntax of the theory, that is, how we can
-    construct terms. In this section, we will explain the semantics of the
-    theory. The semantics revolve around the concept of /type/, which plays the
-    role of a proposition. First, we will define what is a type. ....
-
-    What is a type?
-
-    To denote that $S$ is a type we write $S:\sf{Type}$.
-
-    Intuitively, a /context/, is a sequence of typed variables, where each type
-    may depend on the preceding variables in the sequence.
-
-    More precisely, a context is a finite sequence of the form
-    \[x₁:S₁,…,xₙ:Sₙ\] Where $xᵢ$ denotes a variable[fn::Every variable must be
-    different than the rest, that is, for every $i,j$ such that $i≠j$ we have
-    $xᵢ≠xⱼ$.].
-    Furthermore, for every $1≤i≤ n$ we have that given arbitrary terms
-    $a₁,…,a_{i-1}$ such that
-    \begin{flalign*}
-   \label{context-cond}
-   S₁:\sf{Type} &\text{ and } a₁:S₁ \\
-   S₂[x₁↦a₁]:\sf{Type} &\text{ and } a₂:S₂[x₁↦a₁] \\
-   & … \\
-   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\sf{Type} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]
-    \end{flalign*}
-    then
-    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\sf{Type}\].
-
-    Intuitively, a /type constructor/ (also known as /type family/),
-    generalizes the concept of type in the sense that it is parameterized by a
-    context. Note that a type constructor parameterized with an empty context is
-    simply a type.
-
-    More precisely, given a context $x₁:S₁,…,xₙ:Sₙ$ we say that $A$ is a type
-    constructor and we write \[A[x₁:A₁,…,xₙ:Aₙ]:\sf{Type}\] if the
-    following holds: Given arbitrary terms $a₁,…,aₙ$ that satisfy
-    \[a₁:S₁,…,aₙ:Sₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]\] then
-    \[A[x₁↦a₁,…,xₙ↦aₙ]:\sf{Type}\].
-
-    We require type constructors to be extensional with respect to the context.
-    That is, if we have $A[x₁↦a₁,…,xₙ↦aₙ]:\sf{Type}$ and
-    \begin{flalign*}
-    a₁&=b₁:A₁ \\
-    &… \\
-    aₙ&=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]
-    \end{flalign*}
-    then \[A[x₁↦a₁,…,xₙ↦aₙ]=A[x₁↦b₁,…,xₙ↦bₙ]\].
-
-*** Equality of terms                                              :noexport:
-     We now define when we consider two terms to be equal. We write $a≡b∼α$ to
-     say that $a$ and $b$ are equal terms of arity $α$.
-     1. /Equivalence/.
-       \begin{mathpar}
-       \inferrule[$≡$-Refl]{a∼α}{a≡a∼α}
-       \and \inferrule[$≡$-Sym]{a≡b∼α}{b≡a∼α}
-       \and \inferrule[$≡$-Trans]{a≡b∼α \\ b≡c∼α}{a≡c∼α}
-       \end{mathpar}
-     2. /Application/.
-       \begin{mathpar}
-       \inferrule[$≡$-App]{a≡a'∼α↠β \\ b≡b'∼α}{a\ b ≡ a'\ b'∼β}
-       \and \inferrule[$≡$-$β$]{x∈\sf{Var}∼α \\  a∼α \\b∼β}{(λx→b)\ a≡b[x↦a]∼β}
-       \end{mathpar}
-       The \text{$≡$-App} tells us that we can replace equal terms in an
-        application. The \text{$≡$-$β$} corresponds to the \text{$β$-reduction} rule
-        in lambda calculus. In the \text{$≡$-$β$} rule we assume that no free
-        variable in $a$ becomes bound in $b[x↦a]$.
-     3. /Abstraction/.
-       \begin{mathpar}
-       \inferrule[$≡$-$ξ$]{x∈\sf{Var}∼α\\b≡b'∼β}{(λx→b)≡(λx→b')∼α↠β}
-       \and \inferrule[$≡$-$α$]{x,y∈\sf{Var}∼ α \\ b∼β}{(λx→b)≡(λy→b[x↦y])∼α↠β}
-       \\ \inferrule[$≡$-$η$]{x∈\sf{Var}∼ α \\ b∼α↠β}{(λx→b\ x)≡b∼α↠β}
-       \end{mathpar}
-       The \text{$≡$-$ξ$} rule tells us that we can replace equal bodies of
-        lambda abstraction terms. The \text{$≡$-$α$} rule tells us that we can
-        rename arguments of lambda abstraction terms. In this rule, we assume
-        that $y$ does not occur free in $b$. The \text{$≡$-$η$} rule tells us
-        that abstraction and application cancel each other. In this rule we
-        assume that $x$ does not occur free in $b$.
-     4. /Combination/.
-       \begin{mathpar}
-       \inferrule[$≡$-Comb1]{a₁≡a₁'∼α₁ \\ … \\ aₙ≡aₙ'∼αₙ}{a₁,…,aₙ≡a₁',…,aₙ'∼α₁⊗…⊗αₙ}
-       \and \inferrule[$≡$-Comb2]{e∼α₁⊗…⊗αₙ}{π₁\ e,…,πₙ\ e≡e∼α₁⊗…⊗αₙ}
-       \end{mathpar}
-       The \text{$≡$-Comb1} rule tells us that we can replace equal terms in a
-        combination. The \text{$≡$-Comb2} rule tells us that selection and
-        combination cancel each other.
-     5. /Selection/.
-       \begin{mathpar}
-       \inferrule[$≡$-Sel1]{a≡a'∼α₁⊗…⊗αₙ \\ 1≤i≤n}{πᵢ\ a≡πᵢ\ a'∼αᵢ}
-       \and \inferrule[$≡$-Sel2]{a₁∼α₁ \\ … \\ aₙ∼αₙ \\ 1≤i≤n}{πᵢ\ (a₁,…,aₙ)≡aᵢ∼αᵢ}
-       \end{mathpar}
-        The \text{$≡$-Sel1} rule tells us that we can replace equal terms in a
-        selection. The \text{$≡$-Sel2} rule tells us that selection projects the
-        indicated component of a combination.
-
-*** Arities                                                       :noexport:
-    We now introduce the concept of /arity/. Arities are used to enforce some
-    structure to the terms that we consider valid. For instance, arities reject
-     terms such as $R(R)$. \jan{replace the quote with some explanation.}
-     \begin{quote}
-     Per Martin-Löf has suggested that with
-     each expression there should be associated an arity, showing the “functionality”
-     of the expression. Instead of just having one syntactical category of expressions,
-     as in combinatory logic, the expressions are divided into different categories
-     according to which syntactical operations are applicable. The arities are similar
-     to the types in typed lambda calculus, at least from a formal point of view.
-     \end{quote}
-     We define arities recursively as follows:
-     1. $𝟬$ is an arity;
-        \begin{mathpar}
-        \inferrule{\ }{𝟬∈\sf{Arity}}
-        \end{mathpar}
-     2. if $α₁,…,αₙ$ (for $n≥2$) are arities, then $(α₁⊗…⊗αₙ)$ is an arity;
-        \begin{mathpar}
-        \inferrule{α₁∈\sf{Arity} \\ … \\αₙ ∈\sf{Arity}}{(α₁⊗…⊗αₙ)∈\sf{Arity}}
-        \end{mathpar}
-     3. if $α$ and $β$ are arities, then $(α↠β)$ is an arity.
-        \begin{mathpar}
-        \inferrule{α∈\sf{Arity} \\ β ∈\sf{Arity}}{(α↠β)∈\sf{Arity}}
-        \end{mathpar}
-     In BNF we have: \[A≔𝟬\ |\ (A⊗…⊗A)\ |\ (A↠A)\] We usually avoid
-     parentheses by setting $⊗$ to have higher precedence than $↠$. Also, $↠$
-     has right associativity. Thus, $𝟬↠ 𝟬↠ 𝟬⊕𝟬=(𝟬↠ (𝟬↠ (𝟬⊕𝟬)))$.
-
-*** Syntax of terms :noexport:
-     We proceed by defining terms in conjunction with their arities. We assume
-     that every variable and every constant has a unique arity associated with
-     it. We write $x∈\sf{Var}∼α$ to say that $x$ is variable of arity $α$.
-     Likewise with constants.
-     1. /Variable/. If $x$ is a variable of arity $α$, then $x$ is term of arity
-       $α$;
-       \begin{mathpar}
-       \inferrule{x∈\sf{Var}∼α}{x∼α}
-       \end{mathpar}
-     2. /Constant/. If $c$ is a constant of arity $α$, then $c$ is a term of arity $α$;
-       \begin{mathpar}
-       \inferrule{c∈\sf{Const}∼α}{c∼α}
-       \end{mathpar}
-     # 3. /Defined identifier/. If $i$ is an identifier defined as $t$ and $t$ has
-     #    arity $α$, then $i$ is a term of arity $α$;
-     4. /Application/. If $f$ is term of arity $α↠β$ and $a$ is a term of
-       arity $α$, then $f\ a$ is a term of arity $β$;
-       \begin{mathpar}
-       \inferrule{f∼α↠β \\ a∼α }{f\ a∼β}
-       \end{mathpar}
-     5. /Abstraction/. If $b$ is a term of arity $β$ and $x$ is a variable of
-       arity $α$, then $(λx→b)$ is a term of arity $α↠β$. We may drop the
-       parentheses when no ambiguity can occur;
-       \begin{mathpar}
-       \inferrule{x∈\sf{Var}∼α \\ b∼β}{(λx→b)∼α↠β}
-       \end{mathpar}
-     6. /Combination/. If $t₁,…,tₙ$ (for $n≥1$) are terms of arities $α₁,…,αₙ$
-        respectively, then $⟨t₁,…,tₙ⟩$ is a term of arity $α₁⊗…⊗αₙ$;
-       \begin{mathpar}
-       \inferrule{t₁∼α₁\\ …\\ tₙ∼αₙ \\ n≥1}{⟨t₁,…,tₙ⟩∼α₁⊗…⊗αₙ}
-       \end{mathpar}
-     7. /Selection/. If $t$ is a term of arity $α₁⊗…⊗αₙ$ (for $n≥1$), then
-       $πᵢ\ t$ is a term of arity $αᵢ$.
-       \begin{mathpar}
-       \inferrule{t∼α₁⊗…⊗αₙ \\ 1≤i≤n}{πᵢ\ t∼αᵢ}
-       \end{mathpar}
-
 ** Martin-Löf dependent type theory
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
    can serve as the basis for constructive mathematics, furthermore, it can be
