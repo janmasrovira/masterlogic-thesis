@@ -2789,6 +2789,58 @@ thanks
      &=3
      \end{flalign*}
 **** Identity set
+     We denote the identity set (or equality set) with the $≡$ constant:
+     \[≡\ : (S:\set)↠(x:\el{S})↠\el{S}↠\set\]
+     *Notation*. We will write $A\ ≡_S\ B$ instead of $≡\ S\ A\ B$.
+
+     We add the constant $\sf{refl}$ to build elements of this set.
+     \[\sf{refl}\ : (S:\set)↠(x:\el{S})↠x≡_Sx\]
+
+     We add an induction principle:
+     \begin{flalign*}
+     \sf{case_≡} :\ & (S:\set)↠(x:S)↠ (y:\el{S})\\
+       ↠\ &(P:(x':\el{S})↠(y':\el{S})↠\el{x'≡_Sy'}↠\set) \\
+       ↠\ &((z:\el{S})↠\el{P\ z\ z\ (\sf{refl}\ S\ z)}) \\
+       ↠\ & (e:\el{x≡_Sy}) \\
+       ↠\ & \el{P\ x\ y\ e}
+     \end{flalign*}
+     We add one equality:
+     \begin{mathpar}
+     \inferrule[Case$≡$]{S:\set\\ a:\el{S} \\ y:\el{S} \\\\
+     P:(x':\el{S})↠(y':\el{S})↠\el{x≡_Sy}↠\set
+     \\\\ i:(z:\el{S})↠\el{P\ z\ z\ (\sf{refl}\ S\ z)} }
+     {\sf{case_≡}\ S\ x\ y\ P\ i\ (\sf{refl}\ S\ x)=i\ a:\el{P\ x\ x\ (\sf{refl}\ S\ x)} }
+     \end{mathpar}
+
+     -----
+
+     With this set we can build a type which states ``for every natural $n$, we
+     have $n+0=n$''. Such type is as follows: \[(n:\el{ℕ})↠ \el{(\sf{add}\ n\ 𝟬)
+     ≡_ℕ n}\] If we were to prove this informally we would proceed as follows.
+     Perform induction on $n$, for the base case is trivial, for the successor
+     case $n=\sf{suc}m$ we have by IH that $\sf{add}\ m\ 𝟬=m$, then we apply
+     $\sf{suc}$ on both sides of the IH, so we have $\sf{suc}\ (\sf{add}\ m\ 𝟬)=\sf{suc}\ m$
+     which is equivalent to $(\sf{add}\ (\sf{suc}\ m)\ 𝟬)=\sf{suc}\ m$.
+
+     In order to formalize the previous proof we will first show this lemma:
+     \[(n:\el{ℕ})↠(m:\el{ℕ})↠ \el{n≡_ℕm}↠\el{\sf{suc}\ n≡_ℕ\sf{suc}\ m}\]
+     In order to show that we build a term of the above type:
+     \begin{flalign*}
+     \sf{lemma} ≔ λn→λm→λe→ \sf{case_≡}\ &ℕ\ n\ m \\
+           &(λn'→λm'→λe'→\sf{suc}\ n'≡_ℕ\sf{suc}\ m') \\
+           & (λz→\sf{refl}\ ℕ\ (\sf{suc}\ z))\\
+           & e
+     \end{flalign*}
+     We ask the reader to check that the term is indeed of the claimed type.
+
+     We are now ready to prove the theorem.
+     \begin{flalign*}
+     \sf{thm} ≔ λn→ \sf{case}_ℕ\ &(λn'→ \sf{add}\ n' 𝟬 ≡_ℕn')\\
+                & (\sf{refl}\ ℕ\ 𝟬) &\text{base case} \\
+                & (λm→ λp→ \sf{lemma}\ (\sf{add}\ m\ 𝟬)\ m\ p) &\text{inductive case} \\
+                & n \\
+     \end{flalign*}
+
 ** Martin-Löf dependent type theory
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
    can serve as the basis for constructive mathematics, furthermore, it can be
