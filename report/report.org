@@ -2748,6 +2748,46 @@ thanks
       \end{mathpar}
 
 **** Natural numbers set
+     We represent the set of natural numbers with the constant $ℕ$:
+     \[ℕ:\set\]
+     We add two constants to build elements in $ℕ$.
+     \begin{flalign*}
+     𝟬 &: ℕ\\
+     \sf{suc}&: ℕ↠ℕ
+     \end{flalign*}
+     We add an induction principle:
+     \begin{flalign*}
+     \sf{case}_ℕ:\ &(P:\el{ℕ}↠\set)\\
+     ↠\ & \el{P\ 𝟬} \\
+     ↠\ & ((n:\el{ℕ})↠ \el{P\ n} ↠ \el{P\ (\sf{suc}\ n)}) \\
+     ↠\ & (a:\el{ℕ}) \\
+     ↠\ & \el{P\ a}
+     \end{flalign*}
+     We add two equalities for the induction principle:
+     \begin{mathpar}
+     \inferrule[case 0]{P:\el{ℕ}↠\set \\ B:\el{P\ 𝟬}
+     \\\\R:(n:\el{ℕ})↠ \el{P\ n} ↠ \el{P\ (\sf{suc}\ n)}}
+     {\sf{case}_ℕ\ P\ B\ R\ 𝟬 =B:\el{P\ 𝟬}}
+     \and \inferrule[case suc]{P:\el{ℕ}↠\set \\ B:\el{P\ 𝟬} \\ n:\el{ℕ}
+     \\\\R:(n:\el{ℕ})↠ \el{P\ n} ↠ \el{P\ (\sf{suc}\ n)}}{\sf{case}_ℕ\ P\ B\ R\ (\sf{suc}\ n) =
+      R\ n\ (\sf{case}_ℕ\ P\ B\ R\ n):\el{P\ (\sf{suc}\ n)}}
+     \end{mathpar}
+
+     -----
+
+     Let us see how we can define addition:
+     \[\sf{add}≔λn→λm→\sf{case}_ℕ\ (λx→ℕ)\ m\ (λx→λy→\sf{suc}\ y)\ n\]
+     It is easy to show that indeed
+     \[\sf{add}:\el{ℕ}↠\el{ℕ}↠\el{ℕ}\]
+     Let us sketch the proof of $\sf{add}\ 1\ 2=3$.
+     \begin{flalign*}
+     \sf{add}\ 1\ 2 &= (λn→λm→\sf{case}_ℕ\ (λx→ℕ)\ m\ (λx→λy→\sf{suc}\ y)\ m)\ (\sf{suc}\ 𝟬)\ (\sf{suc}\ (\sf{suc}\ 𝟬)) &\\
+     &= \sf{case}_ℕ\ (λx→ℕ)\ (\sf{suc}\ (\sf{suc}\ 𝟬))\ (λx→λy→\sf{suc}\ y)\ (\sf{suc}\ 𝟬)&\textsc{Case suc} \\
+     &= (λx→λy→\sf{suc}\ y)\ 𝟬\ (\sf{case}_ℕ\ (λx→ℕ)\ (\sf{suc}\ (\sf{suc}\ 𝟬))\ (λx→λy→\sf{suc}\ y)\ 𝟬)& β\text{-=} \\
+     &= \sf{suc}\ (\sf{case}_ℕ\ (λx→ℕ)\ (\sf{suc}\ (\sf{suc}\ 𝟬))\ (λx→λy→\sf{suc}\ y)\ 𝟬) &\textsc{Case }𝟬\\
+     &=\sf{suc}\ (\sf{suc}\ (\sf{suc}\ 𝟬)) &\\
+     &=3
+     \end{flalign*}
 **** Identity set
 ** Martin-Löf dependent type theory
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
