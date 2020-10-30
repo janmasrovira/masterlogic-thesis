@@ -215,11 +215,11 @@ thanks
    predicate. In this language Löb's theorem reads as \[□(□A→A)→□A.\] The above
    principle is in fact one of the axioms of \gl{}. The value of \gl{} directly
    depends on the arithmetical soundness and completeness theorems that we will
-   present shortly, but first we need to introduce the concept of arithmetical
-   realization. A realization $*$ is a map from modal formulas in the language
+   present shortly, but first we need to introduce the concept of /arithmetical
+   realization/. A realization $*$ is a map from modal formulas in the language
    of \gl{} to arithmetical sentences such that it satisfies the following:
    \begin{flalign*}
-   ⊥^* &= ⊥; \\
+   ⊥^* &= (0=1) ; \\
    (A → B)^* &= A^*→B^*; \\
    (□A)^* &= \prov{\rep{A}}.
    \end{flalign*}
@@ -261,24 +261,26 @@ thanks
    between finite extensions of such theory. Thus when we say that $T+A$
    interprets $T+B$ we assume that $A$ and $B$ are formulas. In interpretability
    logics we only consider first order arithmetical theories which are
-   recursively enumerable and are sequential (?). Moreover, we are only
-   concerned with the provable, within $T$, interpretability properties. In
-   other words, we study the behaviour of the binary interpretability predicate
-   $\sf{Int}_T$. Naturally, the predicate $\sf{Int}_T(A,B)$ must hold when we
-   can formalize in $T$ that $T+A$ interprets $T+B$. For a theory $T$, we denote
-   the logic that describes the behaviour of the interpretability predicate of
-   $T$ as $\sf{IL}(T)$. The language of $\sf{IL}(T)$ extends the language of
-   \sf{GL} with the binary modal operator $▷$, thus the language becomes
-   $⟨⊥,→,□,▷⟩$. In order to give a more detailed definition of $\sf{IL}(T)$ we
-   first define what is an /arithmetical realization/. We say that a map $*$
-   from formulas in $\sf{IL}(T)$ to sentences in the language of $T$. Moreover,
-   it must satisfy the following constraints:
+   recursively enumerable and are sequential[fn::A sequential theory is an
+   arithmetical which can code and decode sequences of elements.]. Moreover, we
+   are only concerned with the provable, within $T$, interpretability
+   properties. In other words, we study the behaviour of the binary
+   interpretability predicate $\sf{Int}_T$. Naturally, the predicate
+   $\sf{Int}_T(A,B)$ must hold when we can formalize in $T$ that $T+A$
+   interprets $T+B$. For a theory $T$, we denote the logic that describes the
+   behaviour of the interpretability predicate of $T$ as $\sf{IL}(T)$. The
+   language of $\sf{IL}(T)$ extends the language of \sf{GL} with the binary
+   modal operator $▷$, thus the language becomes $⟨⊥,→,□,▷⟩$. In order to give a
+   more detailed definition of $\sf{IL}(T)$ we first extend the definition of
+   arithmetical realization with an extra equation for the $▷$ case. A
+   realization $*$ is a map from formulas in $\sf{IL}(T)$ to sentences in the
+   language of $T$. Moreover, it must satisfy the following constraints:
    \begin{flalign*}
-   ⊥^* \text{ is mapped to a contradiction;} \\
-   (A→B)^*= A^*→B^* ; \\
-   (A▷B)^*= \sf{Int}_T(⌜A⌝,⌜B⌝) ; \\
+   ⊥^* &= (0=1);\\
+   (A→B)^*&= A^*→B^* ; \\
+   (□A)^*&= \sf{Prov}_T(⌜A⌝) ; \\
+   (A▷B)^*&= \sf{Int}_T(⌜A⌝,⌜B⌝) .
    \end{flalign*}
-
 
    mention \sf{M}, $P$ and $R$.
 ** Original contributions
