@@ -1,0 +1,352 @@
+\begin{spverbatim}
+module GeneralizedVeltmanSemantics.Properties.Vukovic where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Function using (_$_)
+open import Data.Product renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝; ∅)
+open import Relation.Binary using () renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym; subst₂; _≢_)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; _◁_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import Base
+open import GeneralizedVeltmanSemantics.Properties using (module SemanticsProperties-4; module SemanticsProperties-L; module PGeneric)
+open import GeneralizedFrame
+open import GeneralizedFrame.Properties
+import OrdinaryFrame as O
+import OrdinaryVeltmanSemantics as O
+import OrdinaryVeltmanSemantics.Properties as O
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+module OrdModel
+  {ℓW ℓR ℓS}
+  (T : ∀ {ℓW ℓS} → (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  {W R S}
+  (F : Frame {ℓW} {ℓR} {ℓS} W R S T)
+  (V : W → Pred Var lzero)
+  where
+  open Frame F
+  open PGeneric T
+
+  W' : Set (lsuc (lsuc ℓW ⊔ ℓR ⊔ ℓS))
+  W' =   ∃[ v ]
+       (Σ[ A ∈ (Pred (W × W) (lsuc ℓW ⊔ ℓS ⊔ ℓR)) ]
+       ((∀ {x V} → S x v V → Σ[ V' ∈ 𝕎 ]
+         (∃[ y ] (y ∈ V' × V' ⊆ R x × V ⊆ V' × (x ⸴ y) ∈ A)))
+       × (∀ {x y} → (x ⸴ y) ∈ A → ∃[ V ] (S x v V × y ∈ V))
+       × (∀ {u} → R u v → (u ⸴ v) ∈ A)))
+
+  R' : Rel W' (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  R' (w ⸴ A ⸴ _) (u ⸴ B ⸴ _) = R w u × (∀ {x} → R x w → ∀ {y} → (x ⸴ y) ∈ B → (x ⸴ y) ∈ A)
+
+  S' : Rel₃ W' (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  S' w'@(w ⸴ A ⸴ _) u'@(u ⸴ B ⸴ _) v'@(v ⸴ C ⸴ _) =
+    R' w' u' × R' w' v' × (∀ {y} → (w ⸴ y) ∈ C → (w ⸴ y) ∈ B)
+
+  module W' where
+    v : W' → W
+    v = proj₁
+
+    A : W' → Pred (W × W) _
+    A = proj₁ ∘ proj₂
+
+    p1 : (w' : W')
+      → ∀ {x V} → S x (v w') V
+      → ∃[ V' ] (∃[ y ]
+      (y ∈ V' × V' ⊆ R x × V ⊆ V' × (x ⸴ y) ∈ A w'))
+    p1 = proj₁ ∘ proj₂ ∘ proj₂
+
+    p2 : (w' : W') → ∀ {x y} → (x ⸴ y) ∈ A w'
+      → Σ 𝕎 λ V → S x (v w') V × y ∈ V
+    p2 = proj₁ ∘ proj₂ ∘ proj₂ ∘ proj₂
+
+    p3 : (w' : W') → ∀ {x} → R x (v w') → (x ⸴ v w') ∈ A w'
+    p3 = proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂
+
+  Amax : W → Pred (W × W) (lsuc ℓW ⊔ ℓS ⊔ ℓR)
+  Amax w (x ⸴ y) = Σ 𝕎 (λ V → S x w V × V y × (⊥ → R x x))
+
+  fmax : W → W'
+  fmax w = w ⸴ Amax w ⸴
+       (λ { {x} {V} SxwV → V ⸴ (proj₁ (Swu-sat SxwV) ⸴ (proj₂ (Swu-sat SxwV)
+         ⸴ ((λ {∈V → SwuY⊆Rw SxwV ∈V}) ⸴ ((λ z → z) ⸴ (_ ⸴ SxwV
+         ⸴ proj₂ (Swu-sat SxwV) ⸴ ⊥-elim)))))})
+    ⸴ (λ {(a ⸴ b ⸴ c ⸴ _) → a ⸴ b ⸴ c})
+    ⸴ λ { Ruw → _ ⸴ S-quasirefl Ruw ⸴ refl ⸴ ⊥-elim}
+
+  Val' : W' → Pred Var lzero
+  Val' w' v = v ∈ V (W'.v w')
+
+  f-chain : ∀ {a} → InfiniteChain R' a → InfiniteChain R _
+  InfiniteChain.b (f-chain x) = W'.v (InfiniteChain.b x)
+  InfiniteChain.a<b (f-chain x) = proj₁ (InfiniteChain.a<b x)
+  InfiniteChain.tail (f-chain x) = f-chain (InfiniteChain.tail x)
+
+  R'-Noetherian : Noetherian R'
+  R'-Noetherian i = R-noetherian (f-chain i)
+
+  F' : O.Frame W' R' S'
+  F' = O.frame
+    (fmax witness)
+    (λ { (Rab ⸴ p1) (Rbc ⸴ p2) → (R-trans Rab Rbc) ⸴
+      (λ {Rxi z → p1 Rxi (p2 (R-trans Rxi Rab) z) })})
+    R'-Noetherian
+    (λ { (R'wu ⸴ R'wv ⸴ _) → R'wu ⸴ R'wv})
+    (λ {R'wu → R'wu ⸴ R'wu ⸴ (λ {x → x})})
+    (λ { (a ⸴ (pij ⸴ b)) ((_ ⸴ rjk) ⸴ (c ⸴ pjk)) → a ⸴ c
+      ⸴ λ {x → b (pjk x)}})
+    λ {R'wu@(Rwu ⸴ pwu) R'uv@(Ruv ⸴ puv) → R'wu ⸴ (R-trans Rwu Ruv ⸴
+      λ { {b} Rbw by∈ → pwu Rbw (puv (R-trans Rbw Rwu) by∈)})
+    ⸴ λ {x → puv Rwu x}}
+
+  M' : O.Model W' R' S' Val'
+  M' = O.model F'
+
+module PrefaceTheoremAll
+  {ℓW ℓR ℓS}
+  {W R S}
+  (F : FrameL {ℓW} {ℓR} {ℓS} W R S)
+  (V : W → Pred Var lzero)
+  where
+  T = Trans-conditions.Trans-L
+  open OrdModel T F V
+  open Frame F
+  open PGeneric T
+
+  M : Model W R S V
+  M = model {V = V} F
+
+  module Theorem
+    (dec : MultiDecidableModel M)
+    (dec' : O.DecidableModel M')
+    (R? : Decidable₂ R)
+    (∈S? : Decidable₃ S)
+    (∈S'? : Decidable₃ S')
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+    (_≡?_ : Decidable₂ (_≡_ {_} {W}))
+    (monotone : ∀ {w u} {V Z : 𝕎} → S w u V → V ⊆ Z → Z ⊆ R w → S w u Z)
+    (quasitrans : Trans-conditions.Trans-L W S)
+    where
+
+    private
+      open Extended dec ∈S? ∈SV?
+      module O' = O.Extended dec' ∈S'?
+
+      thm⇨ : ∀ {w C A} → M , w ⊩ A → M' O., w ⸴ C ⊩ A
+      thm⇦ : ∀ {w C A} → M' O., w ⸴ C ⊩ A → M , w ⊩ A
+      thm'⇨ : ∀ {w C A} → M , w ⊮ A → M' O., w ⸴ C ⊮ A
+
+      thm⇦ x = ⊩⇔¬⊮ ⇐ λ {y → O.⊮→¬⊩ (thm'⇨ y) x}
+
+      module F
+        (V0 V : 𝕎)
+        (v0 u w : W)
+        (v0∈V0 : v0 ∈ V0)
+        (SwuV0 : S w u V0)
+        (Swv0V : S w v0 V)
+        where
+        f : ∀ {v} → v ∈ V0 → Σ _ λ Vv → S w v Vv
+        f {v} v∈V0 with v ≡? v0
+        ... | (yes refl) = V ⸴ Swv0V
+        ... | (no n) = ｛ v ｝ ⸴ S-quasirefl (SwuY⊆Rw SwuV0 v∈V0)
+
+        f≡v0 : ∀ {v} → v ∈ V → v ∈ proj₁ (f v0∈V0)
+        f≡v0 {v} v∈V with v0 ≡? v0
+        ... | yes refl = v∈V
+        ... | no n = ⊥-elim (n refl)
+
+      -- thm⇨ = {!!}
+      thm⇨ (var x) = O.var x
+      thm⇨ A@(impl _) = O'.⊩↝ ⇐ λ {wA → thm⇨ ((⊩↝ ⇒ A) (thm⇦ wA))}
+      thm⇨ {w} {A'@(A ⸴ Ap1 ⸴ Ap2 ⸴ Ap3)} D▷E@(rhd {D} {E} xl) = O'.⊩▷ ⇐
+        λ { {𝔹@(u ⸴ B ⸴ _)} R'wu@(Rwu ⸴ Rwu∈) u⊩D
+          → case (⊩▷ ⇒ D▷E) Rwu (thm⇦ u⊩D) of
+          λ { (V0 ⸴ SwuV0 ⸴ V0⊩E) →
+        let v0 = proj₁ (Swu-sat SwuV0)
+            v0∈V0 = proj₂ (Swu-sat SwuV0)
+            𝔸 = w ⸴ A'
+            C : Pred (W × W) (lsuc ℓW ⊔ ℓS ⊔ ℓR)
+            C = λ { (x ⸴ y) →
+              (y ≡ v0 × R x v0) ⊎
+              (w ≡ x × (w ⸴ y) ∈ B × Σ _ λ V' → S x v0 V' × y ∈ V') ⊎
+              (¬ (R x w) × w ≢ x × Σ _ λ V' → S x v0 V' × y ∈ V') ⊎
+              R x w × (x ⸴ y) ∈ A × Σ _ λ V' → S x v0 V' × y ∈ V'}
+            V0-v = V0 ∩ λ x → x ≢ v0
+            ℂ : W'
+            ℂ = v0 ⸴ C
+              ⸴ (λ {x} {V} Sxv0V →
+              let
+                case-w≡x : w ≡ x → Σ 𝕎 λ V' → Σ _ λ y →
+                  y ∈ V' × V' ⊆ R x × V ⊆ V' × (x ⸴ y) ∈ C
+                case-w≡x = λ {refl →
+                  let
+                    open F V0 V v0 u w v0∈V0 SwuV0 Sxv0V
+                    SwuV∪V0-v0 = quasitrans SwuV0 f
+                    pB = W'.p1 𝔹 SwuV∪V0-v0
+                    V' = proj₁ pB
+                    y = proj₁ ∘ proj₂ $ pB
+                    y∈V' : y ∈ V'
+                    y∈V' = proj₁ ∘ proj₂ ∘ proj₂ $ pB
+                    V'⊆Rx : V' ⊆ R x
+                    V'⊆Rx = proj₁ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ pB
+                    V∪V0-v0⊆V' : _ ⊆ V'
+                    V∪V0-v0⊆V' = proj₁ ∘ proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ pB
+                    wy∈B : (w ⸴ y) ∈ B
+                    wy∈B = proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ pB
+                    pB2 = W'.p2 𝔹 wy∈B
+                    V⊆V' : V ⊆ V'
+                    V⊆V' = λ {∈V → V∪V0-v0⊆V' (v0 ⸴ v0∈V0 ⸴ f≡v0 ∈V)}
+                    Swv0⋃ : S w v0 _
+                    Swv0⋃ = monotone Sxv0V (λ { {v} v∈V → v0 ⸴ v0∈V0 ⸴ f≡v0 v∈V})
+                      λ {z → V'⊆Rx (V∪V0-v0⊆V' z)}
+                    Swv0V' : S w v0 V'
+                    Swv0V' = monotone Swv0⋃ V∪V0-v0⊆V' V'⊆Rx
+                    wy∈C : (w ⸴ y) ∈ C
+                    wy∈C = inj₂ (inj₁ (refl ⸴ wy∈B ⸴ _ ⸴ Swv0V' ⸴ y∈V'))
+                  in V' ⸴ y ⸴ y∈V' ⸴ V'⊆Rx ⸴ V⊆V' ⸴ wy∈C}
+                case-w≠x : w ≢ x → ¬ R x w → Σ 𝕎 λ V' → Σ _ λ y →
+                  y ∈ V' × V' ⊆ R x × V ⊆ V' × (x ⸴ y) ∈ C
+                case-w≠x = λ {w≠x ¬Rwx →
+                  let
+                    V⊆C : V ⊆ λ {y → (x ⸴ y) ∈ C}
+                    V⊆C = λ { {y} y∈V → inj₂ (inj₂ (inj₁
+                      (¬Rwx ⸴ (w≠x ⸴ V ⸴ Sxv0V ⸴ y∈V))))}
+                    y∈V = proj₂ $ Swu-sat Sxv0V
+                  in V ⸴ _ ⸴ y∈V ⸴ SwuY⊆Rw Sxv0V ⸴ (λ i → i) ⸴ V⊆C y∈V}
+                case-Rxw : R x w → Σ 𝕎 λ V' → Σ _ λ y →
+                  y ∈ V' × V' ⊆ R x × V ⊆ V' × (x ⸴ y) ∈ C
+                case-Rxw = λ { Rxw →
+                  let
+                    Rwv0 = SwuY⊆Rw SwuV0 v0∈V0
+                    Sxwv0 : S x w ｛ v0 ｝
+                    Sxwv0 = R-Sw-trans Rxw Rwv0
+                    SwxV : S x w V
+                    SwxV = S-ext (quasitrans Sxwv0 λ {refl → _ ⸴ Sxv0V})
+                      (λ { (_ ⸴ refl ⸴ p) → p})
+                      λ {v∈V → v0 ⸴ refl ⸴ v∈V}
+                    p = W'.p1 𝔸 SwxV
+                    V' = proj₁ p
+                    y∈V' = proj₁ ∘ proj₂ ∘ proj₂ $ p
+                    V'⊆Rx = proj₁ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ p
+                    V⊆V' = proj₁ ∘ proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ p
+                    xy∈A : (x ⸴ _) ∈ A
+                    xy∈A = proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ p
+                    SxwV' : S x v0 V'
+                    SxwV' = monotone Sxv0V V⊆V' V'⊆Rx
+                  in V' ⸴ _ ⸴ y∈V' ⸴ V'⊆Rx ⸴ V⊆V'
+                    ⸴ inj₂ (inj₂ (inj₂ (Rxw ⸴ xy∈A ⸴ (_ ⸴ (SxwV' ⸴ y∈V')))))}
+              in
+              case w ≡? x ⸴ R? x w of
+                λ { (yes refl ⸴ _) → case-w≡x refl
+                ; (no w≠x ⸴ no ¬Rxw) → case-w≠x w≠x ¬Rxw
+                ; (no w≠x ⸴ yes Rxw) → case-Rxw Rxw } )
+              ⸴ (λ { (inj₁ (refl ⸴ Rxv0)) → _ ⸴ S-quasirefl Rxv0 ⸴ refl ;
+                (inj₂ (inj₁ (refl ⸴ wy∈ ⸴ V ⸴ Sxv0V ⸴ ∈V))) → _ ⸴ Sxv0V ⸴ ∈V ;
+                (inj₂ (inj₂ (inj₁ (¬Rxw ⸴ w≠x ⸴ V ⸴ Sxv0V ⸴ ∈V)))) → _ ⸴ Sxv0V ⸴ ∈V ;
+                (inj₂ (inj₂ (inj₂ (Rxw ⸴ ∈A ⸴ V ⸴ Sxv0V ⸴ ∈V)))) → _ ⸴ Sxv0V ⸴ ∈V})
+              ⸴ λ { Rxv0 → inj₁ (refl ⸴ Rxv0)}
+            Rwv0 : R w v0
+            Rwv0 = SwuY⊆Rw SwuV0 v0∈V0
+            C→A : ∀ {x y} → R x w → (x ⸴ y) ∈ C → (x ⸴ y) ∈ A
+            C→A = λ { {x} {y} Rxw xy∈C@(inj₁ (refl ⸴ Rxv0))
+                → case W'.p2 ℂ xy∈C of λ { (V ⸴ SV ⸴ ∈V) → {!Ap3!}} ;
+              Rxw (inj₂ (inj₁ (refl ⸴ wy∈B ⸴ _))) → ⊥-elim (R-Irreflexive {F = F} refl Rxw) ;
+              Rxw (inj₂ (inj₂ (inj₁ x))) → ⊥-elim (proj₁ x Rxw) ;
+              Rxw (inj₂ (inj₂ (inj₂ (_ ⸴ xy∈A ⸴ _)))) → xy∈A }
+            wv0∈B : (w ⸴ v0) ∈ B
+            wv0∈B = {!!}
+            C→B : ∀ {y} → (w ⸴ y) ∈ C → (w ⸴ y) ∈ B
+            C→B = λ { {y} xy∈C@(inj₁ (refl ⸴ Rwv0)) → wv0∈B ;
+              (inj₂ (inj₁ (refl ⸴ wy∈B ⸴ _))) → wy∈B ;
+              (inj₂ (inj₂ (inj₁ (_ ⸴ w≠w ⸴ _)))) → ⊥-elim (w≠w refl) ;
+              (inj₂ (inj₂ (inj₂ (Rww ⸴ _)))) → ⊥-elim (R-Irreflexive {F = F} refl Rww) }
+            R'AB : R' 𝔸 𝔹
+            R'AB = Rwu ⸴ Rwu∈
+            R'AC : R' 𝔸 ℂ
+            R'AC = Rwv0 ⸴ (λ { {x} Rxw xy∈C → C→A Rxw xy∈C})
+        in ℂ ⸴ ((R'AB ⸴ R'AC ⸴ λ {x → C→B x}) ⸴ thm⇨ (V0⊩E v0∈V0))
+           }}
+
+      thm'⇨ (var x) = O.var x
+      thm'⇨ {w} {C} (impl {A} {B} a b) = O.impl (thm⇨ a) (thm'⇨ b)
+      thm'⇨ bot = O.bot
+      thm'⇨ {w} {A ⸴ Ap1 ⸴ Ap2} DE@(rhd {D} {E} _) = case ⊮▷ ⇒ DE of
+        λ { (u ⸴ Rwu ⸴ u⊩D ⸴ pu) →
+          let open Aux u Rwu u⊩D (λ {SV → pu _ (Swu-sat SV) SV})
+          in O'.⊮▷ ⇐ (𝔹 ⸴ {!!})
+        }
+        where
+        module Aux
+          (u : W)
+          (Rwu : R w u)
+          (u⊩D : M , u ⊩ D)
+          (pu : ∀ {V} → S w u V → Satisfiable (V ∩ (M ,_⊮ E)))
+          where
+          B : Pred (W × W) (lsuc ℓW ⊔ ℓS ⊔ ℓR)
+          B (x ⸴ y) =
+              (y ≡ u × R x u)
+            ⊎ (w ≡ x × M , y ⊮ E × Σ 𝕎 λ V → S w u V × y ∈ V)
+            ⊎ (¬ R x w × w ≢ x × Σ 𝕎 λ V → S x u V × y ∈ V)
+            ⊎ (R x w × (x ⸴ y) ∈ A × Σ 𝕎 λ V → S x u V × y ∈ V)
+          p2 : ∀ {x y} → (x ⸴ y) ∈ B → Σ 𝕎 λ V → S x u V × y ∈ V
+          p2 (inj₁ (refl ⸴ Rxu)) = _ ⸴ S-quasirefl Rxu ⸴ refl
+          p2 (inj₂ (inj₁ (refl ⸴ y⊮E ⸴ V ⸴ SwuV ⸴ y∈V))) = V ⸴ SwuV ⸴ y∈V
+          p2 (inj₂ (inj₂ (inj₁ (¬Rxw ⸴ x≠w ⸴ V ⸴ SxuV ⸴ y∈V)))) = V ⸴ SxuV ⸴ y∈V
+          p2 (inj₂ (inj₂ (inj₂ (Rxw ⸴ xy∈A ⸴ V ⸴ SxuV ⸴ y∈V)))) = V ⸴ SxuV ⸴ y∈V
+          p1 : ∀ {x V} → S x u V → Σ 𝕎 λ V' → Σ W λ y
+            → y ∈ V' × V' ⊆ R x × V ⊆ V' × (x ⸴ y) ∈ B
+          p1 {x} {V} SxuV with w ≡? x
+          ... | yes refl = case pu SxuV of
+            λ { (y ⸴ y∈V ⸴ yE) → V ⸴ _ ⸴ y∈V ⸴ (λ {z → SwuY⊆Rw SxuV z }) ⸴ (λ {z → z})
+            ⸴ inj₂ (inj₁ (refl ⸴ yE ⸴ _ ⸴ SxuV ⸴ y∈V))}
+          ... | no w≠x with R? x w
+          ... | no ¬Rxw = V ⸴ _ ⸴ (proj₂ (Swu-sat SxuV) ⸴ (λ {z → SwuY⊆Rw SxuV z })
+            ⸴ (λ {z → z})
+            ⸴ (inj₂ (inj₂ (inj₁ (¬Rxw ⸴ (w≠x ⸴ (_ ⸴ (SxuV ⸴ (proj₂ (Swu-sat SxuV))))))))))
+          ... | yes Rxw = V' ⸴ y ⸴ y∈V' ⸴ (λ {z → V'⊆Rx z}) ⸴ (λ {z → V⊆V' z})
+            ⸴ inj₂ (inj₂ (inj₂ (Rxw ⸴ (xy∈A ⸴ _ ⸴ (SxuV' ⸴ y∈V')))))
+            where
+            SxwV : S x w V
+            SxwV = S-trans Rxw Rwu SxuV
+              where open FrameLProperties F
+            p : Σ 𝕎 λ V' → Σ _ λ y
+              → y ∈ V' × V' ⊆ R x × V ⊆ V' × (x ⸴ y) ∈ A
+            p = Ap1 SxwV
+            V' = proj₁ p
+            y = proj₁ ∘ proj₂ $ p
+            y∈V' = proj₁ ∘ proj₂ ∘ proj₂ $ p
+            V'⊆Rx = proj₁ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ p
+            V⊆V' = proj₁ ∘ proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ p
+            xy∈A = proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ ∘ proj₂ $ p
+            SxuV' : S x u V'
+            SxuV' = monotone SxuV V⊆V' V'⊆Rx
+          𝔹 : W'
+          𝔹 = u ⸴ B
+            ⸴ p1
+            ⸴ p2
+            ⸴ inj₁ ∘ (refl ⸴_)
+          c0 : ∀ {x} → R x w → R x u → (x ⸴ u) ∈ A
+          c0 Rxw Rxu = case Ap1 (R-Sw-trans Rxw Rwu) of
+            λ { (V' ⸴ y ⸴ y∈V' ⸴ V'⊆Rx ⸴ u⊆V' ⸴ xy∈A) → {!!}}
+          l1 : ∀ {x y} → R x w → (x ⸴ y) ∈ B → (x ⸴ y) ∈ A
+          l1 Rxw (inj₁ (refl ⸴ Rxu)) = c0 Rxw Rxu
+          l1 Rxw (inj₂ (inj₁ (refl ⸴ snd))) = ⊥-elim (R-Irreflexive {F = F} refl Rxw)
+          l1 Rxw (inj₂ (inj₂ (inj₁ x))) = ⊥-elim (proj₁ x Rxw)
+          l1 Rxw (inj₂ (inj₂ (inj₂ y))) = proj₁ ∘ proj₂ $ y
+
+    theorem : ∀ {w C A} → M , w ⊩ A ⇔ M' O., w ⸴ C ⊩ A
+    theorem = equivalence thm⇨ thm⇦
+\end{spverbatim}

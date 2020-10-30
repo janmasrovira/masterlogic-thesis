@@ -1,0 +1,85 @@
+\begin{spverbatim}
+module Base where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; zero; suc)
+open import Agda.Builtin.Bool
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Product
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym; cong)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Level using (Level; _⊔_) renaming (suc to lsuc; zero to lzero)
+open import Relation.Binary using (REL; Rel; Transitive; Irreflexive)
+open import Relation.Nullary using (Dec; yes; no)
+open import Relation.Nullary using (¬_)
+open import Relation.Unary using (Pred; Decidable; _⊆_) renaming (_⇒_ to _P⇒_)
+
+private
+  variable
+    ℓa ℓb ℓc ℓ ℓ₁ ℓ₂ ℓ₃ : Level
+    A : Set ℓa
+    B : Set ℓb
+    C : Set ℓc
+
+infix 5 _⇒_
+_⇒_ : ∀ {a b} {A : Set a} {B : Set b} → A ⇔ B → A → B
+f ⇒ x  = Equivalence.to f ⟨$⟩ x
+
+infix 5 _⇐_
+_⇐_ : ∀ {f t} {A : Set f} {B : Set t} → A ⇔ B → B → A
+f ⇐ x  = Equivalence.from f ⟨$⟩ x
+
+REL₃ : Set ℓa → Set ℓb → Set ℓc → (ℓ : Level) → Set (ℓa ⊔ ℓb ⊔ ℓc ⊔ lsuc ℓ)
+REL₃ A B C ℓ = A → B → C → Set ℓ
+
+Rel₃ : Set ℓa → (ℓ : Level) → Set (ℓa ⊔ lsuc ℓ)
+Rel₃ A ℓ = REL₃ A A A ℓ
+
+Decidable₃ : REL₃ A B C ℓ → Set _
+Decidable₃ R = ∀ x y z → Dec (R x y z)
+
+subst₃ : ∀ {ℓ ℓ'} {A B C : Set ℓ} (R : REL₃ A B C ℓ') {w z x y u v} → w ≡ z → x ≡ y → u ≡ v → R x u w → R y v z
+subst₃ _ refl refl refl p = p
+
+record InfiniteChain {ℓW ℓR} {W : Set ℓW} (_<_ : Rel W ℓR) (a : W)
+  : Set (ℓR ⊔ ℓW) where
+  coinductive
+  field
+    b : W
+    a<b : a < b
+    tail : InfiniteChain _<_ b
+
+infiniteRefl : ∀ {R : Rel A ℓ} {x} → R x x → InfiniteChain R x
+InfiniteChain.b (infiniteRefl {x = x} Rxx) = x
+InfiniteChain.a<b (infiniteRefl {x = x} Rxx) = Rxx
+InfiniteChain.tail (infiniteRefl {x = x} Rxx) = infiniteRefl Rxx
+
+Noetherian : ∀ {ℓR ℓW} {W : Set ℓW} → Rel W ℓR → Set (ℓR ⊔ ℓW)
+Noetherian _<_ = ∀ {a} → ¬ (InfiniteChain _<_ a)
+
+Noetherian⇒Irreflexive : ∀ {ℓR ℓW} {W : Set ℓW} {R : Rel W ℓR} → Noetherian R → Irreflexive _≡_ R
+Noetherian⇒Irreflexive noeth refl Rxx = noeth (infiniteRefl Rxx)
+
+Noetherian⇒Irreflexive' : ∀ {ℓR ℓW} {W : Set ℓW} {R : Rel W ℓR} → Noetherian R → ∀ {x} → ¬ R x x
+Noetherian⇒Irreflexive' noeth Rxx = noeth (infiniteRefl Rxx)
+
+data _≤_ : Rel Nat lzero where
+  z≤n : (a : Nat) → zero ≤ a
+  s≤s : {a b : Nat} → a ≤ b → suc a ≤ suc b
+
+≤-trans : Transitive _≤_
+≤-trans {a} {b} {c} (z≤n b) b≤c = z≤n c
+≤-trans {suc a} {suc b} {suc c} (s≤s a≤b) (s≤s b≤c) = s≤s (≤-trans a≤b b≤c)
+
+reflex : ∀ {ℓ} {A : Set ℓ} {a : A} → a ≡ a
+reflex = refl
+
+symm : ∀ {ℓ} {A : Set ℓ} {a b : A} → a ≡ b → b ≡ a
+symm refl = refl
+
+transitivity : ∀ {ℓ} {A : Set ℓ} {a b c : A} → a ≡ b → b ≡ c → a ≡ c
+transitivity refl refl = refl
+\end{spverbatim}

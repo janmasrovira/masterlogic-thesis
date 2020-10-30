@@ -1,0 +1,97 @@
+\begin{spverbatim}
+module GeneralizedVeltmanSemantics.Properties.M where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Product using (Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym)
+
+open import Formula
+open import GeneralizedVeltmanSemantics
+open import Base
+open import GeneralizedVeltmanSemantics.Properties
+  using (module Extended; ⊩¬; ⊮¬; ⊩□; ⊩♢; ⊩MP; ⊩∧; ⊩→¬⊮; ⊮→¬⊩)
+import Principles as P
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+M-condition : ∀ {W R S} → FrameL {ℓW} {ℓR} {ℓS} W R S → Set _
+M-condition {W = W} {R = R} {S = S} F = ∀ {w u V} → S w u V → Σ 𝕎 λ V' → V' ⊆ V × S w u V'
+  × ∀ {z v'} → v' ∈ V' → R v' z → R u z
+  where open FrameL F
+
+module M-soundness
+  {W R S V}
+  {M : Model {lzero} {lzero} {lzero} W R S V}
+  (M,_*⊩?_ : MultiDecidableModel M)
+  (∈S? : Decidable₃ S)
+  (S? : S-decidable (Model.F M))
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y) where
+
+  open Model M
+  open FrameL F
+  open Extended M,_*⊩?_ ∈S? ∈SV?
+
+  ⊩M : ∀ {w A B C} → M-condition F → M , w ⊩ A ▷ B ↝ (A ∧ □ C) ▷ (B ∧ □ C)
+  ⊩M {w} {A} {B} {C} cM = ⊩↝ ⇐ λ A▷B → ⊩▷ ⇐ λ { {x} Rwx x⊩A∧□C
+    → case ⊩∧ ⇒ x⊩A∧□C of λ { (x⊩A ⸴ x⊩□C) → case (⊩▷ ⇒ A▷B) Rwx x⊩A of
+    λ { (Z ⸴ SwxZ ⸴ Z⊩B) → case cM SwxZ of
+    λ { (Z' ⸴ Z'⊆Z ⸴ SwxZ' ⸴ snd) → Z' ⸴ SwxZ' ⸴ λ {p → ⊩∧ ⇐ (Z⊩B (Z'⊆Z p) ⸴
+    ⊩□ ⇐ λ {y → (⊩□ ⇒ x⊩□C) (snd p y)})}}}}}
+
+module M-completeness
+  {W R S}
+  {F : FrameL {lzero} {lzero} {lzero} W R S}
+  (∈S? : Decidable₃ S)
+  (dec : ∀ V → MultiDecidableModel (model {V = V} F))
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+  where
+  open FrameL F
+
+  *⊩M : Set₁
+  *⊩M = P.M (F *⊩_)
+
+  pattern a = 0
+  pattern b = 1
+  pattern c = 2
+
+  ⊩M⇒M-condition : *⊩M → M-condition F
+  ⊩M⇒M-condition ⊩M {w} {u} {V} SwuV
+    = case (⊩▷ ⇒ (⊩MP (⊩M Val w) w⊩a▷b)) Rwu u⊩a∧□c of
+      λ { (Z ⸴ SwuZ ⸴ Z⊩b∧□c) → Z ⸴ (λ {x → [b] ⇒ proj₁ (⊩∧ ⇒ Z⊩b∧□c x)}) ⸴ SwuZ
+      ⸴ λ {x x₁ → [c] ⇒ (⊩□ ⇒ (proj₂ (⊩∧ ⇒ Z⊩b∧□c x))) x₁}}
+    where
+    Rwu : R w u
+    Rwu = Sw⊆Rw SwuV
+    Val : Valuation F
+    Val w a = w ≡ u
+    Val w b = w ∈ V
+    Val w c = R u w
+    Val w (suc (suc (suc _))) = ⊥
+    M = model {V = Val} F
+    open Extended (dec Val) ∈S? ∈SV?
+    [a] : ∀ {w} → M , w ⊩ var a ⇔ w ≡ u
+    [a] = equivalence (λ { (var x) → x}) λ {z → var z}
+    [b] : ∀ {w} → M , w ⊩ var b ⇔ w ∈ V
+    [b] = equivalence (λ { (var x) → x}) λ {z → var z}
+    [c] : ∀ {w} → M , w ⊩ var c ⇔ R u w
+    [c] = equivalence (λ { (var x) → x}) λ {z → var z}
+    w⊩a▷b : M , w ⊩ var a ▷ var b
+    w⊩a▷b = ⊩▷ ⇐ λ { {i} Rwi ia → case [a] ⇒ ia of λ {refl → V ⸴ (SwuV ⸴ λ {x → [b] ⇐ x})}}
+    u⊩a∧□c : M , u ⊩ var a ∧ □ var c
+    u⊩a∧□c = ⊩∧ ⇐ ([a] ⇐ refl ⸴ ⊩□ ⇐ λ x → [c] ⇐ x)
+
+\end{spverbatim}

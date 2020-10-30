@@ -1,0 +1,316 @@
+\begin{spverbatim}
+module IL.Edsl where
+
+import Agda.Builtin.Unit as U
+import Data.Empty as Empty
+import Data.Fin as Fin
+import Data.List as Lst
+import Data.Maybe as M
+import Function as Fun
+import Relation.Binary.PropositionalEquality as Eq
+open Eq using (_≢_)
+open import Relation.Nullary
+open Eq using (_≡_; refl; subst)
+open Fin using (Fin; inject+; fromℕ; inject₁; zero; suc; #_)
+open Fun using (id)
+open Lst using (List; []; _∷_)
+open M using (nothing; just; Maybe)
+open import Agda.Builtin.Equality
+open import Agda.Builtin.FromNat
+open import Data.List.Relation.Unary.Any using () renaming (here to here'; there to there')
+open import Agda.Builtin.Nat
+open import Data.Bool using (true; false) renaming (_∨_ to _||_ ; _∧_ to _&_)
+open import Data.Nat using (_≤?_)
+open import Data.List.Membership.Propositional using (_∈_)
+open import Data.Product
+open import Formula
+open import IL
+
+instance
+  NumNat : Number Nat
+  NumNat .Number.Constraint _ = U.⊤
+  NumNat .Number.fromNat    m = m
+
+pattern _! a = var a
+
+here : ∀ {A : Fm} {Σ : List Fm} → A ∈ (A ∷ Σ)
+here {A} {Σ} = here' refl
+
+there : ∀ {A : Fm} {Σ B} → A ∈ Σ → A ∈ (B ∷ Σ)
+there x = there' x
+
+_!_ : ∀ {A : Set} → (L : List A) → (i : Nat) → Maybe A
+[] ! _ = nothing
+(x ∷ l) ! zero = just x
+(x ∷ l) ! suc i = l ! i
+
+makeMember : ∀ {Σ i A} → Σ ! i ≡ just A → A ∈ Σ
+makeMember {a ∷ l} {zero} refl = here
+makeMember {a ∷ l} {suc i} x = there (makeMember {l} {i} x)
+
+instance
+  NumMember : ∀ {A Σ} → Number (A ∈ Σ)
+  NumMember {A} {Σ} .Number.Constraint i = Σ ! i ≡ just A
+  NumMember {A} {Σ} .Number.fromNat i {{p}} = makeMember p
+
+_≤_ : (m n : Nat) → Set
+zero  ≤ n     = U.⊤
+suc m ≤ zero  = Empty.⊥
+suc m ≤ suc n = m ≤ n
+
+fromN≤ : (m n : Nat) → m ≤ n → Fin (suc n)
+fromN≤ zero    _       _  = zero
+fromN≤ (suc _) zero    ()
+fromN≤ (suc m) (suc n) p  = suc (fromN≤ m n p)
+
+instance
+  NumFin : ∀ {n} → Number (Fin (suc n))
+  NumFin {n} .Number.Constraint m         = m ≤ n
+  NumFin {n} .Number.fromNat    m {{m≤n}} = fromN≤ m n m≤n
+
+data Single {A : Set} : A → Set where
+  single : (n : A) → Single n
+
+instance
+  NumSing : ∀ {n} → Number (Single {Nat} n)
+  NumSing {n} .Number.Constraint m = n ≡ m
+  NumSing .Number.fromNat m ⦃ refl ⦄ = single m
+
+data HilbertProof : List Fm → Fm → Nat → Set
+lookup-all : ∀ {Σ A n} → HilbertProof Σ A n → Fin (suc n) → List Fm × (Fm × Nat)
+lookup-may : ∀ {Σ A n} → HilbertProof Σ A n → Nat → Maybe Fm
+
+lookup : ∀ {Σ A n} → HilbertProof Σ A n → Fin (suc n) → Fm
+lookup H i = proj₁ (proj₂ (lookup-all H i))
+
+compile-instr : ∀ {n Σ A} → (H : HilbertProof Σ A n) → (i : Fin (suc n)) → Σ ⊢ lookup H i
+
+data HilbertRef {Σ A n} (H : HilbertProof Σ A n) (fB : Fm) (f : Fm → Fm) : Set where
+  ref : (i : Nat) → M.map f (lookup-may H i) ≡ just fB → HilbertRef H fB f
+
+data HilbertProof where
+  begin : ∀ {Σ A} → Σ ⊢ A → HilbertProof Σ A 0
+  by : ∀ {Σ A B n} → Σ ⊢ B → HilbertProof Σ A n → HilbertProof Σ B (suc n)
+  Ax : ∀ {Σ B n} → (A : Fm) → HilbertProof Σ B n → HilbertProof (A ∷ Σ) A (suc n)
+  nec : ∀ {Σ n □A C} (H : HilbertProof [] C n) (i : HilbertRef H (□A) □_)
+    → HilbertProof Σ (□A) (suc n)
+  MP : ∀ {n Σ A B C} (H : HilbertProof Σ C n) → HilbertRef H (A ↝ B) id → HilbertRef H A id → HilbertProof Σ B (suc n)
+
+lookup-all {Σ} {A} {n} x zero = Σ , A , n
+lookup-all (by x H) (suc i) = lookup-all H i
+lookup-all (MP {A} {B} H i' j') (suc i) = lookup-all H i
+lookup-all (begin x) (suc ())
+lookup-all (Ax x y) (suc h) = lookup-all y h
+lookup-all (nec H j) (suc i) = lookup-all H i
+
+-- nothing if the result would be a negative number
+_-≥_ : (n m : Nat) → Maybe (Fin (suc n))
+n -≥ zero = just (fromℕ n)
+zero -≥ suc m = nothing
+suc n -≥ suc m = M.map inject₁ (n -≥ m)
+
+lookup-may {Σ} {A} {n} H i = M.map (lookup H) (n -≥ i)
+
+is-just-map : ∀ {A B : Set} {may : Maybe A} {f : A → B}
+  → M.is-just (M.map f may) ≡ M.is-just may
+is-just-map {A} {B} {just _} = refl
+is-just-map {A} {B} {nothing} = refl
+
+-≥-is-just : ∀ {n i} → M.is-just (n -≥ i) ≡ true → i ≤ n
+-≥-is-just {zero} {zero} x = U.tt
+-≥-is-just {suc n} {zero} x = U.tt
+-≥-is-just {suc n} {suc i} x = -≥-is-just {n} {i} (Eq.trans (Eq.sym is-just-map) x)
+
+is-just-≡ : ∀ {A : Set} {a : Maybe A} {b} → a ≡ just b → M.is-just a ≡ true
+is-just-≡ {_} {just _} x = refl
+
+subst-⊢ : ∀ {Σ A A'} → A ≡ A' → Σ ⊢ A → Σ ⊢ A'
+subst-⊢ {Σ} x y = subst (λ x →  Σ ⊢ x) x y
+
+l-weakening : {Σ : List Fm} {A B : Fm} (Π : Σ ⊢ A) → (B ∷ Σ) ⊢ A
+l-weakening (Ax x) = Ax (there x)
+l-weakening C1 = C1
+l-weakening C2 = C2
+l-weakening C3 = C3
+l-weakening K = K
+l-weakening L = L
+l-weakening J1 = J1
+l-weakening J2 = J2
+l-weakening J3 = J3
+l-weakening J4 = J4
+l-weakening J5 = J5
+l-weakening (MP A B) = MP (l-weakening A) (l-weakening B)
+l-weakening (nec k) = nec k
+
+l-weakening[] : {Σ : List Fm} {A : Fm} (Π : [] ⊢ A) → Σ ⊢ A
+l-weakening[] C1 = C1
+l-weakening[] C2 = C2
+l-weakening[] C3 = C3
+l-weakening[] K = K
+l-weakening[] L = L
+l-weakening[] J1 = J1
+l-weakening[] J2 = J2
+l-weakening[] J3 = J3
+l-weakening[] J4 = J4
+l-weakening[] J5 = J5
+l-weakening[] (MP a b) = MP (l-weakening[] a) (l-weakening[] b)
+l-weakening[] (nec p) = nec p
+
+A↝A : ∀ {Σ A} → Σ ⊢ A ↝ A
+A↝A {Σ} {A} = MP (MP C2 C1) (C1 {B = A})
+
+injective-just : ∀ {A : Set} {a b : A} → just a ≡ just b → a ≡ b
+injective-just refl = refl
+
+_-Fin_ : (n m : Nat) → Fin (suc n)
+n -Fin zero = fromℕ n
+zero -Fin suc m = zero
+suc n -Fin suc m = inject₁ (n -Fin m)
+
+lookup-may-just : ∀ {n i A B Σ} {H : HilbertProof Σ B n}
+  → lookup-may H i ≡ just A
+  → lookup H (n -Fin i) ≡ A
+lookup-may-just {n} {i} {A} {_} {Σ} {H} p = injective-just p'
+  where
+    aux-i≤n : ∀ {n i Σ A B} {H : HilbertProof Σ B n} → lookup-may H i ≡ just A → i ≤ n
+    aux-i≤n {n} {i} x = -≥-is-just {n} {i} (Eq.trans (Eq.sym is-just-map) (is-just-≡ x))
+    aux--≥ : ∀ {n i} → i ≤ n → n -≥ i ≡ just (n -Fin i)
+    aux--≥ {n} {zero} x = refl
+    aux--≥ {suc n} {suc i} x = Eq.cong (M.map inject₁) (aux--≥ {n} {i} x)
+    i≤n : i ≤ n
+    i≤n = aux-i≤n {n} {i} p
+    n-i-just : n -≥ i ≡ just (n -Fin i)
+    n-i-just = aux--≥ {n} {i} i≤n
+    p-rewrite : ∀ {n i B Σ} {H : HilbertProof Σ B n}
+      → n -≥ i ≡ just (n -Fin i)
+      → M.map (lookup H) (n -≥ i) ≡ just A
+      → M.map (lookup H) (just (n -Fin i)) ≡ just A
+    p-rewrite x p rewrite x = p
+    p' : just (lookup H (n -Fin i)) ≡ just A
+    p' rewrite (p-rewrite {n} {i} n-i-just p) = refl
+
+compile-nec-aux : ∀ {A : Set} {m : Maybe Fm} {a : Fm} {f} → M.map f m ≡ just a
+  → (∀ {b} → (f b ≢ a)) → A
+compile-nec-aux {A} {m} {a} {f} x k = Empty.⊥-elim (k (injective-just
+  (subst (λ {z → M.map f z ≡ just a}) (proj₂ (aux {m = m} x)) x)))
+  where aux : ∀ {m} → M.map f m ≡ just a → Σ _ λ b → m ≡ just b
+        aux {just i} x = i , refl
+
+compile-nec : ∀ {□A n C Σ}
+  → (H : HilbertProof [] C n) → HilbertRef H □A □_ → Σ ⊢ □A
+compile-nec {v !} H (ref i x) = absurd! {_} {lookup-may H i} {v} x
+  where
+  absurd! : ∀ {A : Set} {a b} → M.map □_ a ≡ just (b !) → A
+  absurd! {_} {just y} {b} x with injective-just (Eq.sym x)
+  ... | ()
+compile-nec {a ↝ b} H (ref i x) = absurd↝ {_} {lookup-may H i} {a} {b} x
+  where
+  absurd↝ : ∀ {A : Set} {a b c} → M.map □_ a ≡ just (b ↝ c) → A
+  absurd↝ {A} {just y} {b} x with injective-just (Eq.sym x)
+  ... | ()
+compile-nec {⊥'} H (ref i x) = absurd⊥ {_} {lookup-may H i} x
+  where
+  absurd⊥ : ∀ {A : Set} {a} → M.map □_ a ≡ just ⊥' → A
+  absurd⊥ {_} {just y} x with injective-just (Eq.sym x)
+  ... | ()
+compile-nec {(A ↝ ⊥') ▷ ⊥'} {n} H (ref i x) =
+   nec (subst-⊢ (lookup-may-just {n} {i} (aux□ x)) (compile-instr H (n -Fin i)))
+  where
+  aux□ : ∀ {a b} → M.map □_ a ≡ just (¬' b ▷ ⊥') → a ≡ just b
+  aux□ {just a} refl = refl
+compile-nec {(_ !) ▷ ⊥'} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {⊥' ▷ ⊥'} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {(A ↝ (_ !)) ▷ ⊥'} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {(A ↝ B ↝ C) ▷ ⊥'} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {(A ↝ B ▷ C) ▷ ⊥'} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {(A ▷ B) ▷ ⊥'} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {A ▷ (_ !)} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {A ▷ (B ↝ C)} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+compile-nec {A ▷ (C ▷ D)} H (ref i x) = compile-nec-aux {m = lookup-may H i} x λ ()
+
+compile-mp : ∀ {A B n Σ C}
+  → (H : HilbertProof Σ C n) → HilbertRef H (A ↝ B) id → HilbertRef H A id
+  → Σ ⊢ B
+compile-mp {A} {B} {n} {Σ} H (ref i pi) (ref j pj) = MP Σ⊢A↝B Σ⊢A
+  where
+  map-id : ∀ {A : Set} {may : Maybe A} → M.map id may ≡ may
+  map-id {A} {just x₁} = refl
+  map-id {A} {nothing} = refl
+  pi' : lookup-may H i ≡ just (A ↝ B)
+  pi' = Eq.trans (Eq.sym map-id) pi
+  pj' : lookup-may H j ≡ just A
+  pj' = Eq.trans (Eq.sym map-id) pj
+  Σ⊢A : Σ ⊢ A
+  Σ⊢A = subst-⊢ (lookup-may-just {n} {j} pj') (compile-instr H (n -Fin j))
+  Σ⊢A↝B : Σ ⊢ A ↝ B
+  Σ⊢A↝B = subst-⊢ (lookup-may-just {n} {i} pi') (compile-instr H (n -Fin i))
+
+compile-instr (begin x) zero = x
+compile-instr (begin x) (suc ())
+compile-instr (by x H) zero = x
+compile-instr (by x H) (suc i) = compile-instr H i
+compile-instr (MP {n} H i j) zero = compile-mp H i j
+compile-instr (MP H _ _) (suc l) = compile-instr H l
+compile-instr (Ax A x) zero = Ax here
+compile-instr (Ax A H) (suc i) = l-weakening (compile-instr H i)
+compile-instr {suc n} {Σ} (nec {Σ} {n} {_} {□A} H i) zero = compile-nec H i
+compile-instr (nec {_} {n} H i) (suc j) = l-weakening[] (compile-instr H j)
+
+compile : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
+compile H = compile-instr H zero
+
+injective-□ : ∀ {A B} → □ A ≡ □ B → A ≡ B
+injective-□ refl = refl
+
+instance
+  NumHilbertRef : ∀ {A Σ n} {H : HilbertProof Σ A n} {fB} {f} → Number (HilbertRef H fB f)
+  NumHilbertRef {A} {Σ} {n} {H} {fB} {f} .Number.Constraint t = M.map f (lookup-may H t) ≡ just fB
+  NumHilbertRef {A} {Σ} {n} {H} .Number.fromNat t ⦃ x ⦄ = ref t x
+
+begin[_]_By_ : ∀ {Σ} → Single {Nat} 0 → (B : Fm) → Σ ⊢ B → HilbertProof Σ B 0
+begin[ z ] B By p = begin p
+
+infixl 10 _[_]_By_
+_[_]_By_ : ∀ {Σ C n} → (H : HilbertProof Σ C n) → Single {Nat} (suc n) → (B : Fm) → Σ ⊢ B → HilbertProof Σ B (suc n)
+H [ n ] B By p = by p H
+
+infixl 10 _[_]_ByNec_
+_[_]_ByNec_ : ∀ {C n}
+  → (H : HilbertProof [] C n) → Single {Nat} (suc n)
+  → (□B : Fm) → HilbertRef H □B □_
+  → HilbertProof [] □B (suc n)
+H [ i ] □A ByNec ix = nec H ix
+
+infixl 10 _[_]_ByMP_,_
+_[_]_ByMP_,_ : ∀ {Σ C A n} → (H : HilbertProof Σ C n) → Single {Nat} (suc n)
+  → (B : Fm) (i : HilbertRef H (A ↝ B) id) (j : HilbertRef H A id) → HilbertProof Σ B (suc n)
+H [ n ] B ByMP i , j = MP H i j
+
+infix 0 _■
+_■ : ∀ {n Σ A} → (H : HilbertProof Σ A n) → Σ ⊢ A
+H ■ = compile H
+
+⊢A↝A : ∀ {A} → [] ⊢ A ↝ A
+⊢A↝A {A} =
+  begin[ 0 ] (A ↝ ((A ↝ A) ↝ A)) ↝ ((A ↝ (A ↝ A)) ↝ (A ↝ A)) By C2
+       [ 1 ] A ↝ ((A ↝ A) ↝ A)                                  By C1
+       [ 2 ] A ↝ (A ↝ A)                                        By C1
+       [ 3 ] (A ↝ (A ↝ A)) ↝ A ↝ A                             ByMP 0 , 1
+       [ 4 ] A ↝ A                                               ByMP 3 , 2
+       ■
+
+⊢A▷A : ∀ {A} → [] ⊢ A ▷ A
+⊢A▷A {A} =
+  begin[ 0 ] A ↝ A                 By ⊢A↝A
+       [ 1 ] □ (A ↝ A)             ByNec 0
+       [ 2 ] □ (A ↝ A) ↝ (A ▷ A)  By J1
+       [ 3 ] A ▷ A                 ByMP 2 , 1
+       ■
+
+⊢A▷A' : ∀ {A} → HilbertProof [] (A ▷ A) 3
+⊢A▷A' {A} =
+  begin[ 0 ] A ↝ A                 By ⊢A↝A
+       [ 1 ] □ (A ↝ A)             ByNec 0
+       [ 2 ] □ (A ↝ A) ↝ (A ▷ A)  By J1
+       [ 3 ] A ▷ A                 ByMP 2 , 1
+\end{spverbatim}

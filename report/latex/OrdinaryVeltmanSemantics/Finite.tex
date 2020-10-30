@@ -1,0 +1,246 @@
+\begin{spverbatim}
+module OrdinaryVeltmanSemantics.Finite where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+open import Function.Bijection using (Bijective; Bijection)
+open import Function.Surjection using (Surjective)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Fin using (Fin; fromℕ; inject₁; zero; suc; lower₁; toℕ)
+open import Data.Fin.Properties using (all?; any?; ¬∀⟶∃¬)
+open import Data.List using (List; []; _∷_; map)
+open import Data.List.Membership.Propositional using (_∈_)
+open import Data.List.Relation.Unary.All using (All; _∷_; [])
+open import Data.List.Relation.Unary.Any using (Any; here; there) renaming (map to Any-map)
+open import Data.Product using (∃; Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; refl; setoid; subst; subst₂; sym; cong; trans)
+open import Relation.Binary.HeterogeneousEquality using (_≅_; ≅-to-type-≡) renaming (subst to hsubst;
+  trans to htrans; sym to hsym; subst₂ to hsubst₂; refl to hrefl; cong to hcong)
+open import Relation.Nary using (substₙ)
+open import Relation.Nullary using (Dec; yes; no; ¬_)
+open import Relation.Nullary.Negation using (¬∃⟶∀¬)
+open import Relation.Unary using (Pred; Decidable; _∩_; _∪_; _⊆_; ∁) renaming (_⇒_ to _P⇒_)
+open import Relation.Unary.Properties using (_∩?_; _∪?_; _×?_; ∁?)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import OrdinaryVeltmanSemantics using (Frame; Model; _,_⊮_; _,_⊩_; impl;
+  var; rhd; bot; _*⊩_; _*⊮_; Valuation; model; DecidableModel)
+open import OrdinaryVeltmanSemantics.Properties using (⊮→¬⊩; ⊩→¬⊮)
+open import Base
+open import OrdinaryFrame
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+Finite : ∀ {W} {R} {S} → Pred (Frame {ℓW} {ℓR} {ℓS} W R S) ℓW
+Finite {W = W} F = Σ Nat λ n → Bijection (setoid W) (setoid (Fin n))
+
+module DecideModel
+  {W : Set ℓW}
+  {R : Rel W ℓR}
+  {S : Rel₃ W ℓR}
+  {V : REL W Var lzero}
+  (M : Model W R S V)
+  (fin : Finite (Model.F M))
+  (V? : Decidable₂ V)
+  (S? : Decidable₃ S)
+  (R? : Decidable₂ R) where
+  F = Model.F M
+  open Frame F
+
+  n : Nat
+  n = proj₁ fin
+
+  bij : Bijection (setoid W) (setoid (Fin n))
+  bij = proj₂ fin
+
+  f : W → Fin n
+  f w = Bijection.to bij ⟨$⟩ w
+
+  g : Fin n → W
+  g m = Surjective.from (Bijective.surjective (Bijection.bijective bij)) ⟨$⟩ m
+
+  fg : ∀ x → f (g x) ≡ x
+  fg = Surjective.right-inverse-of (Bijective.surjective (Bijection.bijective bij))
+
+  gf : ∀ x → g (f x) ≡ x
+  gf = Bijective.left-inverse-of (Bijection.bijective bij)
+
+  R' : Rel (Fin n) _
+  R' x y = R (g x) (g y)
+
+  R'? : Decidable₂ R'
+  R'? x y with R? (g x) (g y)
+  ... | yes t = yes t
+  ... | no n = no n
+
+  S' : Rel₃ (Fin n) _
+  S' x y z = S (g x) (g y) (g z)
+
+  S'? : Decidable₃ S'
+  S'? x y z with S? (g x) (g y) (g z)
+  ... | yes p = yes p
+  ... | no p = no p
+
+  fR : ∀ {w u} → R w u → R' (f w) (f u)
+  fR {w} {u} = subst₂ R (sym (gf w)) (sym (gf u))
+
+  fR2 : ∀ {w u} → R w u → R (g (f w)) (g (f u))
+  fR2 {w} {u} = subst₂ R (sym (gf w)) (sym (gf u))
+
+  R'-trans : Transitive R'
+  R'-trans = Frame.R-trans F
+
+  ≡-subst₂-removable : ∀ {p a} {A : Set a} (R : Rel A p) {x y x' y'}
+    (eq1 : x ≡ y) (eq2 : x' ≡ y') z → subst₂ R eq1 eq2 z ≅ z
+  ≡-subst₂-removable R₁ refl refl z = hrefl
+
+  g-chain : ∀ {a} → InfiniteChain R' a → InfiniteChain R (g a)
+  InfiniteChain.b (g-chain x) = g (InfiniteChain.b x)
+  InfiniteChain.a<b (g-chain x) = InfiniteChain.a<b x
+  InfiniteChain.tail (g-chain x) = g-chain (InfiniteChain.tail x)
+
+  R'-noetherian : Noetherian R'
+  R'-noetherian x = R-noetherian (g-chain x)
+
+  S'w⊆R[w]² : ∀ {w u v} → S' w u v → R' w u × R' w v
+  S'w⊆R[w]² = Frame.Sw⊆R[w]² F
+
+  S'w-refl : ∀ {w u} → R' w u → S' w u u
+  S'w-refl = Frame.Sw-refl F
+
+  S'w-trans : ∀ {w} → Transitive (S w)
+  S'w-trans = Frame.Sw-trans F
+
+  R'-S'w-trans : ∀ {w u v} → R' w u → R' u v → S' w u v
+  R'-S'w-trans = Frame.R-Sw-trans F
+
+  F' : Frame (Fin n) R' S'
+  F' = frame (f (Frame.witness F)) R'-trans R'-noetherian S'w⊆R[w]²
+      S'w-refl S'w-trans R'-S'w-trans
+
+  V' : Valuation F'
+  V' w x = V (g w) x
+
+  V'? : Decidable₂ V'
+  V'? x y with V? (g x) y
+  ... | yes p = yes p
+  ... | no p = no p
+
+  M' : Model (Fin n) R' S' V'
+  M' = model {V = V'} F'
+
+  g⊮ : ∀ {w A} → M' , w ⊮ A → M , g w ⊮ A
+  g⊩ : ∀ {w A} → M' , w ⊩ A → M , g w ⊩ A
+
+  g⊮ (var x) = var x
+  g⊮ (impl x y) = impl (g⊩ x) (g⊮ y)
+  g⊮ {w} (rhd {A} {B} (u ⸴ Ru ⸴ uA ⸴ snd)) = rhd (g u ⸴ Ru ⸴ g⊩ uA
+    ⸴ λ v → case snd (f v) of λ {
+    (inj₁ x) → inj₁ λ z → x (subst (S (g w) (g u)) (sym (gf _)) z) ;
+    (inj₂ y) → inj₂ (subst (M ,_⊮ B) (gf _) (g⊮ y))})
+  g⊮ bot = bot
+
+  g⊩ (var x) = var x
+  g⊩ (impl (inj₁ x)) = impl (inj₁ (g⊮ x))
+  g⊩ (impl (inj₂ y)) = impl (inj₂ (g⊩ y))
+  g⊩ (rhd {A} x) = rhd (λ {u} y → case x (aux y) of
+    λ { (inj₁ x) → inj₁ (subst (M ,_⊮ A) (gf u) (g⊮ x))
+    ; (inj₂ (v ⸴ Sv ⸴ snd)) → inj₂ (g v ⸴ (aux' Sv ⸴ g⊩ snd))})
+    where
+    aux : ∀ {w u} → R (g w) u → R' w (f u)
+    aux = subst₂ R refl (sym (gf _))
+    aux' : ∀ {w u v} → S' w (f u) v → S (g w) u (g v)
+    aux' {w} {u} {v} = subst (λ a → S (g w) a (g v)) (gf u)
+
+  M',_⊩?D_ : Decidable₂ (M' ,_⊩_)
+  M',_⊮?D_ : Decidable₂ (M' ,_⊮_)
+  M',_⊩?_ : DecidableModel M'
+
+  M', w ⊩?D A with M', w ⊩? A
+  ... | inj₁ p = yes p
+  ... | inj₂ p = no (⊮→¬⊩ p)
+
+  M', w ⊮?D A with M', w ⊩? A
+  ... | inj₁ p = no (⊩→¬⊮ p)
+  ... | inj₂ p = yes p
+
+
+  M', w ⊩? var x with V'? w x
+  ... | yes y = inj₁ (var y)
+  ... | no n = inj₂ (var n)
+  M', w ⊩? ⊥' = inj₂ bot
+  M', w ⊩? (A ↝ B) with M', w ⊩? A | M', w ⊩? B
+  ... | inj₂ y | b = inj₁ (impl (inj₁ y))
+  ... | inj₁ x | inj₂ b = inj₂ (impl x b)
+  ... | inj₁ x | inj₁ b = inj₁ (impl (inj₂ b))
+  M', w ⊩? (A ▷ B) = case A▷B of
+    λ { (yes p) → inj₁ (rhd (λ {u} r → case M', u ⊩? A of
+        λ { (inj₂ x) → inj₁ x
+        ; (inj₁ y) → inj₂ (case p u of (
+          λ { (inj₁ (inj₁ x)) → ⊥-elim (x r)
+          ; (inj₁ (inj₂ t)) → ⊥-elim (⊩→¬⊮ y t)
+          ; (inj₂ t) → t}))})) ;
+      (no p) → inj₂ (rhd (case ¬∀⟶∃¬ n P' P? p of
+        λ { (u ⸴ snd) → u ⸴ (case aux P1? P2? snd of
+          λ { (p1 ⸴ p2) → case aux P11? P12? p1 of
+            λ { (fst ⸴ snd) → ¬¬-elim {u} {R' w} (R'? w) fst
+            ⸴ (case M', u ⊩? A of (
+              λ { (inj₁ x) → x ; (inj₂ y) → ⊥-elim (snd y)}))
+              ⸴ λ v → case aux2 (S'? w u) (M',_⊩?D B) (¬∃⟶∀¬ p2 v) of
+                λ { (inj₁ x) → inj₁ x ; (inj₂ y) → inj₂ (case M', v ⊩? B of (
+                λ { (inj₁ x) → ⊥-elim (y x)
+                  ; (inj₂ y) → y})) }}})})) }
+    where
+    P11 P12 P2 : Pred (Fin n) _
+    P11 = ∁ (R' w)
+    P12 = M' ,_⊮ A
+    P1 = P11 ∪ P12
+    P2 = (λ u → ∃ (λ v → S' w u v × M' , v ⊩ B))
+    P1? : Decidable P1
+    P11? : Decidable P11
+    P11? = ∁? (R'? w)
+    P12? : Decidable P12
+    P12? = M',_⊮?D A
+    P1? = P11? ∪? P12?
+    P2? : Decidable P2
+    P2? = λ u → any? (S'? w u ∩? (M',_⊩?D B))
+    P' : Pred (Fin n) _
+    P' = P1 ∪ P2
+
+    P? : Decidable P'
+    P? = P1? ∪? P2?
+
+    aux : ∀ {u} → {P Q : Pred (Fin n) _} → Decidable P → Decidable Q
+      →  ¬ ((P ∪ Q) u) → ¬ P u × ¬ Q u
+    aux {u} P? Q? ¬u = (λ x → ¬u (inj₁ x)) ⸴ λ x → ¬u (inj₂ x)
+
+    aux2 : ∀ {u} → {P Q : Pred (Fin n) _} → Decidable P → Decidable Q
+      →  ¬ ((P ∩ Q) u) → ¬ P u ⊎ ¬ Q u
+    aux2 {u} P? Q? ¬u with P? u | Q? u
+    ... | no p | _ = inj₁ p
+    ... | yes p | no n = inj₂ (λ x → ¬u (p ⸴ x))
+    ... | yes p | yes n = inj₁ (λ x → ¬u (x ⸴ n))
+
+    ¬¬-elim : ∀ {u} → {P : Pred (Fin n) _} → Decidable P → ¬ ¬ P u → P u
+    ¬¬-elim {u} P? k with P? u
+    ... | yes p = p
+    ... | no p = ⊥-elim (k p)
+
+    A▷B : Dec (∀ u → P' u)
+    A▷B = all? P?
+
+  -- Decides the original model
+  M,_⊩?_ : DecidableModel M
+  M, w ⊩? A with M', f w ⊩? A
+  ... | inj₁ p = inj₁ (subst (M ,_⊩ A) (gf _) (g⊩ p))
+  ... | inj₂ p = inj₂ (subst (M ,_⊮ A) (gf _) (g⊮ p))
+\end{spverbatim}

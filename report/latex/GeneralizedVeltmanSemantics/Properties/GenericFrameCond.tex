@@ -1,0 +1,130 @@
+\begin{spverbatim}
+module GeneralizedVeltmanSemantics.Properties.GenericFrameCond where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Product using (Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝; ∅)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; _◁_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import GeneralizedVeltmanSemantics
+open import Base using (_⇒_; _⇐_; Decidable₃; Rel₃; REL₃)
+open import GeneralizedVeltmanSemantics.Properties
+  using (module Extended; ⊩¬; ⊮¬; ⊩□; ⊩♢; ⊩MP; ⊩∧; ⊩→¬⊮)
+import Principles as P
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+    W : Set ℓW
+    R : Rel W ℓR
+    S : REL₃ W W (Pred W ℓW) ℓS
+    V : REL W Var lzero
+
+module Condition
+  (F : FrameL {lzero} {lzero} {lzero} W R S)
+  where
+  open FrameL F
+
+  lift : Set → Set₁
+  lift Sa = Sa × (⊥ → Set)
+
+  Tagger : Set₁
+  Tagger = Var → 𝕎
+
+  fm2pred : Tagger → Fm → W → Set₁
+  fm2pred ⟦_⟧ (var v) u = lift (u ∈ ⟦ v ⟧)
+  fm2pred _ ⊥' w = lift ⊥
+  fm2pred ⟦_⟧ (A ↝ B) w = w ∈ fm2pred ⟦_⟧ A → w ∈ fm2pred ⟦_⟧ B
+  fm2pred ⟦_⟧ (A ▷ B) w = ∀ {u} → R w u → u ∈ fm2pred ⟦_⟧ A
+    → Σ 𝕎 λ Y → S w u Y × Y ⊆ fm2pred ⟦_⟧ B
+
+  Frame-cond : Fm → Set₁
+  Frame-cond A = ∀ g w → fm2pred g A w
+
+module Truth-lemma
+  {M : Model {lzero} {lzero} {lzero} W R S V}
+  (M,_*⊩?_ : MultiDecidableModel M)
+  (∈S? : Decidable₃ S)
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y) where
+
+  open Model M
+  open FrameL F
+  open Extended M,_*⊩?_ ∈S? ∈SV?
+  open Condition F
+
+  lemma : ∀ {⟦_⟧ w A} → (q : ∀ {w v} → M , w ⊩ var v ⇔ w ∈ ⟦ v ⟧) →
+    M , w ⊩ A ⇔ w ∈ fm2pred ⟦_⟧ A
+  lemma {g} {w} {A} q = equivalence ⇨ ⇦
+    where
+    ⇨ : ∀ {w A} → M , w ⊩ A → w ∈ fm2pred g A
+    ⇦ : ∀ {w A} → w ∈ fm2pred g A → M , w ⊩ A
+    ⇨ v@(var x) = q ⇒ v ⸴ λ ()
+    ⇨ i@(impl _) u = ⇨ ((⊩↝ ⇒ i) (⇦ u))
+    ⇨ {w} r@(rhd _) Rwu u∈[A] = case (⊩▷ ⇒ r) Rwu (⇦ u∈[A]) of
+      λ { (Z ⸴ SZ ⸴ snd) → Z ⸴ SZ ⸴ λ {v → ⇨ (snd v)}}
+    ⇦ {w} {var x} (fst ⸴ _) = q ⇐ fst
+    ⇦ {w} {A ↝ B} p = ⊩↝ ⇐ λ {x → ⇦ (p (⇨ x))}
+    ⇦ {w} {A ▷ B} p = ⊩▷ ⇐ λ {Rwu uA → case p Rwu (⇨ uA) of
+      λ { (Z ⸴ ZS ⸴ snd) → Z ⸴ ZS ⸴ λ {x → ⇦ (snd x)}}}
+
+
+module soundness
+  {M : Model {lzero} {lzero} {lzero} W R S V}
+  (M,_*⊩?_ : MultiDecidableModel M)
+  (∈S? : Decidable₃ S)
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y) where
+
+  open Model M
+  open FrameL F
+  open Extended M,_*⊩?_ ∈S? ∈SV?
+  open Condition F
+  open Truth-lemma M,_*⊩?_ ∈S? ∈SV?
+
+  sound : ∀ w P → Frame-cond P → M , w ⊩ P
+  sound w A cond = lemma g-aux ⇐ cond ⟦_⟧ w
+    where
+    ⟦_⟧ : Tagger
+    ⟦ x ⟧ = [⊩ var x ]
+    g-aux : ∀ {w v} → M , w ⊩ var v ⇔ w ∈ [⊩ var v ]
+    g-aux {w} {v} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊩ var v → w ∈ [⊩ var v ]
+      ⇨ x = ∈[⊩ var v ] ⇐ x
+      ⇦ : w ∈ [⊩ var v ] → M , w ⊩ var v
+      ⇦ x = ∈[⊩ var v ] ⇒ x
+
+
+module P⇒ℱ
+  {F : FrameL {lzero} {lzero} {lzero} W R S}
+  (∈S? : Decidable₃ S)
+  (dec : ∀ V → MultiDecidableModel (model {V = V} F))
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+  where
+  open FrameL F
+  open Condition F
+
+  thm : ∀ P → F *⊩ P → Frame-cond P
+  thm P x g w = lemma g-aux ⇒ w⊩P
+    where
+    Val : Valuation F
+    Val u a = u ∈ g a
+    M = model {V = Val} F
+    open Extended (dec Val) ∈S? ∈SV?
+    open Truth-lemma (dec Val) ∈S? ∈SV?
+    w⊩P : M , w ⊩ P
+    w⊩P = x (λ a b → g b a) w
+    g-aux : ∀ {w v} → M , w ⊩ var v ⇔ w ∈ g v
+    g-aux {w} {v} = equivalence (λ { (var x) → x}) var
+\end{spverbatim}

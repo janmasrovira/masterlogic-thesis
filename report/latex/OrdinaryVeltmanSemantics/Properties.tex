@@ -1,0 +1,292 @@
+\begin{spverbatim}
+module OrdinaryVeltmanSemantics.Properties where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Product renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import OrdinaryVeltmanSemantics
+open import Base
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+    W : Set ℓW
+    R : Rel W ℓR
+    S : Rel₃ W ℓS
+    V : REL W Var lzero
+
+module _
+  {M : Model W R S V} where
+  open Model M
+  open Frame F
+
+  ⊩⊥ : ∀ {w} → ¬ (M , w ⊩ ⊥')
+  ⊩⊥ = λ ()
+
+  ⊮→¬⊩ : ∀ {w A} → M , w ⊮ A → ¬ (M , w ⊩ A)
+  ⊮→¬⊩ (var x) (var x₂) = x x₂
+  ⊮→¬⊩ (impl x y) (impl (inj₁ z)) = ⊮→¬⊩ z x
+  ⊮→¬⊩ (impl x y) (impl (inj₂ z)) = ⊮→¬⊩ y z
+  ⊮→¬⊩ (rhd (u' ⸴ wRu' ⸴ u'⊩A ⸴ snd)) (rhd z) with z wRu'
+  ... | inj₁ u'⊮A with snd u'
+  ... | inj₁ x = x (Sw-refl wRu')
+  ... | inj₂ y = ⊮→¬⊩ u'⊮A u'⊩A
+  ⊮→¬⊩ (rhd (u' ⸴ wRu' ⸴ mm ⸴ snd)) (rhd z) | inj₂ (v ⸴ u'Sv ⸴ vB) with snd v
+  ... | inj₁ ¬u'Sv = ¬u'Sv u'Sv
+  ... | inj₂ r = ⊮→¬⊩ r vB
+
+  ⊩→¬⊮ : ∀ {w A} → M , w ⊩ A → ¬ (M , w ⊮ A)
+  ⊩→¬⊮ x y = ⊮→¬⊩ y x
+
+  ⊩MP : ∀ {w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B
+  ⊩MP (impl (inj₁ x)) y = ⊥-elim (⊩→¬⊮ y x)
+  ⊩MP (impl (inj₂ x)) y = x
+
+  ⊩¬ : ∀ {w A} → (M , w ⊩ ¬' A) ⇔ (M , w ⊮ A)
+  ⊩¬ {w} {A} = equivalence ⇨ ⇦
+    where ⇨ : M , w ⊩ ¬' A → M , w ⊮ A
+          ⇨ (impl (inj₁ x)) = x
+          ⇦ : M , w ⊮ A → M , w ⊩ ¬' A
+          ⇦ (var x) = impl (inj₁ (var x))
+          ⇦ (impl x x₁) = impl (inj₁ (impl x x₁))
+          ⇦ (rhd x) = impl (inj₁ (rhd x))
+          ⇦ bot = impl (inj₁ bot)
+
+  ⊩⊤ : ∀ {w} → M , w ⊩ ⊤'
+  ⊩⊤ = impl (inj₁ bot)
+
+  ⊮⊤ : ∀ {w} → ¬ (M , w ⊮ ⊤')
+  ⊮⊤ (impl x x₁) = ⊩→¬⊮ x x₁
+
+  ⊮¬ : ∀ {w A} → M , w ⊮ ¬' A ⇔ M , w ⊩ A
+  ⊮¬ {w} {A} = equivalence ⇨ ⇦
+    where
+      ⇨ : M , w ⊮ ¬' A → M , w ⊩ A
+      ⇨ (impl x x₁) = x
+      ⇦ : M , w ⊩ A → M , w ⊮ ¬' A
+      ⇦ x = impl x bot
+
+  ⊩¬¬ : ∀ {w A} → M , w ⊩ ¬' ¬' A ⇔ M , w ⊩ A
+  ⊩¬¬ {w} {A} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊩ ¬' ¬' A → M , w ⊩ A
+    ⇨ (impl (inj₁ (impl x x₁))) = x
+    ⇦ : M , w ⊩ A → M , w ⊩ ¬' ¬' A
+    ⇦ x = impl (inj₁ (impl x bot))
+
+  ⊮¬¬ : ∀ {w A} → M , w ⊮ ¬' ¬' A ⇔ M , w ⊮ A
+  ⊮¬¬ {w} {A} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊮ ¬' ¬' A → M , w ⊮ A
+    ⇨ x = ⊩¬ ⇒ (⊮¬ ⇒ x)
+    ⇦ : M , w ⊮ A → M , w ⊮ ¬' ¬' A
+    ⇦ x = ⊮¬ ⇐ (⊩¬ ⇐ x)
+
+  ⊩∧ : ∀ {w A B} → M , w ⊩ A ∧ B ⇔ (M , w ⊩ A × M , w ⊩ B)
+  ⊩∧ {w} {A} {B} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊩ A ∧ B → M , w ⊩ A × M , w ⊩ B
+    ⇨ (impl (inj₁ (impl x (impl x₁ y)))) = x ⸴ x₁
+    ⇦ : M , w ⊩ A × M , w ⊩ B → M , w ⊩ A ∧ B
+    ⇦ (fst ⸴ snd) = impl (inj₁ (impl fst (impl snd bot)))
+
+  ⊮∧ : ∀ {w A B} → M , w ⊮ A ∧ B ⇔ (M , w ⊮ A ⊎ M , w ⊮ B)
+  ⊮∧ {w} {A} {B} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊮ A ∧ B → (M , w ⊮ A ⊎ M , w ⊮ B)
+    ⇨ (impl (impl (inj₁ x)) x₁) = inj₁ x
+    ⇨ (impl (impl (inj₂ (impl (inj₁ x)))) x₁) = inj₂ x
+    ⇦ : (M , w ⊮ A ⊎ M , w ⊮ B) → M , w ⊮ A ∧ B
+    ⇦ (inj₁ x) = impl (impl (inj₁ x)) bot
+    ⇦ (inj₂ y) = impl (impl (inj₂ (⊩¬ ⇐ y))) bot
+
+  ⊩∨ : ∀ {w A B} → M , w ⊩ A ∨ B ⇔ (M , w ⊩ A ⊎ M , w ⊩ B)
+  ⊩∨ {w} {A} {B} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊩ A ∨ B → (M , w ⊩ A ⊎ M , w ⊩ B)
+    ⇨ (impl (inj₁ (impl x x₁))) = inj₁ x
+    ⇨ (impl (inj₂ y)) = inj₂ y
+    ⇦ : (M , w ⊩ A ⊎ M , w ⊩ B) → M , w ⊩ A ∨ B
+    ⇦ (inj₁ x) = impl (inj₁ (⊮¬ ⇐ x))
+    ⇦ (inj₂ y) = impl (inj₂ y)
+
+  ⊩□ : ∀ {w A} → M , w ⊩ □ A ⇔ (∀ {v} → R w v → M , v ⊩ A)
+  ⊩□ {w} {A} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊩ □ A → (∀ {v} → R w v → M , v ⊩ A)
+    ⇨ (rhd f) wRv with f wRv
+    ... | inj₁ k = ⊮¬ ⇒ k
+    ⇦ : (∀ {v} → R w v → M , v ⊩ A) → M , w ⊩ □ A
+    ⇦ x = rhd λ wRu → inj₁ (⊮¬ ⇐ (x wRu))
+
+  ⊮□ : ∀ {w A} → M , w ⊮ □ A ⇔ (∃[ u ] (R w u × M , u ⊮ A))
+  ⊮□ {w} {A} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊮ □ A → (Σ (W) λ u → R w u × M , u ⊮ A)
+    ⇨ (rhd (u ⸴ wRu ⸴ u⊩¬A ⸴ snd)) = u ⸴ wRu ⸴ ⊩¬ ⇒ u⊩¬A
+    ⇦ : (Σ (W) λ u → R w u × M , u ⊮ A) → M , w ⊮ □ A
+    ⇦ (u ⸴ wRu ⸴ u⊮A) = rhd (u ⸴ (wRu ⸴ ⊩¬ ⇐ u⊮A ⸴ λ v → inj₂ bot))
+
+  ⊩♢ : ∀ {w A} → M , w ⊩ ♢ A ⇔ (Σ (W) λ u → R w u × M , u ⊩ A)
+  ⊩♢ {w} {A} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊩ ♢ A → Σ (W) λ u → R w u × M , u ⊩ A
+    ⇨ (impl (inj₁ (rhd (u ⸴ m ⸴ u⊩¬¬A ⸴ snd)))) = u ⸴ m ⸴ ⊩¬¬ ⇒ u⊩¬¬A
+    ⇦ : (Σ (W) λ u → R w u × M , u ⊩ A) → M , w ⊩ ♢ A
+    ⇦ (u ⸴ wRu ⸴ snd) = impl (inj₁ (rhd (u ⸴ (wRu ⸴ ⊩¬¬ ⇐ snd ⸴ λ _ → inj₂ bot))))
+
+  ⊮♢ : ∀ {w A} → M , w ⊮ ♢ A ⇔ (∀ {u} → R w u → M , u ⊮ A)
+  ⊮♢ {w} {A} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊮ ♢ A → (∀ {u} → R w u → M , u ⊮ A)
+    ⇨ (impl (rhd x) y) wRu with x wRu
+    ... | inj₁ u⊮¬¬A = ⊮¬¬ ⇒ u⊮¬¬A
+    ⇦ : (∀ {u} → R w u → M , u ⊮ A) → M , w ⊮ ♢ A
+    ⇦ x = impl (rhd (λ wRu → inj₁ (⊮¬¬ ⇐ (x wRu)))) bot
+
+  ⊩4' : ∀ {w A} → M , w ⊩ □ A → M , w ⊩ □ □ A
+  ⊩4' (rhd x) = ⊩□ ⇐ λ {u} wRu → rhd (λ {v} uRv →
+    case x {v} (R-trans wRu uRv) of λ { (inj₁ x) → inj₁ x})
+
+  ⊩↝⇨ : ∀ {w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B
+  ⊩↝⇨ (impl (inj₁ x)) y = ⊥-elim (⊮→¬⊩ x y)
+  ⊩↝⇨ (impl (inj₂ b)) y = b
+
+  ⊩▷⇨ : ∀ {w A B} → M , w ⊩ A ▷ B → (∀ {u} → R w u → M , u ⊩ A → Σ (W) λ v → (S) w u v × M , v ⊩ B)
+  ⊩▷⇨ (rhd x) {u} wRu uA with x wRu
+  ⊩▷⇨ {M} (rhd x) {u} wRu uA | inj₁ x₁ = u ⸴ (Sw-refl wRu ⸴ ⊥-elim (⊩→¬⊮ uA x₁))
+  ⊩▷⇨ (rhd x) {u} wRu uA | inj₂ (fst ⸴ fst₁ ⸴ snd) = fst ⸴ (fst₁ ⸴ snd)
+
+R-Irreflexive : Frame W R S → Irreflexive _≡_ R
+R-Irreflexive {R = R} F {x} refl Rxx = R-noetherian (infiniteRefl Rxx)
+  where open Frame F
+
+-- This module contains the properties that can be proved with the assumption
+-- that we have a procedure to decide M , w ⊩ A
+module Extended
+  {M : Model {ℓW} {ℓR} {ℓS} W R S V}
+  (M,_⊩?_ : DecidableModel M)
+  (∈S? : Decidable₃ (S))
+  where
+  open Frame (Model.F M)
+
+  ⊩↝ : ∀ {w A B} → M , w ⊩ A ↝ B ⇔ (M , w ⊩ A → M , w ⊩ B)
+  ⊩↝ {w} {A} {B} = equivalence ⊩↝⇨ ⇦
+    where
+    ⇦ : (M , w ⊩ A → M , w ⊩ B) → M , w ⊩ A ↝ B
+    ⇦ x with M, w ⊩? A
+    ... | inj₁ z = impl (inj₂ (x z))
+    ... | inj₂ y = impl (inj₁ y)
+
+  ⊩▷ : ∀ {w A B} → M , w ⊩ A ▷ B ⇔
+    (∀ {u} → R w u → M , u ⊩ A → Σ (W) λ v → (S) w u v × M , v ⊩ B)
+  ⊩▷ {w} {A} {B} = equivalence ⊩▷⇨ ⇦
+    where
+    ⇦ : (∀ {u} → R w u → M , u ⊩ A → Σ W λ v → S w u v × M , v ⊩ B) → M , w ⊩ A ▷ B
+    ⇦ x = rhd (λ {u} wRu → [ (λ x₁ → inj₂ (x wRu x₁)) , inj₁ ] (M, u ⊩? A))
+
+  ⊩4 : ∀ {w A} → M , w ⊩ □ A ↝ □ □ A
+  ⊩4 = ⊩↝ ⇐ ⊩4'
+
+  ⊩⇔¬⊮ : ∀ {w A} → M , w ⊩ A ⇔ (¬ M , w ⊮ A)
+  ⊩⇔¬⊮ {w} {A} = equivalence ⊩→¬⊮ ⇦
+    where
+    ⇦ : (M , w ⊮ A → ⊥) → M , w ⊩ A
+    ⇦ x = [ id , (λ y → ⊥-elim (x y)) ] (M, w ⊩? A)
+
+  ⊮⇔¬⊩ : ∀ {w A} → M , w ⊮ A ⇔ (¬ M , w ⊩ A)
+  ⊮⇔¬⊩ {w} {A} = equivalence ⊮→¬⊩ ⇦
+    where
+    ⇦ : ¬ M , w ⊩ A → M , w ⊮ A
+    ⇦ x = [ (λ y → ⊥-elim (x y)) , id ] (M, w ⊩? A)
+
+  ⊮▷ : ∀ {w A B} → M , w ⊮ A ▷ B ⇔ Σ W λ x → R w x × M , x ⊩ A
+    × (∀ {z} → S w x z → M , z ⊮ B)
+  ⊮▷ {w} {A} {B} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊮ A ▷ B → Σ W λ x → R w x × M , x ⊩ A
+      × (∀ {z} → S w x z → M , z ⊮ B)
+    ⇨ (rhd (y ⸴ fst₁ ⸴ fst₂ ⸴ snd)) = y ⸴ fst₁ ⸴ fst₂ ⸴ λ { {z} Sx → case snd z of
+      λ { (inj₁ x) → ⊥-elim (x Sx) ; (inj₂ y) → y}}
+    ⇦ : (Σ W λ x → R w x × M , x ⊩ A × (∀ {z} → S w x z → M , z ⊮ B)) → M , w ⊮ A ▷ B
+    ⇦ (y ⸴ Rwy ⸴ yA ⸴ snd) = rhd (y ⸴ Rwy ⸴ yA ⸴ (λ z → case ∈S? w y z of
+      λ { (yes p) → inj₂ (snd p); (no p) → inj₁ p}))
+
+  ⊩◁ : ∀ {w A B} → M , w ⊩ ¬' (A ▷ ¬' B) ⇔ Σ W λ x → R w x × M , x ⊩ A
+    × ∀ {z} → S w x z → M , z ⊩ B
+  ⊩◁ {w} {A} {B} = equivalence ⇨ ⇦
+    where
+    ⇨ : M , w ⊩ ¬' (A ▷ ¬' B) → Σ W λ x → R w x × M , x ⊩ A
+      × ∀ {z} → S w x z → M , z ⊩ B
+    ⇨ x = case ⊮▷ ⇒ (⊩¬ ⇒ x) of λ { (fst ⸴ fst₁ ⸴ fst₂ ⸴ snd) → fst ⸴ fst₁ ⸴ fst₂ ⸴
+      λ {x → ⊮¬ ⇒ (snd x)}}
+    ⇦ : (Σ W λ x → R w x × M , x ⊩ A × ∀ {z} → S w x z → M , z ⊩ B) → M , w ⊩ ¬' (A ▷ ¬' B)
+    ⇦ (y ⸴ fst₁ ⸴ fst₂ ⸴ snd) = ⊩¬ ⇐ (⊮▷ ⇐ (y ⸴ fst₁ ⸴ fst₂ ⸴ λ {x → ⊮¬ ⇐ snd x}))
+
+  ⊩K : ∀ {w A B} → M , w ⊩ □ (A ↝ B) ↝ □ A ↝ □ B
+  ⊩K {w} {A} {B} = ⊩↝ ⇐ λ x → ⊩↝ ⇐ λ y → ⊩□ ⇐
+    λ {u} wRu → ⊩MP ((⊩□ ⇒ x) wRu) ((⊩□ ⇒ y) wRu)
+
+  ⊩J1 : ∀ {w A B} → M , w ⊩ □ (A ↝ B) ↝ A ▷ B
+  ⊩J1 {w} {A} {B} = ⊩↝ ⇐ λ x → rhd (λ {u} z →
+    [ (λ uA → inj₂ (u ⸴ Sw-refl z ⸴
+    ⊩MP ((⊩□ ⇒ x) z) uA)) , inj₁ ] (M, u ⊩? A))
+
+  ⊩J2 : ∀ {w A B C} → M , w ⊩ A ▷ B ∧ B ▷ C ↝ A ▷ C
+  ⊩J2 {w} {A} {B} {C} = ⊩↝ ⇐ λ x → ⊩▷ ⇐ λ {u} wRu uA → case ⊩∧ ⇒ x of
+    λ { (wA▷B ⸴ snd) → case (⊩▷ ⇒ wA▷B) wRu uA of
+    λ { (v ⸴ Swuv ⸴ snd') → case (⊩▷ ⇒ snd)
+    (proj₂ (Sw⊆R[w]² Swuv)) snd' of
+    λ { (e ⸴ fst ⸴ snd) → e ⸴ Sw-trans Swuv fst ⸴  snd}}}
+
+  ⊩J3 : ∀ {w A B C} → M , w ⊩ A ▷ C ∧ B ▷ C ↝ (A ∨ B) ▷ C
+  ⊩J3 {w} {A} {B} {C} = ⊩↝ ⇐ λ x → ⊩▷ ⇐ λ Rwu uA∨B → case ⊩∧ ⇒ x of
+    λ {(a ⸴ b) → case ⊩∨ ⇒ uA∨B of
+    λ { (inj₁ uA) → (⊩▷ ⇒ a) Rwu uA ;
+    (inj₂ uB) → (⊩▷ ⇒ b) Rwu uB} }
+
+  ⊩J4 : ∀ {w A B} → M , w ⊩ A ▷ B ↝ ♢ A ↝ ♢ B
+  ⊩J4 = ⊩↝ ⇐ λ x → ⊩↝ ⇐ λ y → ⊩♢ ⇐ (case ⊩♢ ⇒ y of λ { (u ⸴ wRu ⸴ snd)
+    → case (⊩▷ ⇒ x) wRu snd of λ { (v ⸴ fst₁ ⸴ snd)
+    → v ⸴ (proj₂ (Sw⊆R[w]² fst₁)) ⸴ snd}})
+
+  ⊩J5 : ∀ {w A} → M , w ⊩ ♢ A ▷ A
+  ⊩J5 = ⊩▷ ⇐ λ {u} wRu u⊩♢A → case ⊩♢ ⇒ u⊩♢A of λ { (v ⸴ uRv ⸴ snd) →
+    v ⸴ R-Sw-trans wRu uRv ⸴ snd}
+
+
+module Extended2
+  {M : Model {ℓW} {ℓR} {ℓS} W R S V}
+  (M,_⊩?_ : DecidableModel M)
+  (∈S? : Decidable₃ S)
+  where
+  open Frame (Model.F M)
+  open Extended M,_⊩?_ ∈S?
+
+  L-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
+  InfiniteChain.b (L-chain {w} {u} Rwu uA uF) = u
+  InfiniteChain.a<b (L-chain {w} {u} Rwu uA uF) = Rwu
+  InfiniteChain.tail (L-chain {w} {u} Rwu u⊮A w⊩□⟨□A↝A⟩)
+     with (⊩□ ⇒ w⊩□⟨□A↝A⟩) Rwu
+  ... | impl (inj₂ u⊩A) = ⊥-elim (⊩→¬⊮ u⊩A u⊮A)
+  ... | impl (inj₁ x⊮□A) with ⊮□ ⇒ x⊮□A
+  ... | (v ⸴ Ruv ⸴ v⊩A) = L-chain Ruv v⊩A ((⊩□ ⇒ ⊩4' w⊩□⟨□A↝A⟩) Rwu)
+
+  ⊩L : ∀ {w A} → M , w ⊩ □ (□ A ↝ A) ↝ □ A
+  ⊩L {w} {A} = ⊩↝ ⇐ λ w⊩□⟨□A→A⟩ → ⊩□ ⇐ λ {u} Rwu → ⊩⇔¬⊮ ⇐
+    λ {u⊮A → R-noetherian (L-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
+\end{spverbatim}

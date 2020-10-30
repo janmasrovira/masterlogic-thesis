@@ -1,0 +1,29 @@
+\begin{spverbatim}
+module IL where
+
+open import OrdinaryVeltmanSemantics using (Model; _,_⊩_; impl)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.List using (List; []; _∷_)
+open import Data.List.Membership.Propositional using (_∈_)
+
+open import Formula using (Fm; _▷_; _↝_; □_; _∧_; _∨_; ♢_; ¬'_; ⊥')
+
+infix 5 _⊢_
+data _⊢_ (Π : List Fm) : Fm → Set where
+  Ax : ∀ {A} → A ∈ Π → Π ⊢ A
+  -- classical axioms
+  C1 : ∀ {A B} → Π ⊢ A ↝ (B ↝ A)
+  C2 : ∀ {A B C} → Π ⊢ (A ↝ (B ↝ C)) ↝ ((A ↝ B) ↝ (A ↝ C))
+  C3 : ∀ {A B} → Π ⊢ (¬' A ↝ ¬' B) ↝ (B ↝ A)
+  -- other axioms
+  K : ∀ {A B} → Π ⊢ (□ (A ↝ B)) ↝ (□ A ↝ □ B)
+  L : ∀ {A} → Π ⊢ □ (□ A ↝ A) ↝ □ A
+  J1 : ∀ {A B} → Π ⊢ □ (A ↝ B) ↝ A ▷ B
+  J2 : ∀ {A B C} → Π ⊢ A ▷ B ∧ B ▷ C ↝ A ▷ C
+  J3 : ∀ {A B C} → Π ⊢ (A ▷ C ∧ B ▷ C) ↝ (A ∨ B) ▷ C
+  J4 : ∀ {A B} → Π ⊢ A ▷ B ↝ ♢ A ↝ ♢ B
+  J5 : ∀ {A} → Π ⊢ ♢ A ▷ A
+  MP : ∀ {A B} → Π ⊢ A ↝ B → Π ⊢ A → Π ⊢ B
+  nec : ∀ {A} → [] ⊢ A → Π ⊢ □ A
+\end{spverbatim}

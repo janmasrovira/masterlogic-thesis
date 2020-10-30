@@ -1,0 +1,184 @@
+\begin{spverbatim}
+module Classical where
+
+open import Function.Equivalence using (_⇔_; equivalence; map; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Data.List using (List; []; _∷_)
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Data.List.Membership.Propositional using (_∈_)
+open import Data.List.Relation.Unary.Any using (Any; here; there)
+open import Data.Product using (Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Base using (_⇒_; _⇐_)
+
+Var : Set
+Var = Nat
+
+infixr 20 _↝_
+data Fm : Set where
+  var : Var → Fm
+  ⊥' : Fm
+  _↝_ : Fm → Fm → Fm
+
+infix 60 ¬'_
+¬'_ : Fm → Fm
+¬' a = a ↝ ⊥'
+
+⊤' : Fm
+⊤' = ¬' ⊥'
+
+infix 30 _∨_
+_∨_ : Fm → Fm → Fm
+ϕ ∨ ψ = ¬' ϕ ↝ ψ
+
+infix 40 _∧_
+_∧_ : Fm → Fm → Fm
+a ∧ b = ¬' (a ↝ ¬' b)
+
+infix 5 _⊢_
+data _⊢_ (Π : List Fm) : Fm → Set where
+  -- classical axioms
+  C1 : ∀ {A B} → Π ⊢ A ↝ B ↝ A
+  C2 : ∀ {A B C} → Π ⊢ (A ↝ B ↝ C) ↝ ((A ↝ B) ↝ A ↝ C)
+  C3 : ∀ {A B} → Π ⊢ (¬' A ↝ ¬' B) ↝ B ↝ A
+  MP : ∀ {A B} → Π ⊢ A ↝ B → Π ⊢ A → Π ⊢ B
+  Ax : ∀ {A} → A ∈ Π → Π ⊢ A
+
+
+record ClassicalLanguage (fm : Set) : Set where
+  field
+    implication : fm → fm → fm
+    varia : Var → fm
+    bottom : fm
+
+
+  negation : fm → fm
+  negation x = implication x bottom
+
+  -- infix 30 _∨'_
+  -- _∨'_ : fm → fm → fm
+  -- ϕ ∨' ψ = ¬'' ϕ c↝ ψ
+
+  -- infix 40 _∧_
+  -- _∧_ : Fm → Fm → Fm
+  -- a ∧ b = ¬' (a ↝ ¬' b)
+
+instance
+  FmClassical : ClassicalLanguage Fm
+  FmClassical = record { implication = _↝_ ; varia = var ; bottom = ⊥' }
+
+
+record ExtendsClassical {fm : Set} {{l : ClassicalLanguage fm}} (_⊢_ : List fm → fm → Set) : Set where
+    infixr 20 _↝'_
+    _↝'_ = ClassicalLanguage.implication l
+
+    infix 60 ¬''_
+    ¬''_ = ClassicalLanguage.negation l
+
+    field C1' : ∀ {A B : fm} {Π : List fm} → Π ⊢ (A ↝' B ↝' A)
+    field C2' : ∀ {A B C Π} → Π ⊢ ((A ↝' B ↝' C) ↝' ((A ↝' B) ↝' A ↝' C))
+    field C3' : ∀ {A B Π} → Π ⊢ ((¬'' A ↝' ¬'' B) ↝' B ↝' A)
+    field MP' : ∀ {A B Π} → Π ⊢ (A ↝' B) → Π ⊢ A → Π ⊢ B
+    field Ax' : ∀ {A Π} → A ∈ Π → Π ⊢ A
+
+instance
+  ClassicalExt : ExtendsClassical _⊢_
+  ClassicalExt = record { C1' = C1 ; C2' = C2 ; C3' = C3 ; MP' = MP ; Ax' = Ax }
+
+-- fromClassical : ∀ {fm : Set} {{_ : ClassicalLanguage fm}} {_⊢'_ : List fm → fm → Set} {{_ : ExtendsClassical _⊢'_}} {Π A} → Π ⊢ A → Π ⊢' A
+-- fromClassical = {!!}
+
+weak : ∀ {Π A B} → Π ⊢ A → (B ∷ Π) ⊢ A
+weak C1 = C1
+weak C2 = C2
+weak C3 = C3
+weak (MP x x₁) = MP (weak x) (weak x₁)
+weak (Ax x) = Ax (there x)
+
+cut : ∀ {Π A B} → Π ⊢ B → (B ∷ Π) ⊢ A → Π ⊢ A
+cut y C1 = C1
+cut y C2 = C2
+cut y C3 = C3
+cut y (MP x x₁) = MP (cut y x) (cut y x₁)
+cut y (Ax (here refl)) = y
+cut y (Ax (there x)) = Ax x
+
+deduction : ∀ {Π A B} → Π ⊢ A ↝ B ⇔ (A ∷ Π) ⊢ B
+deduction {Π} {A} {B} = equivalence ⇨ ⇦
+  where
+  ⇨ : ∀ {Π A B} → Π ⊢ A ↝ B → (A ∷ Π) ⊢ B
+  ⇨ x = MP (weak x) (Ax (here refl))
+  ⇦ : ∀ {Π A B} → (A ∷ Π) ⊢ B → Π ⊢ A ↝ B
+  ⇦ C1 = MP C1 C1
+  ⇦ C2 = MP C1 C2
+  ⇦ C3 = MP C1 C3
+  ⇦ {Π} {A} {B} (MP {C} x y) = MP (MP C2 (⇦ x)) (⇦ y)
+  ⇦ (Ax (here refl)) = MP (MP C2 C1) (C1 {_} {_} {⊥'})
+  ⇦ (Ax (there x)) = MP C1 (Ax x)
+
+⊢A↝A : ∀ {Π A} → Π ⊢ A ↝ A
+⊢A↝A {_} {A} = deduction ⇐ Ax (here refl)
+
+⊢A∨¬A : ∀ {Π A} → Π ⊢ A ∨ (¬' A)
+⊢A∨¬A {A} = ⊢A↝A
+
+trans : ∀ {A B C Π} → Π ⊢ (A ↝ B) ↝ (B ↝ C) ↝ A ↝ C
+trans {A} {B} {C} = deduction ⇐ (deduction ⇐ (deduction ⇐ MP (Ax (there (here refl)))
+  (MP (Ax (there (there (here refl)))) (Ax (here refl)))))
+
+⊢⦅A↝B⦆↝⦅B↝C⦆↝A↝C : ∀ {A B C Π} → Π ⊢ (A ↝ B) ↝ (B ↝ C) ↝ A ↝ C
+⊢⦅A↝B⦆↝⦅B↝C⦆↝A↝C = trans
+
+⊢A↝¬¬A : ∀ {Π A} → Π ⊢ A ↝ ¬' ¬' A
+⊢A↝¬¬A = deduction ⇐ (deduction ⇐ MP (Ax (here refl)) (Ax (there (here refl))))
+
+⊢¬¬A↝A : ∀ {A Π} → Π ⊢ (¬' ¬' A) ↝ A
+⊢¬¬A↝A {A} = MP C3 ⊢A↝¬¬A
+
+⦅A↝B⦆↝¬B↝¬A : ∀ {A B Π} → Π ⊢ (A ↝ B) ↝ ¬' B ↝ ¬' A
+⦅A↝B⦆↝¬B↝¬A = deduction ⇐ (deduction ⇐ (deduction ⇐ MP (Ax (there (here refl)))
+  (MP (Ax (there (there (here refl)))) (Ax (here refl)))))
+
+⦅A↝B↝C⦆↝B↝A↝C : ∀ {A B C Π} → Π ⊢ (A ↝ B ↝ C) ↝ B ↝ A ↝ C
+⦅A↝B↝C⦆↝B↝A↝C = deduction ⇐ (deduction ⇐ (deduction ⇐ cut
+  (MP (Ax (there (there (here refl)))) (Ax (here refl))) (MP (Ax (here refl))
+  (Ax (there (there (here refl)))))))
+
+⊢A↝⊤ : ∀ {Π A} → Π ⊢ A ↝ ⊤'
+⊢A↝⊤ = deduction ⇐ (deduction ⇐ Ax (here refl))
+
+⊢⊥↝A : ∀ {Π A} → Π ⊢ ⊥' ↝ A
+⊢⊥↝A = MP C3 ⊢A↝⊤
+
+⊢¬A↝A↝B : ∀ {A B Π} → Π ⊢ ¬' A ↝ A ↝ B
+⊢¬A↝A↝B = MP (MP C2 (MP C1 C3)) C1
+
+⊢↝ : ∀ {A B Π} → (Π ⊢ ¬' A ⊎ Π ⊢ B) → Π ⊢ A ↝ B
+⊢↝ (inj₁ x) = MP C3 (MP C1 x)
+⊢↝ (inj₂ y) = MP C1 y
+
+⊢∨ : ∀ {Π A B} → (Π ⊢ A ⊎ Π ⊢ B) → Π ⊢ A ∨ B
+⊢∨ (inj₁ x) = deduction ⇐ cut (weak x) (MP ⊢⊥↝A (MP (Ax (there (here refl)))
+ (Ax (here refl))))
+⊢∨ (inj₂ y) = deduction ⇐ weak y
+
+⊢A∧B↝A : ∀ {Π A B} → Π ⊢ A ∧ B ↝ A
+⊢A∧B↝A = MP (MP trans (MP ⦅A↝B⦆↝¬B↝¬A ⊢¬A↝A↝B)) ⊢¬¬A↝A
+⊢A∧B↝B : ∀ {Π A B} → Π ⊢ A ∧ B ↝ B
+⊢A∧B↝B = MP (MP trans (MP ⦅A↝B⦆↝¬B↝¬A C1)) ⊢¬¬A↝A
+
+⊢A↝B↝A∧B : ∀ {Π A B} → Π ⊢ A ↝ B ↝ A ∧ B
+⊢A↝B↝A∧B = deduction ⇐ (deduction ⇐ (deduction ⇐ cut (MP (Ax (here refl))
+  (Ax (there (there (here refl))))) (MP (Ax (here refl))
+  (Ax (there (there (here refl)))))))
+
+⊢∧ : ∀ {Π A B} → (Π ⊢ A × Π ⊢ B) ⇔ Π ⊢ A ∧ B
+⊢∧ {Π} {A} {B} = equivalence ⇨ ⇦
+  where
+  ⇨ : (Π ⊢ A × Π ⊢ B) → Π ⊢ A ∧ B
+  ⇨ (fst ⸴ snd) = MP (MP ⊢A↝B↝A∧B fst) snd
+  ⇦ : Π ⊢ A ∧ B → (Π ⊢ A × Π ⊢ B)
+  ⇦ x = MP ⊢A∧B↝A x ⸴ MP ⊢A∧B↝B x
+\end{spverbatim}

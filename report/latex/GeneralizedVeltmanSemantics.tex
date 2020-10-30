@@ -1,0 +1,104 @@
+\begin{spverbatim}
+module _ where
+
+open import Agda.Builtin.Nat using (Nat; suc; _+_)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.List using (List)
+open import Data.List.Relation.Unary.All using (All)
+open import Data.Product
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Function using (_∘_; case_of_)
+open import Relation.Binary using (REL; Rel; Transitive; Reflexive)
+open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; refl)
+open import Relation.Nullary using (¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; ｛_｝; _∩_; _⊆_; Satisfiable)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ¬'_)
+open import Base using (Noetherian; REL₃; Rel₃)
+open import GeneralizedFrame using (FrameL; Frame; module Trans-conditions) public
+
+module Generic
+  (T : ∀ {ℓW ℓS} (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  where
+
+  Valuation : ∀ {ℓW ℓR ℓS W R S} → Frame {ℓW} {ℓR} {ℓS} W R S T → Set (lsuc lzero ⊔ ℓW)
+  Valuation {W = W} F = REL W Var lzero
+
+  record Model
+    {ℓW ℓR ℓS}
+    (W : Set ℓW)
+    (R : Rel W ℓR)
+    (S : REL₃ _ _ _ ℓS)
+    (V : REL W Var lzero)
+    : Set (lsuc ℓW ⊔ ℓR ⊔ ℓS) where
+    constructor model
+    field
+      F : Frame {ℓW} {ℓR} {ℓS} W R S T
+
+  infix 5 _,_⊮_
+  data _,_⊮_ {ℓW ℓR ℓS W R S V} (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+    : Fm → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+
+  infix 5 _,_⊩_
+  data _,_⊩_ {ℓW ℓR ℓS W R S V} (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W) : Fm → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+
+  data _,_⊩_ {ℓW} {ℓR} {ℓS} {W} {R} {S} {V} M w where
+    var : ∀ {a : Var} → a ∈ V w → M , w ⊩ var a
+    impl : ∀ {A B} → M , w ⊮ A ⊎ M , w ⊩ B → M , w ⊩ A ↝ B
+    rhd : ∀ {A B} →
+      (∀ {u} → R w u → M , u ⊮ A ⊎ (∃[ Y ] (S w u Y × (Y ⊆ M ,_⊩ B))))
+      → M , w ⊩ A ▷ B
+
+  data _,_⊮_ {ℓW} {ℓR} {ℓS} {W} {R} {S} {V} M w where
+    var : ∀ {a : Var} → a ∉ V w → M , w ⊮ var a
+    impl : ∀ {A B} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
+    rhd : ∀ {A B} →
+      ∃[ u ] (R w u × M , u ⊩ A
+      × ∀ Y → Satisfiable Y → (¬ S w u Y) ⊎ (Satisfiable (Y ∩ (M ,_⊮ B))))
+      → M , w ⊮ A ▷ B
+    bot : M , w ⊮ ⊥'
+
+  DecidableModel : ∀ {ℓW ℓR ℓS W R S V} → Model {ℓW} {ℓR} {ℓS} W R S V
+    → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
+
+  MultiDecidableModel : ∀ {ℓW ℓR ℓS W R S V} → Model {ℓW} {ℓR} {ℓS} W R S V
+    → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS ⊔ lsuc ℓW)
+  MultiDecidableModel {ℓW = ℓW} {W = W} M =
+    ∀ (Y : Pred W ℓW) A → Y ⊆ M ,_⊩ A ⊎ Satisfiable (Y ∩ (M ,_⊮ A))
+
+  SingleDecidableModel : ∀ {ℓW ℓR ℓS W R S V} → {M : Model {ℓW} {ℓR} {ℓS} W R S V}
+    → MultiDecidableModel M → DecidableModel M
+  SingleDecidableModel x w A = case x ｛ w ｝ A of
+    λ { (inj₁ x) → inj₁ (x refl) ; (inj₂ (u , refl , snd)) → inj₂ snd}
+
+  S-decidable : ∀ {ℓW ℓR ℓS W R S} → (F :  Frame {ℓW} {ℓR} {ℓS} W R S T)
+    → Set (lsuc ℓW ⊔ ℓS)
+  S-decidable {S = S} F = ∀ x y u → (Σ 𝕎 λ U → u ∈ U × S x y U) ⊎ (∀ U → S x y U → u ∉ U)
+    where open Frame F
+
+-- Frame validity
+  infix 5 _*⊩_
+  _*⊩_ : ∀ {ℓW ℓR ℓS W R S} → Frame {ℓW} {ℓR} {ℓS} W R S T → Fm → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  F *⊩ A = ∀ val w → model {V = val} F , w ⊩ A
+
+  infix 5 _*⊮_
+  _*⊮_ : ∀ {ℓW ℓR ℓS W R S} → Frame {ℓW} {ℓR} {ℓS} W R S T → Fm → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  F *⊮ A = Σ (Valuation F × _) λ { (val , w) → model {V = val} F , w ⊮ A}
+    where open Frame F
+
+  _,_⊩*_ : ∀ {ℓW ℓR ℓS W R S V} → (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W) → List Fm → Set _
+  M , w ⊩* Π = All (M , w ⊩_) Π
+
+module _ where open Generic Trans-conditions.Trans-L public
+
+module T1 where open Generic Trans-conditions.Trans-1 public
+module T2 where open Generic Trans-conditions.Trans-2 public
+module T3 where open Generic Trans-conditions.Trans-3 public
+module T4 where open Generic Trans-conditions.Trans-4 public
+module T5 where open Generic Trans-conditions.Trans-5 public
+module T6 where open Generic Trans-conditions.Trans-6 public
+module T7 where open Generic Trans-conditions.Trans-7 public
+module T8 where open Generic Trans-conditions.Trans-6 public
+\end{spverbatim}

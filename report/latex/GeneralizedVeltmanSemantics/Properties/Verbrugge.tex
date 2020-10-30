@@ -1,0 +1,571 @@
+\begin{spverbatim}
+module GeneralizedVeltmanSemantics.Properties.Verbrugge where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Function using (_$_)
+open import Data.Product renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝; ∅)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym; subst₂)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; _◁_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import Base
+open import GeneralizedVeltmanSemantics.Properties
+  using (module SemanticsProperties-4;
+    module SemanticsProperties-3;
+    module SemanticsProperties-L; module PGeneric)
+open import GeneralizedFrame
+open import GeneralizedFrame.Properties
+import OrdinaryFrame as O
+import OrdinaryVeltmanSemantics as O
+import OrdinaryVeltmanSemantics.Properties as O
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+module OrdModel
+  {ℓW ℓR ℓS}
+  (T : ∀ {ℓW ℓS} → (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  {W R S}
+  (F : Frame {ℓW} {ℓR} {ℓS} W R S T)
+  (V : W → Pred Var lzero)
+  where
+  open Frame F
+  open PGeneric T
+
+  W' : Set _
+  W' = ∃[ x ]
+       (Σ[ A ∈ (Pred (W × W) (lsuc ℓW ⊔ ℓS ⊔ ℓR)) ]
+       ((∀ {u v} → (u ⸴ v) ∈ A → ∃[ Y ] (S u x Y × v ∈ Y))
+       × (∀ {u V} → S u x V → ∃[ v ] (v ∈ V × (u ⸴ v) ∈ A))))
+
+  Amax : W → Pred (W × W) _
+  Amax x (w ⸴ v) = Σ 𝕎 λ C → S w x C × v ∈ C × (⊥ → R v v)
+
+  R' : Rel W' _
+  R' (x ⸴ A ⸴ _) (y ⸴ B ⸴ _) = R x y × (∀ {w z} → R w x → (w ⸴ z) ∈ B → (w ⸴ z) ∈ A)
+
+  S' : Rel₃ W' _
+  S' w'@(w ⸴ C ⸴ _) x'@(x ⸴ A ⸴ _) y'@(y ⸴ B ⸴ _) =
+    R' w' x' × R' w' y' × (∀ {v} → (w ⸴ v) ∈ B → (w ⸴ v) ∈ A)
+
+  fmax : W → W'
+  fmax w = w ⸴ Amax w ⸴ (λ { (C ⸴ SuwC ⸴ v∈C ⸴ _) → C ⸴ SuwC ⸴ v∈C})
+    ⸴ λ {SuwV → (proj₁ (Swu-sat SuwV)) ⸴ ((proj₂ (Swu-sat SuwV)) ⸴
+    (_ ⸴ (SuwV ⸴ (proj₂ (Swu-sat SuwV) ⸴ ⊥-elim))))}
+
+  module W' where
+    x : W' → W
+    x = proj₁
+
+    A : W' → Pred (W × W) _
+    A = proj₁ ∘ proj₂
+
+    p1 : (w' : W')
+       → (∀ {u v} → (u ⸴ v) ∈ (A w') → Σ 𝕎 λ Y → S u (proj₁ w') Y × v ∈ Y)
+    p1 = proj₁ ∘ proj₂ ∘ proj₂
+
+    p2 : (w' : W') → ∀ {u V} → S u (x w') V → Σ W λ v → v ∈ V × (u ⸴ v) ∈ (A w')
+    p2 = proj₂ ∘ proj₂ ∘ proj₂
+
+    x∘f≡id : ∀ w → x (fmax w) ≡ w
+    x∘f≡id w = refl
+
+  V' : W' → Pred Var lzero
+  V' w' v = v ∈ V (W'.x w')
+
+  f-chain : ∀ {a} → InfiniteChain R' a → InfiniteChain R _
+  InfiniteChain.b (f-chain x) = W'.x (InfiniteChain.b x)
+  InfiniteChain.a<b (f-chain x) = proj₁ (InfiniteChain.a<b x)
+  InfiniteChain.tail (f-chain x) = f-chain (InfiniteChain.tail x)
+
+  R'-Noetherian : Noetherian R'
+  R'-Noetherian i = R-noetherian (f-chain i)
+
+  F' : O.Frame W' R' S'
+  F' = O.frame
+    (fmax witness)
+    (λ { {u} {v} (x ⸴ A) (y ⸴ B) → R-trans x y ⸴
+    λ { {v1} {v2} Rwx wz∈A → A Rwx (B (R-trans Rwx x) wz∈A)}})
+    R'-Noetherian
+    (λ { (fst ⸴ fst₁ ⸴ snd) → fst ⸴ fst₁})
+    (λ { {w} {z} (Rwz ⸴ snd) →
+    (Rwz ⸴ λ { {u} {v} Ruw W'Auv → snd Ruw W'Auv}) ⸴ (Rwz ⸴ snd) ⸴ λ z → z})
+    (λ { ((Rwi ⸴ snd1) ⸴ _ ⸴ snd) (_ ⸴ (a ⸴ snd3))
+      → (Rwi ⸴
+      λ {x x₁ → snd1 x x₁}) ⸴ a ⸴ λ { x → snd (snd3 x)}})
+    λ { (fst ⸴ snd) (fst₁ ⸴ B) → (fst ⸴ snd) ⸴
+    (R-trans fst fst₁ ⸴ λ {x y → snd x (B (R-trans x fst) y)}) ⸴ B fst}
+
+  M' : O.Model W' R' S' V'
+  M' = O.model F'
+
+module PrefaceTheoremAll
+  {ℓW ℓR ℓS}
+  (T : ∀ {ℓW ℓS} → (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  {W R S}
+  (F : Frame {ℓW} {ℓR} {ℓS} W R S T)
+  (V : W → Pred Var lzero)
+  where
+  open OrdModel T F V
+  open Frame F
+  open PGeneric T
+
+  M : Model W R S V
+  M = model {V = V} F
+
+  lemma⇨-type : Set _
+  lemma⇨-type =
+    ∀ {w x Y} → S w x Y →
+    Σ _ λ y → y ∈ Y
+    × (∀ {b V} → S b y V
+      → Σ _ λ v → v ∈ V
+      -- (1)
+      × (b ≡ w → S b x ｛ v ｝)
+      -- (2)
+      × (R b w → S b w ｛ v ｝))
+
+  lemma⇦-type : Set _
+  lemma⇦-type =
+    ∀ {w b x V} → R w x → S b x V →
+    Σ _ λ v → v ∈ V
+      -- (1)
+      × (b ≡ w → S b x ｛ v ｝)
+      -- (2)
+      × (R b w → S b w ｛ v ｝)
+
+  module Theorem
+    (dec : MultiDecidableModel M)
+    (dec' : O.DecidableModel M')
+    (∈S? : Decidable₃ S)
+    (∈S'? : Decidable₃ S')
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+    (lemma⇨ : lemma⇨-type)
+    (lemma⇦ : lemma⇦-type)
+    where
+
+    private
+      open Extended dec ∈S? ∈SV?
+      module O' = O.Extended dec' ∈S'?
+
+      thm⇨ : ∀ {w C A} → M , w ⊩ A → M' O., w ⸴ C ⊩ A
+      thm⇦ : ∀ {w C A} → M' O., w ⸴ C ⊩ A → M , w ⊩ A
+      thm'⇨ : ∀ {w C A} → M , w ⊮ A → M' O., w ⸴ C ⊮ A
+
+      thm⇦ x = ⊩⇔¬⊮ ⇐ λ {y → O.⊮→¬⊩ (thm'⇨ y) x}
+
+      thm⇨ (var x) = O.var x
+      thm⇨ A@(impl _) = O'.⊩↝ ⇐ λ {wA → thm⇨ ((⊩↝ ⇒ A) (thm⇦ wA))}
+      thm⇨ {w} {C'@(C ⸴ Cp1 ⸴ Cp2)} F@(rhd {D} {E} xl) = O'.⊩▷ ⇐
+        λ { {xA} R'wx@(Rwx ⸴ Rwx∈) x⊩D
+          → case (⊩▷ ⇒ F) Rwx (thm⇦ x⊩D) of
+          λ { (V ⸴ SwxV ⸴ V⊩E) →
+          let
+              l = lemma⇨ SwxV
+              y = proj₁ l
+              y∈V = (proj₁ ∘ proj₂) l
+              lemma2 = (proj₂ ∘ proj₂) l
+              x = W'.x xA
+              Rwy : R w y
+              Rwy = SwuY⊆Rw SwxV y∈V
+              A = W'.A xA
+              B = λ { (u ⸴ v) → (Σ _ λ Y
+                → S u y Y × v ∈ Y) × (u ≡ w → (w ⸴ v) ∈ A) × (R u w → (u ⸴ v) ∈ C) }
+              yB∈W' : W'
+              yB∈W' = y ⸴ B ⸴
+                (λ { {u} {v} ((Y ⸴ SuyY ⸴ v∈Y) ⸴ _) → Y ⸴ SuyY ⸴ v∈Y}) ⸴
+                λ { {b} {V} SbyV →
+                  let l2 = lemma2 SbyV
+                      v = proj₁ l2
+                      v∈V = (proj₁ ∘ proj₂) l2
+                      lemma-1 = (proj₁ ∘ proj₂ ∘ proj₂) l2
+                      lemma-2 = (proj₂ ∘ proj₂ ∘ proj₂) l2
+                  in _ ⸴ v∈V ⸴ (_ ⸴ (SbyV ⸴ v∈V))
+                ⸴ (λ { refl → let
+                        Swxv : S w x ｛ v ｝
+                        Swxv = lemma-1 refl
+                      in case W'.p2 xA Swxv of λ { (_ ⸴ refl ⸴ snd) → snd} })
+                ⸴ λ { Rbw → let
+                              Sbwz : S b w ｛ v ｝
+                              Sbwz = lemma-2 Rbw
+                              bv∈C : (b ⸴ v) ∈ C
+                              bv∈C = case Cp2 Sbwz of
+                                λ { (_ ⸴ refl ⸴ snd) → snd}
+                            in bv∈C} }
+              l1 : ∀ {v} → (w ⸴ v) ∈ B → (w ⸴ v) ∈ A
+              l1 wv∈B = proj₁ (proj₂ wv∈B) refl
+              l2 : ∀ {b z} → R b w → (b ⸴ z) ∈ B → (b ⸴ z) ∈ C
+              l2 {b} {z} Rbw bz∈B = (proj₂ ∘ proj₂) bz∈B Rbw
+              R'wy : R' (w ⸴ C') yB∈W'
+              R'wy = Rwy ⸴ (λ {Rbw ∈B → l2 Rbw ∈B})
+          in
+            yB∈W' ⸴ (R'wx ⸴ R'wy ⸴ λ {z → l1 z})
+            ⸴ thm⇨ (V⊩E y∈V)
+            }}
+
+      thm'⇨ (var x) = O.var x
+      thm'⇨ {w} {C} (impl {A} {B} a b) = O.impl (thm⇨ a) (thm'⇨ b)
+      thm'⇨ bot = O.bot
+      thm'⇨ {w} {C'@(C ⸴ Cp1 ⸴ Cp2)} F@(rhd {D} {E} _) = case ⊮▷ ⇒ F of
+        λ { (x ⸴ Rwx ⸴ x⊩D ⸴ px)
+        → let A = λ { (u ⸴ v) →
+                (Σ _ λ Y → S u x Y × v ∈ Y) × (u ≡ w → M , v ⊮ E) × (R u w → (u ⸴ v) ∈ C)}
+              xA∈W' : W'
+              xA∈W' = x ⸴ A ⸴
+                (λ { ((V ⸴ SuxV ⸴ v∈V) ⸴ _) → _ ⸴ SuxV ⸴ v∈V}) ⸴
+                λ { {b} {V} SbxV →
+                  let l = lemma⇦ Rwx SbxV
+                      v = proj₁ l
+                      v∈V : v ∈ V
+                      v∈V = proj₁ ∘ proj₂ $ l
+                      l1 = proj₁ ∘ proj₂ ∘ proj₂ $ l
+                      l2 = proj₂ ∘ proj₂ ∘ proj₂ $ l
+                  in
+                  _ ⸴ (v∈V ⸴ (_ ⸴ (SbxV ⸴ v∈V))
+                ⸴ (λ { refl →
+                let
+                  Swxv : S b x ｛ v ｝
+                  Swxv = l1 refl
+                in case px _ (_ ⸴ refl) Swxv of
+                  λ { (_ ⸴ refl ⸴ l) → l}
+                }) ⸴ λ { Rbw →
+                  let
+                    Suwv : S b w ｛ v ｝
+                    Suwv = l2 Rbw
+                    uv∈C : (b ⸴ v) ∈ C
+                    uv∈C = case Cp2 Suwv of λ { (_ ⸴ refl ⸴ p) → p}
+                  in uv∈C} )}
+              R'wx : R' (w ⸴ C') xA∈W'
+              R'wx = Rwx ⸴ (λ { {b} Rbw bz∈A → (proj₂ ∘ proj₂) bz∈A Rbw})
+          in O'.⊮▷ ⇐ (xA∈W' ⸴ R'wx ⸴ thm⇨ x⊩D ⸴ λ { {yB@(y ⸴ B ⸴ B1 ⸴ B2)}
+            S'wxy →
+            let
+                Rwy : R w y
+                Rwy = (proj₁ ∘ proj₁ ∘ proj₂) S'wxy
+                Swyy : S w y ｛ y ｝
+                Swyy = S-quasirefl Rwy
+                wy∈B : (w ⸴ y) ∈ B
+                wy∈B = case B2 Swyy of
+                  λ { (_ ⸴ refl ⸴ snd) → snd}
+                wy∈A : (w ⸴ y) ∈ A
+                wy∈A = (proj₂ ∘ proj₂) S'wxy wy∈B
+            in thm'⇨ ((proj₁ ∘ proj₂) wy∈A refl)})}
+
+    theorem : ∀ {w C A} → M , w ⊩ A ⇔ M' O., w ⸴ C ⊩ A
+    theorem = equivalence thm⇨ thm⇦
+
+module Theorem-4
+  {W R S}
+  (F : Frame4 {ℓW} {ℓR} {ℓS} W R S)
+  (V : W → Pred Var lzero)
+  where
+  open Frame4 F
+  open SemanticsProperties-4
+
+  open Trans-conditions using (Trans-4)
+  open OrdModel {ℓW} {ℓR} {ℓS} Trans-4 F V
+  open PrefaceTheoremAll Trans-4 F V
+
+  lemma⇦ : lemma⇦-type
+  lemma⇦ {w} {b} {x} {V} Rwx SbxV =
+    let
+      qt = quasitrans SbxV
+      v = proj₁ qt
+      v∈V = proj₁ (proj₂ qt)
+      transv : ∀ {Y} → S b v Y → S b x Y
+      transv = proj₂ (proj₂ qt)
+    in v ⸴ v∈V
+      -- (1)
+      ⸴ (
+      let
+        Rbv : R b v
+        Rbv = SwuY⊆Rw SbxV v∈V
+        Swvv : S b v ｛ v ｝
+        Swvv = S-quasirefl Rbv
+        Swxv : S b x ｛ v ｝
+        Swxv = transv Swvv
+        in const Swxv)
+      -- (2)
+      ⸴ λ { Rbw →
+        let
+          Ruv : R b v
+          Ruv = SwuY⊆Rw SbxV v∈V
+          Suvv : S b v ｛ v ｝
+          Suvv = S-quasirefl Ruv
+          Suxv : S b x ｛ v ｝
+          Suxv = transv Suvv
+          Suwx : S b w ｛ x ｝
+          Suwx = R-Sw-trans Rbw Rwx
+          transx : ∀ {Y} → S b x Y → S b w Y
+          transx {Y} = case quasitrans Suwx of
+            λ { (_ ⸴ refl ⸴ p) → p}
+          Sbwv : S b w ｛ v ｝
+          Sbwv = transx Suxv
+        in Sbwv}
+
+  lemma⇨ : lemma⇨-type
+  lemma⇨ {w} {x} {Y} SwxY =
+    let
+      qt = quasitrans SwxY
+      y = proj₁ qt
+      y∈V = (proj₁ ∘ proj₂) qt
+      Rwy : R w y
+      Rwy = SwuY⊆Rw SwxY (proj₁ (proj₂ qt))
+      transy : ∀ {V} → S w y V → S w x V
+      transy = (proj₂ ∘ proj₂) qt
+    in y ⸴ y∈V ⸴
+      (λ {b} {V} SbyV →
+    let v∈V = (proj₁ ∘ proj₂) (quasitrans SbyV)
+        v = proj₁ (quasitrans SbyV)
+        transv : ∀ {V} → S b v V → S b y V
+        transv = (proj₂ ∘ proj₂) (quasitrans SbyV)
+    in v ⸴ v∈V ⸴
+      -- (1)
+      (λ {refl →
+        let
+            SwxV : S w x V
+            SwxV = transy SbyV
+            Rwv : R w v
+            Rwv = SwuY⊆Rw SwxV v∈V
+            Swvv : S w v ｛ v ｝
+            Swvv = S-quasirefl Rwv
+            Swxv : S w x ｛ v ｝
+            Swxv = (transy ∘ transv) Swvv
+        in Swxv
+        })
+      -- (2)
+      ⸴ λ { Rbw →
+        let
+          Sbyz : S b w ｛ y ｝
+          Sbyz = R-Sw-trans Rbw Rwy
+          transy : ∀ {Y} → S b y Y → S b w Y
+          transy {Y} = case quasitrans Sbyz of
+            λ { (_ ⸴ refl ⸴ a) → a {Y}  }
+          SbwY : S b w V
+          SbwY = transy SbyV
+          transv : ∀ {V} → S b v V → S b y V
+          transv = (proj₂ ∘ proj₂) (quasitrans SbyV)
+          Sbvv : S b v ｛ v ｝
+          Sbvv = S-quasirefl (SwuY⊆Rw SbwY v∈V)
+          Sbwv : S b w ｛ v ｝
+          Sbwv = (transy ∘ transv) Sbvv
+        in Sbwv
+      })
+
+  module _
+    (dec : MultiDecidableModel M)
+    (dec' : O.DecidableModel M')
+    (∈S? : Decidable₃ S)
+    (∈S'? : Decidable₃ S')
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+    where
+    open Theorem dec dec' ∈S? ∈S'? ∈SV? lemma⇨ lemma⇦
+
+-- module Theorem-L
+--   {W R S}
+--   (F : FrameL {ℓW} {ℓR} {ℓS} W R S)
+--   (V : W → Pred Var lzero)
+--   where
+--   open FrameL F
+--   open SemanticsProperties-L
+
+--   open Trans-conditions using (Trans-L)
+--   open OrdModel {ℓW} {ℓR} {ℓS} Trans-L F V
+--   open PrefaceTheoremAll Trans-L F V
+--   open FrameLProperties F
+
+--   lemma⇦ : lemma⇦-type
+--   lemma⇦ {w} {b} {x} {V} Rwx SbxV = v ⸴ v∈V ⸴ l1 ⸴ l2
+--     where
+--       v = proj₁ (Swu-sat SbxV)
+--       v∈V = proj₂ (Swu-sat SbxV)
+--       transv = quasitrans SbxV
+--       l1 : b ≡ w → S b x ｛ v ｝
+--       l1 refl = {!!}
+--         where
+--         RbV : ∀ {v} → v ∈ V → R b v
+--         RbV v∈V = SwuY⊆Rw SbxV v∈V
+--         Swvv : S b v ｛ v ｝
+--         Swvv = S-quasirefl (RbV v∈V)
+--         Swxv : S b x ｛ v ｝
+--         Swxv = case quasitrans SbxV
+--           (λ { {v'} v'∈V → ｛ v' ｝ ⸴ S-quasirefl (RbV v'∈V)}) of
+--           λ { SbxV → {!SbxV!} }
+--       l2 : R b w → S b w ｛ v ｝
+--       l2 Rbw = S-trans Rbw Rwx Sbxv
+--         where
+--         Rbv : R b v
+--         Rbv = SwuY⊆Rw SbxV v∈V
+--         Sbvv : S b v ｛ v ｝
+--         Sbvv = S-quasirefl Rbv
+--         Sbxv : S b x ｛ v ｝
+--         Sbxv = {!S-trans!}
+
+  -- lemma⇦ {w} {b} {x} {V} Rwx SbxV =
+  --   let
+  --     qt = quasitrans SbxV
+  --     v = proj₁ qt
+  --     v∈V = proj₁ (proj₂ qt)
+  --     transv : ∀ {Y} → S b v Y → S b x Y
+  --     transv = proj₂ (proj₂ qt)
+
+        -- let
+        --   Ruv : R b v
+        --   Ruv = SwuY⊆Rw SbxV v∈V
+        --   Suvv : S b v ｛ v ｝
+        --   Suvv = S-quasirefl Ruv
+        --   Suxv : S b x ｛ v ｝
+        --   Suxv = transv Suvv
+        --   Suwx : S b w ｛ x ｝
+        --   Suwx = R-Sw-trans Rbw Rwx
+        --   transx : ∀ {Y} → S b x Y → S b w Y
+        --   transx {Y} = case quasitrans Suwx of
+        --     λ { (_ ⸴ refl ⸴ p) → p}
+        --   Sbwv : S b w ｛ v ｝
+        --   Sbwv = transx Suxv
+        -- in Sbwv}
+
+
+  -- lemma⇨ : lemma⇨-type
+  -- lemma⇨ {w} {x} {Y} SwxY = y ⸴ y∈Y ⸴ l
+  --   where
+  --     y = proj₁ (Swu-sat SwxY)
+  --     y∈Y = proj₂ (Swu-sat SwxY)
+  --     l : ∀ {b V} → S b y V → Σ W
+  --       (λ v → V v × (b ≡ w → S b x ｛ v ｝) × (R b w → S b w ｛ v ｝))
+  --     l {b} {V} SbyV = v ⸴ v∈V ⸴ l1 ⸴ l2
+  --       where
+  --       v = proj₁ $ Swu-sat SbyV
+  --       v∈V = proj₂ $ Swu-sat SbyV
+  --       l1 : b ≡ w → S b x ｛ v ｝
+  --       l1 refl = {!!}
+  --       l2 : R b w → S b w ｛ v ｝
+  --       l2 Rbw = {!!}
+
+  -- module _
+  --   (dec : MultiDecidableModel M)
+  --   (dec' : O.DecidableModel M')
+  --   (∈S? : Decidable₃ S)
+  --   (∈S'? : Decidable₃ S')
+  --   (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+  --   where
+  --   open Theorem dec dec' ∈S? ∈S'? ∈SV? lemma⇨ lemma⇦
+
+module Theorem-3
+  {W R S}
+  (F : Frame3 {ℓW} {ℓR} {ℓS} W R S)
+  (V : W → Pred Var lzero)
+  where
+  open Frame3 F
+  open SemanticsProperties-3
+
+  open Trans-conditions using (Trans-3)
+  open OrdModel {ℓW} {ℓR} {ℓS} Trans-3 F V
+  open PrefaceTheoremAll Trans-3 F V
+  open FrameProperties Trans-3 F
+
+  lemma⇦ : lemma⇦-type
+  lemma⇦ {w} {b} {x} {V} Rwx SbxV =
+    let
+      qt = quasitrans SbxV
+      v = proj₁ qt
+      v∈V = proj₁ (proj₂ qt)
+      transv : ∀ {Y} → S b v Y → Σ 𝕎 λ V' → V' ⊆ Y × S b x V'
+      transv = proj₂ (proj₂ qt)
+    in v ⸴ v∈V
+      -- (1)
+      ⸴ (
+      let
+        Rbv : R b v
+        Rbv = SwuY⊆Rw SbxV v∈V
+        Swvv : S b v ｛ v ｝
+        Swvv = S-quasirefl Rbv
+        Swxv : S b x ｛ v ｝
+        Swxv = case transv Swvv of
+          λ { (v' ⸴ v'⊆｛v｝ ⸴ l) → S-ext l v'⊆｛v｝
+          λ { refl → case Swu-sat l of
+          λ { (_ ⸴ snd) → case v'⊆｛v｝ snd of λ {refl → snd}}}}
+        in const Swxv)
+      -- (2)
+      ⸴ λ { Rbw →
+        let
+          Ruv : R b v
+          Ruv = SwuY⊆Rw SbxV v∈V
+          Suvv : S b v ｛ v ｝
+          Suvv = S-quasirefl Ruv
+          Suxv : S b x ｛ v ｝
+          Suxv = uncurry S⊆｛v｝ (proj₂ (transv Suvv))
+          Suwx : S b w ｛ x ｝
+          Suwx = R-Sw-trans Rbw Rwx
+          transx : ∀ {Y} → S b x Y → Σ 𝕎 λ Y' → Y' ⊆ Y × S b w Y'
+          transx {Y} = case quasitrans Suwx of
+            λ { (_ ⸴ refl ⸴ p) → p}
+          Sbwv : S b w ｛ v ｝
+          Sbwv = uncurry S⊆｛v｝ (proj₂ (transx Suxv))
+        in Sbwv}
+
+  lemma⇨ : lemma⇨-type
+  lemma⇨ {w} {x} {Y} SwxY =
+    let
+      qt = quasitrans SwxY
+      y = proj₁ qt
+      y∈V = (proj₁ ∘ proj₂) qt
+      Rwy : R w y
+      Rwy = SwuY⊆Rw SwxY (proj₁ (proj₂ qt))
+      transy : ∀ {u} → S w y ｛ u ｝ → S w x ｛ u ｝
+      transy Sbvy = uncurry S⊆｛v｝ ∘ proj₂ ∘ (proj₂ ∘ proj₂) qt $ Sbvy
+    in y ⸴ y∈V ⸴
+      (λ {b} {V} SbyV →
+    let v∈V = (proj₁ ∘ proj₂) (quasitrans SbyV)
+        v = proj₁ (quasitrans SbyV)
+        transv : ∀ {u} → S b v ｛ u ｝ → S b y ｛ u ｝
+        transv Sbvy = uncurry S⊆｛v｝ ∘ proj₂ ∘ (proj₂ ∘ proj₂ $ quasitrans SbyV) $ Sbvy
+    in v ⸴ v∈V ⸴
+      -- (1)
+      (λ {refl →
+        let
+            Rwv : R w v
+            Rwv = SwuY⊆Rw SbyV v∈V
+            Swvv : S w v ｛ v ｝
+            Swvv = S-quasirefl Rwv
+            Swxv : S w x ｛ v ｝
+            Swxv = (transy ∘ transv) Swvv
+        in Swxv
+        })
+      -- (2)
+      ⸴ λ { Rbw →
+        let
+          Sbyz : S b w ｛ y ｝
+          Sbyz = R-Sw-trans Rbw Rwy
+          transy : ∀ {u} → S b y ｛ u ｝ → S b w ｛ u ｝
+          transy {Y} Sbyu = case quasitrans Sbyz of
+            λ { (_ ⸴ refl ⸴ a) → uncurry S⊆｛v｝ ∘ proj₂ $ a Sbyu }
+          Rbv : R b v
+          Rbv = SwuY⊆Rw SbyV v∈V
+          Sbvv : S b v ｛ v ｝
+          Sbvv = S-quasirefl Rbv
+          Sbwv : S b w ｛ v ｝
+          Sbwv = (transy ∘ transv) Sbvv
+        in Sbwv
+      })
+
+  module _
+    (dec : MultiDecidableModel M)
+    (dec' : O.DecidableModel M')
+    (∈S? : Decidable₃ S)
+    (∈S'? : Decidable₃ S')
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+    where
+    open Theorem dec dec' ∈S? ∈S'? ∈SV? lemma⇨ lemma⇦
+\end{spverbatim}

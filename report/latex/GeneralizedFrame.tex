@@ -1,0 +1,173 @@
+\begin{spverbatim}
+module GeneralizedFrame where
+
+open import Agda.Builtin.Nat using (Nat; suc; _+_)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.List using (List)
+open import Data.List.Relation.Unary.All using (All)
+open import Data.Product
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Function using (_∘_; case_of_; _$_)
+open import Relation.Binary using (REL; Rel; Transitive; Reflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; refl; subst; cong)
+open import Relation.Nullary using (¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; ｛_｝; _∩_; _⊆_; Satisfiable)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ¬'_)
+open import Base
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+⋃[_] : ∀ {ℓ ℓ' ℓ''} {B : Set ℓ'} → (A : Set ℓ) → (A → Pred B ℓ'') → Pred B _
+⋃[ y∈Y ] y→Y z = ∃[ y∈Y ] (z ∈ (y→Y y∈Y))
+
+module Trans-conditions (W : Set ℓW) (S : REL₃ W W (Pred W ℓW) ℓS) where
+  private
+    𝕎 = Pred W ℓW
+
+  Trans-1 Trans-2 Trans-3 Trans-4 Trans-5 Trans-6 Trans-7 Trans-8 Trans-L
+    : Set (lsuc ℓW ⊔ ℓS)
+
+  Trans-1 = ∀ {u x Y} → S x u Y → (y→Y : ∀ {y} → y ∈ Y → 𝕎)
+    → (irrel : ∀ {y} {y∈Y y∈'Y : y ∈ Y} → y→Y y∈Y ≡ y→Y y∈'Y)
+    → (∀ {y} (y∈Y : y ∈ Y) → S x y (y→Y y∈Y))
+    → ∃[ Z ] (Z ⊆ ⋃[ Σ W (_∈ Y) ] (y→Y ∘ proj₂) × S x u Z)
+  Trans-2 = ∀ {u x Y} → S x u Y → (y→Y : ∀ {y} → y ∈ Y → 𝕎)
+    → (irrel : ∀ {y} {y∈Y y∈'Y : y ∈ Y} → y→Y y∈Y ≡ y→Y y∈'Y)
+    → (∀ {y} (y∈Y : y ∈ Y) → S x y (y→Y y∈Y))
+    → S x u (⋃[ Σ W (_∈ Y) ] (y→Y ∘ proj₂))
+  Trans-3 = ∀ {x u Y} → S x u Y → ∃[ y ] (Σ[ y∈Y ∈ (y ∈ Y) ] (∀ {Y'} → S x y Y' → ∃[ Y'' ]
+    (Y'' ⊆ Y' × S x u Y'')))
+  Trans-4 = ∀ {x u Y} → S x u Y → ∃[ y ] (y ∈ Y × (∀ {Y'} → S x y Y' → S x u Y'))
+  Trans-5 = ∀ {u x y Y Y'} → S x u Y → y ∈ Y → S x y Y' → ∃[ Y'' ] (Y'' ⊆ Y' × S x u Y'')
+  Trans-6 = ∀ {u x y Y Y'} → S x u Y → y ∈ Y → S x y Y' → S x u Y'
+  Trans-7 = ∀ {u x y Y Y'} → S x u Y → y ∈ Y → S x y Y' → y ∉ Y'
+    → ∃[ Y'' ] (Y'' ⊆ Y' × S x u Y'')
+  Trans-8 = ∀ {u x y Y Y'} → S x u Y → y ∈ Y → S x y Y' → y ∉ Y' → S x u Y'
+  Trans-L1 = ∀ {w u V} → S w u V → (f : ∀ {v} → v ∈ V → ∃[ Z ] (S w v Z))
+      → ∃[ Z ] (Z ⊆ (λ { x → ∃[ v ] (Σ[ v∈V ∈ (v ∈ V) ] (x ∈ proj₁ (f v∈V)))}) × S w u Z)
+  Trans-L = ∀ {w u V} → S w u V → (f : ∀ {v} → v ∈ V → ∃[ Z ] (S w v Z))
+      → S w u λ {x → ∃[ v ] (Σ[ v∈V ∈ (v ∈ V) ] (x ∈ proj₁ (f v∈V)))}
+
+record FrameNoTrans (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS)
+  : Set (lsuc lzero ⊔ ℓR ⊔ ℓS ⊔ lsuc ℓW) where
+  constructor frame
+  𝕎 : Set _
+  𝕎 = Pred W ℓW
+  field
+    witness : W
+    Swu-sat : ∀ {w u Y} → S w u Y → Satisfiable Y
+    R-trans : Transitive R
+    R-noetherian : Noetherian R
+    Sw⊆Rw : ∀ {w u Y} → S w u Y → R w u
+    SwuY⊆Rw : ∀ {w u Y} → S w u Y → ∀ {y} → y ∈ Y → R w y
+    S-quasirefl : ∀ {w u} → R w u → S w u ｛ u ｝
+    R-Sw-trans : ∀ {w u v} → R w u → R u v → S w u ｛ v ｝
+    S-ext : ∀ {w x V V'} → S w x V → V ⊆ V' → V' ⊆ V → S w x V'
+
+  IsChoiceSet : 𝕎 → (w x : W) → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  IsChoiceSet Γ w x = R w x × ∀ {Y} → S w x Y → Satisfiable (Y ∩ Γ)
+
+  ChoiceSet : (w x : W) → Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  ChoiceSet w x = Σ 𝕎 λ Γ → IsChoiceSet Γ w x
+
+record Frame (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS)
+  (T : (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  : Set (lsuc ℓW ⊔ ℓR ⊔ ℓS) where
+  constructor frame
+  field
+    frame-0 : FrameNoTrans {ℓW} {ℓR} {ℓS} W R S
+    quasitrans : T W S
+  open FrameNoTrans frame-0 public
+
+FrameL : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+FrameL W R S = Frame W R S (Trans-conditions.Trans-L)
+
+Frame1 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame1 W R S = Frame W R S (Trans-conditions.Trans-1)
+
+Frame2 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame2 W R S = Frame W R S (Trans-conditions.Trans-2)
+
+Frame3 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame3 W R S = Frame W R S (Trans-conditions.Trans-3)
+
+Frame4 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame4 W R S = Frame W R S (Trans-conditions.Trans-4)
+
+Frame5 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame5 W R S = Frame W R S (Trans-conditions.Trans-5)
+
+Frame6 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame6 W R S = Frame W R S (Trans-conditions.Trans-6)
+
+Frame7 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame7 W R S = Frame W R S (Trans-conditions.Trans-7)
+
+Frame8 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
+Frame8 W R S = Frame W R S (Trans-conditions.Trans-8)
+
+module FrameL
+  {W R S}
+  (F : FrameL {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame1
+  {W R S}
+  (F : Frame1 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame2
+  {W R S}
+  (F : Frame2 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame3
+  {W R S}
+  (F : Frame3 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame4
+  {W R S}
+  (F : Frame4 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame5
+  {W R S}
+  (F : Frame5 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame6
+  {W R S}
+  (F : Frame6 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame7
+  {W R S}
+  (F : Frame7 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Frame8
+  {W R S}
+  (F : Frame8 {ℓW} {ℓR} {ℓS} W R S) where
+  open Frame F public
+
+module Predicates
+  {W R S}
+  (F : FrameL {lzero} {lzero} {lzero} W R S)
+  where
+  open FrameL F
+
+  R[_] : 𝕎 → 𝕎
+  R[ V ] x = ∃[ v ] (v ∈ V × R v x)
+
+  R⁻¹[_] : 𝕎 → 𝕎
+  R⁻¹[ E ] x = ∃[ e ] (e ∈ E × R x e)
+
+  R⁻¹_[_] : W → 𝕎 → 𝕎
+  R⁻¹ x [ V ] = R⁻¹[ V ] ∩ R x
+\end{spverbatim}

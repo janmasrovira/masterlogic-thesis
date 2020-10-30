@@ -1,0 +1,88 @@
+\begin{spverbatim}
+module OrdinaryVeltmanSemantics.Properties.P₀ where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Product using (Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import OrdinaryVeltmanSemantics using (Frame; Model; _,_⊮_; _,_⊩_; impl;
+  var; rhd; bot; _*⊩_; _*⊮_; Valuation; model; DecidableModel)
+open import OrdinaryVeltmanSemantics.Properties using (module Extended; ⊩∧; ⊩□;
+  R-Irreflexive; ⊩♢; ⊩→¬⊮; ⊩MP)
+open import Base using (_⇒_; _⇐_; Decidable₃)
+import Principles as P
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+P₀-condition : ∀ {W R S} → Frame {ℓW} {ℓR} {ℓS} W R S → Set (ℓW ⊔ ℓR ⊔ ℓS)
+P₀-condition {W = W} {R = R} {S = S} F = ∀ {w x y z u} → R w x → R x y → S w y z → R z u → S x y u
+  where open Frame F
+
+module P₀-soundness
+  {W R S V}
+  {M : Model {ℓW} {ℓR} {ℓS} W R S V}
+  (M,_⊩?_ : DecidableModel M)
+  (S? : Decidable₃ S)
+  where
+
+  open Model M
+  open Frame F
+  open Extended M,_⊩?_ S?
+
+  ⊩P₀ : ∀ {w} → P₀-condition (Model.F M) → P.P₀ (M , w ⊩_)
+  ⊩P₀ {w} c {A} {B} = ⊩↝ ⇐ λ A▷♢B → ⊩□ ⇐ λ { {x} Rwx → ⊩▷ ⇐ λ { {y} Rxy y⊩A
+    → case (⊩▷ ⇒ A▷♢B) (R-trans Rwx Rxy) y⊩A of λ { (z ⸴ Swyz ⸴ z⊩♢B) → case ⊩♢ ⇒ z⊩♢B of
+    λ { (u ⸴ Rzu ⸴ uB) → u ⸴ (c Rwx Rxy Swyz Rzu) ⸴ uB}}}}
+
+
+module P₀-cond
+  {W R S}
+  {F : Frame {lzero} {lzero} {lzero} W R S}
+  (dec : ∀ V → DecidableModel (model {V = V} F))
+  (S? : Decidable₃ S)
+  where
+  open Frame F
+
+  F*⊩P₀ : Set₁
+  F*⊩P₀ = P.P₀ (F *⊩_)
+
+  pattern a = 0
+  pattern b = 1
+
+  *⊩P₀ : F*⊩P₀ → P₀-condition F
+  *⊩P₀ ⊩P₀ {w} {x} {y} {z} {u} Rwx Rxy Swyz Rzu = case (⊩▷ ⇒ x⊩a▷b) Rxy ([a] ⇐ refl) of
+    λ { (z' ⸴ Sxyz ⸴ z⊩b) → case [b] ⇒ z⊩b of λ {refl → Sxyz}}
+    where
+    Val : Valuation F
+    Val w a = w ≡ y
+    Val w b = w ≡ u
+    Val w (suc (suc _)) = ⊥
+    M = model {V = Val} F
+    open Extended {M = M} (dec Val) S?
+    [a] : ∀ {w} → M , w ⊩ var a ⇔ w ≡ y
+    [a] = equivalence (λ { (var x) → x}) λ {z → var z}
+    [b] : ∀ {w} → M , w ⊩ var b ⇔ w ≡ u
+    [b] = equivalence (λ { (var x) → x}) λ {z → var z}
+    w⊩a▷♢b : M , w ⊩ var a ▷ ♢ var b
+    w⊩a▷♢b = ⊩▷ ⇐ λ { {x} Rwx x⊩a → case [a] ⇒ x⊩a of
+      λ { refl → z ⸴ Swyz ⸴ ⊩♢ ⇐ (u ⸴ Rzu ⸴ [b] ⇐ refl)} }
+    w⊩□a▷b : M , w ⊩ □ (var a ▷ var b)
+    w⊩□a▷b = ⊩MP (⊩P₀ Val w) w⊩a▷♢b
+    x⊩a▷b : M , x ⊩ var a ▷ var b
+    x⊩a▷b = (⊩□ ⇒ w⊩□a▷b) Rwx
+\end{spverbatim}

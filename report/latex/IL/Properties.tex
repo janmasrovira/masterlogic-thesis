@@ -1,0 +1,343 @@
+\begin{spverbatim}
+module IL.Properties where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.List using (map; List; []; _∷_)
+open import Data.List.Membership.Propositional using (_∈_)
+open import Data.List.Relation.Unary.All using (All; []; _∷_)
+open import Relation.Binary using (REL; Rel; Transitive)
+import Data.List.Relation.Unary.Any as Any
+open import Data.Product using (Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Unary using (Pred; Decidable)
+open import Data.List.Relation.Unary.Any using () renaming (here to here'; there to there')
+
+import GeneralizedVeltmanSemantics as G
+open import Base using (_⇒_; _⇐_; Decidable₃; Rel₃; REL₃)
+open import Classical using () renaming (_⊢_ to _⊢c_; Fm to Fmc)
+open import Formula using (Fm; _▷_; _↝_; □_; _∧_; _∨_; _↔_; ♢_; ¬'_; ⊥'; ⊤'; Var)
+open import IL
+import OrdinaryVeltmanSemantics as O
+
+here : ∀ {A : Fm} {Σ : List Fm} → A ∈ (A ∷ Σ)
+here {A} {Σ} = here' refl
+
+there : ∀ {A : Fm} {Σ B} → A ∈ Σ → A ∈ (B ∷ Σ)
+there x = there' x
+
+fmc : Fmc → Fm
+fmc (Fmc.var x) = Fm.var x
+fmc Fmc.⊥' = ⊥'
+fmc (x Fmc.↝ y) = (fmc x) ↝ fmc y
+
+weak : ∀ {A B Π} → Π ⊢ A → (B ∷ Π) ⊢ A
+weak (_⊢_.Ax x) = _⊢_.Ax (there x)
+weak C1 = C1
+weak C2 = C2
+weak C3 = C3
+weak K = K
+weak L = L
+weak J1 = J1
+weak J2 = J2
+weak J3 = J3
+weak J4 = J4
+weak J5 = J5
+weak (MP x y) = MP (weak x) (weak y)
+weak (nec x) = nec x
+
+⊢c→⊢ : ∀ {A Π} → Π ⊢c A → map fmc Π ⊢ fmc A
+⊢c→⊢ _⊢c_.C1 = C1
+⊢c→⊢ _⊢c_.C2 = C2
+⊢c→⊢ _⊢c_.C3 = C3
+⊢c→⊢ (_⊢c_.MP x x₁) = MP (⊢c→⊢ x) (⊢c→⊢ x₁)
+⊢c→⊢ (_⊢c_.Ax (Any.here refl)) = _⊢_.Ax here
+⊢c→⊢ (_⊢c_.Ax (Any.there x)) = weak (⊢c→⊢ (_⊢c_.Ax x))
+
+val : (Var → Fm) → Fm → Fm
+val f (Fm.var v) = f v
+val f ⊥' = ⊥'
+val f (a ↝ b) = val f a ↝ val f b
+val f (a ▷ b) = val f a ▷ val f b
+
+-- structurality of ⊢
+⊢struct : ∀ {A Π} → (f : Var → Fm) → Π ⊢ A → map (val f) Π ⊢ val f A
+⊢struct f (Ax (here' refl )) = Ax here
+⊢struct f (Ax (there' x)) = weak (⊢struct f (Ax x))
+⊢struct f C1 = C1
+⊢struct f C2 = C2
+⊢struct f C3 = C3
+⊢struct f K = K
+⊢struct f L = L
+⊢struct f J1 = J1
+⊢struct f J2 = J2
+⊢struct f J3 = J3
+⊢struct f J4 = J4
+⊢struct f J5 = J5
+⊢struct f (MP x x₁) = MP (⊢struct f x) (⊢struct f x₁)
+⊢struct f (nec x) = nec (⊢struct f x)
+
+deduction : ∀ {Π A B} → Π ⊢ A ↝ B ⇔ (A ∷ Π) ⊢ B
+deduction = equivalence ⇨ ⇦
+  where
+  ⇦ : ∀ {Π A B} → (A ∷ Π) ⊢ B → Π ⊢ A ↝ B
+  ⇦ {_} {A} {B} (Ax (here' refl )) = MP (MP C2 C1) (C1 {_} {_} {⊥'})
+  ⇦ (Ax (there' x)) = MP C1 (Ax x)
+  ⇦ C1 = MP C1 C1
+  ⇦ C2 = MP C1 C2
+  ⇦ C3 = MP C1 C3
+  ⇦ K = MP C1 K
+  ⇦ L = MP C1 L
+  ⇦ J1 = MP C1 J1
+  ⇦ J2 = MP C1 J2
+  ⇦ J3 = MP C1 J3
+  ⇦ J4 = MP C1 J4
+  ⇦ J5 = MP C1 J5
+  ⇦ (MP x y) = MP (MP C2 (⇦ x)) (⇦ y)
+  ⇦ (nec x) = MP C1 (nec x)
+  ⇨ : ∀ {Π A B} → Π ⊢ A ↝ B → (A ∷ Π) ⊢ B
+  ⇨ x = MP (weak x) (Ax here)
+
+cut : ∀ {Π A B} → Π ⊢ B → (B ∷ Π) ⊢ A → Π ⊢ A
+cut x (Ax (here' refl)) = x
+cut x (Ax (there' z)) = Ax z
+cut x C1 = C1
+cut x C2 = C2
+cut x C3 = C3
+cut x K = K
+cut x L = L
+cut x J1 = J1
+cut x J2 = J2
+cut x J3 = J3
+cut x J4 = J4
+cut x J5 = J5
+cut x (MP y y₁) = MP (cut x y) (cut x y₁)
+cut x (nec y) = nec y
+
+⊢A↝A : ∀ {A Π} → Π ⊢ A ↝ A
+⊢A↝A = deduction ⇐ (Ax here)
+
+A↝A : ∀ {Π A} → Π ⊢ A ↝ A
+A↝A {Π} {A} = MP (MP (C2 {Π} {A} {A ↝ A} {A}) (C1 {Π} {A} {A ↝ A})) (C1 {Π} {A} {A})
+
+⊢A↝A' : ∀ {A Π} → Π ⊢ A ↝ A
+⊢A↝A' {A} = MP (MP C2 C1) (C1 {B = A})
+
+⊢A▷A : ∀ {A Π} → Π ⊢ A ▷ A
+⊢A▷A {A} = MP J1 (nec ⊢A↝A)
+
+trans : ∀ {A B C Π} → Π ⊢ (A ↝ B) ↝ (B ↝ C) ↝ A ↝ C
+trans {A} {B} {C} = deduction ⇐ (deduction ⇐ (deduction ⇐ (MP (Ax (there here))
+  (MP (Ax (there (there here))) (Ax here)))))
+
+⊢⦅A↝B⦆↝⦅B↝C⦆↝A↝C : ∀ {A B C Π} → Π ⊢ (A ↝ B) ↝ (B ↝ C) ↝ A ↝ C
+⊢⦅A↝B⦆↝⦅B↝C⦆↝A↝C = trans
+
+⊢A↝¬¬A : ∀ {Π A} → Π ⊢ A ↝ ¬' ¬' A
+⊢A↝¬¬A = deduction ⇐ (deduction ⇐ (MP (Ax here) (Ax (there here))))
+
+⊢¬¬A↝A : ∀ {A Π} → Π ⊢ (¬' ¬' A) ↝ A
+⊢¬¬A↝A {A} = MP C3 ⊢A↝¬¬A
+
+⊢⦅A↝B⦆↝¬B↝¬A : ∀ {A B Π} → Π ⊢ (A ↝ B) ↝ ¬' B ↝ ¬' A
+⊢⦅A↝B⦆↝¬B↝¬A = deduction ⇐ (deduction ⇐ (deduction ⇐ (MP (Ax (there here))
+  (MP (Ax (there (there here))) (Ax here)))))
+
+⊢A↝⊤ : ∀ {Π A} → Π ⊢ A ↝ ⊤'
+⊢A↝⊤ = deduction ⇐ (deduction ⇐ (Ax here))
+
+⊢⊥↝A : ∀ {Π A} → Π ⊢ ⊥' ↝ A
+⊢⊥↝A = MP C3 ⊢A↝⊤
+
+⊢¬A↝A↝B : ∀ {A B Π} → Π ⊢ ¬' A ↝ A ↝ B
+⊢¬A↝A↝B = MP (MP C2 (MP C1 C3)) C1
+
+⊢↝ : ∀ {A B Π} → (Π ⊢ ¬' A ⊎ Π ⊢ B) → Π ⊢ A ↝ B
+⊢↝ (inj₁ x) = MP C3 (MP C1 x)
+⊢↝ (inj₂ y) = MP C1 y
+
+⊢A∧B↝A : ∀ {Π A B} → Π ⊢ A ∧ B ↝ A
+⊢A∧B↝A = MP (MP trans (MP ⊢⦅A↝B⦆↝¬B↝¬A ⊢¬A↝A↝B)) ⊢¬¬A↝A
+
+⊢A∧B↝B : ∀ {Π A B} → Π ⊢ A ∧ B ↝ B
+⊢A∧B↝B = MP (MP trans (MP ⊢⦅A↝B⦆↝¬B↝¬A C1)) ⊢¬¬A↝A
+
+⊢⦅A↝B↝C⦆↝B↝A↝C : ∀ {A B C Π} → Π ⊢ (A ↝ B ↝ C) ↝ B ↝ A ↝ C
+⊢⦅A↝B↝C⦆↝B↝A↝C = deduction ⇐ (deduction ⇐ (deduction ⇐ (cut
+  (MP (Ax (there (there here))) (Ax here)) (MP (Ax here)
+  (Ax (there (there here)))))))
+
+⊢A↝B↝A∧B : ∀ {Π A B} → Π ⊢ A ↝ B ↝ A ∧ B
+⊢A↝B↝A∧B = deduction ⇐ (deduction ⇐ (deduction ⇐ (cut (MP (Ax here)
+  (Ax (there (there here)))) (MP (Ax here)
+  (Ax (there (there here)))))))
+
+⊢∧ : ∀ {Π A B} → Π ⊢ A ∧ B ⇔ (Π ⊢ A × Π ⊢ B)
+⊢∧ {Π} {A} {B} = equivalence ⇨ ⇦
+  where
+  ⇦ : (Π ⊢ A × Π ⊢ B) → Π ⊢ A ∧ B
+  ⇦ (fst ⸴ snd) = MP (MP ⊢A↝B↝A∧B fst) snd
+  ⇨ : Π ⊢ A ∧ B → (Π ⊢ A × Π ⊢ B)
+  ⇨ x = MP ⊢A∧B↝A x ⸴ MP ⊢A∧B↝B x
+
+⊢A↝A∨B : ∀ {A B Π} → Π ⊢ A ↝ A ∨ B
+⊢A↝A∨B = deduction ⇐ (deduction ⇐ (MP ⊢⊥↝A (MP (Ax here)
+  (Ax (there here)))))
+
+K1 : ∀ {Π A} → Π ⊢ A ▷ (A ∨ ♢ A) × Π ⊢ (A ∨ ♢ A) ▷ A
+K1 {Π} {A} = ⇨ ⸴ ⇦
+  where
+  ⇨ : Π ⊢ A ▷ (A ∨ ♢ A)
+  ⇨ = MP J1 (nec ⊢A↝A∨B)
+  ⇦ : Π ⊢ (A ∨ ♢ A) ▷ A
+  ⇦ = MP J3 (⊢∧ ⇐ (⊢A▷A ⸴ J5))
+
+A↝B⇒□A↝□B : ∀ {A B Π} → [] ⊢ A ↝ B → Π ⊢ □ A ↝ □ B
+A↝B⇒□A↝□B x = MP K (nec x)
+
+A↔B⇒□A↔□B : ∀ {A B Π} → [] ⊢ A ↔ B → Π ⊢ □ A ↔ □ B
+A↔B⇒□A↔□B x = ⊢∧ ⇐ (case ⊢∧ ⇒ x of λ {(fst ⸴ snd) → A↝B⇒□A↝□B fst ⸴ A↝B⇒□A↝□B snd})
+
+⊢□⦅A∧B⦆↔⦅□A∧□B⦆ : ∀ {A B Π} → Π ⊢ □ (A ∧ B) ↔ (□ A ∧ □ B)
+⊢□⦅A∧B⦆↔⦅□A∧□B⦆ {A} {B} {Π} = ⊢∧ ⇐ (⇨ ⸴ ⇦)
+  where
+  ⇨ : Π ⊢ □ (A ∧ B) ↝ □ A ∧ □ B
+  ⇨ = deduction ⇐ cut (MP (A↝B⇒□A↝□B ⊢A∧B↝A) (Ax here))
+    (cut (MP (A↝B⇒□A↝□B ⊢A∧B↝B) (Ax (there here)))
+   (⊢∧ ⇐ ((Ax (there here)) ⸴ (Ax here))))
+  ⇦ : Π ⊢ □ A ∧ □ B ↝ □ (A ∧ B)
+  ⇦ = deduction ⇐ MP (MP K (MP (A↝B⇒□A↝□B  ⊢A↝B↝A∧B) (MP ⊢A∧B↝A (Ax here))))
+    (MP ⊢A∧B↝B (Ax here))
+
+A↝B⇒♢A↝♢B : ∀ {A B Π} → [] ⊢ A ↝ B → Π ⊢ ♢ A ↝ ♢ B
+A↝B⇒♢A↝♢B x = deduction ⇐ (deduction ⇐
+  MP (Ax (there (here))) (MP (A↝B⇒□A↝□B (MP ⊢⦅A↝B⦆↝¬B↝¬A x)) (Ax here)))
+
+A↔B⇒♢A↔♢B : ∀ {A B Π} → [] ⊢ A ↔ B → Π ⊢ ♢ A ↔ ♢ B
+A↔B⇒♢A↔♢B x = ⊢∧ ⇐ (case ⊢∧ ⇒ x of λ {(fst ⸴ snd) → A↝B⇒♢A↝♢B fst ⸴ A↝B⇒♢A↝♢B snd})
+
+⊢¬⦅A∧B⦆↔¬A∨¬B : ∀ {A B Π} → Π ⊢ ¬' (A ∧ B) ↔ ¬' A ∨ ¬' B
+⊢¬⦅A∧B⦆↔¬A∨¬B {A} {B} {Π} = ⊢∧ ⇐ (⇨ ⸴ ⇦)
+  where
+  ⇨ : Π ⊢ ¬' (A ∧ B) ↝ ¬' A ∨ ¬' B
+  ⇨ = deduction ⇐ (deduction ⇐  MP (MP ⊢¬¬A↝A (Ax (there here)))
+    (MP ⊢¬¬A↝A (Ax here)))
+  ⇦ : Π ⊢ ¬' A ∨ ¬' B ↝ ¬' (A ∧ B)
+  ⇦ = deduction ⇐ (deduction ⇐ MP (MP (Ax (there here))
+   (MP ⊢A↝¬¬A (MP ⊢A∧B↝A (Ax here)))) (MP ⊢A∧B↝B (Ax here)))
+
+L2 : ∀ {A B Π} → Π ⊢ □ (A ↝ B) ↝ (□ A ↝ □ B)
+L2 = K
+
+L4 : ∀ {Π A} → Π ⊢ □ (□ A ↝ A) ↝ □ A
+L4 = L
+
+⦅A∨¬'B⦆↝⦅A∧B∨¬'B⦆ : ∀ {A B Π} → Π ⊢ (A ∨ ¬' B) ↝ (A ∧ B ∨ ¬' B)
+⦅A∨¬'B⦆↝⦅A∧B∨¬'B⦆ = deduction ⇐ (deduction ⇐ (deduction ⇐ (
+  (cut (MP C3 (Ax (there (there here))))
+  (cut (MP (Ax here) (Ax (there here)))
+  (cut (MP ⊢¬¬A↝A (Ax (there (there (there here)))))
+  (cut (MP (Ax here) (Ax (there here))) (MP (Ax here)
+  (Ax (there (there (there (there here)))))))))))))
+
+
+All∈ : ∀ {ℓ₂} {P : Pred Fm ℓ₂} {L a} → a ∈ L → All P L → P a
+All∈ (here' refl) (px ∷ ay) = px
+All∈ (there' x) (px ∷ ay) = All∈ x ay
+
+variable
+  ℓW ℓR ℓS : Level
+
+module OrdSoundness
+  {W : Set lzero}
+  {R : Rel W lzero}
+  {S : Rel₃ W lzero}
+  {V : REL W Var lzero}
+  {M : O.Model W R S V}
+  (M,_⊩?_ : O.DecidableModel M)
+  (∈?S : Decidable₃ S)
+  where
+
+  open import OrdinaryVeltmanSemantics
+    using (Model; _,_⊩_; _,_⊮_; impl; rhd; bot; DecidableModel; _,_⊩*_)
+  open import OrdinaryVeltmanSemantics.Properties
+    using (⊩MP; ⊩¬; ⊮→¬⊩; ⊩□; ⊩♢; ⊮¬; module Extended; module Extended2)
+
+  open Extended M,_⊩?_ ∈?S
+  open Extended2 M,_⊩?_ ∈?S
+
+  soundness : ∀ {w A Π} → Π ⊢ A → M , w ⊩* Π → M , w ⊩ A
+  soundness {w} (C1 {A}) p = ⊩↝ ⇐ λ x → impl (inj₂ x)
+  soundness {w} (C2 {A} {B} {C}) p = ⊩↝ ⇐ λ x → ⊩↝ ⇐ λ y → ⊩↝ ⇐ λ z → ⊩MP (⊩MP x z) (⊩MP y z)
+  soundness {w} (C3 {A} {B}) p = ⊩↝ ⇐
+    λ {x → ⊩↝ ⇐ λ y → case x of λ { (impl (inj₁ x)) → ⊮¬ ⇒ x
+    ; (impl (inj₂ z)) → ⊥-elim (⊮→¬⊩ (⊩¬ ⇒ z) y)}}
+  soundness {w} K p = ⊩K
+  soundness {w} L p = ⊩L
+  soundness {w} J1 p = ⊩J1
+  soundness {w} J2 p = ⊩J2
+  soundness {w} J3 p = ⊩J3
+  soundness {w} J4 p = ⊩J4
+  soundness {w} J5 p = ⊩J5
+  soundness {w} (MP x y) p = ⊩MP (soundness x p) (soundness y p)
+  soundness {w} (nec x) p = ⊩□ ⇐ λ {u} wRu → soundness x []
+  soundness {w} (Ax x) p = All∈ x p
+
+module GenSoundness-All
+  {W : Set ℓW}
+  {S : REL₃ W W (Pred W ℓW) ℓS}
+  (T : ∀ {ℓW ℓS} (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  where
+  open import GeneralizedVeltmanSemantics.Properties using (module PGeneric)
+  open PGeneric T
+  module Soundness
+    {W R S V}
+    {M : Model {lzero} {lzero} {lzero} W R S V}
+    (M,_*⊩?_ : MultiDecidableModel M)
+    (∈S? : Decidable₃ S)
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+    (⊩J2 : ∀ {w A B C} → M , w ⊩ (A ▷ B ∧ B ▷ C) ↝ A ▷ C)
+    where
+
+    open Extended M,_*⊩?_ ∈S? ∈SV?
+    open Extended2 M,_*⊩?_ ∈S? ∈SV?
+
+    soundness : ∀ {w A Π} → Π ⊢ A → M , w ⊩* Π → M , w ⊩ A
+    soundness {w} (C1 {A}) p = ⊩↝ ⇐ λ x → impl (inj₂ x)
+    soundness {w} C2 p = ⊩↝ ⇐ λ x → ⊩↝ ⇐ λ y → ⊩↝ ⇐ λ z → ⊩MP (⊩MP x z) (⊩MP y z)
+    soundness {w} C3 p = ⊩↝ ⇐ λ {x → ⊩↝ ⇐ λ y → case x of λ { (impl (inj₁ x)) → ⊮¬ ⇒ x
+      ; (impl (inj₂ z)) → ⊥-elim (⊮→¬⊩ (⊩¬ ⇒ z) y)}}
+    soundness {w} K p = ⊩K
+    soundness {w} L p = ⊩L
+    soundness {w} J1 p = ⊩J1
+    soundness {w} J2 p = ⊩J2
+    soundness {w} J3 p = ⊩J3
+    soundness {w} J4 p = ⊩J4
+    soundness {w} J5 p = ⊩J5
+    soundness {w} (MP x y) p = ⊩MP (soundness x p) (soundness y p)
+    soundness {w} (nec x) p = ⊩□ ⇐ λ {u} wRu → soundness x []
+    soundness {w} (Ax x) p = All∈ x p
+
+module GenSoundness-L
+  {W R S V}
+  {M : G.Model {lzero} {lzero} {lzero} W R S V}
+  (M,_*⊩?_ : G.MultiDecidableModel M)
+  (∈S? : Decidable₃ S)
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+  where
+  open import GeneralizedVeltmanSemantics.Properties using (module Extended; module Extended2; module ExtendedT2; _,_⊩*_; _,_⊩_)
+  open import GeneralizedFrame using (module Trans-conditions)
+  open Trans-conditions using (Trans-L)
+
+  open ExtendedT2 M,_*⊩?_ ∈S? ∈SV?
+  open GenSoundness-All {W = W} {S = S} Trans-L using (module Soundness)
+  open Soundness M,_*⊩?_ ∈S? ∈SV? ⊩J2 renaming (soundness to s)
+
+  soundness : ∀ {w A Π} → Π ⊢ A → M , w ⊩* Π → M , w ⊩ A
+  soundness {w} A p = s A p
+\end{spverbatim}

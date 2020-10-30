@@ -1,0 +1,417 @@
+\begin{spverbatim}
+module GeneralizedVeltmanSemantics.Properties where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Product using (Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; _◁_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+import GeneralizedVeltmanSemantics as G
+open import GeneralizedFrame using (module Trans-conditions)
+open import Base
+import Principles as P
+
+module PGeneric
+  (T : ∀ {ℓW ℓS} (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  where
+  open G.Generic T public
+
+  R-Irreflexive : ∀ {ℓW ℓR ℓS W R S T} → {F : G.Frame {ℓW} {ℓR} {ℓS} W R S T} → Irreflexive _≡_ R
+  R-Irreflexive {F = F} {x} refl Rxx = R-noetherian (infiniteRefl Rxx)
+    where open G.Frame F
+
+  module _
+    {ℓW ℓR ℓS}
+    {W R S V}
+    {M : Model {ℓW} {ℓR} {ℓS} W R S V} where
+    open Model M
+    open G.Frame F
+
+    ⊩⊥ : ∀ {w} → ¬ (M , w ⊩ ⊥')
+    ⊩⊥ = λ ()
+
+    ⊮→¬⊩ : ∀ {w A} → M , w ⊮ A → ¬ (M , w ⊩ A)
+    ⊮→¬⊩ (var x) (var x₁) = x x₁
+    ⊮→¬⊩ (impl x a) (impl (inj₁ x₁)) = ⊮→¬⊩ x₁ x
+    ⊮→¬⊩ (impl x a) (impl (inj₂ y)) = ⊮→¬⊩ a y
+    ⊮→¬⊩ (rhd (u ⸴ Rwu ⸴ fst ⸴ snd)) (rhd z) with z Rwu
+    ... | inj₁ x = ⊮→¬⊩ x fst
+    ... | inj₂ (Y ⸴ SwuY ⸴ p)
+      = case snd Y (Swu-sat SwuY) of
+        λ { (inj₁ x) → x SwuY ; (inj₂ (y ⸴ w ⸴ z))
+        → ⊮→¬⊩ z (p w)}
+
+    ⊩→¬⊮ : ∀ {w A} → M , w ⊩ A → ¬ (M , w ⊮ A)
+    ⊩→¬⊮ x y = ⊮→¬⊩ y x
+
+    ⊩MP : ∀ {w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B
+    ⊩MP (impl (inj₁ x)) y = ⊥-elim (⊩→¬⊮ y x)
+    ⊩MP (impl (inj₂ x)) y = x
+
+    ⊩¬ : ∀  {w A} → (M , w ⊩ ¬' A) ⇔ (M , w ⊮ A)
+    ⊩¬ {w} {A} = equivalence ⇨ ⇦
+      where ⇨ : M , w ⊩ ¬' A → M , w ⊮ A
+            ⇨ (impl (inj₁ x)) = x
+            ⇦ : M , w ⊮ A → M , w ⊩ ¬' A
+            ⇦ (var x) = impl (inj₁ (var x))
+            ⇦ (impl x x₁) = impl (inj₁ (impl x x₁))
+            ⇦ (rhd x) = impl (inj₁ (rhd x))
+            ⇦ bot = impl (inj₁ bot)
+
+    ⊩⊤ : ∀ {w} → M , w ⊩ ⊤'
+    ⊩⊤ = impl (inj₁ bot)
+
+    ⊮⊤ : ∀ {w} → ¬ (M , w ⊮ ⊤')
+    ⊮⊤ (impl x x₁) = ⊩→¬⊮ x x₁
+
+    ⊮¬ : ∀ {w A} → M , w ⊮ ¬' A ⇔ M , w ⊩ A
+    ⊮¬ {w} {A} = equivalence ⇨ ⇦
+      where
+        ⇨ : M , w ⊮ ¬' A → M , w ⊩ A
+        ⇨ (impl x x₁) = x
+        ⇦ : M , w ⊩ A → M , w ⊮ ¬' A
+        ⇦ x = impl x bot
+
+    ⊩¬¬ : ∀ {w A} → M , w ⊩ ¬' ¬' A ⇔ M , w ⊩ A
+    ⊩¬¬ {w} {A} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊩ ¬' ¬' A → M , w ⊩ A
+      ⇨ (impl (inj₁ (impl x x₁))) = x
+      ⇦ : M , w ⊩ A → M , w ⊩ ¬' ¬' A
+      ⇦ x = impl (inj₁ (impl x bot))
+
+    ⊮¬¬ : ∀  {w A} → M , w ⊮ ¬' ¬' A ⇔ M , w ⊮ A
+    ⊮¬¬ {w} {A} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊮ ¬' ¬' A → M , w ⊮ A
+      ⇨ x = ⊩¬ ⇒ (⊮¬ ⇒ x)
+      ⇦ : M , w ⊮ A → M , w ⊮ ¬' ¬' A
+      ⇦ x = ⊮¬ ⇐ (⊩¬ ⇐ x)
+
+    ⊩∧ : ∀ {w A B} → M , w ⊩ A ∧ B ⇔ (M , w ⊩ A × M , w ⊩ B)
+    ⊩∧ {w} {A} {B} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊩ A ∧ B → M , w ⊩ A × M , w ⊩ B
+      ⇨ (impl (inj₁ (impl x (impl x₁ y)))) = x ⸴ x₁
+      ⇦ : M , w ⊩ A × M , w ⊩ B → M , w ⊩ A ∧ B
+      ⇦ (fst ⸴ snd) = impl (inj₁ (impl fst (impl snd bot)))
+
+    ⊮∧ : ∀ {w A B} → M , w ⊮ A ∧ B ⇔ (M , w ⊮ A ⊎ M , w ⊮ B)
+    ⊮∧ {w} {A} {B} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊮ A ∧ B → (M , w ⊮ A ⊎ M , w ⊮ B)
+      ⇨ (impl (impl (inj₁ x)) x₁) = inj₁ x
+      ⇨ (impl (impl (inj₂ (impl (inj₁ x)))) x₁) = inj₂ x
+      ⇦ : (M , w ⊮ A ⊎ M , w ⊮ B) → M , w ⊮ A ∧ B
+      ⇦ (inj₁ x) = impl (impl (inj₁ x)) bot
+      ⇦ (inj₂ y) = impl (impl (inj₂ (⊩¬ ⇐ y))) bot
+
+    ⊩∨ : ∀ {w A B} → M , w ⊩ A ∨ B ⇔ (M , w ⊩ A ⊎ M , w ⊩ B)
+    ⊩∨ {w} {A} {B} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊩ A ∨ B → (M , w ⊩ A ⊎ M , w ⊩ B)
+      ⇨ (impl (inj₁ (impl x x₁))) = inj₁ x
+      ⇨ (impl (inj₂ y)) = inj₂ y
+      ⇦ : (M , w ⊩ A ⊎ M , w ⊩ B) → M , w ⊩ A ∨ B
+      ⇦ (inj₁ x) = impl (inj₁ (⊮¬ ⇐ x))
+      ⇦ (inj₂ y) = impl (inj₂ y)
+
+    ⊩□ : ∀ {w A} → M , w ⊩ □ A ⇔ (∀ {v} → R w v → M , v ⊩ A)
+    ⊩□ {w} {A} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊩ □ A → (∀ {v} → R w v → M , v ⊩ A)
+      ⇨ (rhd f) wRv with f wRv
+      ... | (inj₁ x) = ⊮¬ ⇒ x
+      ... | inj₂ (Y ⸴ SwvY ⸴ x) = case Swu-sat SwvY of
+        λ { (u ⸴ snd) → ⊥-elim (⊩⊥ (x snd)) }
+      ⇦ : (∀ {v} → R w v → M , v ⊩ A) → M , w ⊩ □ A
+      ⇦ x = rhd λ wRu → inj₁ (⊮¬ ⇐ (x wRu))
+
+    ⊮□ : ∀ {w A} → M , w ⊮ □ A ⇔ (Σ (W) λ u → R w u × M , u ⊮ A)
+    ⊮□ {w} {A} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊮ □ A → (Σ (W) λ u → R w u × M , u ⊮ A)
+      ⇨ (rhd (u ⸴ wRu ⸴ u⊩¬A ⸴ snd)) = u ⸴ wRu ⸴ ⊩¬ ⇒ u⊩¬A
+      ⇦ : (Σ W λ u → R w u × M , u ⊮ A) → M , w ⊮ □ A
+      ⇦ (u ⸴ wRu ⸴ u⊮A) = rhd (u ⸴ (wRu ⸴ ⊩¬ ⇐ u⊮A
+        ⸴ λ { Y (v ⸴ p) → inj₂ (v ⸴ p ⸴ bot)}))
+
+    ⊩♢ : ∀  {w A} → M , w ⊩ ♢ A ⇔ (Σ (W) λ u → R w u × M , u ⊩ A)
+    ⊩♢ {w} {A} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊩ ♢ A → Σ W λ u → R w u × M , u ⊩ A
+      ⇨ (impl (inj₁ (rhd (u ⸴ m ⸴ u⊩¬¬A ⸴ snd)))) = u ⸴ m ⸴ ⊩¬¬ ⇒ u⊩¬¬A
+      ⇦ : (Σ W λ u → R w u × M , u ⊩ A) → M , w ⊩ ♢ A
+      ⇦ (u ⸴ wRu ⸴ snd) = impl (inj₁ (rhd (u ⸴ (wRu ⸴ ⊩¬¬ ⇐ snd ⸴ λ _ s → inj₂ (proj₁ s ⸴ proj₂ s ⸴ bot)))))
+
+    ⊮♢ : ∀ {w A} → M , w ⊮ ♢ A ⇔ (∀ {u} → R w u → M , u ⊮ A)
+    ⊮♢ {w} {A} = equivalence ⇨ ⇦
+      where
+      ⇨ : M , w ⊮ ♢ A → (∀ {u} → R w u → M , u ⊮ A)
+      ⇨ (impl (rhd x) y) wRu with x wRu
+      ... | inj₁ z = ⊮¬¬ ⇒ z
+      ... | inj₂ (Y ⸴ z ⸴ k) = ⊥-elim (⊩⊥ (k (proj₂ (Swu-sat z))))
+      ⇦ : (∀ {u} → R w u → M , u ⊮ A) → M , w ⊮ ♢ A
+      ⇦ x = impl (rhd (λ wRu → inj₁ (⊮¬¬ ⇐ (x wRu)))) bot
+
+    ⊩4' : ∀ {w A} → M , w ⊩ □ A → M , w ⊩ □ □ A
+    ⊩4' (rhd x) = ⊩□ ⇐ λ {u} wRu → rhd (λ {v} uRv →
+      case x {v} (R-trans wRu uRv) of λ { (inj₁ x) → inj₁ x
+        ; (inj₂ (Y ⸴ SY ⸴ snd)) → ⊥-elim (⊩⊥ (snd (proj₂ (Swu-sat SY))))})
+
+    ⊩↝⇨ : ∀ {w A B} → M , w ⊩ A ↝ B → (M , w ⊩ A → M , w ⊩ B)
+    ⊩↝⇨ (impl (inj₁ x)) y = ⊥-elim (⊮→¬⊩ x y)
+    ⊩↝⇨ (impl (inj₂ b)) y = b
+
+    module Extended
+      (M,_*⊩?_ : MultiDecidableModel M)
+      (∈S? : Decidable₃ S)
+      (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y) where
+
+      infix 5 M,_⊩?_
+      M,_⊩?_ : DecidableModel M
+      M,_⊩?_ = SingleDecidableModel M,_*⊩?_
+
+      open Model M
+
+      [⊩_] : Fm → 𝕎
+      [⊩ A ] y with M, y ⊩? A
+      ... | inj₁ p = ⊤ × (⊥ → W)
+      ... | inj₂ p = ⊥ × (⊥ → W)
+
+      ∈[⊩_] : ∀ {y} A → y ∈ [⊩ A ] ⇔ M , y ⊩ A
+      ∈[⊩_] {y} A = equivalence ⇨ ⇦
+        where
+        ⇨ : y ∈ [⊩ A ] → M , y ⊩ A
+        ⇨ x with M, y ⊩? A
+        ... | inj₁ k = k
+        ⇦ : M , y ⊩ A → y ∈ [⊩ A ]
+        ⇦ fst with M, y ⊩? A
+        ... | inj₁ x = tt ⸴ λ ()
+        ... | inj₂ y = ⊩→¬⊮ fst y ⸴ λ ()
+
+      ⊩↝ : ∀ {w A B} → M , w ⊩ A ↝ B ⇔ (M , w ⊩ A → M , w ⊩ B)
+      ⊩↝ {w} {A} {B} = equivalence ⊩↝⇨ ⇦
+        where
+        ⇦ : (M , w ⊩ A → M , w ⊩ B) → M , w ⊩ A ↝ B
+        ⇦ x with M, w ⊩? A
+        ... | inj₁ z = impl (inj₂ (x z))
+        ... | inj₂ y = impl (inj₁ y)
+
+      -- ⊮↝ : ∀ {w A B} → M , w ⊮ A ↝ B ⇔ (M , w ⊩ A × M , w ⊮ B)
+      -- ⊮↝ {w} {A} {B} = equivalence ⇨ ⇦
+      --   where
+      --   ⇨ : M , w ⊮ A ↝ B → (M , w ⊩ A × M , w ⊮ B)
+      --   ⇨ x = {!!}
+      --   ⇦ : (M , w ⊩ A × M , w ⊮ B) → M , w ⊮ A ↝ B
+      --   ⇦ = {!!}
+
+      ⊩▷ : ∀ {w A B} → M , w ⊩ A ▷ B ⇔
+        (∀ {u} → R w u → M , u ⊩ A → Σ 𝕎 λ Y → S w u Y × Y ⊆ M ,_⊩ B)
+      ⊩▷ {w} {A} {B} = equivalence ⇨ ⇦
+        where
+        ⇨ : M , w ⊩ A ▷ B → (∀ {u} → R w u → M , u ⊩ A
+          → Σ 𝕎 λ Y
+          → S w u Y × Y ⊆ M ,_⊩ B)
+        ⇨ (rhd x) {u} wRu uA with x wRu
+        ⇨ (rhd x) {u} wRu uA | inj₁ z = ⊥-elim (⊩→¬⊮ uA z)
+        ⇨ (rhd x) {u} wRu uA | inj₂ (fst ⸴ fst₁ ⸴ snd) = fst ⸴ (fst₁ ⸴ snd)
+        ⇦ : (∀ {u} → R w u → M , u ⊩ A → Σ 𝕎 λ Y → S w u Y
+          × Y ⊆ M ,_⊩ B) → M , w ⊩ A ▷ B
+        ⇦ x = rhd (λ {u} wRu → [ (λ x₁ → inj₂ (x wRu x₁)) , inj₁ ] (M, u ⊩? A))
+
+      ⊮▷ : ∀ {w A B} → M , w ⊮ A ▷ B ⇔
+        Σ W (λ u → R w u × M , u ⊩ A × ∀ Y → Satisfiable Y → S w u Y → (Satisfiable (Y ∩ (M ,_⊮ B))))
+      ⊮▷ {w} {A} {B} = equivalence ⇨ ⇦
+        where
+        ⇨ : M , w ⊮ A ▷ B → Σ W (λ u → R w u × M , u ⊩ A × ((Y : 𝕎) →
+              Satisfiable Y → S w u Y → Satisfiable (Y ∩ (M ,_⊮ B))))
+        ⇨ (rhd (u ⸴ Rwu ⸴ uA ⸴ snd)) = u ⸴ Rwu ⸴ uA ⸴ (λ {Y x x₁ → case snd Y x of
+          λ { (inj₁ x) → ⊥-elim (x x₁) ; (inj₂ y) → y}})
+        ⇦ : Σ W (λ u → R w u × M , u ⊩ A × ((Y : 𝕎) →
+              Satisfiable Y → S w u Y → Satisfiable (Y ∩ (M ,_⊮ B)))) →
+          M , w ⊮ A ▷ B
+        ⇦ (u ⸴ Rwu ⸴ uA ⸴ snd) = rhd (u ⸴ Rwu ⸴ uA ⸴ λ Y x → case ∈S? w u Y of
+          λ { (yes p) → inj₂ (snd Y x p) ; (no p) → inj₁ p})
+
+      ⊩◁ : ∀ {w A B} → M , w ⊩ A ◁ B ⇔ Σ W λ x → R w x × M , x ⊩ A × ∀ {V} → S w x V → Σ W λ b → b ∈ V × M , b ⊩ B
+      ⊩◁ {w} {A} {B} = equivalence ⇨ ⇦
+        where
+        ⇨ : M , w ⊩ A ◁ B → Σ W λ x → R w x × M , x ⊩ A × ∀ {V} → S w x V → Σ W λ b → b ∈ V × M , b ⊩ B
+        ⇨ A◁B = case ⊩¬ ⇒ A◁B of λ {z → case ⊮▷ ⇒ z of
+          λ { (u ⸴ Rwu ⸴ uA ⸴ snd) → u ⸴ Rwu ⸴ uA ⸴ λ {V} SwuV → case snd V (Swu-sat SwuV) SwuV of
+          λ { (b ⸴ fst ⸴ snd) → b ⸴ (fst ⸴ (⊮¬ ⇒ snd)) }}}
+        ⇦ : (Σ W λ x → R w x × M , x ⊩ A × ∀ {V} → S w x V → Σ W λ b → b ∈ V × M , b ⊩ B) → M , w ⊩ A ◁ B
+        ⇦ (u ⸴ Rwu ⸴ uA ⸴ p) = ⊩¬ ⇐ (⊮▷ ⇐ (u ⸴ Rwu ⸴ uA ⸴ (λ Y satY SwuY → case p SwuY of
+          λ { (y ⸴ y∈Y ⸴ yB) → y ⸴ (y∈Y ⸴ ⊮¬ ⇐ yB)})))
+
+      ⊩4 : ∀ {w A} → M , w ⊩ □ A ↝ □ □ A
+      ⊩4 = ⊩↝ ⇐ ⊩4'
+
+      ⊩⇔¬⊮ : ∀ {w A} → M , w ⊩ A ⇔ (¬ M , w ⊮ A)
+      ⊩⇔¬⊮ {w} {A} = equivalence ⊩→¬⊮ ⇦
+        where
+        ⇦ : (M , w ⊮ A → ⊥) → M , w ⊩ A
+        ⇦ x = [ id , (λ y → ⊥-elim (x y)) ] (M, w ⊩? A)
+
+      ⊮⇔¬⊩ : ∀ {w A} → M , w ⊮ A ⇔ (¬ M , w ⊩ A)
+      ⊮⇔¬⊩ {w} {A} = equivalence ⊮→¬⊩ ⇦
+        where
+        ⇦ : ¬ M , w ⊩ A → M , w ⊮ A
+        ⇦ x = [ (λ y → ⊥-elim (x y)) , id ] (M, w ⊩? A)
+
+      ⊩K : ∀ {w A B} → M , w ⊩ □ (A ↝ B) ↝ □ A ↝ □ B
+      ⊩K {w} {A} {B} = ⊩↝ ⇐ λ x → ⊩↝ ⇐ λ y → ⊩□ ⇐
+        λ {u} wRu → ⊩MP ((⊩□ ⇒ x) wRu) ((⊩□ ⇒ y) wRu)
+
+
+      ⊩J1 : ∀ {w A B} → M , w ⊩ □ (A ↝ B) ↝ A ▷ B
+      ⊩J1 {w} {A} {B} = ⊩↝ ⇐ λ x → rhd λ { {u} Rwu → case M, u ⊩? A of
+        λ { (inj₁ k) → inj₂ (｛ u ｝ ⸴ S-quasirefl Rwu ⸴
+        λ {refl → ⊩MP ((⊩□ ⇒ x) Rwu) k})
+        ; (inj₂ y) → inj₁ y}}
+
+
+      ⊩J3 : ∀ {w A B C} → M , w ⊩ A ▷ C ∧ B ▷ C ↝ (A ∨ B) ▷ C
+      ⊩J3 {w} {A} {B} {C} = ⊩↝ ⇐ λ x → ⊩▷ ⇐ λ Rwu uA∨B → case ⊩∧ ⇒ x of
+        λ {(a ⸴ b) → case ⊩∨ ⇒ uA∨B of
+        λ { (inj₁ uA) → (⊩▷ ⇒ a) Rwu uA ;
+        (inj₂ uB) → (⊩▷ ⇒ b) Rwu uB} }
+
+      ⊩J4 : ∀ {w A B} → M , w ⊩ A ▷ B ↝ ♢ A ↝ ♢ B
+      ⊩J4 = ⊩↝ ⇐ λ x → ⊩↝ ⇐ λ y → ⊩♢ ⇐ (case ⊩♢ ⇒ y of
+        λ { (u ⸴ Rwu ⸴ snd) → case (⊩▷ ⇒ x) Rwu snd of
+        λ { (Y ⸴ SwuY ⸴ YB) → case Swu-sat SwuY of
+        λ { (v ⸴ vY) → v ⸴ SwuY⊆Rw SwuY vY ⸴ YB vY}}})
+
+      ⊩J5 : ∀ {w A} → M , w ⊩ ♢ A ▷ A
+      ⊩J5 = ⊩▷ ⇐ λ {u} Rwu u⊩♢A → case ⊩♢ ⇒ u⊩♢A of
+        λ { (v ⸴ Ruv ⸴ vA) → ｛ v ｝ ⸴ R-Sw-trans Rwu Ruv
+          ⸴ λ {refl → vA}}
+
+      [⊩▷] : ∀ {A B w} {𝔸 𝔹 : 𝕎}
+        → (∀ {u} → M , u ⊩ A ⇔ u ∈ 𝔸)
+        → (∀ {u} → M , u ⊩ B ⇔ u ∈ 𝔹)
+        → (∀ {u} → R w u → u ∈ 𝔸 → Σ 𝕎 λ V → S w u V × V ⊆ 𝔹)
+        → M , w ⊩ A ▷ B
+      [⊩▷] [A] [B] A▷B = ⊩▷ ⇐ λ { {u} Rwu u⊩A → case A▷B Rwu ([A] ⇒ u⊩A) of
+        λ { (V ⸴ SwuV ⸴ V⊆𝔹) → V ⸴ SwuV ⸴ (λ {z → [B] ⇐ V⊆𝔹 z})}}
+
+      -- NOTE: you must avoid using S-quasitrans in this module! this is hacky and
+      -- unelegant, but doing it properly would require a lot of work.
+      module Properties-Trans where
+
+        Trans-4 Trans-7 Trans-8 Trans-3 : Set _
+        Trans-4 = ∀ {x u Y} → S x u Y → Σ W λ y → Σ (y ∈ Y) λ y∈Y → ∀ {Y'} → S x y Y' → S x u Y'
+
+        Trans-7 = ∀ {u x y Y Y'} → S x u Y → y ∈ Y → S x y Y' → y ∉ Y'
+          → Σ 𝕎 λ Y'' → Y'' ⊆ Y' × S x u Y''
+
+        Trans-8 = ∀ {u x y Y Y'} → S x u Y → y ∈ Y → S x y Y' → y ∉ Y' → S x u Y'
+
+        Trans-3 = ∀ {x u Y} → S x u Y → Σ W λ y → Σ (y ∈ Y) λ y∈Y → ∀ {Y'} → S x y Y' → Σ 𝕎 λ Y''
+          → Y'' ⊆ Y' × S x u Y''
+
+        4⇒3 : Trans-4 → Trans-3
+        4⇒3 t SxuY = case t SxuY of λ { (y ⸴ fst₁ ⸴ snd) → y ⸴ fst₁ ⸴
+          λ { {Y'} SxyY' → Y' ⸴ (λ x → x) ⸴ snd SxyY'}}
+
+        ⊩J2-T3 : ∀ {w A B C} → Trans-3 → M , w ⊩ (A ▷ B ∧ B ▷ C) ↝ A ▷ C
+        ⊩J2-T3 {w} {A} {B} {C} t = ⊩↝ ⇐ λ x → ⊩▷ ⇐ λ {u} Rwu uA → case ⊩∧ ⇒ x of
+            λ { (A▷B ⸴ B▷C) → case (⊩▷ ⇒ A▷B) Rwu uA of
+            λ { (Y ⸴ SwuY ⸴ YB ) → case t SwuY of
+            λ { (y ⸴ y∈Y ⸴ snd) → case (⊩▷ ⇒ B▷C) (SwuY⊆Rw SwuY y∈Y) (YB y∈Y) of
+            λ { (Y' ⸴ SwyY' ⸴ Y'⊩C) → case snd SwyY' of
+            λ { (Y'' ⸴ Y''⊆Y' ⸴ SwuY'') → Y'' ⸴ SwuY'' ⸴ λ {x₁ → Y'⊩C (Y''⊆Y' x₁)}}}}}}
+
+        ⊩J2-T4 : ∀ {w A B C} → Trans-4 → M , w ⊩ (A ▷ B ∧ B ▷ C) ↝ A ▷ C
+        ⊩J2-T4 {w} {A} {B} {C} t = ⊩J2-T3 (4⇒3 t)
+
+        -- NOTE: you must avoid using S-quasitrans in this proof! this is hacky and
+        -- unelegant, but doing it properly would require a lot of work.
+        ⊩J2-T8 : ∀ {w A B C} → Trans-8 → M , w ⊩ (A ▷ B ∧ B ▷ C) ↝ A ▷ C
+        ⊩J2-T8 {w} {A} {B} {C} t = ⊩↝ ⇐ λ x → ⊩▷ ⇐ λ {u} Rwu uA → case ⊩∧ ⇒ x of
+            λ { (A▷B ⸴ B▷C) → case (⊩▷ ⇒ A▷B) Rwu uA of
+            λ { (Y ⸴ SwuY ⸴ YB ) → case M, Y *⊩? C of
+            λ { (inj₁ x) → Y ⸴ SwuY ⸴ λ {x₁ → x x₁} ;
+            (inj₂ (y ⸴ y∈Y ⸴ y⊮C)) → case (⊩▷ ⇒ B▷C) (SwuY⊆Rw SwuY y∈Y) (YB y∈Y) of
+            λ { (Y' ⸴ SwyY' ⸴ Y'⊆C) → Y' ⸴ t SwuY y∈Y SwyY' (λ {y∈Y' → ⊮→¬⊩ y⊮C (Y'⊆C y∈Y')}) ⸴
+            λ {x₁ → Y'⊆C x₁}}}}}
+
+  module Extended2
+    {ℓW ℓR ℓS}
+    {W R S V}
+    {M : Model {ℓW} {ℓR} {ℓS} W R S V}
+    (M,_*⊩?_ : MultiDecidableModel M)
+    (∈S? : Decidable₃ S)
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y) where
+
+    infix 5 M,_⊩?_
+    M,_⊩?_ : DecidableModel M
+    M,_⊩?_ = SingleDecidableModel M,_*⊩?_
+
+    open Model M
+    open Extended M,_*⊩?_ ∈S? ∈SV?
+    open G.Frame F
+
+    L-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
+    InfiniteChain.b (L-chain {w} {u} Rwu uA uF) = u
+    InfiniteChain.a<b (L-chain {w} {u} Rwu uA uF) = Rwu
+    InfiniteChain.tail (L-chain {w} {u} Rwu uA uF) =
+      case (⊩□ ⇒ uF) Rwu of
+      λ { (impl (inj₁ x)) → case ⊮□ ⇒ x of
+        λ { (v ⸴ Ruv ⸴ vA) → L-chain Ruv vA ((⊩□ ⇒ ⊩4' uF) Rwu)}
+      ; (impl (inj₂ y)) → ⊥-elim (⊩→¬⊮ y uA) }
+
+    ⊩L : ∀ {w A} → M , w ⊩ □ (□ A ↝ A) ↝ □ A
+    ⊩L {w} {A} = ⊩↝ ⇐ λ x → ⊩□ ⇐ λ {u} Rwu → ⊩⇔¬⊮ ⇐
+      λ ¬A → R-noetherian (L-chain Rwu ¬A x)
+
+module _ where
+  open PGeneric Trans-conditions.Trans-L
+  module ExtendedT2
+    {ℓW ℓR ℓS}
+    {W R S V}
+    {M : Model {ℓW} {ℓR} {ℓS} W R S V}
+    (M,_*⊩?_ : MultiDecidableModel M)
+    (∈S? : Decidable₃ S)
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+    where
+    open Extended M,_*⊩?_ ∈S? ∈SV?
+    open Model M
+    open G.Frame F
+
+    ⊩J2 : ∀ {w A B C} → M , w ⊩ (A ▷ B ∧ B ▷ C) ↝ A ▷ C
+    ⊩J2 {w} {A} {B} {C} = ⊩↝ ⇐ λ x → ⊩▷ ⇐ λ {u} Rwu uA → case ⊩∧ ⇒ x of
+      λ { (A▷B ⸴ B▷C) → case (⊩▷ ⇒ A▷B) Rwu uA of
+      λ { (Y ⸴ SwuY ⸴ YB ) → case M, Y *⊩? C of
+      λ { (inj₁ x) → Y ⸴ SwuY ⸴ λ { {v} k → x k}
+      ; (inj₂ (v ⸴ v∈Y ⸴ v¬C)) → case (⊩▷ ⇒ B▷C) (SwuY⊆Rw SwuY v∈Y) (YB v∈Y) of
+      λ { (Z ⸴ SwvZ ⸴ ZC) → _ ⸴ let
+        f : ∀ {y} → y ∈ Y → Σ 𝕎 λ Z → S w y Z × Z ⊆ M ,_⊩ C
+        f {y} y∈Y = case (⊩▷ ⇒ B▷C) (SwuY⊆Rw SwuY y∈Y) (YB y∈Y) of
+          λ { (Zy ⸴ fst ⸴ snd) → Zy ⸴ fst ⸴ λ {z → snd z}}
+        f' : ∀ {y} → y ∈ Y → Σ 𝕎 λ Z → S w y Z
+        f' y∈Y = proj₁ (f y∈Y) ⸴ (proj₁ (proj₂ (f y∈Y))) in
+        quasitrans SwuY f' ⸴ λ { {x} (y ⸴ y∈Y ⸴ x∈Z) → proj₂ (proj₂ (f y∈Y)) x∈Z}}}}}
+
+
+module _ where
+  open PGeneric Trans-conditions.Trans-L public
+  open ExtendedT2 public
+module SemanticsProperties-4 = PGeneric Trans-conditions.Trans-4
+module SemanticsProperties-3 = PGeneric Trans-conditions.Trans-3
+module SemanticsProperties-L = PGeneric Trans-conditions.Trans-L
+\end{spverbatim}

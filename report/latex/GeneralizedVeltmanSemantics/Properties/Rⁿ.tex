@@ -1,0 +1,250 @@
+\begin{spverbatim}
+module GeneralizedVeltmanSemantics.Properties.Rⁿ where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero; _-_)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Nat.Base using (_≤_; _<_; s≤s; z≤n)
+open import Data.Fin using (Fin; zero; suc; fromℕ; inject₁; _ℕ-_; toℕ; _ℕ-ℕ_; fromℕ<)
+open import Data.Fin.Properties using (toℕ‿ℕ-)
+open import Data.Nat.Properties using (≤-step; ≤-pred; ≤-reflexive; ≤-irrelevant; m∸n≤m;
+  <⇒≤; <-cmp; _<?_; 1+n≰n; n≤1+n; ≰⇒>; _≟_; ≤-antisym; ≤-trans; _≤?_)
+open import Data.Product renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary using (REL; Rel; Transitive; tri<; tri>; tri≈)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym; cong;
+  subst₂)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝)
+
+open import Formula
+open import GeneralizedVeltmanSemantics
+open import Base using (_⇒_; _⇐_; Decidable₃; subst₃)
+open import GeneralizedVeltmanSemantics.Properties
+  using (module Extended; ⊩¬; ⊮¬; ⊩□; ⊩♢; ⊩MP; ⊩∧; ⊩→¬⊮; ⊮→¬⊩)
+open import GeneralizedVeltmanSemantics.Properties.R using (R-condition)
+import Principles as P
+open import Principles using (RⁿU)
+open import GeneralizedFrame using (module Predicates)
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+module _
+  {W R S}
+  (F : FrameL {lzero} {lzero} {lzero} W R S)
+  where
+  open FrameL F
+  open Predicates F
+
+  Rⁿ-condition : Nat → Set _
+  Rⁿ-condition zero = R-condition F
+  Rⁿ-condition (suc n) =
+    ∀ {w y z : W} {𝔸 𝔹 ℂ : 𝕎} (x : (i : Nat) → {i < suc n} → W) (𝔻 : (i : Nat) → i ≤ n → 𝕎)
+    → R w (x n {s≤s (≤-reflexive refl)})
+    → R (x 0 {s≤s z≤n}) y
+    → R y z
+    → z ∈ 𝔻 zero z≤n
+    → ((i : Nat) → (i<n : i < n) → R (x (suc i) {s≤s i<n}) (x i {s≤s (<⇒≤ i<n)}))
+    → (∀ {u} → R w u → u ∈ 𝔸 → ∃[ V ] (S w u V × V ⊆ 𝔹))
+    → (∀ {u} → R (x n {s≤s (≤-reflexive refl)}) u → u ∈ 𝔻 n (≤-reflexive refl)
+        → Σ 𝕎 λ V → S (x n {s≤s (≤-reflexive refl)}) u V × V ⊆ 𝔸)
+    → ((i : Nat) → (i<n : i < n) → {u : W} → R (x i {s≤s (<⇒≤ i<n)}) u
+      → u ∈ 𝔻 i (<⇒≤ i<n)
+      → ∃[ V ] (S (x i {s≤s (<⇒≤ i<n)}) u V × V ⊆ 𝔻 (suc i) i<n))
+    → (∀ {V} → S y z V → Satisfiable (V ∩ ℂ))
+      → ∃[ V ] (V ⊆ 𝔹 × S w (x n {s≤s (≤-reflexive refl)}) V × R[ V ] ⊆ ℂ)
+
+
+extend : ∀ {ℓ} {A : Set ℓ} {n} → A → (f : (i : Nat) → {i < n} → A) → (i : Nat) → {i < suc n} → A
+extend {l} {_} {n} x f i {p} with i <? n
+... | yes z = f i {z}
+... | no z = x
+
+extend-last : ∀ {ℓ} {A : Set ℓ} {n} → (x : A) → (f : (i : Nat) → {i < n} → A) → extend x f n {≤-reflexive refl} ≡ x
+extend-last {_} {_} {n} x f with n <? n
+... | yes z = ⊥-elim (1+n≰n z)
+... | no z = refl
+
+module Rⁿ-soundness
+  {W R S V}
+  {M : Model {lzero} {lzero} {lzero} W R S V}
+  (M,_*⊩?_ : MultiDecidableModel M)
+  (∈S? : Decidable₃ S)
+  (S? : S-decidable (Model.F M))
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y) where
+
+  open Model M
+  open FrameL F
+  open Extended M,_*⊩?_ ∈S? ∈SV?
+
+  ⊩Rⁿ : ∀ {n w} → Rⁿ-condition F (suc n) → P.Rⁿ (suc n) (M , w ⊩_)
+  ⊩Rⁿ {n} {w} cond {A} {B} {C} D = ⊩↝ ⇐ λ { w⊩A▷B → ⊩▷ ⇐
+    λ { {x} Rwx x⊩∧ → case ⊩∧ ⇒ x⊩∧ of
+    λ { (x⊩Un ⸴ x⊩Dn▷A) → case ⊩U n (≤-reflexive refl) x⊩Un of
+      λ { (y ⸴ z ⸴ xs ⸴ Ryz ⸴ Rx₀y ⸴ Rxs ⸴ xsn≡x ⸴ xs⊩U ⸴ xs⊩D ⸴ ¬D▷¬C ⸴ zD)
+      → case cond xs (λ {i p → [⊩ D i {s≤s p} ]}) (subst (R w) (sym xsn≡x) Rwx)
+        Rx₀y Ryz (∈[⊩ D 0 {s≤s z≤n} ] ⇐ subst (λ p → M , z ⊩ D 0 {p})
+          (≤-irrelevant _ _) zD) Rxs
+        (λ {Rwu uA → case (⊩▷ ⇒ w⊩A▷B) Rwu (∈[⊩ A ] ⇒ uA) of
+        λ { (V ⸴ SwuV ⸴ V⊩B) → V ⸴ SwuV ⸴ λ {p → ∈[⊩ B ] ⇐ V⊩B p}}})
+        (λ { {u} Rxu u∈𝔻 → case (⊩▷ ⇒ x⊩Dn▷A) (subst (λ x → R x u) xsn≡x Rxu)
+        (∈[⊩ D n {s≤s (≤-reflexive refl)} ] ⇒ u∈𝔻) of
+        λ { (V ⸴ SwxV ⸴ V⊩A) → V ⸴ subst (λ x → S x u V) (sym xsn≡x) SwxV ⸴
+        λ {∈V → ∈[⊩ A ] ⇐ V⊩A ∈V}}})
+        (λ {j j<n {u} Rxsju u⊩Di → case (⊩▷ ⇒ xs⊩D j j<n) Rxsju
+        (∈[⊩ D j {_} ] ⇒ subst (λ {p → [⊩ D j {p}] u}) (≤-irrelevant _ _) u⊩Di) of
+          λ { (V ⸴ SjuV ⸴ V⊩Dj) → V ⸴ SjuV ⸴ λ { {v} ∈V → ∈[⊩ D (suc j) ]
+          ⇐ subst (λ p → M , v ⊩ D (suc j) {p}) (≤-irrelevant _ _) (V⊩Dj ∈V)}}})
+        (λ {SyzV → case ¬D▷¬C SyzV of
+        ---
+        λ { (c ⸴ snd ⸴ cC) → c ⸴ snd ⸴ (∈[⊩ C ] ⇐ cC)}})
+        of λ { (V ⸴ V⊆𝔹 ⸴ Swx ⸴ RV⊆ℂ) → V ⸴ subst (λ x → S w x V) xsn≡x Swx
+        ⸴ λ {∈V → ⊩∧ ⇐ ((∈[⊩ B ] ⇒ V⊆𝔹 ∈V) ⸴ ⊩□ ⇐
+        λ {Rxv → ∈[⊩ C ] ⇒ RV⊆ℂ (_ ⸴ ∈V ⸴ Rxv)})}}}}}}
+    where
+    ⊩U : ∀ {x} iu → (i≤n : iu ≤ n)
+      → M , x ⊩ RⁿU n iu {i≤n} {C} {D}
+      -----
+      → Σ W λ y → Σ W λ z
+      → Σ ((j : Nat) → {j < suc iu} → W) λ xs
+      → R y z
+        × (R (xs 0 {s≤s z≤n}) y)
+        × (∀ j → (j<i : j < iu) → R (xs (suc j) {s≤s j<i}) (xs j {s≤s (<⇒≤ j<i)}))
+        × xs iu {≤-reflexive refl} ≡ x
+        × (∀ j → (j≤i : j ≤ iu) → M , xs j {s≤s j≤i} ⊩ RⁿU n j {≤-trans j≤i i≤n} {C} {D})
+        × (∀ j → (j<i : j < iu) → M , xs j {s≤s (<⇒≤ j<i)} ⊩ D j {s≤s (≤-trans (<⇒≤ j<i) i≤n)} ▷ D (suc j) {s≤s (≤-trans j<i i≤n)})
+        × (∀ {V} → S y z V → Satisfiable (V ∩ (M ,_⊩ C)))
+        × M , z ⊩ D 0 {s≤s z≤n}
+      -----
+    ⊩U {x} zero i≤n x⊩ = case ⊩♢ ⇒ x⊩ of
+      λ { (y ⸴ Rxy ⸴ y⊩) → case ⊩◁ ⇒ y⊩ of λ { (z ⸴ Ryz ⸴ z⊩D ⸴ pD)
+      → y ⸴ z ⸴ (λ {_ → x}) ⸴ Ryz ⸴ Rxy ⸴ (λ {j ()}) ⸴ refl ⸴
+      (λ { .0 z≤n → subst (λ p → M , x ⊩ ♢ (¬' (D zero {p} ▷ ¬' C)))
+        (≤-irrelevant _ _) x⊩ }) ⸴
+        (λ {_ ()}) ⸴
+        (λ {k → pD k }) ⸴ subst (λ p → M , z ⊩ D 0 {p})
+          (≤-irrelevant _ _) z⊩D
+      }}
+    ⊩U {x} (suc i) i≤n x⊩ = case ⊩♢ ⇒ x⊩ of λ { (x' ⸴ Rxx' ⸴ x'⊩) → case ⊩∧ ⇒ x'⊩ of
+      λ { (x'⊩D ⸴ x'⊩U) → case ⊩U i (≤-pred (≤-step i≤n)) x'⊩U of
+      λ { (y ⸴ z ⸴ xs ⸴ Ryz ⸴ Rx₀y ⸴ Rs ⸴ xsi≡x' ⸴ xs⊩U ⸴ xs⊩D ⸴ ¬D▷¬C ⸴ z⊩D)
+      → y ⸴ z ⸴ extend x xs ⸴ Ryz ⸴ Rx₀y ⸴
+        R-aux xs Rs (subst (R x) (sym xsi≡x') Rxx') ⸴
+        extend-last x xs ⸴ ⊩U-aux xs xs⊩U ⸴ ⊩D-aux xs (subst (λ p → M , p ⊩ D i ▷ D (suc i)) (sym xsi≡x') x'⊩D) xs⊩D ⸴
+        (λ {z → ¬D▷¬C z}) ⸴ z⊩D
+        }}}
+        where
+        ⊩D-aux : (xs : (j : Nat) → {j < suc i} → W)
+          (as : M , xs i ⊩ D i ▷ D (suc i))
+          (⊩D : (j : Nat) → (j<i : j < i) → M , xs j ⊩ D j ▷ D (suc j))
+          (j : Nat) (j<i : j < suc i)
+          → M , extend x xs j {s≤s (<⇒≤ j<i)} ⊩ D j ▷ D (suc j)
+        ⊩D-aux xs xj⊩D ⊩D j j<si with j <? suc i
+        ... | no a = ⊥-elim (a j<si)
+        ... | yes _ with j <? i
+        ... | yes j<i = subst₃ (λ p p1 p2 → M , xs j {p} ⊩ D j {p1} ▷ D (suc j) {p2})
+            (≤-irrelevant _ _) (≤-irrelevant _ _) (≤-irrelevant _ _) (⊩D j j<i)
+        ... | no a with j ≟ i
+        ... | yes refl = subst₃ (λ p p1 p2 → M , xs j {p} ⊩ D j {p1} ▷ D (suc j) {p2})
+            (≤-irrelevant _ _) (≤-irrelevant _ _) (≤-irrelevant _ _) xj⊩D
+        ... | no y = ⊥-elim (y (≤-antisym (≤-pred j<si) (≤-pred (≰⇒> a))))
+        ⊩U-aux : (xs : (j : Nat) → {j < suc i} → W)
+          (xs⊩U : (j : Nat) (j≤i : j ≤ i) → M , xs j {s≤s j≤i} ⊩ RⁿU n j)
+          (j : Nat) (j≤i : j ≤ suc i)
+          → M , extend x xs j {s≤s j≤i} ⊩ RⁿU n j {≤-trans j≤i i≤n} {C} {D}
+        ⊩U-aux xs xs⊩U j j≤i with j <? suc i
+        ... | yes y = subst₂ (λ p1 p2 → M , xs j {p1} ⊩ RⁿU n j {p2} ) (≤-irrelevant _ _) (≤-irrelevant _ _) (xs⊩U j (≤-pred y))
+        ... | no y with j ≟ suc i
+        ... | yes refl = subst (λ p → M , x ⊩ RⁿU n j {p} {C} {D}) (≤-irrelevant _ _) x⊩
+        ... | no n = ⊥-elim (n (≤-antisym j≤i (≰⇒> (λ z → y (s≤s z)))))
+        R-aux : (xs : (j : Nat) → {j < suc i} → W) (Rs : (j : Nat) (j<i : j < i)
+          → R (xs (suc j) {s≤s j<i}) (xs j {s≤s (<⇒≤ j<i)}))
+          → R x (xs i {s≤s (≤-reflexive refl)})
+          → (j : Nat) (j<i : j < suc i)
+          → R (extend x xs (suc j) {s≤s j<i}) (extend x xs j {s≤s (<⇒≤ j<i)})
+        R-aux xs Rs Rxx' j (s≤s j<i) with j <? suc i
+        ... | (no b) = ⊥-elim (b (s≤s j<i))
+        ... | (yes b) with suc j <? suc i
+        ... | (yes a) = subst₂ R xs-irrel xs-irrel (Rs j (≤-pred a))
+          where
+          xs-irrel : ∀ {i p1 p2} → xs i {p1} ≡ xs i {p2}
+          xs-irrel {i} {p1} {p2} = cong (λ p → xs i {p}) (≤-irrelevant p1 p2)
+        ... | (no a) with j ≟ i
+        ... | (yes refl) = subst (λ p → R x (xs j {p})) (≤-irrelevant _ _) Rxx'
+        ... | (no n) = ⊥-elim (case ≰⇒> a of (λ { (s≤s (s≤s z)) → n (≤-antisym j<i z)}))
+
+module Rⁿ-completeness
+  {W R S}
+  {F : FrameL {lzero} {lzero} {lzero} W R S}
+  (∈S? : Decidable₃ S)
+  (dec : ∀ V → MultiDecidableModel (model {V = V} F))
+  (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+  where
+  open FrameL F
+
+  *⊩Rⁿ : Nat → Set₁
+  *⊩Rⁿ n = P.Rⁿ n (F *⊩_)
+
+  pattern a = 0
+  pattern b = 1
+  pattern c = 2
+  pattern d i = suc (suc (suc i))
+
+
+  ⊩Rⁿ⇒Rⁿ-condition : (n : Nat) → *⊩Rⁿ (suc n) → Rⁿ-condition F (suc n)
+  ⊩Rⁿ⇒Rⁿ-condition n ⊩Rⁿ {w} {y} {z} {𝔸} {𝔹} {ℂ}
+    xs 𝔻 Rwxn Rx0y Ryz z∈𝔻₀ Rxs w⊩𝔸▷𝔹 xn⊩D▷A xs⊩D y⊩D◁C
+    = case (⊩▷ ⇒ ⊩MP (⊩Rⁿ D Val w) w⊩a▷b) Rwxn (⊩∧ ⇐ (xs⊩U n ⸴ xn⊩d▷a)) of
+      λ { (V ⸴ SwxnV ⸴ V⊩b∧□c) → V ⸴ (λ {x → [b] ⇒ proj₁ (⊩∧ ⇒ V⊩b∧□c x)})
+      ⸴ SwxnV ⸴ (λ { (v ⸴ v∈V ⸴ Rvx) → [c] ⇒ (⊩□ ⇒ proj₂ (⊩∧ ⇒ V⊩b∧□c v∈V)) Rvx})}
+    where
+    Val : Valuation F
+    Val u a = u ∈ 𝔸
+    Val u b = u ∈ 𝔹
+    Val u c = u ∈ ℂ
+    Val u (d j) with j ≤? n
+    ... | yes j≤n = u ∈ 𝔻 j j≤n
+    ... | no ¬j≤n = ⊥
+    M = model {V = Val} F
+    D : (j : Nat) {_ : j < suc n} → Fm
+    D j = var (d j)
+    open Extended (dec Val) ∈S? ∈SV?
+    [a] : ∀ {u} → M , u ⊩ var a ⇔ u ∈ 𝔸
+    [a] {u} = equivalence (λ { (var x) → x}) (λ x₁ → var x₁)
+    [b] : ∀ {u} → M , u ⊩ var b ⇔ u ∈ 𝔹
+    [b] {u} = equivalence (λ { (var x) → x}) (λ x₁ → var x₁)
+    [c] : ∀ {u} → M , u ⊩ var c ⇔ u ∈ ℂ
+    [c] {u} = equivalence (λ { (var x) → x}) (λ x₁ → var x₁)
+    [d] : ∀ j {j≤n u} → M , u ⊩ var (d j) ⇔ u ∈ 𝔻 j j≤n
+    [d] j {j≤n} {u} = equivalence ⇨ λ x → var (⇦ x)
+      where
+      ⇨ : M , u ⊩ var (d j) → 𝔻 j j≤n u
+      ⇨ (var x) with j ≤? n
+      ... | yes p = subst (λ p → 𝔻 j p u) (≤-irrelevant _ _) x
+      ... | no _ = ⊥-elim x
+      ⇦ : 𝔻 j j≤n u → d j ∈ Val u
+      ⇦ x with j ≤? n
+      ... | yes p = subst (λ p → 𝔻 j p u) (≤-irrelevant _ _) x
+      ... | no p = ⊥-elim (p j≤n)
+    w⊩a▷b : M , w ⊩ var a ▷ var b
+    w⊩a▷b = [⊩▷] [a] [b] w⊩𝔸▷𝔹
+    x⊩d▷a : M , xs n {≤-reflexive refl} ⊩ var (d n) ▷ var a
+    x⊩d▷a = [⊩▷] ([d] n) [a] xn⊩D▷A
+    xn⊩d▷a : M , xs n ⊩ var (d n) ▷ var a
+    xn⊩d▷a = [⊩▷] ([d] n) [a] xn⊩D▷A
+    xs⊩U : ∀ j {j<sn j≤n} → M , xs j {j<sn} ⊩ RⁿU n j {j≤n} {var c} {D}
+    xs⊩U zero {j<sn} {j≤n} = ⊩♢ ⇐ (y ⸴ (subst (λ p → R (xs zero {p}) y) (≤-irrelevant _ _) Rx0y)
+      ⸴ ⊩◁ ⇐ (z ⸴ Ryz ⸴ ([d] 0 ⇐ z∈𝔻₀) ⸴ λ {SyzV → case y⊩D◁C SyzV of
+       λ { (v ⸴ v∈V ⸴ v∈ℂ) → v ⸴ v∈V ⸴ ([c] ⇐ v∈ℂ)}}))
+    xs⊩U (suc j) {j<sn} {j≤n} = ⊩♢ ⇐ (xs j {s≤s (<⇒≤ j≤n)} ⸴ (subst₂ (λ p p' →
+      R (xs (suc j) {p}) (xs j {p'})) (≤-irrelevant _ _) (≤-irrelevant _ _) (Rxs j j≤n))
+      ⸴ ⊩∧ ⇐ ([⊩▷] ([d] j) ([d] _) (xs⊩D j j≤n) ⸴ xs⊩U j))
+\end{spverbatim}

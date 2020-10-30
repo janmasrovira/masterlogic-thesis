@@ -41,3 +41,16 @@
    cp fonts/*.otf ~/.fonts/
    fc-cache -fv
    #+end_example
+** Export code
+   I do not use any fancy highlight method, instead I use a verbatim environment.
+
+   I use the following script to export all Agda files to a verbatim latex file.
+   The =gawk= command only works as is in the fish shell due to character
+   escaping mechanism being different from bash.
+   #+begin_example
+   cd interpretability-logics/src
+   fd .agda > ../list.txt
+   cd ..
+   parallel "mkdir -p latex/{//}" :::: list.txt
+   parallel "gawk 'BEGIN{print \"\\\\\begin{spverbatim}\"}{print}END{print \"\\\\\end{spverbatim}\"}' src/{} > latex/{.}.tex" :::: list.txt
+  #+end_example

@@ -1,0 +1,347 @@
+\begin{spverbatim}
+module GeneralizedFrame.Properties where
+
+open import Agda.Builtin.Nat using (Nat; suc; _+_)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.List using (List)
+open import Data.List.Relation.Unary.All using (All)
+open import Data.Product
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Function using (_∘_; case_of_; _$_)
+open import Relation.Binary using (REL; Rel; Transitive; Reflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; _≢_; refl; subst; cong)
+open import Relation.Nullary using (¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; ｛_｝; _∩_; _⊆_; Satisfiable)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ¬'_)
+open import Base using (Noetherian; REL₃)
+
+
+import GeneralizedVeltmanSemantics as G
+open import GeneralizedFrame
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+module FrameProperties
+    {W R S}
+    (T : ∀ {ℓW ℓS} (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+    (F : Frame {ℓW} {ℓR} {ℓS} W R S T)
+  where
+  open Frame F
+
+  S⊆｛v｝ : ∀ {w u v V} → V ⊆ ｛ v ｝ → S w u V → S w u ｛ v ｝
+  S⊆｛v｝ V⊆v SwuV = S-ext SwuV V⊆v (λ { refl → case Swu-sat SwuV of
+             λ { (_ , snd) → case V⊆v snd of λ {refl → snd}}})
+
+  S⊆｛v｝' : ∀ {w u k} → ∃[ V ] (V ⊆ ｛ k ｝ × S w u V) → S w u ｛ k ｝
+  S⊆｛v｝' (V , V⊆k , SwuV) = S⊆｛v｝ V⊆k SwuV
+
+
+module FrameLProperties
+  {ℓW ℓR ℓS}
+  {W R S}
+  (F : FrameL {ℓW} {ℓR} {ℓS} W R S)
+   where
+   open FrameL F
+
+   transUni : ∀ {b w x V} → S b w ｛ x ｝ → S b x V → S b w V
+   transUni {b} {w} {x} Sbwx SbxV = case quasitrans Sbwx (λ {refl → _ , SbxV}) of
+            λ {SbwU → S-ext SbwU (λ { (_ , refl , snd) → snd}) (λ {k → _ , refl , k})}
+
+   S-trans : ∀ {x w u} {V : 𝕎} → R x w → R w u → S x u V → S x w V
+   S-trans {x} {w} {u} {V} Rxw Rwu = transUni (R-Sw-trans Rxw Rwu)
+
+
+module Mono-closure
+  (W : Set ℓW)
+  (R : Rel W ℓR)
+  (S : REL₃ W W (Pred W ℓW) ℓS) where
+  private
+    𝕎 = Pred W ℓW
+
+  data S' : REL₃ W W 𝕎 (ℓR ⊔ lsuc ℓW ⊔ ℓS) where
+    s' : ∀ {w u Y Y'} → S w u Y → Y ⊆ Y' → Y' ⊆ R w → S' w u Y'
+
+  S'→S : ∀ {w u Y'} → S' w u Y' → Σ 𝕎 λ Y → S w u Y × Y ⊆ Y' × Y' ⊆ R w
+  S'→S (s' {Y = Y} x x₁ x₂) = Y , x , x₁ , x₂
+
+  S'→S[Y] : ∀ {w u} {Y' : 𝕎} → (Σ 𝕎 λ Y → S w u Y × Y ⊆ Y' × Y' ⊆ R w) → 𝕎
+  S'→S[Y] = proj₁
+
+  S'→S[S] : ∀ {w u} {Y' : 𝕎} → (P : Σ 𝕎 λ Y → S w u Y × Y ⊆ Y' × Y' ⊆ R w) → let Y = proj₁ P in S w u Y
+  S'→S[S] = proj₁ ∘ proj₂
+
+  S'→S[⊆] : ∀ {w u} {Y' : 𝕎} → (P : Σ 𝕎 λ Y → S w u Y × Y ⊆ Y' × Y' ⊆ R w) → let Y = proj₁ P in Y ⊆ Y'
+  S'→S[⊆] = proj₁ ∘ proj₂ ∘ proj₂
+
+  S'→S[R] : ∀ {w u} {Y' : 𝕎} → (P : Σ 𝕎 λ Y → S w u Y × Y ⊆ Y' × Y' ⊆ R w) → Y' ⊆ R w
+  S'→S[R] = proj₂ ∘ proj₂ ∘ proj₂
+
+module Transitivity'
+  {W : Set ℓW}
+  {R : Rel W ℓR}
+  {S : REL₃ W W (Pred W ℓW) ℓS}
+  where
+  𝕎 : Set _
+  𝕎 = Pred W ℓW
+
+  Frame-1 Frame-2 Frame-3 Frame-4 Frame-5 Frame-6 Frame-7 Frame-8
+    : Set _
+  Frame-1 = Frame W R S (Trans-conditions.Trans-1)
+  Frame-2 = Frame W R S (Trans-conditions.Trans-2)
+  Frame-3 = Frame W R S (Trans-conditions.Trans-3)
+  Frame-4 = Frame W R S (Trans-conditions.Trans-4)
+  Frame-5 = Frame W R S (Trans-conditions.Trans-5)
+  Frame-6 = Frame W R S (Trans-conditions.Trans-6)
+  Frame-7 = Frame W R S (Trans-conditions.Trans-7)
+  Frame-8 = Frame W R S (Trans-conditions.Trans-8)
+
+  open Mono-closure W R S
+
+  Frame-1' Frame-2' Frame-3' Frame-4' Frame-5' Frame-6' Frame-7' Frame-8'
+    : Set _
+  Frame-1' = Frame W R S' (Trans-conditions.Trans-1)
+  Frame-2' = Frame W R S' (Trans-conditions.Trans-2)
+  Frame-3' = Frame W R S' (Trans-conditions.Trans-3)
+  Frame-4' = Frame W R S' (Trans-conditions.Trans-4)
+  Frame-5' = Frame W R S' (Trans-conditions.Trans-5)
+  Frame-6' = Frame W R S' (Trans-conditions.Trans-6)
+  Frame-7' = Frame W R S' (Trans-conditions.Trans-7)
+  Frame-8' = Frame W R S' (Trans-conditions.Trans-8)
+
+  lemma : FrameNoTrans W R S → FrameNoTrans W R S'
+  lemma (frame witness Swu-sat R-trans R-noetherian Sw⊆R[w]
+    SwuY⊆Rw S-quasirefl R-Sw-trans S-ext) =
+    frame witness
+      (λ { (s' SwuY Y⊆Y' Y'⊆Rw) → case Swu-sat SwuY of λ { (fst , snd) → fst , (Y⊆Y' snd)}})
+      R-trans
+      R-noetherian
+      (λ { (s' x x₁ x₂) → Sw⊆R[w] x})
+      (λ { (s' x x₂ x₃) x₁ → x₃ x₁})
+      (λ x → S⊆S' (S-quasirefl x))
+      (λ {x x₁ → S⊆S' (R-Sw-trans x x₁)})
+      λ { (Mono-closure.s' SwxY Y⊆V V⊆R) V⊆V' V'⊆V →
+        Mono-closure.s' SwxY (V⊆V' ∘ Y⊆V) (V⊆R ∘ V'⊆V)}
+      where
+      S⊆S' : ∀ {w u Y} → S w u Y → S' w u Y
+      S⊆S' {w} {u} {Y} x = s' x (λ z → z) (SwuY⊆Rw x)
+
+  S'-⊆-Irrel : Set (lsuc ℓW ⊔ ℓR ⊔ ℓS)
+  S'-⊆-Irrel = ∀ {x u Y'} (SxuY' : S' x u Y') →
+    let Y = S'→S[Y] (S'→S SxuY')
+    in Σ (Y ⊆ Y') λ Y⊆Y' → ∀ {y} {y∈Y y∈'Y : y ∈ Y} → Y⊆Y' y∈Y ≡ Y⊆Y' y∈'Y
+
+  1⇒2' : S'-⊆-Irrel → Frame-1 → Frame-2'
+  1⇒2' ⊆-irrel (frame frame-0 trans) = frame (lemma frame-0)
+    λ { a@(s' {x} {u} {Y} {Y'} SxuY Y⊆ Y⊆Rx) y'→Y' irrel SxyY'y →
+    case ⊆-irrel a of λ { (Y⊆Y' , irrel') →
+     case trans SxuY
+     (λ y∈Y → S'→S[Y] (S'→S (SxyY'y (Y⊆Y' y∈Y))))
+     (cong (S'→S[Y] ∘ S'→S ∘ SxyY'y) irrel')
+     (λ y∈Y → S'→S[S] (S'→S (SxyY'y (Y⊆Y' y∈Y)))) of
+     λ { (Z , Z⊆ , SxuZ) → s' SxuZ
+       (λ { z  → case Z⊆ z of
+       λ { ((v , v∈Y) , snd) →
+         (v , (Y⊆Y' v∈Y)) , (S'→S[⊆] (S'→S (SxyY'y (Y⊆Y' v∈Y)))) snd }})
+       λ { {v} ((y , y∈Y') , v∈Y_y) → (S'→S[R] (S'→S (SxyY'y y∈Y'))) v∈Y_y}}}}
+
+  2⇒2' : S'-⊆-Irrel → Frame-2 → Frame-2'
+  2⇒2' ⊆-irrel (frame frame-0 trans) = frame (lemma frame-0)
+    λ { a@(s' {x} {u} {Y} {Y'} SxuY Y⊆ _) y'→Y' irrel SxyY'y →
+    case ⊆-irrel a of λ { (Y⊆Y' , irrel') →
+     case trans SxuY
+     (λ y∈Y → S'→S[Y] ∘ S'→S ∘ SxyY'y ∘ Y⊆Y' $ y∈Y)
+     (cong (S'→S[Y] ∘ S'→S ∘ SxyY'y) irrel')
+     (λ y∈Y → S'→S[S] (S'→S (SxyY'y (Y⊆Y' y∈Y)))) of
+     λ {Sxu⋃ → s' Sxu⋃
+       (λ { ((v , v∈Y) , snd) →
+         (v , (Y⊆Y' v∈Y)) , (S'→S[⊆] ∘ S'→S ∘ SxyY'y ∘ Y⊆Y' $ v∈Y) snd })
+       λ { {v} ((y , y∈Y') , v∈Yy) → (S'→S[R] ∘ S'→S ∘ SxyY'y $ y∈Y') v∈Yy}}}}
+
+  3⇒2' : Frame-3 → Frame-2'
+  3⇒2' (frame frame-0 trans) = frame (lemma frame-0)
+    λ { (s' {x} {u} {Y} SxuY Y⊆Y' _) y'→Y irrel y'→S' → case trans SxuY of
+    λ { (y₀ , y₀∈Y , snd) → case snd (S'→S[S] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y) of
+    λ { (Z , Z⊆ , SxuZ) → s' SxuZ
+      (λ { {v} v∈Yy → (y₀ , Y⊆Y' y₀∈Y) , (S'→S[⊆] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y) (Z⊆ v∈Yy)})
+    λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd}}}}
+
+  4⇒2' : Frame-4 → Frame-2'
+  4⇒2' (frame frame-0 trans) = frame (lemma frame-0)
+    λ { (s' {x} {u} {Y} SxuY Y⊆Y' _) y'→Y irrel y'→S' → case trans SxuY of
+    λ { (y₀ , y₀∈Y , snd) → s' (snd (S'→S[S] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y))
+    (λ { {v} v∈Yy → (y₀ , Y⊆Y' y₀∈Y) , (S'→S[⊆] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y) v∈Yy})
+    λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd}}}
+
+  5⇒2' : Frame-5 → Frame-2'
+  5⇒2' (frame frame-0 trans) = frame (lemma frame-0)
+    λ { (s' {x} {u} {Y} SxuY Y⊆Y' _) y'→Y irrel y'→S' →
+    case Swu-sat SxuY of λ { (y₀ , y₀∈Y) →
+    case trans SxuY y₀∈Y (S'→S[S] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y) of
+    λ { (Z , Z⊆SxuYy₀ , SxuYy₀) → s' SxuYy₀
+    (λ {∈Z → case Z⊆SxuYy₀ ∈Z of
+    λ {v∈Yy → (y₀ , Y⊆Y' y₀∈Y) , (S'→S[⊆] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y) v∈Yy}})
+    λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd}}}}
+    where open FrameNoTrans frame-0
+
+  6⇒2' : Frame-6 → Frame-2'
+  6⇒2' (frame frame-0 trans) = frame (lemma frame-0)
+    λ { (s' {x} {u} {Y} SxuY Y⊆Y' _) y'→Y irrel y'→S' →
+    case Swu-sat SxuY of λ { (y₀ , y₀∈Y) →
+    case trans SxuY y₀∈Y (S'→S[S] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y) of
+    λ { SxuYy₀ → s' SxuYy₀
+    ((λ { {v} v∈Yy → (y₀ , Y⊆Y' y₀∈Y) , (S'→S[⊆] ∘ S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y) v∈Yy}))
+    λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd}}}}
+    where open FrameNoTrans frame-0
+
+  dec-⊆ : Set _
+  dec-⊆ = (X Y : 𝕎) → X ⊆ Y ⊎ (Σ W λ x → x ∈ X × x ∉ Y)
+
+  7⇒2' : dec-⊆ → Frame-7 → Frame-2'
+  7⇒2' ⊆? (frame frame-0 trans) = frame (lemma frame-0)
+    λ { a@(s' {x} {u} {Y} {Y'} SxuY Y⊆Y' _) y'→Y irrel y'→S' →
+     case ⊆? Y (⋃[ Σ W (_∈ Y') ] (y'→Y ∘ proj₂)) of
+     λ { (inj₁ Y⊆U) → s' SxuY Y⊆U
+     λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd}
+     ; (inj₂ (y₀ , y₀∈Y , ∉U)) →
+        let r = S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y in
+        case trans SxuY y₀∈Y (S'→S[S] r)
+          (λ { y₀∈Yy₀- → ∉U ((y₀ , Y⊆Y' y₀∈Y) , S'→S[⊆] r y₀∈Yy₀-)}) of
+          λ { (Z , Z⊆ , SxuYy₀) → s' SxuYy₀ (λ ∈Y'- → (y₀ , Y⊆Y' y₀∈Y) , S'→S[⊆] r (Z⊆ ∈Y'-))
+          (λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd})} }}
+
+  8⇒2' : dec-⊆ → Frame-8 → Frame-2'
+  8⇒2' ⊆? (frame frame-0 trans) = frame (lemma frame-0)
+    λ { a@(s' {x} {u} {Y} {Y'} SxuY Y⊆Y' _) y'→Y irrel y'→S' →
+     case ⊆? Y (⋃[ Σ W (_∈ Y') ] (y'→Y ∘ proj₂)) of
+     λ { (inj₁ Y⊆U) → s' SxuY Y⊆U
+     λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd}
+     ; (inj₂ (y₀ , y₀∈Y , ∉U)) →
+        let r = S'→S ∘ y'→S' ∘ Y⊆Y' $ y₀∈Y in
+        case trans SxuY y₀∈Y (S'→S[S] r)
+          (λ { y₀∈Yy₀- → ∉U ((y₀ , Y⊆Y' y₀∈Y) , S'→S[⊆] r y₀∈Yy₀-)}) of
+          λ { SxuYy₀ → s' SxuYy₀ (λ ∈Y'- → (y₀ , Y⊆Y' y₀∈Y) , S'→S[⊆] r ∈Y'-)
+          (λ { {v} ((y , y∈Y') , snd) → (S'→S[R] ∘ S'→S ∘ y'→S' $ y∈Y') snd})}}}
+
+module Transitivity {W} {R} {S}
+  (F : FrameNoTrans {ℓW} {ℓR} {ℓS} W R S)
+  where
+  open FrameNoTrans F
+
+  Monotone : Set _
+  Monotone = ∀ {w u} {V Z : 𝕎} → S w u V → V ⊆ Z → Z ⊆ R w → S w u Z
+
+  R-Decidable : Set _
+  R-Decidable = Decidable₂ R
+
+  S₃-Decidable : Set _
+  S₃-Decidable = ∀ {w u Y} → S w u Y → Decidable Y
+
+  open Trans-conditions W S
+
+  ---------------
+
+  1⇒2 : Monotone → Trans-1 → Trans-2
+  --
+  2⇒1 : Trans-2 → Trans-1
+  --
+  3⇒4 : Monotone → Trans-3 → Trans-4
+  --
+  4⇒3 : Trans-4 → Trans-3
+  --
+  5⇒1 : Trans-5 → Trans-1
+  5⇒2 : Monotone → Trans-5 → Trans-2
+  5⇒3 : Trans-5 → Trans-3
+  5⇒4 : Monotone → Trans-5 → Trans-4
+  5⇒6 : Monotone → Trans-5 → Trans-6
+  5⇒7 : Trans-5 → Trans-7
+  5⇒8 : Monotone → Trans-5 → Trans-8
+  --
+  6⇒1 : Trans-6 → Trans-1
+  6⇒2 : Monotone → Trans-6 → Trans-2
+  6⇒3 : Trans-6 → Trans-3
+  6⇒4 : Trans-6 → Trans-4
+  6⇒5 : Trans-6 → Trans-5
+  6⇒7 : Trans-6 → Trans-7
+  6⇒8 : Trans-6 → Trans-8
+  --
+  7⇒8 : Monotone → Trans-7 → Trans-8
+  --
+  8⇒7 : Trans-8 → Trans-7
+
+  ---------------
+
+  1⇒2 mono t SxuY y→Y irrel p = case t SxuY y→Y irrel p of
+    λ { (Z , Z⊆ , SxuZ) → mono SxuZ Z⊆
+    λ { {v} ((y , y∈Y) , snd) → SwuY⊆Rw (p y∈Y) snd}}
+
+  2⇒1 t {Y = Y} SxuY y→Y irrel p = ⋃[ Σ W (_∈ Y) ] (y→Y ∘ proj₂) , (λ z → z) , t SxuY y→Y irrel p
+
+  3⇒4 mono t SxuY = case t SxuY of
+    λ { (y , y∈Y , snd) → y , y∈Y , λ {SxyY' → case snd SxyY' of
+    λ { (Y'' , Y''⊆Y' , SxuY'') → mono SxuY'' Y''⊆Y' (λ { {v} v∈
+    → SwuY⊆Rw SxyY' v∈})}}}
+
+  4⇒3 t SxuY = case t SxuY of λ { (y , fst₁ , snd) → y , fst₁ ,
+    λ { {Y'} SxyY' → Y' , (λ x → x) , snd SxyY'}}
+
+  -- needs irrel
+  -- 2⇒2L : Trans-2 → Trans-L
+  -- 2⇒2L T2 SxuY f = S-ext (T2 SxuY (λ { {y} y∈Y → proj₁ (f y∈Y)})
+  --   (λ { {y} {a} {b} → {!!} }) λ {y∈Y → proj₂ (f y∈Y)})
+  --   (λ { ((x , x∈V) , snd) → _ , x∈V , snd})
+  --   λ { (y , y∈Y , snd) → (y , y∈Y) , snd}
+
+  2L⇒2 : Trans-L → Trans-2
+  2L⇒2 TL SxuY y→Y irrel y→SYy = S-ext
+    (TL SxuY λ {v∈Y → _ , y→SYy v∈Y})
+    (λ { (y , y∈Y , snd) → (y , y∈Y) , snd})
+    λ { ((y , y∈Y) , snd) → _ , y∈Y , snd}
+
+  5⇒1 t SxuY y→Y irrel p = case Swu-sat SxuY of λ { (y , y∈Y)
+    → case t SxuY y∈Y (p y∈Y) of λ { (Y' , Y'⊆Yy , SxuY') → Y' ,
+    (λ {x → (_ , y∈Y) , Y'⊆Yy x}) , SxuY'}}
+
+  5⇒2 mono t SxuY y→Y irrel p = case Swu-sat SxuY of λ { (y , y∈Y)
+    → case t SxuY y∈Y (p y∈Y) of λ { (Y' , Y'⊆Yy , SxuY') →
+    mono SxuY' (λ x₁ → (y , y∈Y) , Y'⊆Yy x₁)
+    (λ { {v} ((y' , y'∈Y) , snd) → SwuY⊆Rw (p y'∈Y) snd})}}
+
+  5⇒3 t SxuY = case Swu-sat SxuY of λ { (y , y∈Y) → y , y∈Y ,
+    λ {SxyY' → t SxuY y∈Y SxyY'}}
+
+  5⇒4 mono t SxuY = case Swu-sat SxuY of λ { (y , y∈Y) → y , y∈Y ,
+    λ {SxyY' → case t SxuY y∈Y SxyY' of λ { (Y'' , Y''⊆Y' , SxuY'') →
+    mono SxuY'' Y''⊆Y' (λ x₁ → SwuY⊆Rw SxyY' x₁)}}}
+
+  5⇒6 mono t SxuY y∈Y SxyY' = case t SxuY y∈Y SxyY' of
+    λ { (Y'' , Y''⊆Y' , SxuY'') → mono SxuY'' Y''⊆Y' λ { {v} v∈ → SwuY⊆Rw SxyY' v∈}}
+
+  5⇒7 t SxuY y∈Y SxyY' y∉Y' = t SxuY y∈Y SxyY'
+
+  5⇒8 mono t = 6⇒8 (5⇒6 mono t)
+
+  6⇒1 t = 5⇒1 (6⇒5 t)
+
+  6⇒2 mono t = 1⇒2 mono (6⇒1 t)
+
+  6⇒3 t = 4⇒3 (6⇒4 t)
+
+  6⇒4 t SxuY = case Swu-sat SxuY of
+    λ { (y , y∈Y) → y , y∈Y , λ {SxyY' → t SxuY y∈Y SxyY'}}
+
+  6⇒5 t {Y' = Y'} SxuY y∈Y SxyY' = Y' , (λ z → z) , t SxuY y∈Y SxyY'
+
+  6⇒8 t SxuY y∈Y SxyY' y∉Y' = t SxuY y∈Y SxyY'
+
+  6⇒7 x = 8⇒7 (6⇒8 x)
+
+  7⇒8 mono t7 SxuY y∈Y SxyY' y∉Y' = case t7 SxuY y∈Y SxyY' y∉Y'
+    of λ { (Y'' , Y''⊆Y' , snd) → mono snd Y''⊆Y' (λ {v} v∈Y' → SwuY⊆Rw SxyY' v∈Y')}
+
+  8⇒7 t8 {Y' = Y'} SxuY y∈Y SxyY' y∉Y' = Y' , ((λ x₆ → x₆) , t8 SxuY y∈Y SxyY' y∉Y')
+\end{spverbatim}

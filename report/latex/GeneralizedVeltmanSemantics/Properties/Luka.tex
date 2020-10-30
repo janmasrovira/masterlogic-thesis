@@ -1,0 +1,150 @@
+\begin{spverbatim}
+module GeneralizedVeltmanSemantics.Properties.Luka where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Function using (_$_)
+open import Data.Product renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝; ∅)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; _◁_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import Base
+open import GeneralizedVeltmanSemantics.Properties
+  using (module SemanticsProperties-4;
+    module SemanticsProperties-3;
+    module SemanticsProperties-L; module PGeneric)
+open import GeneralizedFrame
+open Trans-conditions
+open import GeneralizedFrame.Properties
+import OrdinaryFrame as O
+import OrdinaryVeltmanSemantics as O
+import OrdinaryVeltmanSemantics.Properties as O
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+-- I think an easier transformation would be (W, R, S) |-> (W, R, { (w, u, v) : for some V, S w u V, and v in V })
+
+module OrdModel
+  {ℓW ℓR ℓS}
+  (T : ∀ {ℓW ℓS} → (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  {W R S}
+  (F : Frame {ℓW} {ℓR} {ℓS} W R S T)
+  (T3 : Trans-3 W S)
+  (V : W → Pred Var lzero)
+  where
+  open Frame F
+  open PGeneric T
+  open FrameProperties T F
+
+  W' : Set _
+  W' = W
+
+  R' : Rel W' _
+  R' = R
+
+  S' : Rel₃ W' _
+  S' w x v = ∃[ V ] (Σ[ SwxV ∈ S w x V ] (v ≡ proj₁ (T3 SwxV)))
+
+  V' : W' → Pred Var lzero
+  V' = V
+
+  f-chain : ∀ {a} → InfiniteChain R' a → InfiniteChain R _
+  InfiniteChain.b (f-chain x) = InfiniteChain.b x
+  InfiniteChain.a<b (f-chain x) = InfiniteChain.a<b x
+  InfiniteChain.tail (f-chain x) = f-chain (InfiniteChain.tail x)
+
+  R'-Noetherian : Noetherian R'
+  R'-Noetherian i = R-noetherian (f-chain i)
+
+  F' : O.Frame W' R' S'
+  F' = O.frame
+    witness
+    R-trans
+    R'-Noetherian
+    (λ { {w} {u} {v} (V ⸴ SwuV ⸴ refl) → Sw⊆Rw SwuV ⸴ SwuY⊆Rw SwuV (proj₁ ∘ proj₂ $ T3 SwuV)})
+    (λ { Rwu → _ ⸴ S-quasirefl Rwu ⸴ (proj₁ ∘ proj₂ $ T3 (S-quasirefl Rwu))})
+    (λ { {w} {i} (V ⸴ SwiV ⸴ refl) (V' ⸴ SwjV' ⸴ refl) →
+      let
+        j = proj₁ (T3 SwiV)
+        k = proj₁ (T3 SwjV')
+        Rwk : R w k
+        Rwk = SwuY⊆Rw SwjV' (proj₁ ∘ proj₂ $ T3 SwjV')
+        Swkk : S w k ｛ k ｝
+        Swkk = S-quasirefl Rwk
+        Swik : S w i ｛ k ｝
+        Swik = S⊆｛v｝' $ (proj₂ ∘ proj₂ $ T3 SwiV) (S⊆｛v｝' $ (proj₂ ∘ proj₂ $ T3 SwjV') Swkk)
+      in _ ⸴ Swik ⸴ (proj₁ ∘ proj₂ $ T3 Swik)
+    })
+    λ { Rwu Ruv → _ ⸴ R-Sw-trans Rwu Ruv ⸴ (proj₁ ∘ proj₂ $ T3 (R-Sw-trans Rwu Ruv))}
+
+  M' : O.Model W' R' S' V'
+  M' = O.model F'
+
+module PrefaceTheoremAll
+  {ℓW ℓR ℓS}
+  (T : ∀ {ℓW ℓS} → (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
+  {W R S}
+  (F : Frame {ℓW} {ℓR} {ℓS} W R S T)
+  (T3 : Trans-3 W S)
+  (V : W → Pred Var lzero)
+  where
+  open Frame F
+  open OrdModel T F T3 V
+  open PGeneric T
+  open FrameProperties T F
+
+  M : Model W R S V
+  M = model {V = V} F
+
+  module Theorem
+    (dec : MultiDecidableModel M)
+    (dec' : O.DecidableModel M')
+    (∈S? : Decidable₃ S)
+    (∈S'? : Decidable₃ S')
+    (∈SV? : ∀ {w u Y} → S w u Y → Decidable Y)
+    where
+
+    private
+      open Extended dec ∈S? ∈SV?
+      module O' = O.Extended dec' ∈S'?
+
+      thm⇨ : ∀ {w A} → M , w ⊩ A → M' O., w ⊩ A
+      thm⇦ : ∀ {w A} → M' O., w ⊩ A → M , w ⊩ A
+      thm'⇨ : ∀ {w A} → M , w ⊮ A → M' O., w ⊮ A
+
+      thm⇦ x = ⊩⇔¬⊮ ⇐ λ {y → O.⊮→¬⊩ (thm'⇨ y) x}
+
+      thm⇨ (var x) = O.var x
+      thm⇨ A@(impl x) = O'.⊩↝ ⇐ λ {wA → thm⇨ ((⊩↝ ⇒ A) (thm⇦ wA))}
+      thm⇨ {w} F@(rhd {D} {E} x) = O'.⊩▷ ⇐
+        λ { {x} Rwx x⊩D → case (⊩▷ ⇒ F) Rwx (thm⇦ x⊩D) of
+        λ { (V ⸴ SwxV ⸴ V⊩E) → proj₁ (T3 SwxV) ⸴ (V ⸴ SwxV ⸴ refl)
+        ⸴ thm⇨ ( V⊩E (proj₁ ∘ proj₂ $ T3 SwxV) )}}
+
+      thm'⇨ (var x) = O.var x
+      thm'⇨ {w} (impl {A} {B} a b) = O.impl (thm⇨ a) (thm'⇨ b)
+      thm'⇨ bot = O.bot
+      thm'⇨ {w} F@(rhd {D} {E} _) = case ⊮▷ ⇒ F of
+        λ {(x ⸴ Rwx ⸴ x⊩D ⸴ px) → O'.⊮▷ ⇐ (x ⸴ Rwx ⸴ thm⇨ x⊩D ⸴
+          λ { (V ⸴ SwxV ⸴ refl) →
+          let k = proj₁ (T3 SwxV)
+              Rwk : R w k
+              Rwk = SwuY⊆Rw SwxV (proj₁ ∘ proj₂ $ T3 SwxV)
+              Swxk : S w x ｛ k ｝
+              Swxk = S⊆｛v｝' $ (proj₂ ∘ proj₂ $ T3 SwxV) (S-quasirefl Rwk)
+          in case px _ (_ ⸴ refl) Swxk of
+            λ { (_ ⸴ refl ⸴ snd) → thm'⇨ snd}})}
+\end{spverbatim}

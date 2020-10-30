@@ -1,0 +1,78 @@
+\begin{spverbatim}
+module _ where
+
+open import Agda.Builtin.Nat using (Nat; zero; suc; _+_)
+open import Data.Fin using (Fin; zero; suc; fromℕ<)
+open import Data.Nat.Base using (_≤_; _<_; s≤s)
+open import Data.Nat.Properties using (≤-step; ≤-pred; ≤-reflexive)
+open import Data.Product using (_×_; _,_)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl)
+open import Relation.Unary using (Pred)
+
+open import Formula
+
+Principle : ∀ ℓ → Set _
+Principle ℓ = (P : Pred Fm ℓ) → Set ℓ
+
+M : ∀ {ℓ} → Principle ℓ
+M P = ∀ {A B C} → P (A ▷ B ↝ (A ∧ □ C) ▷ (B ∧ □ C))
+
+P : ∀ {ℓ} → Principle ℓ
+P Pr = ∀ {A B} → Pr (A ▷ B ↝ □ (A ▷ B))
+
+M₀ : ∀ {ℓ} → Principle ℓ
+M₀ P = ∀ {A B C} → P (A ▷ B ↝ (♢ A ∧ □ C) ▷ (B ∧ □ C))
+
+W : ∀ {ℓ} → Principle ℓ
+W P = ∀ {A B} → P (A ▷ B ↝ A ▷ B ∧ □ (¬' A))
+
+W⋆ : ∀ {ℓ} → Principle ℓ
+W⋆ P = ∀ A B → P (A ▷ B ↝ A ▷ B ∧ □ (¬' A))
+
+P₀-Fm : ∀ A B → Fm
+P₀-Fm A B = A ▷ (♢ B) ↝ □ (A ▷ B)
+
+P₀ : ∀ {ℓ} → Principle ℓ
+P₀ P = ∀ {A B} → P (P₀-Fm A B)
+
+R : ∀ {ℓ} → Principle ℓ
+R P = ∀ {A B C} → P (A ▷ B ↝ (¬' (A ▷ ¬' C) ▷ (B ∧ □ C)))
+
+R₁ : ∀ {ℓ} → Principle ℓ
+R₁ P = ∀ {A B C D E} → P (
+  A ▷ B ↝ ((A ◁ C) ∧ (D ▷ ♢ E)) ▷ (B ∧ □ C ∧ (D ▷ E)))
+
+R₂-Fm : ∀ {A B C D E F G} → Fm
+R₂-Fm {A} {B} {C} {D} {E} {F} {G} =
+  A ▷ (B ∧ (C ▷ D)) ↝
+  (¬' (A ▷ ¬' E) ∧ (G ▷ ¬' (C ▷ ¬' F)))
+  ▷
+  (B ∧ (C ▷ D) ∧ (□ E) ∧ (G ▷ C) ∧ (G ▷ D ∧ □ F))
+
+R₂ : ∀ {ℓ} → Principle ℓ
+R₂ P = ∀ {A B C D E F G} → (P (R₂-Fm {A} {B} {C} {D} {E} {F} {G}))
+
+R⁰ : ∀ {ℓ} → Principle ℓ
+R⁰ P = ∀ {A B C} → P (A ▷ B ↝ (A ◁ C) ▷ (B ∧ □ C))
+
+R¹ : ∀ {ℓ} → Principle ℓ
+R¹ P = ∀ {A B C D} → P (A ▷ B ↝ (♢ (D ◁ C) ∧ (D ▷ A)) ▷ (B ∧ □ C))
+
+R² : ∀ {ℓ} → Principle ℓ
+R² P = ∀ {A B C D E} → P (A ▷ B ↝ (♢ ((D ▷ E) ∧ ♢ (¬' (D ▷ ¬' C))) ∧ (E ▷ A)) ▷ (B ∧ □ C))
+
+RⁿΩ RⁿU : (m u : Nat) → {u ≤ m} → {C : Fm} → {D : (i : Nat) → {i < suc m} → Fm} → Fm
+RⁿΩ m zero {p} {C} {D} = ¬' (D zero {s≤s p} ▷ ¬' C)
+RⁿΩ m (suc k) {p} {C} {D} = (D k {≤-pred (≤-step (s≤s p))} ▷ D (suc k) {s≤s p}
+  ∧ RⁿU m k {≤-pred (≤-step p)} {C} {D})
+
+RⁿU m zero {p} {C} {D} = ♢ (RⁿΩ m zero {p} {C} {D})
+RⁿU m (suc k) {p} {C} {D} = ♢ (RⁿΩ m (suc k) {p} {C} {D})
+
+Rⁿ-Fm : (n : Nat) → {A B C : Fm} {D : (i : Nat) → {i < n} → Fm} → Fm
+Rⁿ-Fm zero {A} {B} {C} {D} = A ▷ B ↝ ¬' (A ▷ ¬' C) ▷ (B ∧ □ C)
+Rⁿ-Fm (suc m) {A} {B} {C} {D} = A ▷ B ↝ (RⁿU m m {≤-reflexive refl} {C} {D} ∧ (D m {≤-reflexive refl} ▷ A)) ▷ (B ∧ □ C)
+
+Rⁿ : ∀ {ℓ} → Nat → Principle ℓ
+Rⁿ r P = ∀ {A B C} → (D : (i : Nat) → {i < r} → Fm) → P (Rⁿ-Fm r {A} {B} {C} {D})
+\end{spverbatim}

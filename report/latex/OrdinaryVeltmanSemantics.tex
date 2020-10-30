@@ -1,0 +1,83 @@
+\begin{spverbatim}
+module _ where
+
+open import Relation.Binary using (REL; Rel; Transitive; Reflexive)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable)
+open import Data.List.Relation.Unary.All using (All; []; _∷_)
+open import Relation.Nullary using (¬_)
+open import Data.List using (map; List; []; _∷_)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Agda.Builtin.Nat using (Nat; suc; _+_)
+open import Data.Product
+open import Data.Sum using (_⊎_; inj₁; inj₂)
+open import Function using (_∘_)
+open import Data.Empty using (⊥; ⊥-elim)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ¬'_)
+open import Base using (Noetherian; Rel₃)
+open import OrdinaryFrame using (Frame) public
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+    W : Set ℓW
+    R : Rel W ℓR
+    S : Rel₃ W ℓS
+    V : REL W Var lzero
+
+Valuation : Frame {ℓW} {ℓR} {ℓS} W R S → Set (lsuc lzero ⊔ ℓW)
+Valuation {W = W} F = REL W Var lzero
+
+record Model (W : Set ℓW) (R : Rel W ℓR) (S : Rel₃ W ℓS) (V : REL W Var lzero)
+  : Set (ℓW ⊔ ℓR ⊔ ℓS) where
+  constructor model
+  field
+    F : Frame {ℓW} {ℓR} {ℓS} W R S
+
+-- {-# NO_POSITIVITY_CHECK #-}
+-- data _,_⊩'_ (M : Model) (w : MW M) : Fm → Set where
+--   var : ∀ {a : Var} → a ∈ (Model.V M w) → M , w ⊩' var a
+-- impl : ∀ {A B} → ((Nat → (M , w ⊩' A)) → (M , w ⊩' B)) → M , w ⊩' (A ↝ B)
+--   rhd : ∀ {A B} →
+--     (∀ {u} → (MR M) w u → M , u ⊩' A → (Σ (MW M) λ v → (MS M) w u v × (M , v ⊩' B)))
+--     → M , w ⊩' A ▷ B
+
+infix 5 _,_⊩_
+data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+  : Fm → Set (ℓW ⊔ ℓR ⊔ ℓS)
+
+infix 5 _,_⊮_
+data _,_⊮_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
+  : Fm → Set (ℓW ⊔ ℓR ⊔ ℓS)
+
+data _,_⊩_ {W = W} {R = R} {S = S} {V = V} M w where
+  var : {a : Var} → a ∈ V w → M , w ⊩ var a
+  impl : ∀ {A B} → M , w ⊮ A ⊎ M , w ⊩ B → M , w ⊩ A ↝ B
+  rhd : ∀ {A B} →
+    (∀ {u} → R w u → M , u ⊮ A ⊎ (∃[ v ] (S w u v × M , v ⊩ B)))
+    → M , w ⊩ A ▷ B
+
+data _,_⊮_ {W = W} {R = R} {S = S} {V = V} M w where
+  var : {a : Var} → a ∉ V w → M , w ⊮ var a
+  impl : {A B : Fm} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
+  rhd : {A B : Fm} →
+    ∃[ u ] (R w u × M , u ⊩ A × ∀ v → (¬ S w u v) ⊎ M , v ⊮ B)
+    → M , w ⊮ A ▷ B
+  bot : M , w ⊮ ⊥'
+
+DecidableModel : Model {ℓW} {ℓR} {ℓS} W R S V → Set (ℓW ⊔ ℓR ⊔ ℓS)
+DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
+
+-- Frame validity
+infix 5 _*⊩_
+_*⊩_ : Frame {ℓW} {ℓR} {ℓS} W R S → Fm → Set (lsuc lzero ⊔ ℓW ⊔ ℓR ⊔ ℓS)
+F *⊩ A = ∀ val w → model {V = val} F , w ⊩ A
+
+-- infix 5 _*⊮_
+_*⊮_ : Frame {ℓW} {ℓR} {ℓS} W R S → Fm → Set (lsuc lzero ⊔ ℓW ⊔ ℓR ⊔ ℓS)
+_*⊮_ {W = W} F A = Σ (Valuation F × W) λ { (val , w) → model {V = val} F , w ⊮ A}
+
+
+_,_⊩*_ : Model {ℓW} {ℓR} {ℓS} W R S V → W → List Fm → Set (ℓW ⊔ ℓR ⊔ ℓS)
+M , w ⊩* Π = All (M , w ⊩_) Π
+\end{spverbatim}

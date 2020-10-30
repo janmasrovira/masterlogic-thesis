@@ -19,6 +19,7 @@
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
 #+latex_header: \usepackage[style=ieee]{biblatex}
 #+latex_header: \usepackage{multicol}
+#+latex_header: \usepackage{stmaryrd}
 #+latex_header: \usepackage{spverbatim}
 
 
@@ -125,12 +126,31 @@
 #+latex_header: \newunicodechar{ₖ}{\makebox[0.5em]{\textsubscript{k}}}
 #+latex_header: \newunicodechar{ₙ}{\makebox[0.5em]{\textsubscript{n}}}
 #+latex_header: \newunicodechar{ₘ}{\makebox[0.5em]{\textsubscript{m}}}
+#+latex_header: \newunicodechar{ᵤ}{\makebox[0.5em]{\textsubscript{u}}}
 #+latex_header: \newunicodechar{ₗ}{\makebox[0.5em]{\textsubscript{l}}}
 #+latex_header: \newunicodechar{⸴}{\makebox[0.5em]{,}}
 #+latex_header: \newunicodechar{｛}{\ensuremath{\{}}
 #+latex_header: \newunicodechar{｝}{\ensuremath{\}}}
-#+latex_header: \setmathfont{Latin Modern Math}
+#+latex_header: \newunicodechar{𝔸}{\ensuremath{𝔸}}
+#+latex_header: \newunicodechar{𝔹}{\ensuremath{𝔹}}
+#+latex_header: \newunicodechar{𝔻}{\ensuremath{𝔻}}
+#+latex_header: \newunicodechar{𝔼}{\ensuremath{𝔼}}
+#+latex_header: \newunicodechar{𝔽}{\ensuremath{𝔽}}
+#+latex_header: \newunicodechar{𝔾}{\ensuremath{𝔾}}
+#+latex_header: \newunicodechar{𝒱}{\ensuremath{𝒱}}
+#+latex_header: \newunicodechar{𝒞}{\ensuremath{𝒞}}
+#+latex_header: \newunicodechar{ℱ}{\ensuremath{ℱ}}
 
+
+
+# inexact replacements. I don't know how to exactly replace these as they do
+# not exist in Latin Modern Math.
+#+latex_header: \newunicodechar{⦃}{\ensuremath{⟦}}
+#+latex_header: \newunicodechar{⦄}{\ensuremath{⟧}}
+#+latex_header: \newunicodechar{⦅}{\ensuremath{⟦}}
+#+latex_header: \newunicodechar{⦆}{\ensuremath{⟧}}
+
+#+latex_header: \setmathfont{Latin Modern Math}
 #+latex_header: \newcommand{\horrule}[1]{\rule{\linewidth}{#1}}
 
 \begin{titlepage}
@@ -279,8 +299,10 @@ thanks
    ⊥^* &= (0=1);\\
    (A→B)^*&= A^*→B^* ; \\
    (□A)^*&= \sf{Prov}_T(⌜A⌝) ; \\
-   (A▷B)^*&= \sf{Int}_T(⌜A⌝,⌜B⌝) .
+   (A▷B)^*&= \sf{Int}_T(⌜A⌝,⌜B⌝).
    \end{flalign*}
+   There is an observation, which the nomenclature $\sf{IL}(T)$ already hints
+   at, that
 
    mention \sf{M}, $P$ and $R$.
 ** Original contributions
@@ -4477,351 +4499,6 @@ Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
  absurd : ⊥
  absurd = self-app (bad self-app)
     #+end_src
-** Agda official reference
-   This section contains a thorough description of some of the topics that were
-   touched in the introduction prior to this section. We believe that the
-   intuition given in the introduction should be enough for the reader to be
-   able to read Section [[sec:agda-project]], however, we encourage the reader to
-   resort to the ensuing reference if they wish for more precise information on
-   the language. The contents of this section have been merely copied from the
-   online Agda documentation (cite:agda-doc).
-
-*** Function definitions and pattern matching
-    A function is defined by first declaring its type followed by a number of
-    equations called clauses. Each clause consists of the function being defined
-    applied to a number of patterns, followed by = and a term called the
-    right-hand side. For example:
-    #+begin_example
-    not : Bool → Bool
-    not true  = false
-    not false = true
-    #+end_example
-    Functions are allowed to call themselves recursively, for example:
-    #+begin_example
-    twice : Nat → Nat
-    twice zero    = zero
-    twice (suc n) = suc (suc (twice n))
-    #+end_example
-
-    The general form for defining a function is
-    #+begin_example
-    f : (x₁ : A₁) → … → (xₙ : Aₙ) → B
-    f p₁ … pₙ = d
-    …
-    f q₁ … qₙ = e
-    #+end_example
-    where =f= is a new identifier, =pᵢ= and =qᵢ= are patterns of type =Aᵢ=, and =d= and =e=
-    are expressions.
-
-    The declaration above gives the identifier =f= the type =(x₁ : A₁) → … → (xₙ :
-    Aₙ) → B= and =f= is defined by the defining equations. Patterns are matched
-    from top to bottom, i.e., the first pattern that matches the actual
-    parameters is the one that is used.
-
-    By default, Agda checks the following properties of a function definition:
-    1. The patterns in the left-hand side of each clause should consist only of
-       constructors and variables.
-    2. No variable should occur more than once on the left-hand side of a single
-       clause.
-    3. The patterns of all clauses should together cover all possible inputs of
-       the function.
-    4. The function should be terminating on all possible inputs.
-
-*** Implicit arguments and automatic inference
-    <<sec:agda-implicit-args>>
-
-    It is possible to omit terms that the type checker can figure out for
-    itself, replacing them by =_=. If the type checker cannot infer the value of
-    an =_= it will report an error. For instance, for the polymorphic identity
-    function
-    #+begin_example
-    id : (A : Set) → A → A
-    #+end_example
-    the first argument can be inferred from the type of the second argument, so
-    we might write =id _ zero= for the application of the identity function to
-    =zero=.
-
-    We can even write this function application without the first argument. In
-    that case we declare an implicit function space:
-    #+begin_example
-    id : {A : Set} → A → A
-    #+end_example
-    and then we can use the notation =id zero=.
-
-    Another example:
-    #+begin_example
-    _==_  : {A : Set} → A → A → Set
-    subst : {A : Set} (C : A → Set) {x y : A} → x == y → C x → C y
-    #+end_example
-    Note how the first argument to =_==_= is left implicit. Similarly, we may
-    leave out the implicit arguments =A=, =x=, and =y= in an application of
-    =subst=. To give an implicit argument explicitly, enclose it in curly braces.
-    The following two expressions are equivalent:
-    #+begin_example
-    x1 = subst C eq cx
-    x2 = subst {_} C {_} {_} eq cx
-    #+end_example
-    It is worth noting that implicit arguments are also inserted at the end of
-    an application, if it is required by the type. For example, in the
-    following, =y1= and =y2= are equivalent.
-    #+begin_example
-    y1 : a == b → C a → C b
-    y1 = subst C
-
-    y2 : a == b → C a → C b
-    y2 = subst C {_} {_}
-    #+end_example
-    Implicit arguments are inserted eagerly in left-hand sides so =y3= and =y4= are
-    equivalent. An exception is when no type signature is given, in which case
-    no implicit argument insertion takes place. Thus in the definition of =y5= the
-    only implicit is the =A= argument of =subst=.
-    #+begin_example
-    y3 : {x y : A} → x == y → C x → C y
-    y3 = subst C
-
-    y4 : {x y : A} → x == y → C x → C y
-    y4 {x} {y} = subst C {_} {_}
-
-    y5 = subst C
-    #+end_example
-    It is also possible to write lambda abstractions with implicit arguments.
-    For example, given =id : (A : Set) → A → A=, we can define the identity
-    function with implicit type argument as
-    #+begin_example
-    id’ = λ {A} → id A
-    #+end_example
-    Implicit arguments can also be referred to by name, so if we want to give
-    the expression =e= explicitly for =y= without giving a value for =x= we can
-    write
-    #+begin_example
-    subst C {y = e} eq cx
-    #+end_example
-    In rare circumstances it can be useful to separate the name used to give an
-    argument by name from the name of the bound variable, for instance if the
-    desired name shadows an existing name. To do this you write
-    #+begin_example
-    id₂ : {A = X : Set} → X → X  -- name of bound variable is X
-    id₂ x = x
-
-    use-id₂ : (Y : Set) → Y → Y
-    use-id₂ Y = id₂ {A = Y}      -- but the label is A
-    #+end_example
-
-    Labeled bindings must appear by themselves when typed, so the type =Set= needs
-    to be repeated in this example:
-    #+begin_example
-    const : {A = X : Set} {B = Y : Set} → A → B → A
-    const x y = x
-    #+end_example
-
-    When constructing implicit function spaces the implicit argument can be
-    omitted, so both expressions below are valid expressions of type ={A : Set}
-    → A → A=:
-    #+begin_example
-    z1 = λ {A} x → x
-    z2 = λ x → x
-    #+end_example
-    The =∀= (or =forall=) syntax for function types also has implicit variants:
-
-    #+begin_example
-    ① : (∀ {x : A} → B)    is-the-same-as  ({x : A} → B)
-    ② : (∀ {x} → B)        is-the-same-as  ({x : _} → B)
-    ③ : (∀ {x y} → B)      is-the-same-as  (∀ {x} → ∀ {y} → B)
-    #+end_example
-
-    In very special situations it makes sense to declare unnamed hidden
-    arguments ={A} → B=. In the following =example=, the hidden argument to
-    =scons= of type =zero ≤ zero= can be solved by \text{$η$-expansion}, since
-    this type reduces to =⊤=.
-    #+begin_example
-    data ⊥ : Set where
-
-    _≤_ : Nat → Nat → Set
-    zero ≤ _      = ⊤
-    suc m ≤ zero  = ⊥
-    suc m ≤ suc n = m ≤ n
-
-    data SList (bound : Nat) : Set where
-    []    : SList bound
-    scons : (head : Nat) → {head ≤ bound} → (tail : SList head) → SList bound
-
-    example : SList zero
-    example = scons zero []
-    #+end_example
-    There are no restrictions on when a function space can be implicit. Internally,
-    explicit and implicit function spaces are treated in the same way. This means
-    that there are no guarantees that implicit arguments will be solved. When there
-    are unsolved implicit arguments the type checker will give an error message
-    indicating which application contains the unsolved arguments. The reason for
-    this liberal approach to implicit arguments is that limiting the use of implicit
-    argument to the cases where we guarantee that they are solved rules out many
-    useful cases in practice.
-*** datatype definitions and constructors
-    <<sec:agda-ref-datatype>>
-    <<sec:agda-datatype>>
-
-    The general form of the definition of a simple datatype =D= is the following
-    #+begin_src text
-  data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
-    c₁ : A₁
-    ...
-    cₙ : Aₙ
-    #+end_src
-
-    The name D of the data type and the names =c₁=, …, =cₙ= of the constructors
-    must be new w.r.t. the current signature and context, and the types =A₁=, …,
-    =Aₙ= must be function types ending in =D=, i.e. they must be of the form
-    #+begin_example
-    (y₁ : B₁) → ... → (yₘ : Bₘ) → D
-    #+end_example
-
-    Datatypes can have parameters. They are declared after the name of the
-    datatype but before the colon, for example:
-    #+begin_example
-    data List (A : Set) : Set where
-      []  : List A
-      _∷_ : A → List A → List A
-    #+end_example
-
-    In addition to parameters, datatypes can also have indices. In contrast to
-    parameters which are required to be the same for all constructors, indices
-    can vary from constructor to constructor. They are declared after the colon
-    as function arguments to =Set=. For example, fixed-length vectors can be
-    defined by indexing them over their length of type =Nat=:
-
-    #+begin_example
-    data Vector (A : Set) : Nat → Set where
-      []  : Vector A zero
-      _∷_ : {n : Nat} → A → Vector A n → Vector A (suc n)
-    #+end_example
-
-    Notice that the parameter =A= is bound once for all constructors, while the
-    index ={n : Nat}= must be bound locally in the constructor =_∷_=.
-
-    Indexed datatypes can also be used to describe predicates, for example the
-    predicate =Even : Nat → Set= can be defined as follows:
-
-    #+begin_example
-    data Even : Nat → Set where
-      even-zero  : Even zero
-      even-plus2 : {n : Nat} → Even n → Even (suc (suc n))
-    #+end_example
-
-    The general form of the definition of a (parametrized, indexed) datatype =D=
-    is the following
-    #+begin_example
-    data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
-      c₁ : A₁
-      ...
-      cₙ : Aₙ
-    #+end_example
-
-    where the types =A₁=, …, =Aₙ= are function types of the form
-    #+begin_example
-    (z₁ : B₁) → ... → (zₘ : Bₘ) → D x₁ ... xₖ t₁ ... tₗ
-    #+end_example
-*** Function types
-    Function types are written =(x : A) → B=, or in the case of non-dependent
-    functions simply =A → B=. For instance, the type of the addition function
-    for natural numbers is:
-    #+begin_example
-    Nat → Nat → Nat
-    #+end_example
-    and the type of the addition function for vectors is:
-    #+begin_example
-    (A : Set) → (n : Nat) → (u : Vec A n) → (v : Vec A n) → Vec A n
-    #+end_example
-
-    where =Set= is the type of sets and =Vec A n= is the type of vectors with =n=
-    elements of type =A=. Arrows between consecutive hypotheses of the form =(x :
-    A)= may also be omitted, and =(x : A) (y : A)= may be shortened to =(x y : A)=:
-    #+begin_example
-    (A : Set) (n : Nat) (u v : Vec A n) → Vec A n
-    #+end_example
-
-    Functions are constructed by lambda abstractions, which can be either typed
-    or untyped. For instance, both expressions below have type =(A : Set) → A → A=
-    (the second expression checks against other types as well):
-    #+begin_example
-    example₁ = λ (A : Set) (x : A) → x
-    example₂ = λ A x → x
-    #+end_example
-
-    The application of a function =f : (x : A) → B= to an argument =a : A= is
-    written =f a= and the type of this is \texttt{B[x := a]}.
-
-    Some notation conventions follow.
-    - Function types:
-      #+begin_example
-      prop₁ : ((x : A) (y : B) → C) is-the-same-as   ((x : A) → (y : B) → C)
-      prop₂ : ((x y : A) → C)      is-the-same-as   ((x : A)(y : A) → C)
-      prop₃ : (∀ (x : A) → C)  is-the-same-as   ((x : A) → C)
-      prop₄ : (∀ x → C)        is-the-same-as   ((x : _) → C)
-      prop₅ : (∀ x y → C)      is-the-same-as   (∀ x → ∀ y → C)
-      #+end_example
-
-    - Functional abstraction:
-      #+begin_example
-      (λ x y → e)                    is-the-same-as   (λ x → (λ y → e))
-      #+end_example
-
-    - Functional application:
-      #+begin_example
-      (f a b)                       is-the-same-as    ((f a) b)
-      #+end_example
-
-*** Record types
-    The general form of a record declaration is as follows:
-    #+begin_example
-    record <recordname> <parameters> : Set <level> where
-      <directives>
-      constructor <constructorname>
-      field
-        <fieldname1> : <type1>
-        <fieldname2> : <type2>
-        -- ...
-      <declarations>
-    #+end_example
-    All the components are optional, and can be given in any order. In
-    particular, fields can be given in more than one block, interspersed with
-    other declarations. Each field is a component of the record. Types of later
-    fields can depend on earlier fields.
-
-    The directives available are eta-equality, no-eta-equality, inductive and
-    co-inductive. For more information visit cite:agda-doc.
-** old :noexport:
-  #   What sets dependent type theory apart from other type theories is that types
-  #   can depend on terms. In a non-dependent theory types and terms live in
-  #   separate worlds and they only meet to decide what terms have which types. In a
-  #   dependent theory, on the other hand, types can talk about terms and so it is
-  #   possible to express things like the precise characterisation of the sorting
-  #   function mentioned above.
-
-  #   In this section we present a dependent type theory
-  #   which can serve as basis for the extensions discussed in later chapters. The
-  #   particular choice of type theory is not crucial and the theory we choose is
-  #   roughly Luo’s UTT [Luo94] extended with Σ-types and η-laws. In the following
-  #   we will refer to this theory as UTT Σ . The syntax of UTT Σ is presented in
-  #   Figure 1.1. A telescope [dB91b] ∆ = (x 1 : A 1 ) . . . (x n : A n ) is a
-  #   sequence of types where later types may depend on elements of previous types.
-  #   W
-
-  # #+name: fig:agda-syntax
-  # #+caption: The syntax of $\textsf{UTT}_Σ$.
-  # #+attr_latex: :align llll :float t :center t :placement [H]
-  # | $s,t,A,B$ | $≔$   | $x$                   | variable                     |
-  # |           | \vert | $(x:A)→B$             | dependent function type      |
-  # |           | \vert | $λx.t$                | lambda abstraction           |
-  # |           | \vert | $s\ t$                | function application         |
-  # |           | \vert | $(x:A)×B$             | dependent pair  type         |
-  # |           | \vert | $⟨s,t⟩$               | dependent pairs              |
-  # |           | \vert | $π₁\ t$ \vert $π₂\ t$ | projections                  |
-  # |           | \vert | $\textsf{Set}_i$          | universes $(i∈ω)$            |
-  # |           | \vert | $𝟏$                   | the unit type                |
-  # |           | \vert | $⟨⟩$                  | the element of the unit type |
-  # | $Γ,Δ$     | $≔$   | $ε$                   |                              |
-  # |           | \vert | $(x:A)Γ$              | telescopes                   |
-
 * Agda in the project
   <<sec:agda-project>>
   The goal of this section is to guide the reader through some key parts of the
@@ -5799,7 +5476,394 @@ heading=bibintoc,
 title=Bibliography
 ]
 
-* TODO Appendix
+* Appendix
   TODO: include all the necessary unicode characters.
+** Official Agda reference
+   This section contains a thorough description of some of the topics that were
+   touched in the introduction prior to this section. We believe that the
+   intuition given in the introduction should be enough for the reader to be
+   able to read Section [[sec:agda-project]], however, we encourage the reader to
+   resort to the ensuing reference if they wish for more precise information on
+   the language. The contents of this section have been merely copied from the
+   online Agda documentation (cite:agda-doc).
 
-  # #+INCLUDE: "./latex/all.tex" export latex
+*** Function definitions and pattern matching
+    A function is defined by first declaring its type followed by a number of
+    equations called clauses. Each clause consists of the function being defined
+    applied to a number of patterns, followed by = and a term called the
+    right-hand side. For example:
+    #+begin_example
+    not : Bool → Bool
+    not true  = false
+    not false = true
+    #+end_example
+    Functions are allowed to call themselves recursively, for example:
+    #+begin_example
+    twice : Nat → Nat
+    twice zero    = zero
+    twice (suc n) = suc (suc (twice n))
+    #+end_example
+
+    The general form for defining a function is
+    #+begin_example
+    f : (x₁ : A₁) → … → (xₙ : Aₙ) → B
+    f p₁ … pₙ = d
+    …
+    f q₁ … qₙ = e
+    #+end_example
+    where =f= is a new identifier, =pᵢ= and =qᵢ= are patterns of type =Aᵢ=, and =d= and =e=
+    are expressions.
+
+    The declaration above gives the identifier =f= the type =(x₁ : A₁) → … → (xₙ :
+    Aₙ) → B= and =f= is defined by the defining equations. Patterns are matched
+    from top to bottom, i.e., the first pattern that matches the actual
+    parameters is the one that is used.
+
+    By default, Agda checks the following properties of a function definition:
+    1. The patterns in the left-hand side of each clause should consist only of
+       constructors and variables.
+    2. No variable should occur more than once on the left-hand side of a single
+       clause.
+    3. The patterns of all clauses should together cover all possible inputs of
+       the function.
+    4. The function should be terminating on all possible inputs.
+
+*** Implicit arguments and automatic inference
+    <<sec:agda-implicit-args>>
+
+    It is possible to omit terms that the type checker can figure out for
+    itself, replacing them by =_=. If the type checker cannot infer the value of
+    an =_= it will report an error. For instance, for the polymorphic identity
+    function
+    #+begin_example
+    id : (A : Set) → A → A
+    #+end_example
+    the first argument can be inferred from the type of the second argument, so
+    we might write =id _ zero= for the application of the identity function to
+    =zero=.
+
+    We can even write this function application without the first argument. In
+    that case we declare an implicit function space:
+    #+begin_example
+    id : {A : Set} → A → A
+    #+end_example
+    and then we can use the notation =id zero=.
+
+    Another example:
+    #+begin_example
+    _==_  : {A : Set} → A → A → Set
+    subst : {A : Set} (C : A → Set) {x y : A} → x == y → C x → C y
+    #+end_example
+    Note how the first argument to =_==_= is left implicit. Similarly, we may
+    leave out the implicit arguments =A=, =x=, and =y= in an application of
+    =subst=. To give an implicit argument explicitly, enclose it in curly braces.
+    The following two expressions are equivalent:
+    #+begin_example
+    x1 = subst C eq cx
+    x2 = subst {_} C {_} {_} eq cx
+    #+end_example
+    It is worth noting that implicit arguments are also inserted at the end of
+    an application, if it is required by the type. For example, in the
+    following, =y1= and =y2= are equivalent.
+    #+begin_example
+    y1 : a == b → C a → C b
+    y1 = subst C
+
+    y2 : a == b → C a → C b
+    y2 = subst C {_} {_}
+    #+end_example
+    Implicit arguments are inserted eagerly in left-hand sides so =y3= and =y4= are
+    equivalent. An exception is when no type signature is given, in which case
+    no implicit argument insertion takes place. Thus in the definition of =y5= the
+    only implicit is the =A= argument of =subst=.
+    #+begin_example
+    y3 : {x y : A} → x == y → C x → C y
+    y3 = subst C
+
+    y4 : {x y : A} → x == y → C x → C y
+    y4 {x} {y} = subst C {_} {_}
+
+    y5 = subst C
+    #+end_example
+    It is also possible to write lambda abstractions with implicit arguments.
+    For example, given =id : (A : Set) → A → A=, we can define the identity
+    function with implicit type argument as
+    #+begin_example
+    id’ = λ {A} → id A
+    #+end_example
+    Implicit arguments can also be referred to by name, so if we want to give
+    the expression =e= explicitly for =y= without giving a value for =x= we can
+    write
+    #+begin_example
+    subst C {y = e} eq cx
+    #+end_example
+    In rare circumstances it can be useful to separate the name used to give an
+    argument by name from the name of the bound variable, for instance if the
+    desired name shadows an existing name. To do this you write
+    #+begin_example
+    id₂ : {A = X : Set} → X → X  -- name of bound variable is X
+    id₂ x = x
+
+    use-id₂ : (Y : Set) → Y → Y
+    use-id₂ Y = id₂ {A = Y}      -- but the label is A
+    #+end_example
+
+    Labeled bindings must appear by themselves when typed, so the type =Set= needs
+    to be repeated in this example:
+    #+begin_example
+    const : {A = X : Set} {B = Y : Set} → A → B → A
+    const x y = x
+    #+end_example
+
+    When constructing implicit function spaces the implicit argument can be
+    omitted, so both expressions below are valid expressions of type ={A : Set}
+    → A → A=:
+    #+begin_example
+    z1 = λ {A} x → x
+    z2 = λ x → x
+    #+end_example
+    The =∀= (or =forall=) syntax for function types also has implicit variants:
+
+    #+begin_example
+    ① : (∀ {x : A} → B)    is-the-same-as  ({x : A} → B)
+    ② : (∀ {x} → B)        is-the-same-as  ({x : _} → B)
+    ③ : (∀ {x y} → B)      is-the-same-as  (∀ {x} → ∀ {y} → B)
+    #+end_example
+
+    In very special situations it makes sense to declare unnamed hidden
+    arguments ={A} → B=. In the following =example=, the hidden argument to
+    =scons= of type =zero ≤ zero= can be solved by \text{$η$-expansion}, since
+    this type reduces to =⊤=.
+    #+begin_example
+    data ⊥ : Set where
+
+    _≤_ : Nat → Nat → Set
+    zero ≤ _      = ⊤
+    suc m ≤ zero  = ⊥
+    suc m ≤ suc n = m ≤ n
+
+    data SList (bound : Nat) : Set where
+    []    : SList bound
+    scons : (head : Nat) → {head ≤ bound} → (tail : SList head) → SList bound
+
+    example : SList zero
+    example = scons zero []
+    #+end_example
+    There are no restrictions on when a function space can be implicit. Internally,
+    explicit and implicit function spaces are treated in the same way. This means
+    that there are no guarantees that implicit arguments will be solved. When there
+    are unsolved implicit arguments the type checker will give an error message
+    indicating which application contains the unsolved arguments. The reason for
+    this liberal approach to implicit arguments is that limiting the use of implicit
+    argument to the cases where we guarantee that they are solved rules out many
+    useful cases in practice.
+*** datatype definitions and constructors
+    <<sec:agda-ref-datatype>>
+    <<sec:agda-datatype>>
+
+    The general form of the definition of a simple datatype =D= is the following
+    #+begin_src text
+  data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
+    c₁ : A₁
+    ...
+    cₙ : Aₙ
+    #+end_src
+
+    The name D of the data type and the names =c₁=, …, =cₙ= of the constructors
+    must be new w.r.t. the current signature and context, and the types =A₁=, …,
+    =Aₙ= must be function types ending in =D=, i.e. they must be of the form
+    #+begin_example
+    (y₁ : B₁) → ... → (yₘ : Bₘ) → D
+    #+end_example
+
+    Datatypes can have parameters. They are declared after the name of the
+    datatype but before the colon, for example:
+    #+begin_example
+    data List (A : Set) : Set where
+      []  : List A
+      _∷_ : A → List A → List A
+    #+end_example
+
+    In addition to parameters, datatypes can also have indices. In contrast to
+    parameters which are required to be the same for all constructors, indices
+    can vary from constructor to constructor. They are declared after the colon
+    as function arguments to =Set=. For example, fixed-length vectors can be
+    defined by indexing them over their length of type =Nat=:
+
+    #+begin_example
+    data Vector (A : Set) : Nat → Set where
+      []  : Vector A zero
+      _∷_ : {n : Nat} → A → Vector A n → Vector A (suc n)
+    #+end_example
+
+    Notice that the parameter =A= is bound once for all constructors, while the
+    index ={n : Nat}= must be bound locally in the constructor =_∷_=.
+
+    Indexed datatypes can also be used to describe predicates, for example the
+    predicate =Even : Nat → Set= can be defined as follows:
+
+    #+begin_example
+    data Even : Nat → Set where
+      even-zero  : Even zero
+      even-plus2 : {n : Nat} → Even n → Even (suc (suc n))
+    #+end_example
+
+    The general form of the definition of a (parametrized, indexed) datatype =D=
+    is the following
+    #+begin_example
+    data D (x₁ : P₁) ... (xₖ : Pₖ) : (y₁ : Q₁) → ... → (yₗ : Qₗ) → Set ℓ where
+      c₁ : A₁
+      ...
+      cₙ : Aₙ
+    #+end_example
+
+    where the types =A₁=, …, =Aₙ= are function types of the form
+    #+begin_example
+    (z₁ : B₁) → ... → (zₘ : Bₘ) → D x₁ ... xₖ t₁ ... tₗ
+    #+end_example
+*** Function types
+    Function types are written =(x : A) → B=, or in the case of non-dependent
+    functions simply =A → B=. For instance, the type of the addition function
+    for natural numbers is:
+    #+begin_example
+    Nat → Nat → Nat
+    #+end_example
+    and the type of the addition function for vectors is:
+    #+begin_example
+    (A : Set) → (n : Nat) → (u : Vec A n) → (v : Vec A n) → Vec A n
+    #+end_example
+
+    where =Set= is the type of sets and =Vec A n= is the type of vectors with =n=
+    elements of type =A=. Arrows between consecutive hypotheses of the form =(x :
+    A)= may also be omitted, and =(x : A) (y : A)= may be shortened to =(x y : A)=:
+    #+begin_example
+    (A : Set) (n : Nat) (u v : Vec A n) → Vec A n
+    #+end_example
+
+    Functions are constructed by lambda abstractions, which can be either typed
+    or untyped. For instance, both expressions below have type =(A : Set) → A → A=
+    (the second expression checks against other types as well):
+    #+begin_example
+    example₁ = λ (A : Set) (x : A) → x
+    example₂ = λ A x → x
+    #+end_example
+
+    The application of a function =f : (x : A) → B= to an argument =a : A= is
+    written =f a= and the type of this is \texttt{B[x := a]}.
+
+    Some notation conventions follow.
+    - Function types:
+      #+begin_example
+      prop₁ : ((x : A) (y : B) → C) is-the-same-as   ((x : A) → (y : B) → C)
+      prop₂ : ((x y : A) → C)      is-the-same-as   ((x : A)(y : A) → C)
+      prop₃ : (∀ (x : A) → C)  is-the-same-as   ((x : A) → C)
+      prop₄ : (∀ x → C)        is-the-same-as   ((x : _) → C)
+      prop₅ : (∀ x y → C)      is-the-same-as   (∀ x → ∀ y → C)
+      #+end_example
+
+    - Functional abstraction:
+      #+begin_example
+      (λ x y → e)                    is-the-same-as   (λ x → (λ y → e))
+      #+end_example
+
+    - Functional application:
+      #+begin_example
+      (f a b)                       is-the-same-as    ((f a) b)
+      #+end_example
+
+*** Record types
+    The general form of a record declaration is as follows:
+    #+begin_example
+    record <recordname> <parameters> : Set <level> where
+      <directives>
+      constructor <constructorname>
+      field
+        <fieldname1> : <type1>
+        <fieldname2> : <type2>
+        -- ...
+      <declarations>
+    #+end_example
+    All the components are optional, and can be given in any order. In
+    particular, fields can be given in more than one block, interspersed with
+    other declarations. Each field is a component of the record. Types of later
+    fields can depend on earlier fields.
+
+    The directives available are eta-equality, no-eta-equality, inductive and
+    co-inductive. For more information visit cite:agda-doc.
+** Agda library code
+   Hi
+*** All
+    This is a helper module which imports everything in the library. It is used
+    to check all the library at once.
+
+    #+include: "latex/All.tex" export latex
+*** Base
+    This module contains some definitions and helper functions which are used
+    throughout the project. It includes, for instance, the definition of a
+    Noetherian relation.
+
+  #+include: "latex/Base.tex" export latex
+*** Classical
+  #+include: "latex/Classical.tex" export latex
+*** Formula
+    The definition of formulas in the language of interpretability logics.
+
+  #+include: "latex/Formula.tex" export latex
+*** GeneralizedFrame/Properties
+  #+include: "latex/GeneralizedFrame/Properties.tex" export latex
+*** GeneralizedFrame
+  #+include: "latex/GeneralizedFrame.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/GenericFrameCond
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/GenericFrameCond.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/Luka
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/Luka.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/M
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/M.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/M₀
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/M₀.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/P₀
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/P₀.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/R
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/R.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/R²
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/R².tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/R¹
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/R¹.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/Rⁿ
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/Rⁿ.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/R₁
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₁.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/R₂
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₂.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/Verbrugge
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/Verbrugge.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/Vukovic
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/Vukovic.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties.tex" export latex
+*** GeneralizedVeltmanSemantics
+  #+include: "latex/GeneralizedVeltmanSemantics.tex" export latex
+*** IL
+  #+include: "latex/IL.tex" export latex
+*** IL/Edsl
+  #+include: "latex/IL/Edsl.tex" export latex
+*** IL/Properties
+  #+include: "latex/IL/Properties.tex" export latex
+*** OrdinaryFrame
+  #+include: "latex/OrdinaryFrame.tex" export latex
+*** OrdinaryVeltmanSemantics/Finite
+  #+include: "latex/OrdinaryVeltmanSemantics/Finite.tex" export latex
+*** OrdinaryVeltmanSemantics/Properties/M
+  #+include: "latex/OrdinaryVeltmanSemantics/Properties/M.tex" export latex
+*** OrdinaryVeltmanSemantics/Properties/M₀
+  #+include: "latex/OrdinaryVeltmanSemantics/Properties/M₀.tex" export latex
+*** OrdinaryVeltmanSemantics/Properties/P₀
+  #+include: "latex/OrdinaryVeltmanSemantics/Properties/P₀.tex" export latex
+*** OrdinaryVeltmanSemantics/Properties/R
+  #+include: "latex/OrdinaryVeltmanSemantics/Properties/R.tex" export latex
+*** OrdinaryVeltmanSemantics/Properties
+  #+include: "latex/OrdinaryVeltmanSemantics/Properties.tex" export latex
+*** OrdinaryVeltmanSemantics
+  #+include: "latex/OrdinaryVeltmanSemantics.tex" export latex
+*** Principles
+  #+include: "latex/Principles.tex" export latex

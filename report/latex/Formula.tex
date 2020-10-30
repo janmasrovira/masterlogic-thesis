@@ -1,0 +1,65 @@
+\begin{spverbatim}
+module Formula where
+
+open import Agda.Builtin.Nat using (Nat; _-_)
+open import Agda.Builtin.Char using (Char; primCharToNat)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Function using (_∘_)
+open import Relation.Binary using (REL; Rel)
+
+Var : Set
+Var = Nat
+
+infixr 20 _↝_
+infix 50 _▷_
+
+
+data Fm : Set where
+  var : Var → Fm
+  ⊥' : Fm
+  _↝_ : Fm → Fm → Fm
+  _▷_ : Fm → Fm → Fm
+
+car : Char → Fm
+car c = var (primCharToNat c - primCharToNat 'a')
+
+infix 60 ¬'_
+¬'_ : Fm → Fm
+¬' a = a ↝ ⊥'
+
+∼ : Fm → Fm
+∼ (var x) = ¬' (var x)
+∼ ⊥' = ¬' ⊥'
+∼ a@(x ↝ var _) = ¬' a
+∼ (a ↝ ⊥') = a
+∼ a@(_ ↝ _ ↝ _) = ¬' a
+∼ a@(_ ↝ _ ▷ _) = ¬' a
+∼ a@(_ ▷ _) = ¬' a
+
+⊤' : Fm
+⊤' = ¬' ⊥'
+
+infix 30 _∨_
+_∨_ : Fm → Fm → Fm
+a ∨ b = ¬' a ↝ b
+
+infixr 40 _∧_
+_∧_ : Fm → Fm → Fm
+a ∧ b = ¬' (a ↝ ¬' b)
+
+infix 70 □_
+□_ : Fm → Fm
+□_ a = ¬' a ▷ ⊥'
+
+infix 70 ♢_
+♢_ : Fm → Fm
+♢_ a = ¬' □ (¬' a)
+
+infixr 15 _↔_
+_↔_ : Fm → Fm → Fm
+a ↔ b = (a ↝ b) ∧ (b ↝ a)
+
+infix 50 _◁_
+_◁_ : Fm → Fm → Fm
+a ◁ b = ¬' (a ▷ ¬' b)
+\end{spverbatim}

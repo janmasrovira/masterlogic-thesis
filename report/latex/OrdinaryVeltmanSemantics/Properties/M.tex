@@ -1,0 +1,150 @@
+\begin{spverbatim}
+module OrdinaryVeltmanSemantics.Properties.M where
+
+open import Function.Equivalence using (_⇔_; equivalence; module Equivalence)
+
+open import Agda.Builtin.Nat using (Nat; suc; zero)
+open import Agda.Builtin.Unit using (⊤; tt)
+open import Agda.Primitive using (Level; lzero; lsuc; _⊔_)
+open import Data.Empty using (⊥; ⊥-elim)
+open import Data.Product using (Σ; proj₁; proj₂; _×_) renaming (_,_ to _⸴_)
+open import Data.Sum using (_⊎_; inj₁; inj₂; [_,_])
+open import Function using (_∘_; const; case_of_; id)
+open import Function.Equality using (_⟨$⟩_)
+open import Relation.Binary using (REL; Rel; Transitive)
+open import Relation.Nullary using (yes; no; ¬_)
+open import Relation.Unary using (Pred; _∈_; _∉_; Decidable; Satisfiable; _⊆_; _∩_; ｛_｝)
+open import Relation.Binary using (Irreflexive) renaming (Decidable to Decidable₂)
+open import Relation.Binary.PropositionalEquality using (_≡_; refl; subst; trans; sym)
+
+open import Formula using (Fm; Var; _↝_; ⊥'; _▷_; var; ⊤'; ¬'_; □_; ♢_; _∧_; _∨_; car)
+open import OrdinaryVeltmanSemantics using (Frame; Model; _,_⊮_; _,_⊩_; impl; var; rhd; bot; _*⊩_; _*⊮_; Valuation; model; DecidableModel)
+open import OrdinaryVeltmanSemantics.Properties using (module Extended; ⊩∧; ⊩□; R-Irreflexive
+  ; ⊩→¬⊮)
+open import Base using (_⇒_; _⇐_; Decidable₃)
+import Principles as P
+
+private
+  variable
+    ℓW ℓR ℓS : Level
+
+M-condition : ∀ {W R S} → Frame {ℓW} {ℓR} {ℓS} W R S → Set (ℓW ⊔ ℓR ⊔ ℓS)
+M-condition {W = W} {R = R} {S = S} F = ∀ {w x y z} → S w x y → R y z → R x z
+  where open Frame F
+
+
+module M-soundness
+  {W R S V}
+  {M : Model {ℓW} {ℓR} {ℓS} W R S V}
+  (M,_⊩?_ : DecidableModel M)
+  (∈?S : Decidable₃ S)
+  where
+
+  open Model M
+  open Frame F
+  open Extended M,_⊩?_ ∈?S
+
+  ⊩M : ∀ {w A B C} → M-condition (Model.F M) → M , w ⊩ A ▷ B ↝ (A ∧ □ C) ▷ (B ∧ □ C)
+  ⊩M {w} {A} {B} {C} c = ⊩↝ ⇐ λ A▷B → ⊩▷ ⇐ λ Rwu x → case ⊩∧ ⇒ x of λ { (uA ⸴ u□C) →
+    case (⊩▷ ⇒ A▷B) Rwu uA of λ { (z ⸴ Swuz ⸴ snd) → z ⸴ Swuz ⸴ (⊩∧ ⇐ (snd ⸴ (⊩□ ⇐
+    (λ {v} Rzv → (⊩□ ⇒ u□C) (c Swuz Rzv)))))}}
+
+
+module M-completeness
+  {W R S}
+  {F : Frame {lzero} {lzero} {lzero} W R S}
+  (_≟_ : Decidable₂ {_} {W} _≡_)
+  (R? : Decidable₂ R)
+  (∈?S : Decidable₃ S)
+  (dec : ∀ V → DecidableModel (model {V = V} F))
+  where
+  open Frame F
+
+  F*⊩M : Set _
+  F*⊩M = P.M (F *⊩_)
+
+  -- If a frame satisfies the M principle for any valuation, then it must
+  -- satisfy the M condition.
+  *⊩M : F*⊩M → M-condition F
+  *⊩M f {w} {w₁} {w₂} {w₃} Sww₁w₂ Rw₂w₃ with R? w₁ w₃
+  ... | yes y = y
+  ... | no ¬Rw₁w₃ =
+    -- ⊥-elim (case (⊩▷ ⇒ (⊩↝ ⇒ (f (var a) (var b) (var c)) V w) w⊩A▷B) Rww₁ w₁⊩A∧□C of
+    ⊥-elim (case (⊩▷ ⇒ (⊩↝ ⇒ f V w) w⊩A▷B) Rww₁ w₁⊩A∧□C of
+    λ { (u ⸴ Sww₁w₂ ⸴ w₂⊩B∧□C) → case only-w₂⊩B (proj₁ (⊩∧ ⇒ w₂⊩B∧□C) ) of
+    λ {refl →  let chk : model {V = V} F , w₂ ⊩ □ var c
+                   chk = proj₂ (⊩∧ ⇒ w₂⊩B∧□C)
+                in ⊩→¬⊮ ((⊩□ ⇒ chk) Rw₂w₃) (var w₃⊮C)}
+    })
+    where
+    pattern a = 0
+    pattern b = 1
+    pattern c = 2
+    V : Valuation F
+    V z v with z ≟ w₁
+    ... | yes refl = case v of λ { a → ⊤ ; (suc x) → ⊥}
+    ... | no _ with z ≟ w₂
+    ... | yes refl = case v of λ { a → ⊥ ; b → ⊤ ; (suc (suc x)) → ⊥}
+    ... | no _ with z ≟ w₃
+    ... | yes refl = ⊥
+    ... | no _ with R? w₁ z
+    ... | yes y = case v of λ {a → ⊥ ; b → ⊥ ; (suc (suc x)) → ⊤}
+    ... | no _ = ⊥
+    open Extended (dec V) ∈?S
+    Rww₁ : R w w₁
+    Rww₁ = proj₁ (Sw⊆R[w]² Sww₁w₂)
+    w₃⊮C : c ∉ V w₃
+    w₃⊮C x with w₃ ≟ w₁
+    ... | yes refl = x
+    ... | no _ with w₃ ≟ w₂
+    ... | yes refl = x
+    ... | no _ with w₃ ≟ w₃
+    ... | yes refl = x
+    ... | no n = n refl
+    only-w₁⊩A : ∀ {u} → model {V = V} F , u ⊩ var a → u ≡ w₁
+    only-w₁⊩A {u} (var x) with u ≟ w₁
+    ... | yes refl = refl
+    ... | no _ with u ≟ w₂
+    ... | yes refl = ⊥-elim x
+    ... | no _ with u ≟ w₃
+    ... | yes refl = ⊥-elim x
+    ... | no _ with R? w₁ u
+    ... | yes r = ⊥-elim x
+    ... | no _ = ⊥-elim x
+    only-w₂⊩B : ∀ {u} → model {V = V} F , u ⊩ var b → u ≡ w₂
+    only-w₂⊩B {u} (var x) with u ≟ w₁
+    ... | yes refl = ⊥-elim x
+    ... | no _ with u ≟ w₂
+    ... | yes refl = refl
+    ... | no _ with u ≟ w₃
+    ... | yes refl = ⊥-elim x
+    ... | no _ with R? w₁ u
+    ... | yes r = ⊥-elim x
+    ... | no nr = ⊥-elim x
+    w₂⊩B : b ∈ V w₂
+    w₂⊩B with w₂ ≟ w₁
+    ... | yes refl = ⊥-elim (¬Rw₁w₃ Rw₂w₃)
+    ... | no _ with w₂ ≟ w₂
+    ... | yes refl = tt
+    ... | no n = ⊥-elim (n refl)
+    w⊩A▷B : model {V = V} F , w ⊩ var a ▷ var b
+    w⊩A▷B = ⊩▷ ⇐ λ {u} x uA → case only-w₁⊩A uA of λ { refl → w₂ ⸴ Sww₁w₂ ⸴ var w₂⊩B}
+    w₁⊩A : a ∈ V w₁
+    w₁⊩A with w₁ ≟ w₁
+    ... | yes refl = tt
+    ... | no n = ⊥-elim (n refl)
+    w₁⊩□C' : ∀ {u} → R w₁ u → c ∈ V u
+    w₁⊩□C' {u} x with u ≟ w₁
+    ... | yes refl = ⊥-elim (R-Irreflexive F refl x)
+    ... | no _ with u ≟ w₂
+    ... | yes refl = ¬Rw₁w₃ (R-trans x Rw₂w₃)
+    ... | no _ with u ≟ w₃
+    ... | yes refl = ¬Rw₁w₃ x
+    ... | no _ with R? w₁ u
+    ... | yes r = tt
+    ... | no nr = nr x
+    w₁⊩□C : model {V = V} F , w₁ ⊩ □ var c
+    w₁⊩□C = ⊩□ ⇐ λ Rw₁v → var (w₁⊩□C' Rw₁v)
+    w₁⊩A∧□C : model {V = V} F , w₁ ⊩ var a ∧ □ var c
+    w₁⊩A∧□C = ⊩∧ ⇐ (var w₁⊩A ⸴ w₁⊩□C)
+\end{spverbatim}
