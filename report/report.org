@@ -254,36 +254,94 @@ thanks
    \prin{ZF} plus the axiom of constructibility ($V=L$) serves as a proof of
    relative consistency of the continuum hypothesis with respect to \prin{ZF}.
 
-   Interpretability logics logics study the behaviour
+   Interpretability logics, as the name foretells, studies the behaviour of
+   interpretations. There are a number of things that we need to specify. We do
+   not study the behaviour of interpretations between two arbitrary theories.
+   Instead, we fix a base theory $T$ and we only consider interpretability
+   between finite extensions of such theory. Thus when we say that $T+A$
+   interprets $T+B$ we assume that $A$ and $B$ are formulas. In interpretability
+   logics we only consider first order arithmetical theories which are
+   recursively enumerable and are sequential (?). Moreover, we are only
+   concerned with the provable, within $T$, interpretability properties. In
+   other words, we study the behaviour of the binary interpretability predicate
+   $\sf{Int}_T$. Naturally, the predicate $\sf{Int}_T(A,B)$ must hold when we
+   can formalize in $T$ that $T+A$ interprets $T+B$. For a theory $T$, we denote
+   the logic that describes the behaviour of the interpretability predicate of
+   $T$ as $\sf{IL}(T)$. The language of $\sf{IL}(T)$ extends the language of
+   \sf{GL} with the binary modal operator $▷$, thus the language becomes
+   $⟨⊥,→,□,▷⟩$. In order to give a more detailed definition of $\sf{IL}(T)$ we
+   first define what is an /arithmetical realization/. We say that a map $*$
+   from formulas in $\sf{IL}(T)$ to sentences in the language of $T$. Moreover,
+   it must satisfy the following constraints:
+   \begin{flalign*}
+   ⊥^* \text{ is mapped to a contradiction;} \\
+   (A→B)^*= A^*→B^* ; \\
+   (A▷B)^*= $\sf{Int}_T(⌜A⌝,⌜B⌝)$ ; \\
+   \end{flalign*}
 
-   mention $M$, $P$ and $R$.
+
+   mention \sf{M}, $P$ and $R$.
 ** Original contributions
    This work includes the following original contributions:
-   1. Generalized frame condition for $R₁$ (in collaboration with Luka). [[theorem:R₁][Link]];
-   2. generalized frame condition for $Rⁿ$. [[theorem:Rⁿ][Link]];
-   3. analysis of transitivity. [[theorem:trans][Link]];
-   4. every Agda proof.
-   5. Embedding of intuitionistic logic into Martin Löf's logical framework.
-      This result is expected. Our contribution has been to provide detailed
-      definitions and proofs, which we were unable to find somewhere else.
+   1. We have found a generalized frame condition for $\prin{R₁}$ (in
+      collaboration with Mikec). [[theorem:R₁][Link]];
+   2. we have found a generalized frame condition for $\prin{Rⁿ}$. [[theorem:Rⁿ][Link]];
+   3. we performed a detailed analysis of the quasi-transitivity conditions
+      available in the literature for generalized semantics. [[theorem:trans][Link]];
+   4. we discovered a flawed proof in a published article. [[sec:flawed-proof][Link]];
+   5. we worked out all the details of a proof in an unpublished manuscript by
+      Verbrugge (cite:Verbrugge). [[sec:verbrugge][Link]];
+   6. we present the implementation of a verified language to write Hilbert
+      style proofs (for the logic \prin{IL}) in Agda with paper-like syntax.
+      [[sec:edsl][Link]];
+   7. we give details for an embedding of propositional intuitionistic logic
+      into Martin Löf's logical framework. This result is expected. Our
+      contribution has been to provide detailed definitions and proofs, which we
+      were unable to find somewhere else. [[sec:def-new-types][Link]];
+   8. during the development of this project we have coauthored two publications:
+      - /An overview of Generalised Veltman Semantics/ (cite:joosten2020overview);
+      - /Generalised Veltman Semantics in Agda/ (cite:masrovira2020generalised).
+   9. we have implemented an Agda library for interpretability logics which
+      includes every theorem and proof marked with {{{agda}}} that is presented
+      in this document. It is worth pointing out that we started from scratch
+      since there was no previous published work of interpretability logics in
+      Agda, or in any other proof assistant. The code comprises ~5000
+      lines of code and is freely available online:
+      \begin{center}
+      \href{https://gitlab.com/janmasrovira/interpretability-logics}
+            {gitlab.com/janmasrovira/interpretability-logics}
+      \end{center}
+      We also provide the code in the annex of this document. [TODO: ADD LINK]
+   10. we have reimplemented a small portion of the Agda library in the Coq proof
+       assistant. This portion includes the definitions of the theorems and
+       proofs marked with {{{coq}}}. Namely this subset is composed of the definition
+       of ordinary Veltman semantics, the axiomatization of the logic \il{} and
+       its proof of soundness. The code comprises ~500 lines of code and is
+       available online:
+       \begin{center}
+       \href{https://gitlab.com/janmasrovira/coq-interpretability-logics}
+            {gitlab.com/janmasrovira/coq-interpretability-logics}
+       \end{center}
 
 ** Language
    <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
    Formulas are defined recursively as usual:
-   1. /Variable/. If $x$ is a variable, then $x$ is a formula;
+   1. /Variable/. If $x$ is a variable, then $x$ is a formula. We assume that we
+      have an infinite countable set of variables. In particular we shall define
+      $\var{}≔ℕ$. However, we use non-capital letters $a,b,c,x,y,z…$ to refer to
+      variables.
    2. /Bottom/. The constant $⊥$ is a formula;
-   3. /Implication/. If $A$ and $B$ are formulas, then $A→B$ is a formula;
-   4. /Interprets/. If $A$ and $B$ are formulas, then $A▷B$ is a formula.
-   We denote the set of valid formulas as \fm{}. We define $\var{}≔ℕ$. However, we
-   use non-capital letters $a,b,c,x,y,z…$ to refer to variables.
+   3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula;
+   4. /Interprets/. If $A$ and $B$ are formulas, then $(A▷B)$ is a formula.
+   We denote the set of valid formulas as \fm{}.
 
    We define the usual operators and constants in the following way:
    1. $¬ A ≔ A → ⊥$;
    2. $⊤ ≔ ¬ ⊥$;
-   3. $A ∨ B ≔ ¬ A → B$;
+   3. $A ∨ B ≔ (¬ A) → B$;
    4. $A ∧ B ≔ ¬ (A → ¬ B)$;
    5. $A ↔ B ≔ (A → B) ∧ (B → A)$;
-   6. $□ A ≔ ¬ A ▷ ⊥$;
+   6. $□ A ≔ (¬ A) ▷ ⊥$;
    7. $♢ A ≔ ¬ □ ¬ A$.
 
    The precedence (from higher to lower) of the operators is in the following
@@ -303,16 +361,16 @@ thanks
       has been tagged with it;
    5. {{{coq}}} this is Coq's logo. Each proof that is formalized in Coq
       has been tagged with it;
-   6. When we write a dot after the quantification of some variables, the scope of
+   6. when we write a dot after the quantification of some variables, the scope of
       the variables extends to the rightmost part of what follows. Hence the
       formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$.
 
 
-   In Section [[sec:trans]] and [[sec:frame-condition]] we present some diagrams. We use
-   straight arrows to represent the $R$ relation and curvy arrows to represent
-   some $S_w$ relation. We sometimes use red ink when an arrow is in a positive
-   position in the formula to emphasize its role. We use discontinuous arrows
-   when it is quantified universally.
+   In Section [[sec:trans]] and Part [[sec:frame-condition]] we present some diagrams.
+   We use straight arrows to represent the $R$ relation and curvy arrows to
+   represent some $S_w$ relation. We sometimes use red ink when an arrow is in a
+   positive position in the formula to emphasize its role. We use discontinuous
+   arrows when it is quantified universally.
 
    We believe that diagrams can help the reader have a better understanding of
    the underlying formula, however, they are not meant to be a replacement as
@@ -320,8 +378,13 @@ thanks
 
 ** Logic \il
    <<sec:il>>
-   The logic \il{} encompasses all classical tautologies in the new language plus
-   the following axiom schemes:
+
+   {{{begindef}}} The logic \il{} encompasses all classical theorems in the new
+   language (given by C1, C2 and C3), all theorems of \prin{GL} in the new
+   language (given by L and K) plus some new axiom schemes:
+   - C1: $A → (B → A)$;
+   - C2: $(A → (B → C)) → ((A → B) → (A → C))$;
+   - C3: $(¬ A → ¬ B) → (B → A)$;
    - K: $□ (A → B) → □ A → □ B$;
    - L: $□ (□ A → A) → □ A$;
    - J1: $□ (A → B) → A ▷ B$;
@@ -329,11 +392,13 @@ thanks
    - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$;
    - J4: $A ▷ B → ♢ A → ♢ B$;
    - J5: $♢ A ▷ A$.
-   If $A$ is an instantiation of any of the previous axiom schemes, then
-   $⊢_{\il}A$. Additionally it has the following rules:
+   If $A$ is an instantiation of any of the previous axiom schemes, then $A$ is
+   a theorem of $\il{}$, which we denote with $⊢_{\il}A$. Additionally it has
+   the following rules:
    - Necessitation: if $⊢_{\il}A$ then $⊢_{\il}□A$;
    - modus ponens: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$;
    - identity: If $A∈Π$ then $Π⊢_{\il}A$.
+   {{{enddef}}}
 
    {{{beginremark}}} While it is acceptable to have an infinite set of
    assumptions $Π$, when verifying properties in Agda we have restricted
@@ -341,20 +406,10 @@ thanks
    proof. This restriction is not meaningful in the context of this project.
    {{{endremark}}}
 
-   {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
-   $Π⊢_{\il}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
-   then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{coq}}} {{{endproof}}}
-
-   {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
-   semantics*. That is, if $Π⊢_{\il}A$ and $M$ is a generalized model with a world
-   $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
-
-   {{{beginproof}}} {{{agda}}} We have verified this in Agda for all the presented
-   quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
-
-   {{{begintheorem}}} *Weakening*. If
-   $Π⊢_{\il}A$ then $B,Π⊢_{\il}A$. {{{endtheorem}}}
-   {{{beginproof}}} {{{agda}}} {{{endproof}}}
+   {{{begintheorem}}} *Weakening*. If $Π⊢_{\il}A$ then $B,Π⊢_{\il}A$.
+   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The proof is trivial. In Agda it
+   is done by an induction on the proof. We only need to take care of shifting
+   one position the references to assumptions. {{{endproof}}}
 
    {{{begintheorem}}} *Deduction*.
    $Π⊢_{\il}A→B$ iff $A,Π⊢_{\il}B$. {{{endtheorem}}}
@@ -368,8 +423,9 @@ thanks
    substitution then $σ[Π]⊢_{\il}σ(A)$. {{{endtheorem}}} {{{beginproof}}}
    {{{agda}}} {{{endproof}}}
 
-   {{{begintheorem}}} *Conjunction*. $Π⊢_{\il}A∧B$ iff $Π⊢_{\il}A$ and $Π⊢_{\il}B$.
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{endproof}}}
+   {{{begintheorem}}} <<thm:conjunction>> \label{thm:conjunction} *Conjunction*.
+   $Π⊢_{\il}A∧B$ iff $Π⊢_{\il}A$ and $Π⊢_{\il}B$. {{{endtheorem}}}
+   {{{beginproof}}} {{{agda}}} {{{endproof}}}
 
    {{{begintheorem}}} The following holds:
     1. $⊢_{\il} A → A$;
@@ -396,8 +452,31 @@ thanks
     22. $⊢_{\il} A ↔ B ⇒ ⊢_{\il} ♢ A ↔ ♢ B$;
     23. $⊢_{\il} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
     24. $⊢_{\il} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
-   {{{endtheorem}}}
-   {{{beginproof}}} {{{agda}}}
+   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} All proofs have been formalized
+   in Agda. Here we only show two examples. Consider theorems 16 and 17, namely
+   $A ▷ (A ∨ ♢ A)$ and $(A ∨ ♢ A) ▷ A$. To prove 16 we assume that we have
+   already showed theorem 14, that is, $⊢_{\il}A→A∨B$.
+   \begin{flalign*}
+   &1.\ A→A∨♢A & \text{by $A→A∨B$} \\
+   &2.\ □ (A→A∨♢A) & \text{by Nec} \\
+   &3.\ □ (A→A∨♢A)→A▷(A∨♢A) & \text{by J1} \\
+   &4.\ A▷(A∨♢A) & \text{by MP on 2, 3}
+   \end{flalign*}
+   To prove 17 we assume we have already showed theorem 2, that is,
+   $⊢_{\il}A▷A$.
+   \begin{flalign*}
+   &1.\ A▷A &\text{} \\
+   &2.\ (♢A▷A) &\text{by J5} \\
+   &3.\ (A▷A)∧(♢A▷A) &\text{Conjunction theorem (\ref{thm:conjunction})} \\
+   &4.\ (A▷A)∧(♢A▷A)→ ((A ∨ ♢ A) ▷ A)& \text{by J3} \\
+   &5.\ (A ∨ ♢ A) ▷ A & \text{by MP 3, 4}
+   \end{flalign*}
+
+  # ⇨ : Π ⊢ A ▷ (A ∨ ♢ A)
+  # ⇨ = MP J1 (nec ⊢A↝A∨B)
+  # ⇦ : Π ⊢ (A ∨ ♢ A) ▷ A
+  # ⇦ = MP J3 (⊢∧ ⇐ (⊢A▷A ⸴ J5))
+
    {{{endproof}}}
 
 ** Semantics
@@ -419,7 +498,6 @@ thanks
     5. if $wRu$ and $uRv$ then $uS_wv$;
     6. for every $w$, $S_w$ is transitive.
     {{{enddef}}}
-
 
     {{{begindef}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$ is a structure
     constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×\var{}$. If
@@ -458,6 +536,10 @@ thanks
     {{{endtheorem}}} {{{beginproof}}} {{{agda}}} We have implemented a verified
     algorithm that given the mentioned conditions, a world $w$ and a formula
     $A$, constructs either a proof of $M,w⊩A$ or a proof of $M,w⊮A$. {{{endproof}}}
+
+    {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
+    $Π⊢_{\il}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
+    then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{coq}}} {{{endproof}}}
 
 *** Generalized Veltman semantics
     {{{begindef}}} cite:mikec2019interpretability A generalized Veltman \gls{gvf}
@@ -511,6 +593,13 @@ thanks
     {{{agda}}}
     {{{endproof}}}
 
+    {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
+    semantics*. That is, if $Π⊢_{\il}A$ and $M$ is a generalized model with a world
+    $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
+
+    {{{beginproof}}} {{{agda}}} We have verified this in Agda for all the presented
+    quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
+
 ** Transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
    for the quasi-transitivity condition which we present in the table below. See
@@ -557,6 +646,7 @@ thanks
  {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
  \[M≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the monotonicity condition. The
  following implications hold.
+ {{{jan(rename M to avoid clash with montaga's principle)}}}
 
  The first item should be read as $F⊨M∧(1)→(2)$.
 
@@ -1022,7 +1112,7 @@ thanks
    The theorems of $\textsf{ILM}$ are the set of interpretability principles
    that are always provable in theories which are $Σ_1$ sound, have full
    induction and prove consistency of any of its finite subsystems
-   (cite:visser1997overview,joosten2020overview). An example of such theory is
+   (cite:visser1997overview,joosten2020overview). An example of such a theory is
    $\textsf{PA}$.
 *** Ordinary semantics
    The frame condition for \prin{M} for ordinary semantics, which we write as $\kord{M}$,
@@ -2835,12 +2925,14 @@ thanks
 
      We are now ready to prove the theorem.
      \begin{flalign*}
-     \sf{thm} ≔ λn→ \sf{case}_ℕ\ &(λn'→ \sf{add}\ n' 𝟬 ≡_ℕn')\\
+     \sf{thm} ≔ λn→ \sf{case}_ℕ\ &(λn'→ \sf{add}\ n'\ 𝟬 ≡_ℕn')\\
                 & (\sf{refl}\ ℕ\ 𝟬) &\text{base case} \\
                 & (λm→ λp→ \sf{lemma}\ (\sf{add}\ m\ 𝟬)\ m\ p) &\text{inductive case} \\
                 & n \\
      \end{flalign*}
 
+*** Final remarks
+    With this we conclude the presentation of Martin's Löf logical framework.
 ** Martin-Löf dependent type theory
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
    can serve as the basis for constructive mathematics, furthermore, it can be
@@ -5563,6 +5655,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    proofs in Agda using paper-like syntax.
 
 *** An eDSL for syntactic proofs
+    <<sec:edsl>>
      In this section we present a language for writing Hilbert style proofs for
      logic \il. This language was first presented by the author of this paper in
      cite:slug for logic $K$.
