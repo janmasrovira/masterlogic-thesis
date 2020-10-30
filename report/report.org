@@ -276,7 +276,7 @@ thanks
    \begin{flalign*}
    ⊥^* \text{ is mapped to a contradiction;} \\
    (A→B)^*= A^*→B^* ; \\
-   (A▷B)^*= $\sf{Int}_T(⌜A⌝,⌜B⌝)$ ; \\
+   (A▷B)^*= \sf{Int}_T(⌜A⌝,⌜B⌝) ; \\
    \end{flalign*}
 
 
