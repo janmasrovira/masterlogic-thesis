@@ -5819,21 +5819,21 @@ title=Bibliography
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Luka.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/M
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/M.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/M₀
+*** GeneralizedVeltmanSemantics/Properties/M\sf{₀}
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/M₀.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/P₀
+*** GeneralizedVeltmanSemantics/Properties/P\sf{₀}
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/P₀.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/R²
+*** GeneralizedVeltmanSemantics/Properties/R\sf{²}
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R².tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/R¹
+*** GeneralizedVeltmanSemantics/Properties/R\sf{¹}
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R¹.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/Rⁿ
+*** GeneralizedVeltmanSemantics/Properties/R\sf{ⁿ}
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Rⁿ.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/R₁
+*** GeneralizedVeltmanSemantics/Properties/R\sf{₁}
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₁.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/R₂
+*** GeneralizedVeltmanSemantics/Properties/R\sf{₂}
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₂.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/Verbrugge
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Verbrugge.tex" export latex
@@ -5855,9 +5855,9 @@ title=Bibliography
   #+include: "latex/OrdinaryVeltmanSemantics/Finite.tex" export latex
 *** OrdinaryVeltmanSemantics/Properties/M
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/M.tex" export latex
-*** OrdinaryVeltmanSemantics/Properties/M₀
+*** OrdinaryVeltmanSemantics/Properties/M\sf{₀}
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/M₀.tex" export latex
-*** OrdinaryVeltmanSemantics/Properties/P₀
+*** OrdinaryVeltmanSemantics/Properties/P\sf{₀}
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/P₀.tex" export latex
 *** OrdinaryVeltmanSemantics/Properties/R
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/R.tex" export latex
