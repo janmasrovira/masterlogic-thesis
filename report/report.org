@@ -26,7 +26,7 @@
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
 
-#+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Firebrick4,citecolor=Green4}
+#+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Salmon4,citecolor=Green4}
 #+latex_header: \newcommand{\ie}[0]{i.e.}
 #+latex_header: \newcommand{\todo}[0]{\textcolor{red}{pending}}
 #+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
@@ -5793,77 +5793,110 @@ title=Bibliography
 ** Agda library code
    Hi
 *** All
+    <<src:all>>
     This is a helper module which imports everything in the library. It is used
     to check all the library at once.
 
     #+include: "latex/All.tex" export latex
 *** Base
+    <<src:base>>
     This module contains some definitions and helper functions which are used
     throughout the project. It includes, for instance, the definition of a
     Noetherian relation.
 
   #+include: "latex/Base.tex" export latex
 *** Classical
+    <<src:classical>>
   #+include: "latex/Classical.tex" export latex
 *** Formula
+    <<src:formula>>
     The definition of formulas in the language of interpretability logics.
 
   #+include: "latex/Formula.tex" export latex
 *** GeneralizedFrame/Properties
+    <<src:generalizedframe.properties>>
   #+include: "latex/GeneralizedFrame/Properties.tex" export latex
 *** GeneralizedFrame
+    <<src:generalizedframe>>
   #+include: "latex/GeneralizedFrame.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/GenericFrameCond
+    <<src:generalizedveltmansemantics.properties.genericframecond>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/GenericFrameCond.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/Luka
+    <<src:generalizedveltmansemantics.properties.luka>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Luka.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/M
+    <<src:generalizedveltmansemantics.properties.m>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/M.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/M\sf{₀}
+    <<src:generalizedveltmansemantics.properties.msub0>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/M₀.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/P\sf{₀}
+    <<src:generalizedveltmansemantics.properties.psub0>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/P₀.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R
+    <<src:generalizedveltmansemantics.properties.r>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{²}
+    <<src:generalizedveltmansemantics.properties.rsup2>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R².tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{¹}
+    <<src:generalizedveltmansemantics.properties.rsup1>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R¹.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{ⁿ}
+    <<src:generalizedveltmansemantics.properties.rsupn>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Rⁿ.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{₁}
+    <<src:generalizedveltmansemantics.properties.rsub1>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₁.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{₂}
+    <<src:generalizedveltmansemantics.properties.rsub2>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₂.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/Verbrugge
+    <<src:generalizedveltmansemantics.properties.verbrugge>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Verbrugge.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/Vukovic
+*** GeneralizedVeltmanSemantics/Properties/Vukovic :noexport:
+    <<src:generalizedveltmansemantics.properties.vukovic>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Vukovic.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties
+    <<src:generalizedveltmansemantics.properties>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties.tex" export latex
 *** GeneralizedVeltmanSemantics
+    <<src:generalizedveltmansemantics>>
   #+include: "latex/GeneralizedVeltmanSemantics.tex" export latex
 *** IL
+    <<src:il>>
   #+include: "latex/IL.tex" export latex
 *** IL/Edsl
+    <<src:il.edsl>>
   #+include: "latex/IL/Edsl.tex" export latex
 *** IL/Properties
+    <<src:il.properties>>
   #+include: "latex/IL/Properties.tex" export latex
 *** OrdinaryFrame
+    <<src:ordinaryframe>>
   #+include: "latex/OrdinaryFrame.tex" export latex
 *** OrdinaryVeltmanSemantics/Finite
+    <<src:ordinaryveltmansemantics.finite>>
   #+include: "latex/OrdinaryVeltmanSemantics/Finite.tex" export latex
 *** OrdinaryVeltmanSemantics/Properties/M
+    <<src:ordinaryveltmansemantics.properties.m>>
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/M.tex" export latex
 *** OrdinaryVeltmanSemantics/Properties/M\sf{₀}
+    <<src:ordinaryveltmansemantics.properties.msub0>>
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/M₀.tex" export latex
 *** OrdinaryVeltmanSemantics/Properties/P\sf{₀}
+    <<src:ordinaryveltmansemantics.properties.psub0>>
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/P₀.tex" export latex
 *** OrdinaryVeltmanSemantics/Properties/R
+    <<src:ordinaryveltmansemantics.properties.r>>
   #+include: "latex/OrdinaryVeltmanSemantics/Properties/R.tex" export latex
 *** OrdinaryVeltmanSemantics/Properties
+    <<src:ordinaryveltmansemantics.properties>>
   #+include: "latex/OrdinaryVeltmanSemantics/Properties.tex" export latex
 *** OrdinaryVeltmanSemantics
+    <<src:ordinaryveltmansemantics>>
   #+include: "latex/OrdinaryVeltmanSemantics.tex" export latex
 *** Principles
+    <<src:principles>>
   #+include: "latex/Principles.tex" export latex
