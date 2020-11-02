@@ -301,10 +301,74 @@ thanks
    (□A)^*&= \sf{Prov}_T(⌜A⌝) ; \\
    (A▷B)^*&= \sf{Int}_T(⌜A⌝,⌜B⌝).
    \end{flalign*}
-   There is an observation, which the nomenclature $\sf{IL}(T)$ already hints
-   at, that
+   Then we define \[\sf{IL}(T)≔\{A\ |\ T⊢A^* \text{ for any realization } *\}.\]
 
-   mention \sf{M}, $P$ and $R$.
+   There is an important difference with respect to provability logics that we
+   need to highlight here. In provability logics we have that \sf{GL} is an
+   axiomatization of the provability logics for all reasonable arithmetical
+   theories {{{jan(double check this)}}} but we do not have an equivalent Swiss
+   army knife that works for all theories in interpretability logics. Instead,
+   we define different logics for various classes of theories. There is an
+   essential logic which we call \il{} that serves as the basis for all these
+   variants. We define this variants as extensions of \il{} by adding axiom
+   schemes to it as we will see later in this overview. The logic \il{} extends
+   the \sf{GL} logic with five new axiom schemes. We will precisely define logic
+   \il{} and comment the significance of the new axiom schemes in Section
+   [[sec:il]].
+
+   The logic \il{} has two relational semantics, which are the main topic of
+   this document, known as /ordinary Veltman semantics/ (introduced by Frank
+   Veltman) and /generalized Veltman semantics/ (introduced by Rineke
+   Verbrugge). Ordinary Veltman semantics are defined much in the same spirit as
+   Kripke semantics for \sf{GL}, however, Veltman frames have an additional
+   indexed (by each of the worlds) binary relation $S_w$ on worlds which is used
+   to model the behaviour of the $▷$ binary modal operator. In generalized
+   Veltman semantics each of the $S_w$ relations, instead of relating two
+   individual worlds, relates an individual world to a set of worlds. This type
+   of definition seems to be inspired by the topological (or neighborhood)
+   semantics that exist for other modal logics with unary modal operators.
+   Topological semantics have not been studied yet for interpretability logics.
+   As expected, both kinds of Veltman semantics are suitable for \il{} as we
+   have soundness (which we present in this document) and completeness
+   ({{{jan(REF needed)}}}) proofs. As we have already mentioned, \il{} is just
+   the logic that we use as basis in interpretability logics, thus, each time we
+   extend it with an axiom scheme (or principle, as we call them) we will need
+   to find new semantics for it. We find these new semantics by finding frame
+   conditions for the various principles that we work with. More precisely, a
+   /frame condition/ for a principle $P$ is a first (or higher) order formula
+   such that for every Veltman frame $F$ we have \[F⊨𝒞 ⇔ ⟨F,V⟩⊩P \text{ for any
+   valuation $V$ and instance of $P$.} \] To show an example, let us put our
+   focus on the interpretability logic of \sf{PA} or similar theories. It
+   happens that the axiomatization of this logic is given by adding the so
+   called principle \sf{M} to the logic \il{}. We denote this new logic as
+   $\sf{ILM}$. The \prin{M} principle is defined as follows: \[\sf{M}≔A ▷ B → (A
+   ∧ □ C) ▷ (B ∧ □ C).\] We give the definition for illustrative purposes, but
+   the details of this formula are not relevant for this example. Then, consider
+   the following condition:
+   #+begin_center
+   if $xS_wy$ and $yRz$ then $xRz$.
+   #+end_center
+   Again, the details of this condition are not relevant here. The important
+   fact to notice is the following. If we consider the class of Veltman frames
+   that satisfy this condition, we have soundness and completeness of \sf{ILM}
+   and thus the presented condition is an adequate frame condition for \sf{M}.
+   There are plenty of principles similar to \sf{M} in the literature. In this
+   work we list a number of interpretability principles, including \sf{M}, and
+   we prove their frame condition for both ordinary and generalized Veltman
+   semantics.
+
+   Some principles, like \sf{M}, are useful because they allow us to axiomatize
+   the interpretability logic for certain classes of theories. However, there
+   are other principles which are interesting because they are arithmetically
+   valid in a large number of theories. These principles play a crucial role in
+   the search of an axiomatization for the logic \ilall{}. The logic \ilall{} is
+   defined to be the intersection of the interpretability logics of all
+   reasonable arithmetical theories. Finding an axiomatization of such theory,
+   as already hinted, remains an open problem, however a lot of progress has
+   been made in the form of finding lower bounds for this logic. In this project
+   we study the frame conditions for two series of principles: \prin{R^n} and
+   \prin{R_n}, which appear in the current best known lower bound for \ilall.
+
 ** Original contributions
    This work includes the following original contributions:
    1. We have found a generalized frame condition for $\prin{R₁}$ (in
@@ -321,22 +385,23 @@ thanks
    7. we give details for an embedding of propositional intuitionistic logic
       into Martin Löf's logical framework. This result is expected. Our
       contribution has been to provide detailed definitions and proofs, which we
-      were unable to find somewhere else. [[sec:def-new-types][Link]];
-   8. during the development of this project we have coauthored two publications:
+      were unable to find somewhere else. The proof detailed proof that $n+0=n$
+      in Martin Löf's logical framework is also original. [[sec:def-new-types][Link]];
+   9. during the development of this project we have coauthored two publications:
       - /An overview of Generalised Veltman Semantics/ (cite:joosten2020overview);
       - /Generalised Veltman Semantics in Agda/ (cite:masrovira2020generalised).
-   9. we have implemented an Agda library for interpretability logics which
-      includes every theorem and proof marked with {{{agda}}} that is presented
-      in this document. It is worth pointing out that we started from scratch
-      since there was no previous published work of interpretability logics in
-      Agda, or in any other proof assistant. The code comprises ~5000
-      lines of code and is freely available online:
-      \begin{center}
-      \href{https://gitlab.com/janmasrovira/interpretability-logics}
-            {gitlab.com/janmasrovira/interpretability-logics}
-      \end{center}
-      We also provide the code in the annex of this document. [TODO: ADD LINK]
-   10. we have reimplemented a small portion of the Agda library in the Coq proof
+   10. we have implemented an Agda library for interpretability logics which
+       includes every theorem and proof marked with {{{agda}}} that is presented
+       in this document. It is worth pointing out that we started from scratch
+       since there was no previous published work of interpretability logics in
+       Agda, or in any other proof assistant. The code comprises ~5000
+       lines of code and is freely available online:
+       \begin{center}
+       \href{https://gitlab.com/janmasrovira/interpretability-logics}
+             {gitlab.com/janmasrovira/interpretability-logics}
+       \end{center}
+       We also provide the code in the annex of this document. [TODO: ADD LINK]
+   11. we have reimplemented a small portion of the Agda library in the Coq proof
        assistant. This portion includes the definitions of the theorems and
        proofs marked with {{{coq}}}. Namely this subset is composed of the definition
        of ordinary Veltman semantics, the axiomatization of the logic \il{} and
@@ -503,7 +568,7 @@ thanks
 
    {{{endproof}}}
 
-** Semantics
+** Veltman Semantics
    In this document we consider two variants of relational semantics for
    interpretability logics similar to Kripke semantics for other modal logics.
 
@@ -624,7 +689,7 @@ thanks
     {{{beginproof}}} {{{agda}}} We have verified this in Agda for all the presented
     quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
 
-** Transitivity
+** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
    for the quasi-transitivity condition which we present in the table below. See
    that in definition [[def:gen-frame]] we used Condition (2). Theorem [[theorem:trans]] presents
@@ -668,33 +733,32 @@ thanks
  # $M'$ has the same truth value as $M$. This has been verified in Agda.
 
  {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
- \[M≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the monotonicity condition. The
+ \[\sf{Mon}≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the monotonicity condition. The
  following implications hold.
- {{{jan(rename M to avoid clash with montaga's principle)}}}
 
- The first item should be read as $F⊨M∧(1)→(2)$.
+ The first item should be read as $F⊨\sf{Mon}∧(1)→(2)$.
 
  {{{beginmulticols(3)}}}
 
-   1. $M ∧ (1) ⇒ (2)$
+   1. $\sf{Mon} ∧ (1) ⇒ (2)$
    2. $(2) ⇒ (1)$
-   3. $M ∧ (3) ⇒ (4)$
+   3. $\sf{Mon} ∧ (3) ⇒ (4)$
    4. $(4) ⇒ (3)$
    5. $(5) ⇒ (1)$
-   6. $M ∧ (5) ⇒ (2)$
+   6. $\sf{Mon} ∧ (5) ⇒ (2)$
    7. $(5) ⇒ (3)$
-   8. $M ∧ (5) ⇒ (4)$
-   9. $M ∧ (5) ⇒ (6)$
+   8. $\sf{Mon} ∧ (5) ⇒ (4)$
+   9. $\sf{Mon} ∧ (5) ⇒ (6)$
    10. $(5) ⇒ (7)$
-   11. $M ∧ (5) ⇒ (8)$
+   11. $\sf{Mon} ∧ (5) ⇒ (8)$
    12. $(6) ⇒ (1)$
-   13. $M ∧ (6) ⇒ (2)$
+   13. $\sf{Mon} ∧ (6) ⇒ (2)$
    14. $(6) ⇒ (3)$
    15. $(6) ⇒ (4)$
    16. $(6) ⇒ (5)$
    17. $(6) ⇒ (7)$
    18. $(6) ⇒ (8)$
-   19. $M ∧ (7) ⇒ (8)$
+   19. $\sf{Mon} ∧ (7) ⇒ (8)$
    20. $(8) ⇒ (7)$
 
  {{{endmulticols}}} {{{endtheorem}}}
@@ -725,11 +789,21 @@ thanks
  {{{endproof}}}
 
 ** Monotonicity
-   Consider the following monotonicity condition:
+   Recall the monotonicity condition that we presented in the previous section:
 
   #+begin_center
     if $uS_wV⊆Z⊆\{v:wRv\}$ then $uS_wZ$.
   #+end_center
+
+  It happens that this condition can be assumed (and in fact, is a standard
+  assumption in the literature) to be satisfied by generalized Veltman frames
+  without harm. This is desirable as a good number of proofs and definitions
+  (especially definitions related to filtrations) can be simplified when
+  assuming the monotonicity condition. By ``can be assumed without harm'', we
+  mean that for any generalized Veltman frame, we can find another generalized
+  Veltman frame that it satisfies the monotonicity condition and moreover both
+  frames will share truth value when expanded to a generalized Veltman model
+  with a valuation. In the following theorem we prove this fact.
 
   {{{begintheorem}}} <<theorem:mono>> Let $F=⟨W,R,S⟩$ be a generalized Veltman
   frame with quasi-transitivity $(i)∈\{1,…,8\}$. Let $F'=⟨W,R,S'⟩$ where $S'$ is
@@ -777,9 +851,9 @@ thanks
     $Y'⊮B$, so $M',w⊮A▷B$.
   {{{endproof}}}
 
-  As we see in Theorem [[theorem:mono]] taking the monotone closure of each $S_w$ does not
-  change the forcing relation and the resulting frame satisfies quasi-transitivity
-  Condition (2).
+  # As we see in Theorem [[theorem:mono]] taking the monotone closure of each $S_w$ does not
+  # change the forcing relation and the resulting frame satisfies quasi-transitivity
+  # Condition (2).
 
   # The previous lemma allows us to safely assume that monotonicity is a condition
   # for a Veltman frame with quasi-transitivity (2).
@@ -1225,7 +1299,10 @@ thanks
    The \prin{M₀} principle reads as follows:
    \[A ▷ B → ♢ A ∧ □ C ▷ B ∧ □ C.\]
 
-   The logic \prin{ILM_0} is complete (cite:modal-matters).
+   The \prin{M₀} principle first appears in
+   cite:Visser:1991:FormalizationOfInterpretability.
+
+    The logic \prin{ILM_0} is complete (cite:modal-matters).
 *** TODO Ordinary semantics
     {{{jan(update drawing)}}}
 
@@ -1420,7 +1497,7 @@ thanks
 
    Note that \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
    and \prin{R_n} series of principles which generalize \prin{R} and are
-   discussed in Sections [[sec:Rsubn]] and [[sec:Rsupn]].
+   discussed in Sections [[sec:Rsub1]] and [[sec:Rsupn]].
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
 
@@ -1562,11 +1639,12 @@ thanks
    {{{endproof}}}
 
 ** The principle \prin{R₁}
-  The $R_1$ principle reads as follows:
-  \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E)).\]
+   <<sec:Rsub1>>
+   The $R_1$ principle reads as follows:
+   \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E)).\]
 
-  It is the second principle of the $\prin{R_n}$ series, which is discussed in
-  section [[sec:Rsubn]].
+   It is the second principle of the $\prin{R_n}$ series.
+   The $R_n$ series of principles is defined in cite:two-new-series:
 *** Ordinary semantics
 
     The $\kord{R_1}$ frame condition reads as follows:
@@ -1825,7 +1903,7 @@ thanks
     - \boxed{⇐}
     {{{endproof}}}
 
-** The principle \prin{Rⁿ}
+** The series of principles \prin{Rⁿ}
    <<sec:Rsupn>>
    The \prin{R^n} principle is defined thus:
    \begin{flalign*}
@@ -1924,10 +2002,6 @@ thanks
       and $R[U]⊆ℂ$.
     {{{endproof}}}
 
-** The principle \prin{Rₙ}
-   <<sec:Rsubn>>
-   The $R_n$ principle is defined in cite:two-new-series:
-
 ** Generic generalized frame condition
    In this section we present a method that given a formula $A$, builds a second
    order formula that is a generalized frame condition for $A$.
@@ -1986,7 +2060,6 @@ thanks
   Coq’s. However, in contrast to Coq it is based on Martin-Löf’s predicative
   intuitionistic type theory.
   \end{quote}
-
 
 ** Introduction to types
    Type theory is a branch of mathematical symbolic logic. It formalizes
@@ -2293,7 +2366,7 @@ thanks
       4. nothing is a proof of $⊥$;
       5. $⊤$ is always true and provable.
 
-*** Syntax of types and terms (new)
+*** Syntax of types and terms
     In a theory that features dependent types, presenting types and terms
     separately is not possible as they are tightly intertwined. In fact, terms
     may appear inside types and vice versa. We will first give a short intuitive
@@ -2929,7 +3002,7 @@ thanks
      -----
 
      With this set we can build a type which states ``for every natural $n$, we
-     have $n+0=n$''. Such type is as follows: \[(n:\el{ℕ})↠ \el{(\sf{add}\ n\ 𝟬)
+     have $n+0=n$''. Such type is as follows: \[(n:\el{ℕ})↠ \el{\sf{add}\ n\ 𝟬
      ≡_ℕ n}\] If we were to prove this informally we would proceed as follows.
      Perform induction on $n$, for the base case is trivial, for the successor
      case $n=\sf{suc}m$ we have by IH that $\sf{add}\ m\ 𝟬=m$, then we apply
@@ -2955,9 +3028,9 @@ thanks
                 & n \\
      \end{flalign*}
 
-*** Final remarks
+*** Final remarks :noexport:
     With this we conclude the presentation of Martin's Löf logical framework.
-** Martin-Löf dependent type theory
+** Martin-Löf dependent type theory :noexport:
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
    can serve as the basis for constructive mathematics, furthermore, it can be
    used as the specification of a programming language.
@@ -5309,13 +5382,15 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 ⊢A↝A {A} = MP (MP (C2 {Π} {A} {A ↝ A} {A}) (C1 {Π} {A} {A ↝ A})) (C1 {Π} {A} {A})
    #+end_src
    We see that it is extremely verbose and hard to read. We can substantially
-   improve it by relying on Agda's type inference to automatically infer the
-   instantiation of almost all of the axiom schemes used.
+   shorten it by relying on Agda's type inference to automatically infer the
+   instantiation of almost all of the axiom schemes used. However, it is still
+   far from being human friendly.
    #+begin_src text
 ⊢A↝A : ∀ {A Π} → Π ⊢ A ↝ A
 ⊢A↝A {A} = MP (MP C2 C1) (C1 {B = A})
    #+end_src
-   From the previous result it is easy to show that $A▷A$ is an \il{} theorem.
+   For now, we forget about the obscure syntax and we use the previous result to
+   prove that $A▷A$ is an \il{} theorem. First, the pen and paper proof:
    \begin{flalign*}
         0.\ &  A → A                        &\text{By } ⊢A→A \\
         1.\ &  □ (A → A)                    &\text{By necessitation on 0} \\
@@ -5340,7 +5415,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
      cite:slug for logic $K$.
 
      We begin by introducing the concept of eDSL. The acronym eDSL stands for
-     Embedded Domain Specific Language. It refers to a small language (a set of
+     /Embedded Domain Specific Language/. It refers to a small language (a set of
      functions and datatypes) embedded in another language (in this case Agda)
      that has been designed to solve a problem in a very specific domain, in this
      case, Hilbert style proofs.
@@ -5376,7 +5451,13 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    human-friendly syntax which is almost identical to the pen and paper usual
    syntax with the standout benefit that the proof is computer checked. We want
    to emphasize, as it may be surprising to the reader, that the proofs shown
-   above are actual Agda code.
+   above are actual Agda code. It is crucial to make clear that this eDSL is
+   /not/ an alternative definition of the logic \il{} presented in different
+   syntax. The eDSL is just a layer above the definition which allows us to use
+   nice syntax while still relying on the simple definition of \il{} we provided
+   in the previous section. Of course, we will need to prove that we can
+   transform proofs in the nice syntax to proofs in the old format. We will
+   comment on it later on this section.
 
    We proceed by giving a short description of the language, which consists of
    four types of instructions:
@@ -5457,7 +5538,12 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    We see that =■= is defined as a postfix operator which translates a proof
    =HilbertProof Σ A n= into a proof =Σ ⊢ A=. This translation step is where
    most of the complexity lays. Needless to say, as is implemented and verified
-   in Agda it is guaranteed to be correct. This ends the tour of the language.
+   in Agda it is guaranteed to be correct. To reiterate, by correct we mean that
+   every proof in the new syntax can be transformed (and definition of the term
+   =■=, which can be found in Section [[src:il.edsl]], is actually the
+   algorithm which performs the transformation) to a proof using only axioms and
+   rules of \il{} as presented in the previous section. This ends the tour of
+   the language.
 
    We strongly believe in the practical utility of this language as it can be
    used by logicians that are not Agda experts due to its simple and familiar
@@ -5815,41 +5901,54 @@ title=Bibliography
   #+include: "latex/Formula.tex" export latex
 *** GeneralizedFrame/Properties
     <<src:generalizedframe.properties>>
+    Properties of generalized Veltman frames.
+
   #+include: "latex/GeneralizedFrame/Properties.tex" export latex
 *** GeneralizedFrame
     <<src:generalizedframe>>
   #+include: "latex/GeneralizedFrame.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/GenericFrameCond
     <<src:generalizedveltmansemantics.properties.genericframecond>>
+    It contains the proof that we can find a frame condition for any principle.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/GenericFrameCond.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/Luka
     <<src:generalizedveltmansemantics.properties.luka>>
+    It contains the proof that we build an ordinary frame from a generalized model.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Luka.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/M
     <<src:generalizedveltmansemantics.properties.m>>
+    The frame condition for the \sf{M} principle.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/M.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/M\sf{₀}
     <<src:generalizedveltmansemantics.properties.msub0>>
+    The frame condition for the \sf{M₀} principle.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/M₀.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/P\sf{₀}
     <<src:generalizedveltmansemantics.properties.psub0>>
+    The frame condition for the \sf{P₀} principle.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/P₀.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R
     <<src:generalizedveltmansemantics.properties.r>>
+    The frame condition for the \sf{R} principle.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/R\sf{²}
-    <<src:generalizedveltmansemantics.properties.rsup2>>
-  #+include: "latex/GeneralizedVeltmanSemantics/Properties/R².tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{¹}
+    The frame condition for the \sf{R^1} principle.
     <<src:generalizedveltmansemantics.properties.rsup1>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R¹.tex" export latex
+*** GeneralizedVeltmanSemantics/Properties/R\sf{²}
+    <<src:generalizedveltmansemantics.properties.rsup2>>
+    The frame condition for the \sf{R^2} principle.
+  #+include: "latex/GeneralizedVeltmanSemantics/Properties/R².tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{ⁿ}
     <<src:generalizedveltmansemantics.properties.rsupn>>
+    The frame condition for the \sf{R^n} principle.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Rⁿ.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/R\sf{₁}
+    The frame condition for the \sf{R^1} principle.
     <<src:generalizedveltmansemantics.properties.rsub1>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₁.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/R\sf{₂}
+*** GeneralizedVeltmanSemantics/Properties/R\sf{₂} :noexport:
+    The frame condition for the \sf{R^2} principle.
     <<src:generalizedveltmansemantics.properties.rsub2>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/R₂.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties/Verbrugge
