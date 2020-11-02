@@ -1,0 +1,146 @@
+* DONE
+In your Section 2, you should be less modest. Everything that is new should be
+mentioned here. For example, your findings on the flawed proof, working out of
+all details of Verbrugge’s proof. Alternative version of it, etc. is missing.
+Everytime you add something, immediately update Section 2. Also, you may have a
+bullet like: we gave more details on the following items: Lemma xxx, Theorem
+yyy, etc.. Include the Agda code and refer to that in the current Item 4. I
+still think you could consider including the Coq code too, or at least mention
+that it has been done referring to an online repository.
+
+* DONE
+Try to be less concise in your prose (unless you really wish to stick to this
+style).
+
+* DONE
+In Section 3: do we have a finite set of variables? Countable? etc. Use brackets
+when saying (A->B) is a formula given A and B are
+
+* DONE
+Your binding scope is not standard: typically, both wedge and vee bind equally
+strong but stronger than rhd which in turn binds stronger than →
+
+jan: I think it is fine.
+
+* DONE
+Section 5: I think that important stuff needs a formal definition environment.
+Make sure that there are no “naked” environments around: each of them needs some
+text/prose before and after it to give it a rhetoric continuity.
+
+* DONE
+Your theorems, even when they are fully formalised should contain some comments.
+Like: By an easy induction on the length of a proof. Also, give exact reference
+to the Lemmas in the code (Agda or Coq) that you include in the appendix to this
+thesis.
+
+* DONE
+In Theorem 9: do some nice ones on paper. Mind you, the average reader (Ramon,
+Tommaso) may never have seen interpretability logics so some simple examples may
+be of good use to them. Also, it seems that your Agda/Coq implementation differs
+significantly from the Definition you give of IL: you claim that all tautologies
+are axioms and then in Thm 9 you are proving them? I guess that you actually
+have some Hilbert style axiomatisation. Reconcile the definition used in the
+thesis and the one in Agda/Coq. Currently your practice is bad.
+
+jan: I have updated the definition of IL. Pending to add some hilbert style proofs.
+
+* TODO
+Section 6
+
+I say this once more and please apply it everywhere: I don’t like “naked” formal
+environments. So, between the header of 6.1 and Definition 10 some text is
+needed. Be gentle to the reader, take him/her by the hand and say what is going
+on.
+
+* TODO
+Likewise Subsection 6.2 and Definition 15: some text is due. You may wish to
+mention reminiscence to Neighbourhood semantics here with some references to the
+literature. You can reuse stuff from our Paper on GVS for example reusing
+material from Section 3.1 may be good here.
+
+* TODO
+Section 7
+
+Should the title not be “Quasi transitivity”? Previous remarks apply to this
+section: so some prose glue to nicely connect the formal items. Comments on the
+proof, references the Agda code. You can look at our paper Section 3.2 to copy
+from there: you are author of it and so are entitled to copy. If you copy, do
+mention and duly reference so.
+
+* DONE
+Thm 19: given Montagna’s principle, I do not think it is a good idea to use M
+here. Maybe {\sf Mon}? Include one informal item to see how such proofs proceed.
+Can’t you think of a graphical representation of Thm 19?
+
+* DONE
+Section 8
+
+You already mentioned monotonicity… make the text more coherent. Also, adding
+some prose. Monotonicity simplifies arguments, definitions in filtrations
+(double check with Luka why monotonicity is so desirable to have) and moreover
+it is used standardly in the literature.
+
+* TODO
+On Page 22 you say “in this section” where I guess this should be “in this part
+of the thesis”. Comments on this part of your thesis are in the handwritten
+doodles.
+
+* TODO
+Part III
+
+On Page 30. please try to be more eloquent and informative. You can mention
+logics for essentially reflective theories (full induction), finitely
+axiomatised, IL(All), IL(PRA), etc.
+
+* TODO
+Your current “An interpretability principle is a schema of modal formulas that
+carries some special signifi- cance." is way too superficial and is like saying
+“Catalan are nice people, they do things”
+(https://www.youtube.com/watch?v=8NCTELUEsR0)
+
+
+* TODO
+Section 14: say why the ++_)D)*)& this principle M_0 is interesting: again, you
+can use our paper as source of inspiration.
+
+* DONE
+Do you explain somewhere in your thesis what the reading convention for your
+frame condition diagrams is?
+Jan: in section "Notation".
+
+* TODO
+Section 15 I see mention of IL(All): is that the first time?
+
+* DONE
+Section 19 R^n is not a principle, it is a series… In Section 19.1: this is not
+really informative. Maybe comment on it or just include it?
+
+* TODO
+I miss a discussion on what it means to have an informative frame condition…
+What you have is a mere direct translation of what it means to be valid on all
+frames. Is this really informative? You can relate this to the mere statement of
+the Lob’s frame condition compared to being Noetherian, and compare R_1 to it’s
+direct translation. This is an important observation we stumbled upon. Maybe
+this discussion can be included in the current Section 21 but then should be
+forward reference in 19.
+
+* TODO
+Section 20
+
+I guess this will be removed? Or otherwise expanded upon?
+
+I will leave comments on Part IV for later.
+
+* TODO
+Part V Give some more bla on Page 98 (first page of Agda in the project)
+
+* DONE
+Section 32.1 it might be nice to include some pictures? Also, mention that you
+wrote this eDSL which is another new contribution in Section 2.
+
+* TODO
+I see no reference to our abstract in the collection of extended abstracts of
+the informal ESSLLI proceedings. This should be included and probably also in
+Luka’s PhD.
+
+OK, that’s it for the moment.
