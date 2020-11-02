@@ -140,7 +140,7 @@ wrote this eDSL which is another new contribution in Section 2.
 
 * TODO
 I see no reference to our abstract in the collection of extended abstracts of
-the informal ESSLLI proceedings. This should be included and probably also in
+the informal AIML proceedings. This should be included and probably also in
 Luka’s PhD.
 
 OK, that’s it for the moment.

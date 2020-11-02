@@ -367,7 +367,7 @@ thanks
    as already hinted, remains an open problem, however a lot of progress has
    been made in the form of finding lower bounds for this logic. In this project
    we study the frame conditions for two series of principles: \prin{R^n} and
-   \prin{R_n}, which appear in the current best known lower bound for \ilall.
+   \prin{R_n}, which appear in the current best known lower bound of \ilall.
 
 ** Original contributions
    This work includes the following original contributions:
@@ -2975,6 +2975,9 @@ thanks
      &=\sf{suc}\ (\sf{suc}\ (\sf{suc}\ 𝟬)) &\\
      &=3
      \end{flalign*}
+
+     In the next section we will see how we can use induction on the natural
+     numbers to prove a property of addition.
 **** Identity set
      We denote the identity set (or equality set) with the $≡$ constant:
      \[≡\ : (S:\set)↠(x:\el{S})↠\el{S}↠\set\]
@@ -3018,18 +3021,70 @@ thanks
            & (λz→\sf{refl}\ ℕ\ (\sf{suc}\ z))\\
            & e
      \end{flalign*}
-     We ask the reader to check that the term is indeed of the claimed type.
+     Let us explain the proof step by step. We start with three lambda
+     abstractions as we have three arguments: two natural numbers and a proof of
+     equality between them. Then we use the \sf{case_≡} primitive to build the
+     desired proof. We now inspect each of the applied arguments. First we have
+     $ℕ$ because the equalities in the proof are between naturals. Second and
+     third we have $n$ and $m$ because they are the two involved naturals. Then
+     we have the property that we want to show, namely $(λn'→λm'→λe'→\sf{suc}\
+     n'≡_ℕ\sf{suc}\ m')$, we will refer to this term as $P$. After that we need
+     to provide a term typed $(z:\el{S})↠\el{P\ z\ z\ (\sf{refl}\ S\ z)}$. In
+     our case we need to replace $S$ by $ℕ$ and $P$ by the fourth argument.
+     After simplifying with the \(\text{$β$-reduction}\) rule we get
+     $(z:\el{ℕ})↠\el{\sf{suc}\ z≡_ℕ\sf{suc}\ z}$. We can easily see that
+     $(λz→\sf{refl}\ ℕ\ (\sf{suc}\ z))$ has the desired type. The last argument,
+     $e$, which has type $\el{n≡_ℕm}$ is the equality that we will use. Finally
+     we see that the return type is $\el{P\ x\ y\ e}$. After replacing $P$ with
+     its definition, $x$ by and $n$ and $y$ by $m$ and simplifying via the
+     \(\text{$β$-reduction}\) rule we get $\el{\sf{suc}\ n≡_ℕ\sf{suc}\ m}$,
+     which is what we wanted.
+     # We ask the reader to check that the term is indeed of the claimed type.
 
-     We are now ready to prove the theorem.
+     We are now ready to prove the theorem. The term that serves as a proof of
+     the theorem, or in other words the term that has the specified type, is
+     provided below.
      \begin{flalign*}
      \sf{thm} ≔ λn→ \sf{case}_ℕ\ &(λn'→ \sf{add}\ n'\ 𝟬 ≡_ℕn')\\
                 & (\sf{refl}\ ℕ\ 𝟬) &\text{base case} \\
                 & (λm→ λp→ \sf{lemma}\ (\sf{add}\ m\ 𝟬)\ m\ p) &\text{inductive case} \\
-                & n \\
+                & n
      \end{flalign*}
+     Let us break the term \sf{thm} into smaller pieces and analyze them. Since
+     we are proving that a property holds for any natural number, we start with
+     a lambda abstraction $λ n→ …$ and then we proceed by induction on $n$ by
+     using the $\sf{case}_ℕ$ constant.
+
+     The first argument of $\sf{case}_ℕ$, namely $(λn'→ \sf{add}\ n'\ 𝟬 ≡_ℕn')$,
+     expresses the property that we want to prove with the induction. We will
+     refer to this argument as $P$. It is easy to observe that $P$ has type
+     $\el{ℕ}↠\set$ as required by the type of $\sf{case}_ℕ$.
+
+     Then, the second argument, which corresponds to the proof for the base case
+     has type $\el{P\ 𝟬}$, which in our case translates into $(λn'→ \sf{add}\
+     n'\ 𝟬 ≡_ℕn')\ 𝟬$ which is the same (by \(\text{$β$-reduction}\)) as
+     $\el{\sf{add}\ 𝟬\ 𝟬 ≡_ℕ𝟬}$ which is the same (by \textsc{case 0}) as $\el{𝟬
+     ≡_ℕ𝟬}$. Thus it suffices to provide the term $\sf{refl}\ ℕ\ 𝟬$, which has the desired
+     type.
+
+     The third argument corresponds to the proof of the inductive case. The type
+     for this argument is[fn::We have renamed the variable $n$ in this argument
+     to $m$ to avoid confusion with the previously bound variable $n$. Recall
+     that this can be done thanks to the \(\text{$α$-$=$}\) rule.] $((m:\el{ℕ})↠
+     \el{P\ m} ↠ \el{P\ (\sf{suc}\ m)})$ which in our case translates into
+     $((m:\el{ℕ})↠ \el{\sf{add}\ m\ 𝟬 ≡_ℕn} ↠ \el{\sf{add}\ (\sf{suc}\ m)\ 𝟬
+     ≡_ℕ\sf{suc}\ m})$. It is easy to see that the lemma we proved before will
+     come in handy. In fact, it suffices to observe that the term $(λm→ λp→
+     \sf{lemma}\ (\sf{add}\ m\ 𝟬)\ m\ p)$ has the desired type. This concludes
+     the proof of the inductive case.
+
+     Finally, the fourth argument is the specific natural number for which we
+     want to perform the induction and prove the property. We just give it $n$,
+     which is bound by the initial $λn→…$. This concludes our proof.
 
 *** Final remarks :noexport:
     With this we conclude the presentation of Martin's Löf logical framework.
+    Talk about operational semantics.
 ** Martin-Löf dependent type theory :noexport:
    Martin-Löfs type theory is also known as intuitionistic type theory, and it
    can serve as the basis for constructive mathematics, furthermore, it can be
