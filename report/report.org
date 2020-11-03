@@ -210,6 +210,7 @@ thanks
    [[file:./jan_thesis_comments_07_07_2020.pdf][pdf-link]].
 * Introduction
 ** Overview of interpretability logics
+   <<sec:overview>>
    We begin by giving a short introduction on provability logics. For more
    information refer to cite:sep-logic-provability. The reason to start here is
    that interpretability logics extend provability logics. Furthermore the
@@ -332,20 +333,20 @@ thanks
    operators. Neighborhood semantics have not been studied yet for
    interpretability logics. As expected, both kinds of Veltman semantics are
    suitable for \il{} as we have soundness (which we present in this thesis) and
-   completeness ({{{jan(REF needed)}}}) proofs. As we have already mentioned,
-   \il{} is just the logic that we use as a base in interpretability logics,
-   thus, each time we extend it with an axiom scheme (or principle, as we call
-   them) we will need to find new semantics for it. Given a collection of
-   principles, we get the semantics for the extension of \il{} with these
-   principles by finding their frame condition. More precisely, a /frame
-   condition/ for a principle \sf{P} is a first (or higher) order formula such
-   that for every Veltman frame $F$ we have \[F⊨𝒞 ⇔ ⟨F,V⟩⊩\sf{P} \text{ for any
-   valuation $V$ and instance of \sf{P}.} \] To give an example, let us put our
-   focus on the interpretability logic of \sf{PA}. It happens that the
-   axiomatization of \sf{IL(PA)} is given by adding the so called principle
-   \sf{M} to the logic \il{}. We denote this new logic as $\sf{ILM}$. The
-   principle \prin{M} is defined as follows: \[\sf{M}≔A ▷ B → (A ∧ □ C) ▷ (B ∧ □
-   C).\] Then, consider the following condition:
+   completeness (cite:Veltman-relative) proofs. As we have
+   already mentioned, \il{} is just the logic that we use as a base in
+   interpretability logics, thus, each time we extend it with an axiom scheme
+   (or principle, as we call them) we will need to find new semantics for it.
+   Given a collection of principles, we get the semantics for the extension of
+   \il{} with these principles by finding their frame condition. More precisely,
+   a /frame condition/ for a principle \sf{P} is a first (or higher) order
+   formula such that for every Veltman frame $F$ we have \[F⊨𝒞 ⇔ ⟨F,V⟩⊩\sf{P}
+   \text{ for any valuation $V$ and instance of \sf{P}.} \] To give an example,
+   let us put our focus on the interpretability logic of \sf{PA}. It happens
+   that the axiomatization of \sf{IL(PA)} is given by adding the so called
+   principle \sf{M} to the logic \il{}. We denote this new logic as $\sf{ILM}$.
+   The principle \prin{M} is defined as follows: \[\sf{M}≔A ▷ B → (A ∧ □ C) ▷ (B
+   ∧ □ C).\] Then, consider the following condition:
    #+begin_center
    if $xS_wy$ and $yRz$ then $xRz$.
    #+end_center
@@ -465,7 +466,14 @@ thanks
    they cannot unambiguously convey all the information in the formula.
 
 ** Logic \il
-   <<sec:il>>
+   <<sec:il>> As explained in the overview (Section [[sec:overview]]) the logic
+   \il{} is the logic that we use as the base for other interpretability logics.
+   The logic \il{} extends \gl{} with new five axioms schemas. J1-J5 which
+   reflect some facts about interpretations.
+
+   After the definition of \il{} we proceed by showing a number of theorems
+   related to it. All of these theorems have been verified and their Agda proof
+   can be found in [[src:il.properties]].
 
    {{{begindef}}} The logic \il{} encompasses all classical theorems in the new
    language (given by C1, C2 and C3), all theorems of \prin{GL} in the new
@@ -513,10 +521,6 @@ thanks
    ourselves to finite sets and thus we assume that $Π$ is finite in the Agda
    proof. This restriction is not meaningful in the context of this thesis.
    {{{endremark}}}
-
-   We proceed by showing a number of theorems related to the logic \il{}. All of
-   these theorems have been verified and their Agda proof can be found in
-   [[src:il.properties]].
 
    {{{begintheorem}}} *Weakening*. If $Π⊢_{\il}A$ then $B,Π⊢_{\il}A$.
    {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The proof is trivial. In Agda it
@@ -920,7 +924,7 @@ thanks
   {{{endremark}}}
 
 * Generalized vs ordinary models
-  In this section we explore the expressiveness of ordinary and generalized
+  In this part we explore the expressiveness of ordinary and generalized
   Veltman semantics. In particular, we discuss how we can transform an ordinary
   model into a generalized model and vice versa. Needless to say, we have the
   requirement that the transformation preserves the truth value of the original
@@ -2321,10 +2325,16 @@ thanks
 ** Martin Löf's logical framework
    <<sec:martin-lof>> In this section we will present the intuitionistic type
    theory presented in cite:nordstrom1990programming. We will refer to this
-   logic as /Martin Löf's logical framework/ or LF for short. {{{jan(needs a
-   longer intro.)}}}
+   logic as /Martin Löf's logical framework/ or LF for short. Even though Agda
+   lacks a well defined specification, LF is considered the basis of Agda's type
+   system (cite:sep-type-theory-intuitionistic). Furthermore, Peter Dybjer
+   suggested[fn::via email correspondence.], who is a professor at the
+   University of Chalmers, where most of the development of Agda takes place,
+   the specific version of LF that we will present in this section. However,
+   there are important differences between LF and Agda's theory that we will
+   comment in Section [[sec:basic-agda]].
 
-   In this logic we have four types of judgment:
+   Logic LF has four types of judgment:
    1. ``$a$ has type $A$''. We write $a:A$. Crucially, in a type theory that
       follows the paradigm of /propositions as types/ we may interpret the
       statement $a:A$ in several ways, all of them equivalent in such paradigm:
@@ -2339,17 +2349,17 @@ thanks
    We say that some proposition (or type) $A$ is true if there exists some $t$
    such that $t:A$.
 
-   The concept of /type/. We say that $A$ is a type if we have a precise
-   definition of the objects in that type and a decidable equivalence relation
-   for the objects of the type.
+   We say that $A$ is a type if we have a precise definition of the objects in
+   that type and a decidable equivalence relation for the objects of the type.
 
    The first type that we define is the type /Set/[fn::The concept of /set/ used
    here differs from the one in set theory.]. The objects of the type /Set/ are
    /sets/. A /set/ $A$ is an inductive description of how the /canonical
-   elements/ of $A$ are built, plus a decidable equality relation between canonical
-   elements. Two sets are equal if a canonical element of one set is a canonical
-   element of the other set and moreover, if two equal canonical elements in one
-   set also are equal in the other set.
+   elements/ of $A$ are built, plus a decidable equality relation between
+   canonical elements. Two sets are equal if a canonical element of one set is a
+   canonical element of the other set and moreover, if two equal canonical
+   elements in one set also are equal in the other set. {{{jan(what are
+   canonical elements exactly? sadly there is no precise definition in the article)}}}
 
    For instance, if we want to define the set of natural numbers, we have two
    canonical elements: /zero/ and the /successor/ of a natural number. The
@@ -3135,6 +3145,7 @@ thanks
 
    See chapter 5 and 14 of cite:nordstrom1990programming.
 ** Basic Agda
+   <<sec:basic-agda>>
    In this section we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
    is an incomplete simplification and thus is not meant to be a precise

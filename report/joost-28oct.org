@@ -44,7 +44,7 @@ thesis and the one in Agda/Coq. Currently your practice is bad.
 
 jan: I have updated the definition of IL. Pending to add some hilbert style proofs.
 
-* TODO
+* DONE
 Section 6
 
 I say this once more and please apply it everywhere: I don’t like “naked” formal
@@ -52,7 +52,7 @@ environments. So, between the header of 6.1 and Definition 10 some text is
 needed. Be gentle to the reader, take him/her by the hand and say what is going
 on.
 
-* TODO
+* DONE
 Likewise Subsection 6.2 and Definition 15: some text is due. You may wish to
 mention reminiscence to Neighbourhood semantics here with some references to the
 literature. You can reuse stuff from our Paper on GVS for example reusing
@@ -80,14 +80,16 @@ some prose. Monotonicity simplifies arguments, definitions in filtrations
 (double check with Luka why monotonicity is so desirable to have) and moreover
 it is used standardly in the literature.
 
+* DONE
+  On Page 22 you say “in this section” where I guess this should be “in this part
+  of the thesis”.
 * TODO
-On Page 22 you say “in this section” where I guess this should be “in this part
-of the thesis”. Comments on this part of your thesis are in the handwritten
-doodles.
+  Comments on this part of your thesis are in the handwritten
+  doodles.
 
-* TODO
 Part III
 
+* TODO
 On Page 30. please try to be more eloquent and informative. You can mention
 logics for essentially reflective theories (full induction), finitely
 axiomatised, IL(All), IL(PRA), etc.
@@ -108,7 +110,7 @@ Do you explain somewhere in your thesis what the reading convention for your
 frame condition diagrams is?
 Jan: in section "Notation".
 
-* TODO
+* DONE
 Section 15 I see mention of IL(All): is that the first time?
 
 * DONE
