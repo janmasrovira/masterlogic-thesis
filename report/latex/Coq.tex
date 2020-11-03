@@ -1,0 +1,512 @@
+\begin{spverbatim}
+From mathcomp Require Import all_ssreflect.
+Require Import Coq.Relations.Relation_Definitions.
+Require Import Coq.Program.Equality.
+
+Module Base.
+
+Record FromTo A B : Type :=
+  fromTo {
+      from : (A -> B);
+      to : (B -> A)
+    }.
+Arguments from {A} {B}.
+Arguments to {A} {B}.
+Notation "a ⇔ b" := (FromTo a b) (at level 99).
+Notation "⇒ x" := (from x) (at level 0).
+Notation "⇐ x" := (to x) (at level 0).
+
+Definition compose {A} {B} {C} (f : B -> C) (g : A -> B) x := f (g (x)).
+Notation "f ∘ g" := (compose f g) (at level 9, right associativity).
+
+Definition relation3 T := T -> relation T.
+Notation "a × b" := (prod a b) (at level 96, right associativity).
+
+CoInductive InfiniteChain {W : Type} (R : relation W) (a : W) : Prop :=
+  infinite_chain {
+    b : W;
+    aRb : R a b;
+    tail : InfiniteChain R b;
+  }.
+
+Definition Noetherian {W : Type} (R : relation W) : Prop
+  := forall {a}, not (InfiniteChain R a).
+
+End Base.
+
+Module Fm.
+Import eqtype.
+Import Equality.
+Definition Var : Type := nat.
+
+Inductive Fm : Type :=
+  | var : Var -> Fm
+  | rhd : Fm -> Fm -> Fm
+  | impl : Fm -> Fm -> Fm
+  | bot : Fm.
+
+Notation "⊥" := bot.
+Notation "a → b" := (impl a b) (at level 80, right associativity).
+Notation "a ▷ b" := (rhd a b) (at level 49, right associativity).
+Notation "¬ a" := (a → ⊥) (at level 40).
+Notation "a ∨ b" := ((¬ a) → b) (at level 70).
+Notation "a ∧ b" := (¬ (a → ¬ b)) (at level 60).
+Notation "□ a" := ((¬ a) ▷ ⊥) (at level 30, no associativity).
+Notation "♢ a" := (¬ □ (¬ a)) (at level 30).
+
+Fixpoint eqfm (a b : Fm) : bool :=
+ match a , b with
+   | var v , var v' => v == v'
+   | rhd a b , rhd a' b' => eqfm a a' && eqfm b b'
+   | impl a b , impl a' b' => eqfm a a' && eqfm b b'
+   | bot , bot => true
+   | _ , _ => false
+ end.
+Check Pack.
+
+End Fm.
+
+Module OrdinaryFrame.
+
+Import Base.
+
+Record Frame (W : Type) (R : relation W) (S : relation3 W) : Type :=
+  frame {
+      witness: W;
+      R_trans : transitive _ R;
+      R_noetherian : Noetherian R;
+      Sw_inc_Rw : forall {w u v}, S w u v -> R w u × R w v;
+      Sw_refl: forall {w u}, R w u -> S w u u;
+      Sw_trans: forall {w}, transitive _ (S w);
+      R_Sw_trans: forall {w u v}, R w u -> R u v -> S w u v
+    }.
+Arguments R_noetherian {W} {R} {S} f.
+Arguments R_trans {W} {R} {S} f [x] [y] [z].
+Arguments Sw_refl {W} {R} {S} f [w] [u].
+Arguments Sw_inc_Rw {W} {R} {S} f [w] [u] [v].
+Arguments Sw_trans {W} {R} {S} f [w] [x].
+Arguments R_Sw_trans {W} {R} {S} f [w] [u] [v].
+
+End OrdinaryFrame.
+
+Module OrdinarySemantics.
+
+Export Fm.
+Import Base.
+Export OrdinaryFrame.
+
+Definition Valuation (W : Type) : Type := W -> Var -> Prop.
+
+Record Model (W : Type) (R : relation W) (S : relation3 W) (V : Valuation W) : Type :=
+  model {
+      frame : Frame W R S
+    }.
+Arguments frame {W} {R} {S} {V}.
+
+Notation "a ∈ P" := (P a) (at level 0, P at next level, no associativity, only parsing).
+
+Reserved Notation "M , w ⊩ A"  (at level 0).
+Reserved Notation "M , w ⊮ A"  (at level 0).
+Inductive forces {W R S V} (M : Model W R S V) (w : W) : Fm -> Prop :=
+  | fvar : forall {a : Var}, a ∈ (V w) -> M , w ⊩ (var a)
+  | fimp : forall {A B}, M , w ⊮ A \/ M , w ⊩ B -> M , w ⊩ (A → B)
+  | frhd : forall {A B}, (forall {u}, R w u -> M , u ⊮ A \/ (ex (fun v => (S w u v) × (M , v ⊩ B))))
+                  -> M , w ⊩ (A ▷ B)
+where "M , w ⊩ A" := (forces M w A)
+with nforces {W R S V} (M : Model W R S V) (w : W) : Fm -> Prop :=
+  | nvar : forall {a : Var}, not (V w a) -> M , w ⊮ (var a)
+  | nimp : forall {A B}, M , w ⊩ A /\ M , w ⊮ B -> M , w ⊮ (A → B)
+  | nbot : M , w ⊮ ⊥
+  | nrhd : forall {A B},
+      ex (fun u => (R w u) × (M , u ⊩ A) ×
+           (forall v, (not (S w u v)) \/ M , v ⊮ B )) -> M , w ⊮ (A ▷ B)
+where "M , w ⊮ A" := (nforces M w A).
+
+Definition DecidableModel {W R S V} (M : Model W R S V) : Type :=
+  forall (w : W) (A : Fm), (M , w ⊩ A) \/ (M , w ⊮ A).
+End OrdinarySemantics.
+
+Module OrdinarySemanticsProperties.
+
+Import OrdinarySemantics.
+Import Base.
+Import Fm.
+
+Parameter W : Type.
+Parameter R : relation W.
+Parameter S : relation3 W.
+Parameter V : Valuation W.
+Parameter M : Model W R S V.
+Parameter dec : DecidableModel M.
+
+Local Notation "w ⊩? A" := (dec w A) (at level 0).
+
+Definition frame : Frame W R S := frame M.
+
+Definition forces_bot0 : not (is_true false) :=
+  fun a => match a with end.
+
+Lemma forces_bot1 {w A} : (M , w ⊩ A) -> not (A = ⊥).
+  by case.
+Qed.
+
+Lemma forces_bot {w} : not (M , w ⊩ ⊥).
+Proof using Type.
+  inversion 1. Qed.
+Notation "⊩⊥" := forces_bot.
+
+Lemma forces_bot2 {w} : not (M , w ⊩ ⊥).
+  by move => h; apply forces_bot1 in h.
+Qed.
+
+Lemma forces_var {v w} : M , w ⊩ (var v) -> V w v.
+Proof using Type. inversion_clear 1 => //. Qed.
+
+Lemma fimp_inv {w A B} : M , w ⊩ (A → B) -> M , w ⊮ A \/ M , w ⊩ B.
+Proof using Type. inversion_clear 1 => //. Qed.
+
+Lemma forces_rhd {w A B} :
+  M , w ⊩ (A ▷ B) ->
+      forall {u}, R w u -> nforces M u A \/ (ex (fun v => (S w u v) × (forces M v B))).
+Proof using Type. inversion_clear 1 => //. Qed.
+
+Lemma fimp_inv2 {w A B} : M , w ⊩ (A → B) -> M , w ⊮ A \/ M , w ⊩ B.
+Proof using Type.
+  by move => h; inversion h.
+Qed.
+
+Lemma nforces_var {w p} : M , w ⊮ (var p) -> not (V w p).
+Proof using Type.
+  by inversion_clear 1.
+Qed.
+
+Lemma nforces_rhd {w A B} :
+  M , w ⊮ (A ▷ B) ->
+     ex (fun u => (R w u) × (forces M u A) ×
+           (forall v, (not (S w u v)) \/ nforces M v B )).
+Proof using Type. by inversion_clear 1 => //. Qed.
+
+Lemma nimp_inv {w A B} :
+  M , w ⊮ (A → B) ->
+      forces M w A /\ nforces M w B.
+Proof using Type. inversion_clear 1 => //. Qed.
+
+Lemma nforces_to_not_forces {w A} : M , w ⊮ A -> not (M , w ⊩ A).
+Proof using Type.
+  move: A w.
+  elim => [ v w a na | A ihA B ihB w | A ihA B ihB w | w b ].
+  +  dependent destruction a.
+  + dependent destruction na => //.
+  + move/nforces_rhd=> [u [Rwu [uA p]] /forces_rhd-wArhdB].
+    case: (wArhdB u Rwu) => [/ihA-h1 //| [z [Swuz zB]]].
+  + case: (p z) => [//|/ihB //].
+    move/nimp_inv=> [wA wB /fimp_inv[/ihA //|/ihB //]].
+  inversion_clear 1.
+Qed.
+
+Lemma forces_to_not_nforces {w A} : M , w ⊩ A -> not (M , w ⊮ A).
+Proof using Type.
+  move: A w.
+  elim => [ v w /forces_var-a /nforces_var-na //
+         | A ihA B ihB w /forces_rhd-ArhdB /nforces_rhd[u [Rwu [uA pu]] ]
+         | A ihA B ihB w /fimp_inv-[nwA | wB] /nimp_inv[/ihA-wA /ihB-nwB //]
+         | w ].
+  case: (ArhdB _ Rwu) => [/ihA //|[v [Swuv /ihB]]].
+  case: (pu v) => [//|//].
+  inversion_clear 1.
+Qed.
+
+Notation "⊮→¬⊩" := nforces_to_not_forces.
+Notation "⊩→¬⊮" := forces_to_not_nforces.
+
+Lemma not_forces_to_nforces {w A} : not (M , w ⊩ A) -> M , w ⊮ A.
+Proof using Type.
+  case (w ⊩? A) => [//|//].
+Qed.
+
+Lemma not_nforces_to_forces {w A} : not (M , w ⊮ A) -> M , w ⊩ A.
+Proof using Type.
+  case (w ⊩? A) => [//|//].
+Qed.
+
+Lemma forces_fromto_not_nforces {w A} : (M , w ⊩ A) ⇔ (not (M , w ⊮ A)).
+Proof using Type.
+  apply: fromTo.
+  apply: forces_to_not_nforces.
+  apply: not_nforces_to_forces.
+Qed.
+Notation "⊩⇔¬⊮" := forces_fromto_not_nforces.
+
+Lemma not_forces_fromto_nforces {w A} : (not (M , w ⊩ A)) ⇔ (M , w ⊮ A).
+Proof using Type.
+  apply: fromTo.
+  apply: not_forces_to_nforces.
+  apply: nforces_to_not_forces.
+Qed.
+Notation "¬⊩⇔⊮" := not_forces_fromto_nforces.
+
+Lemma fimp_inv' {w A B} : (M , w ⊩ (A → B)) ⇔ (M , w ⊩ A -> M , w ⊩ B).
+Proof using Type.
+  apply: fromTo => [/fimp_inv-[/(⇐ ¬⊩⇔⊮)  //|//]
+                  | AtoB].
+  apply: fimp.
+  case: (w ⊩? A) => [/AtoB-wB|].
+  apply: or_intror => //.
+  apply: or_introl => //.
+Qed.
+Notation "⊩→" := (fimp_inv').
+
+Lemma forces_rhd' {w A B} :
+  (M , w ⊩ (A ▷ B)) ⇔
+    forall {u}, R w u -> forces M u A -> (ex (fun v => (S w u v) × (forces M v B))).
+Proof using Type.
+  apply: fromTo => [/forces_rhd-a u Rwu uA|p].
+  case: (a _ Rwu) => [/(⇐ ¬⊩⇔⊮) //|//].
+  apply: frhd => [u Rwu].
+  case: (u ⊩? A) => [uA |nuA].
+  apply: or_intror. apply: p => //.
+  apply: or_introl => //.
+Qed.
+Notation "⊩▷" := (forces_rhd').
+
+Lemma forces_neg {w A} : (M , w ⊩ ¬ A) ⇔ (M , w ⊮ A).
+Proof using Type.
+  apply: fromTo => [/(⇒ ⊩→)-a|/(⇐ ¬⊩⇔⊮)-nwA].
+  case: (w ⊩? A) => [/a/⊩⊥//|//].
+  apply: (⇐ ⊩→) => //.
+Qed.
+Notation "⊩¬" := forces_neg.
+
+Lemma nforces_neg {w A} : (M , w ⊮ ¬ A) ⇔ (M , w ⊩ A).
+Proof using Type.
+  apply: fromTo => [/nimp_inv-[a //]|a].
+  apply: nimp. apply: conj => //. apply: nbot.
+Qed.
+Notation "⊮¬" := nforces_neg.
+
+Lemma forces_box {w A} :
+  (M , w ⊩ (□ A)) ⇔ (forall {u}, R w u -> M , u ⊩ A).
+Proof using Type.
+  apply: fromTo => [/forces_rhd-p u Rwu|a].
+  case: (p _ Rwu) => [/(⇒ ⊮¬)//|[v [_ /⊩⊥ //]]].
+  apply: frhd => [u Rwu]. apply: or_introl.
+  apply: (⇐ ⊮¬). apply: a => //.
+Qed.
+Notation "⊩□" := forces_box.
+
+Lemma nforces_box {w A} :
+  (M , w ⊮ (□ A)) ⇔ (ex (fun v => (R w v) × (M , v ⊮ A))).
+Proof using Type.
+  apply: fromTo => [/nforces_rhd-[u [Rwu [/(⇒ ⊩¬)uA pA]]]|[u [Rwu /(⇐ ⊩¬)nuA]]].
+  exists u => //.
+  apply: nrhd. exists u. apply: conj => //. apply: conj => //.
+  move => v. apply: or_intror. apply: nbot.
+Qed.
+Notation "⊮□" := nforces_box.
+
+Lemma forces_diamond {w A} :
+  (M , w ⊩ (♢ A)) ⇔ (ex (fun v => (R w v) × (M , v ⊩ A))).
+Proof using Type.
+  apply: fromTo => [/(⇒ ⊩¬)/(⇒ ⊮□) [u [Rwu /(⇒ ⊮¬)-uA]]|[u [Rwu /(⇐ ⊮¬)uA]]].
+  exists u => //. apply: (⇐ ⊩¬). apply: (⇐ ⊮□). exists u => //.
+Qed.
+Notation "⊩♢" := forces_diamond.
+
+Lemma nforces_diamond {w A} :
+  (M , w ⊮ (♢ A)) ⇔ (forall {u}, R w u -> M , u ⊮ A).
+Proof using Type.
+  apply: fromTo => [/(⇒ ⊮¬)/(⇒ ⊩□) p u Rwu|p].
+  apply: (⇒ ⊩¬). apply: p => //.
+  apply: (⇐ ⊮¬). apply: (⇐ ⊩□) => [u Rwu].
+  apply: (⇐ ⊩¬). apply: p => //.
+Qed.
+Notation "⊮♢" := nforces_diamond.
+
+Lemma forces_and {w A B} :
+  (M , w ⊩ (A ∧ B)) ⇔ (M , w ⊩ A × M , w ⊩ B).
+Proof using Type.
+  apply: fromTo => [/(fimp_inv) [/nimp_inv [a /(⇒ ⊮¬) b]|/⊩⊥ //]
+                  |[a /(⇐ ⊮¬)b]].
+  apply: conj => //.
+  apply: fimp. apply: or_introl. apply: nimp. apply: conj => //.
+Qed.
+Notation "⊩∧" := forces_and.
+
+Lemma nforces_and {w A B} : (M , w ⊮ (A ∧ B)) ⇔ (M , w ⊮ A \/ M , w ⊮ B).
+Proof using Type.
+  apply: fromTo => [/nimp_inv-[/fimp_inv-[a|/(⇒ ⊩¬)b] _]|[a|/(⇐ ⊩¬)b]].
+  apply: or_introl => //. apply: or_intror => //.
+  apply: nimp. apply: conj. apply: fimp. apply: or_introl => //. apply: nbot.
+  apply: nimp. apply: conj. apply: fimp. apply: or_intror => //. apply: nbot.
+Qed.
+Notation "⊮∧" := nforces_and.
+
+Lemma forces_or {w A B} :
+  (M , w ⊩ (A ∨ B)) ⇔ (M , w ⊩ A \/ M , w ⊩ B).
+Proof using Type.
+  apply: fromTo => [/fimp_inv-[/(⇒ ⊮¬)a|b]|[/(⇐ ⊮¬)a|b]].
+  apply: or_introl => //.
+  apply: or_intror => //.
+  apply: fimp. apply: or_introl => //.
+  apply: fimp. apply: or_intror => //.
+Qed.
+Notation "⊩∨" := forces_or.
+
+Lemma nforces_or {w A B} :
+  (M , w ⊮ (A ∨ B)) ⇔ (M , w ⊮ A × M , w ⊮ B).
+Proof using Type.
+  apply: fromTo => [/nimp_inv-[/(⇒⊩¬)a b] |[/(⇐ ⊩¬)a b]].
+  apply: conj => //.
+  apply: nimp. apply: conj => //.
+Qed.
+Notation "⊮∨" := nforces_or.
+
+Inductive subset {A} (P Q : A -> Prop) : Type :=
+  | ss : (forall {x}, (P x -> Q x)) -> subset P Q.
+Arguments ss {A} {P} {Q}.
+
+Lemma forces_J1 {w A B} : M , w ⊩ (□ (A → B) → A ▷ B).
+Proof using Type.
+  apply: (⇐ ⊩→) => /(⇒ ⊩□)p.
+  apply: (⇐ ⊩▷) => [u Rwu uA].
+  exists u. apply: conj => //.
+  apply: (Sw_refl frame). apply: Rwu.
+  apply: ⇒⊩→(p _ Rwu)uA.
+Qed.
+Notation "⊩J1" := forces_J1.
+
+Lemma forces_J2 {w A B C} : M , w ⊩ (A ▷ B ∧ B ▷ C → A ▷ C).
+Proof using Type.
+  apply: (⇐ ⊩→) => /(⇒ ⊩∧) [/(⇒⊩▷)ab /(⇒⊩▷)bc].
+  apply: (⇐ ⊩▷) => [u Rwu uA].
+  pose proof (ab _ Rwu uA) as [v [Swuv vB]].
+  pose proof (Sw_inc_Rw frame Swuv) as [_ Rwv].
+  pose proof (bc v Rwv vB) as [z [Swvz zC]].
+  exists z. apply: conj => //.
+  apply: (Sw_trans frame). apply: Swuv. apply: Swvz.
+Qed.
+Notation "⊩J2" := forces_J2.
+
+Lemma forces_J3 {w A B C} : M , w ⊩ (A ▷ C ∧ B ▷ C → (A ∨ B) ▷ C).
+Proof using Type.
+  apply: (⇐ ⊩→) => /(⇒ ⊩∧)[/(⇒ ⊩▷)ac /(⇒ ⊩▷)bc].
+  apply: (⇐ ⊩▷) => [u Rwu /(⇒ ⊩∨)[uA|uB]].
+  apply: ac => //.
+  apply: bc => //.
+Qed.
+
+Lemma forces_J4 {w A B} : M , w ⊩ ((A ▷ B) → ♢ A → ♢ B).
+Proof using Type.
+  apply: (⇐ ⊩→) => /(⇒ ⊩▷)p. apply: (⇐ ⊩→) => /(⇒ ⊩♢)[v [Rwv vA]].
+  apply: (⇐ ⊩♢).
+  pose proof (p _ Rwv vA) as [z [Swvz zB]].
+  pose proof (Sw_inc_Rw frame Swvz) as [_ Rwz].
+  exists z. apply: conj => //.
+Qed.
+
+Lemma forces_J5 {w A} : M , w ⊩ ((♢ A) ▷ A).
+Proof using Type.
+  apply: (⇐ ⊩▷) => [u Rwu /(⇒ ⊩♢)[v [Ruv vA]]].
+  exists v. pose proof (R_Sw_trans frame Rwu Ruv) as Swuv.
+  apply: conj => //.
+Qed.
+
+Lemma forces_K {w A B} : M , w ⊩ ((□ (A → B)) → (□ A → □ B)).
+Proof using Type.
+  apply: (⇐ ⊩→) => /(⇒⊩□)pab.
+  apply: (⇐ ⊩→) => /(⇒⊩□)pa.
+  apply: (⇐ ⊩□) => [u Rwu].
+  apply: (⇒⊩→)(pab u Rwu)(pa _ Rwu).
+Qed.
+
+Lemma forces_4 {w A} : M , w ⊩ (□ A) -> M , w ⊩ (□ (□ A)).
+Proof using Type.
+  move=> /(⇒⊩□)boxA.
+  apply: ⇐ ⊩□ => u Rwu.
+  apply: ⇐ ⊩□ => v Ruv.
+  apply: boxA (R_trans frame Rwu Ruv).
+Qed.
+
+Lemma L_chain {w u A} : R w u -> M , u ⊮ A -> M , w ⊩ (□ (□ A → A)) -> InfiniteChain R w.
+Proof using Type.
+  move: w u A.
+  cofix h => w u A Rwu uA p.
+  pose proof fimp_inv((⇒ ⊩□ p) _ Rwu) as [nboxA|a].
+  pose proof (⇒ ⊮□ nboxA) as [v [Ruv nvA]].
+  apply: infinite_chain. apply: Rwu.
+  apply: h. apply: Ruv. apply: nvA.
+  apply: ⇒ ⊩□ (forces_4 p) _ Rwu.
+  exfalso. apply: (⇒ ⊩⇔¬⊮) a uA.
+Qed.
+
+
+Lemma forces_L {w A} : M , w ⊩ (□ (□ A → A) → □ A).
+Proof using Type.
+  apply: (⇐⊩→) => p. apply: (⇐ ⊩□) => u Rwu.
+  case: (dec u A) => [//|nuA].
+  exfalso. apply: (R_noetherian frame).
+  apply: (L_chain Rwu nuA p).
+Qed.
+
+Lemma forces_C1 {w A B} : M , w ⊩ (A → B → A).
+Proof using Type.
+  apply: (⇐ ⊩→) => wA. apply: (⇐ ⊩→) => //.
+Qed.
+
+Lemma forces_C2 {w A B C} : M , w ⊩ ((A → (B → C)) → ((A → B) → (A → C))).
+Proof using Type.
+  apply: (⇐ ⊩→) => wABC. apply: (⇐ ⊩→) => /(⇒ ⊩→)wAB. apply: (⇐ ⊩→) => wA.
+  apply: (⇒⊩→(⇒⊩→ wABC wA)(wAB wA)).
+Qed.
+
+Lemma forces_C3 {w A B} : M , w ⊩ ((¬ A → ¬ B) → B → A).
+Proof using Type.
+  apply: (⇐⊩→) => /(⇒⊩∨)[a|/(⇐¬⊩⇔⊮ ∘ ⇒⊩¬)b]; apply: (⇐ ⊩→) => //.
+Qed.
+
+Inductive ILProof (Π : list Fm) : Fm -> Prop :=
+  (* | Ax : forall {A}, In A Π -> ILProof Π A *)
+  | C1 : forall {A B}, ILProof Π (A → (B → A))
+  | C2 : forall {A B C}, ILProof Π ((A → (B → C)) → ((A → B) → (A → C)))
+  | C3 : forall {A B}, ILProof Π ((¬ A → ¬ B) → B → A)
+  | K : forall {A B}, ILProof Π ((□ (A → B)) → (□ A → □ B))
+  | L : forall {A}, ILProof Π (□ (□ A → A) → □ A)
+  | J1 : forall {A B}, ILProof Π (□ (A → B) → (A ▷ B))
+  | J2 : forall {A B C}, ILProof Π (A ▷ B ∧ B ▷ C → (A ▷ C))
+  | J3 : forall {A B C}, ILProof Π (((A ▷ C) ∧ (B ▷ C)) → ((A ∨ B) ▷ C))
+  | J4 : forall {A B},  ILProof Π ((A ▷ B) → ♢ A → ♢ B)
+  | J5 : forall {A},  ILProof Π (♢ A ▷ A)
+  | MP : forall {A B}, ILProof Π (A → B) -> ILProof Π A -> ILProof Π B
+  | nec : forall {A}, ILProof nil A -> ILProof Π (□ A).
+Notation "Π ⊢ A" := (ILProof Π A) (at level 50).
+
+Lemma soundness {D} (w : W) (p : nil ⊢ D) : M , w ⊩ D.
+Proof using Type.
+  elim: p w => [Π A B w
+         |Π A B C w
+         |Π A B w
+         |Π A B w
+         |Π A w
+         |Π A B w
+         |Π A B C w
+         |Π A B C w
+         |Π A B w
+         |Π A w
+         |Π A B _ hAB _ hA w
+         |Π A ilA h w].
+  apply: forces_C1.
+  apply: forces_C2.
+  apply: forces_C3.
+  apply: forces_K.
+  apply: forces_L.
+  apply: forces_J1.
+  apply: forces_J2.
+  apply: forces_J3.
+  apply: forces_J4.
+  apply: forces_J5.
+  apply: (⇒⊩→(hAB _) (hA _)).
+  apply: (⇐⊩□) => u Rwu. apply: h.
+Qed.
+
+End OrdinarySemanticsProperties.
+\end{spverbatim}
