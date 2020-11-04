@@ -376,7 +376,7 @@ thanks
    2. we have found a generalized frame condition for $\prin{Rⁿ}$. [[theorem:Rⁿ][Link]];
    3. we performed a detailed analysis of the quasi-transitivity conditions
       available in the literature for generalized semantics. [[theorem:trans][Link]];
-   4. we discovered a flawed proof in a published article. [[sec:flawed-proof][Link]];
+   4. we discovered a proof in a published article which needs to be repaired. [[sec:flawed-proof][Link]];
    5. we worked out all the details of a proof in an unpublished manuscript by
       Verbrugge (cite:Verbrugge). [[sec:verbrugge][Link]];
    6. we present the implementation of a verified language to write Hilbert
@@ -1188,40 +1188,57 @@ thanks
    # $u_{(w, v)}$ inherit exactly (it shouldn't be too hard, I actually did
    # something similar in the old version of the IL complexity paper).
 
-** A flawed proof in disguise
-   <<sec:flawed-proof>>
-   As we all know, mathematical proofs can get long and tedious to follow. It is
-   an art to guide the reader through the key steps of the proof and prevent
-   them from getting lost in the details. In order to achieve that, a resource
-   that is often used is to omit details of trivial claims during the proof.
-   Omitting details saves a lot of time and usually there is no harm in it.
-   However, we may mistakenly believe that something is trivial, whereas in
-   reality it may not be trivial, or in the worst case, it may not even be true.
-   If the mistake is overlooked, we may end up building on top of an
-   inconsistent basis. Needless to say, this is an unacceptable situation which
-   we should try to avoid at all costs. In this section we present an example of
-   a published flawed proof. We discovered the flaw while trying to formalize
-   the proof in Agda. We proceed by giving some context to the proof.
+** A proof in need of repair
+   <<sec:flawed-proof>> As we all know, mathematical proofs can get long and
+   tedious to follow. It is an art to guide the reader through the key steps of
+   the proof and prevent them from getting lost in the details. In order to
+   achieve that, a resource that is often used is to omit details of trivial
+   claims during the proof. Omitting details saves a lot of time and usually
+   there is no harm in it. However, we may mistakenly believe that something is
+   trivial, whereas in reality it may not be trivial, or in the worst case, it
+   may not even be true. If the mistake is overlooked, we may end up building on
+   top of an inconsistent basis. Needless to say, this is an unacceptable
+   situation which we should try to avoid at all costs. In this section we
+   present an example of a published proof where some steps remain unjustified.
+   We discovered these gaps while trying to formalize the proof in Agda. We
+   proceed by giving some context to the proof.
 
    The transformations from a generalized to an ordinary Veltman model given in
    Sections [[sec:verbrugge]] and [[sec:gen-to-ord-luka]] work for simple notions of
-   quasi-transitivity but do not work for Condition (2), which is the standard.
-   In cite:vukovic2008bisimulations a transformation which is claimed to work
-   for Condition (2) is presented. We studied the transformation and started to
-   formalize in Agda the proof of its correctness following the proof of
-   Proposition 2.8 in cite:vukovic2008bisimulations. Despite of our best efforts
-   we could not follow some steps which are claimed to be obvious in the
-   original paper. After that, we decided to ask the original author for a
-   clarification. He kindly replied but was unable to find a satisfying fix for
-   the holes in the proof. After further investigation we realized that the
-   proof had fundamental flaws which could not be fixed easily. Sadly, we have
-   to conclude that Proposition 2.8 of cite:vukovic2008bisimulations is no
-   longer a proven theorem. Thus, the problem of finding transformation from a
-   generalized model (with Condition (2)) to an ordinary model such that it
-   preserves some structure of the original model remains an open question. By
-   ``preserves some structure'' we mean that we should have a property of the form:
-   \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈\fm{}.\]
-   Where $f$ is a map from the set of worlds of $M$ to the set of worlds of $M'$.
+   quasi-transitivity but do not seem to work directly for Condition (2), which
+   is the standard. In cite:vukovic2008bisimulations a transformation which is
+   claimed to work for Condition (2) is presented. We studied the transformation
+   and started to formalize in Agda the proof of its correctness following the
+   proof of Proposition 2.8 in cite:vukovic2008bisimulations.
+
+   # new
+   Despite our strong efforts to fill in the missing steps, we could not
+   reproduce the original reasoning. Although we did not find an explicit
+   counterexample, the original author agrees with us that the missing steps
+   could render the proof invalid. The validity of Proposition 2.8 of
+   cite:vukovic2008bisimulations comes into question and until this is resolved,
+   we may consider the problem of finding transformation from a generalized
+
+   model (with Condition (2)) to an ordinary model such that it preserves some
+   structure of the original model to be an open question once again. By
+   ``preserves some structure'' we mean that we should have a property of the
+   form: \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈\fm{}.\] Where $f$ is a
+   map from the set of worlds of $M$ to the set of worlds of $M'$.
+
+   # old
+   # Despite our best efforts we could not follow some steps which are claimed
+   # to be obvious in the original paper. After that, we decided to ask the
+   # original author for a clarification. He kindly replied but was unable to find
+   # a satisfying fix for the holes in the proof. After further investigation we
+   # realized that the proof had fundamental flaws which could not be fixed
+   # easily. Sadly, we have to conclude that Proposition 2.8 of
+   # cite:vukovic2008bisimulations is no longer a proven theorem. Thus, the
+   # problem of finding transformation from a generalized model (with Condition
+   # (2)) to an ordinary model such that it preserves some structure of the
+   # original model remains an open question. By ``preserves some structure'' we
+   # mean that we should have a property of the form: \[M,w⊩A⇔M',f(w)⊩A\ \ \
+   # \text{for every }w∈W,A∈\fm{}.\] Where $f$ is a map from the set of worlds of
+   # $M$ to the set of worlds of $M'$.
 
    We believe that this example should be taken as a humbling reminder that we
    are humans and we make mistakes. Even if a proof has been through skilled
@@ -1232,6 +1249,69 @@ thanks
    time investment both on learning and in formalizing big scale mathematical
    proofs. However, the confidence level that they offer certainly outweighs
    their negatives in some situations.
+*** The details
+    In this section we present the details to better understand which are the
+    problematic steps in the proof. For that, we copy[fn::with very slim
+    adaptations to accommodate our notation.] Definitions 2.5, 2.7 and
+    Propositions 2.6, 2.8 in cite:vukovic2008bisimulations.
+
+    *Definition 2.5* of cite:vukovic2008bisimulations: Let $F=⟨W,R,\{S_w:w∈W\}⟩$
+    be a generalized Veltman frame. Let $W'$ consist of all pairs $⟨v,C⟩$, where
+    $v∈W$ and $C$ is a set of ordered pairs $⟨x,y⟩∈W²$ such that:
+    1. If $xRv$, then $⟨x,v⟩∈C$;
+    2. for each $x∈W$ and each $V⊆W[x]$ such that $vS_xV$ there are $V'⊆W[x]$ and
+       $y∈V'$ such that $V⊆V'$ and $⟨x,y⟩∈C$;
+    3. if $⟨x,y⟩∈C$, then there is $V⊆W[x]$ such that $vS_xV$ and $y∈V$.
+    We define a relation $R'⊆W'×W'$ by
+    \[⟨w,A⟩R'⟨u,B⟩ \text{ iff: } wRu \text{ and } ∀x∀y(xRw ⇒⟨x,y⟩∈B⇒⟨x,y⟩∈A)\]
+    We define a relation $S'_{⟨w,A⟩}$ for each $⟨w,A⟩∈W'$ by
+    \[⟨u,B⟩S'_{⟨w,A⟩}⟨v,C⟩ \text{ iff: } ⟨w,A⟩R'⟨u,B⟩ \text{ and } ⟨w,A⟩R'⟨v,C⟩ \text{ and }
+    ∀y(⟨w,y⟩∈C⇒⟨w,y⟩∈B)\]
+    We denote an ordered triple $⟨W',R',\{S'_{w'}:w'∈W'\}⟩$ by $\mathrm{of}(F)$.
+
+    *Proposition 2.6* of cite:vukovic2008bisimulations: Let $M$ be a generalized
+    Veltman frame, then $\mathrm{of}(M)$ is an ordinary Veltman frame.
+    {{{beginproof}}} {{{agda}}} The proof is omitted in the original paper and
+    we omit it here too. However, the proof has been formalized in Agda and can
+    be found in Section [[src:generalizedveltmansemantics.properties.vukovic]].
+    {{{endproof}}}
+
+    *Definition 2.7* of cite:vukovic2008bisimulations: Let $M=⟨F,V⟩$ be a generalized
+    Veltman model, then we define V' by
+    \[⟨⟨w,A⟩,p⟩∈V' \text{ iff: } ⟨w,p⟩∈V.\]
+    We denote the model $⟨\mathrm{of}(F),V'⟩$ by $\mathrm{o}(M)$.
+
+    *Proposition 2.8* of cite:vukovic2008bisimulations: Let
+    $M=⟨W,R,\{S_w:w∈W\},V⟩$ be a generalized Veltman model. Let
+    \[\mathrm{o}(M)=⟨W',R',\{S'_{w'}∈W'\},V⟩.\]
+    Then for each formula $ϕ$ and each $⟨w,A⟩∈W'$ we have
+    \[W,w⊩ϕ \text{ iff: } \mathrm{o}(M),⟨w,A⟩⊩ϕ.\]
+
+    /Partial proof/. The proof goes by induction on the formula $ϕ$. The only
+    interesting case is $▷$. Now, suppose that $w⊩ϕ▷ψ$. We want to show
+    $⟨w,A⟩⊩ϕ▷ψ$. Assume $⟨w,A⟩R'⟨u,B⟩$ and $⟨u,B⟩⊩ϕ$. By IH we have $u⊩ϕ$. Then
+    from $⟨w,A⟩⊩ϕ▷ψ$ we get that there exists a set of worlds $V₀⊆\{x:wRx\}$
+    such that $uS_wV_0$ and $v⊩ψ$ for each $v∈V₀$. Let $v₀$ be any element of
+    the set $V₀$.
+
+    In the proof it is claimed that the following holds: \[∀x (xRw \text{ and }
+    xRv₀ ⇒ ⟨x,v₀⟩∈A). \] However, details on why this holds are not given. This is
+    one of the steps that has not yet been repaired neither by us or the author.
+
+    Further in the proof it is claimed[fn::In the original paper a stronger
+    property is claimed, but the property highlighted here is the only piece
+    missing.] that the following holds: \[⟨w,v₀⟩∈B.\]
+    We find ourselves again in a situation which we have been able to justify.
+
+    The partial Agda proof of Proposition 2.8 can be found in
+    [[src:generalizedveltmansemantics.properties.vukovic]].
+
+    As a closing remark, we want to emphasize that we do not deem this proof as
+    definitely flawed since we have not found a counterexample to the theorem.
+    However, the fact that neither us or the author were unable to fill the
+    presented gaps hints that the at least the definitions involved in the proof
+    should be tweaked.
+
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
   formulas that carries some special significance.
@@ -2327,9 +2407,9 @@ thanks
    theory presented in cite:nordstrom1990programming. We will refer to this
    logic as /Martin Löf's logical framework/ or LF for short. Even though Agda
    lacks a well defined specification, LF is considered the basis of Agda's type
-   system (cite:sep-type-theory-intuitionistic). Furthermore, Peter Dybjer
-   suggested[fn::via email correspondence.], who is a professor at the
-   University of Chalmers, where most of the development of Agda takes place,
+   system (cite:sep-type-theory-intuitionistic). Furthermore, Peter Dybjer, who
+   is a professor at the Chalmers University of Technology[fn::Where most of the
+   development of Agda takes place.], suggested[fn::via email correspondence.]
    the specific version of LF that we will present in this section. However,
    there are important differences between LF and Agda's theory that we will
    comment in Section [[sec:basic-agda]].
@@ -2337,14 +2417,14 @@ thanks
    Logic LF has four types of judgment:
    1. ``$a$ has type $A$''. We write $a:A$. Crucially, in a type theory that
       follows the paradigm of /propositions as types/ we may interpret the
-      statement $a:A$ in several ways, all of them equivalent in such paradigm:
+      statement $a:A$ in several ways, all of them equivalent in such a paradigm:
       - The term $a$ has type $A$;
       - the term $a$ satisfies the proposition $A$;
       - the term $a$ is a proof of the proposition $A$;
       - the term $a$ is a program that satisfies the specification $A$.
    2. ``$A$ is a type''. We write $A:\mathsf{Type}$.
-   3. ``$A_1$ and $A_2$ are equal types''. We write $A_1≡A_2:\mathsf{Type}$.
-   4. ``$a_1$ and $a_2$ are equal elements of the type $A$''. We write $a_1≡a_2:A$.
+   3. ``$A_1$ and $A_2$ are equal types''. We write $A_1=A_2:\mathsf{Type}$.
+   4. ``$a_1$ and $a_2$ are equal elements of the type $A$''. We write $a_1=a_2:A$.
 
    We say that some proposition (or type) $A$ is true if there exists some $t$
    such that $t:A$.
@@ -2352,14 +2432,21 @@ thanks
    We say that $A$ is a type if we have a precise definition of the objects in
    that type and a decidable equivalence relation for the objects of the type.
 
-   The first type that we define is the type /Set/[fn::The concept of /set/ used
-   here differs from the one in set theory.]. The objects of the type /Set/ are
-   /sets/. A /set/ $A$ is an inductive description of how the /canonical
-   elements/ of $A$ are built, plus a decidable equality relation between
-   canonical elements. Two sets are equal if a canonical element of one set is a
-   canonical element of the other set and moreover, if two equal canonical
-   elements in one set also are equal in the other set. {{{jan(what are
-   canonical elements exactly? sadly there is no precise definition in the article)}}}
+   {{{jan(Quoted definition of type:)}}} (cite:nordstrom1990programming)
+   \begin{quote}
+   What does it mean that something is a type? To know that $A$ is a type is to
+know what it means to be an object of the type, as well as what it means for two
+objects to be the same.
+   \end{quote}
+
+   The first type that we define is the type \set{}[fn::The concept of /set/
+   used here differs from the one in set theory.]. We refer to the objects of
+   the type \set{} as /sets/. A /set/ is an inductive description of how its
+   /canonical elements/ are built, plus a decidable equality relation between
+   them. Two sets are equal if any canonical element of one set is a canonical
+   element of the other set and moreover, if any two equal canonical elements in
+   one set also are equal in the other set. {{{jan(what are canonical elements
+   exactly? sadly there is no precise definition in the article)}}}
 
    For instance, if we want to define the set of natural numbers, we have two
    canonical elements: /zero/ and the /successor/ of a natural number. The
@@ -2372,8 +2459,8 @@ thanks
    \inferrule[Set]{\ }{\mathsf{Set}:\mathsf{Type}}
    \end{mathpar}
 
-   If $A$ is a set, then the elements of $A$ in conjunction with their
-   equivalence relation forms a type.
+   If $A$ is a set, then the elements of $A$, denoted with \el{A}, in
+   conjunction with their equivalence relation forms a type.
    \begin{mathpar}
    \inferrule[El]{A:\set{} }{\sf{El}(A):\sf{Type}}
    \and
@@ -2433,9 +2520,9 @@ thanks
     syntax of terms: \[S≔x\ |\ (x:S)↠S\ |\ S\ S\ |\ c\] We want to highlight the
     construction $(x:S)↠S$. This is the type of dependent functions. If we have
     $(a:A)↠B$ then this is the type of functions from $A$ to $B$. However, in
-    this case the type $B$ may depend on $a$. As we will see, this is the
-    cornerstone and gives the name to /dependent types/.
-
+    this case the type $B$ may depend on $a$ (we will also say that $B$ is
+    indexed by a term of type $A$). As we will see, this is the cornerstone of
+    and gives the name to /dependent types/.
 
     As we did with simply typed lambda calculus, we introduce the concept of a
     /context/. Intuitively, a context, is a sequence of typed variables, where
@@ -2448,18 +2535,18 @@ thanks
     $a₁,…,a_{i-1}$ such that
     \begin{flalign*}
    \label{context-cond}
-   S₁:\sf{Type} &\text{ and } a₁:S₁ \\
-   S₂[x₁↦a₁]:\sf{Type} &\text{ and } a₂:S₂[x₁↦a₁] \\
+   S₁:\sf{Type} &\text{ and } a₁:S₁; \\
+   S₂[x₁↦a₁]:\sf{Type} &\text{ and } a₂:S₂[x₁↦a₁]; \\
    & … \\
-   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\sf{Type} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]
+   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\sf{Type} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}] ;
     \end{flalign*}
-    then
-    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\sf{Type}\].
-    Then, if $Γ$ is a context, we write:
-    1. $Γ⊢t:A$ to say that term $t$ has type
-      $A$ in the context $Γ$. We write $t:A$ instead of $∅⊢t:A$. As expected, we
-    2. $Γ⊢S:\sf{Type}$ to say that $S$ is a type in context $Γ$.
-    3. $Γ⊢a=b:S$ to say that $a$ and $b$ are equal terms of type $S$ in context $Γ$.
+    then it must be that
+    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\sf{Type}.\]
+    If $Γ$ is a context, we write:
+    1. $Γ⊢t:A$ to say that term $t$ has type $A$ in the context $Γ$. We write
+       $t:A$ instead of $∅⊢t:A$;
+    2. $Γ⊢S:\sf{Type}$ to say that $S$ is a type in context $Γ$;
+    3. $Γ⊢a=b:S$ to say that $a$ and $b$ are equal terms of type $S$ in context $Γ$;
     4. $Γ⊢A=B:\sf{Type}$ to say that $A$ and $B$ are equal types in context $Γ$.
     In any case, in order to avoid cluttered rules, if the context is the same
     for all the parts of a rule, we will not mention it explicitly. For
@@ -2476,10 +2563,8 @@ thanks
     As expected, we have the following rule:
     \begin{mathpar}
     \inferrule[Assum]{Γ⊢A:\sf{Type}}
-    {Γ,x:A⊢x:A}
+    {Γ,x:A, Γ'⊢x:A}
     \end{mathpar}
-    Note that $x:A$ does not necessarily need to be at the rightmost position in
-    the context.
 
     Since equality is an equivalence relation we have the corresponding rules
     for equality on types and on terms.
@@ -2491,10 +2576,16 @@ thanks
     \end{mathpar}
     Analogously, for types we have:
     \begin{mathpar}
-    \inferrule[Refl]{A:\sf{Type}}{A=A:\sf{Type}} \and
-    \inferrule[Sym]{ A=B:\sf{Type} }{B=A:\sf{Type}} \and
-    \inferrule[Trans]{B=C:\sf{Type}}{A=C:\sf{Type}}
+    \inferrule[Refl]{A:\type{}}{A=A:\sf{Type}} \and
+    \inferrule[Sym]{ A=B:\type{} }{B=A:\sf{Type}} \and
+    \inferrule[Trans]{A=B:\type{} \\ B=C:\sf{Type}}{A=C:\sf{Type}}
     \end{mathpar}
+    Note that in the \textsc{Refl} rule the requirement $A:\type{}$ is redundant
+    since the assumption $a:A$ already requires $A:\type$. We will sometimes add
+    redundant assumptions when we believe it helps with the readability of the
+    rule.
+
+
     Furthermore we can substitute equal types.
     \begin{mathpar}
     \inferrule[Id1]{A=B:\sf{Type}\\a:A }{a:B} \and
@@ -2582,7 +2673,7 @@ thanks
 
 *** Function and application rules
     We can form by the following rule the type of functions from a type $A$ to a
-    type $B$ indexed by a term of type $A$.
+    type $B$, where $B$ is a type that may depend on a term of type $A$.
     \begin{mathpar}
     \inferrule[Fun]{Γ⊢A:\sf{Type}\\Γ,x:A⊢B:\sf{Type}}{Γ⊢(x:A)↠B:\sf{Type}}
     \end{mathpar}
@@ -2593,7 +2684,7 @@ thanks
     \begin{mathpar}
     \inferrule[Fun']{A:\sf{Type}\\B:\sf{Type}}{A↠B:\sf{Type}}
     \end{mathpar}
-    Application and abstraction. \jan{use $→$ or . ?}
+    Application and abstraction.
     \begin{mathpar}
     \inferrule[App]{f:(x:A)↠B \\ a:A}{f\ a:B[x↦a]}
     \and \inferrule[Abs]{Γ,x:A⊢b:B}{Γ⊢λx→b:(x:A)↠B}
@@ -2624,7 +2715,7 @@ thanks
     \inferrule[$α$-$=$]{b:B[x:A]}{λx→b=λy→b[x↦y]:(x:A)↠B}
     \end{mathpar}
     The \text{$η$-$=$} rule tells us that abstraction and application cancel
-    each other. In this rule we assume that $y$ does not occur free in $b$.
+    each other out. In this rule we assume that $y$ does not occur free in $b$.
     \begin{mathpar}
     \inferrule[$η$-$=$]{c:(x:A)↠B}{λx→b=λy→b[x↦y]:λ(x:A)↠B}
     \end{mathpar}
@@ -2637,9 +2728,41 @@ thanks
     <<sec:def-new-types>> In this section we will define some new sets that will
     allow us to express...
 
+    For each set we will introduce the following:
+    1. A typed constant that represents the set.
+    2. One or more[fn::With the exception of the empty set, which has no
+       constants to introduce new elements.] constants to introduce elements of
+       the set. We call these constants /constructors/ of the set.
+    3. A way to interact with the elements of the set. This is done via an
+       induction principle. The induction principle is defined by giving a typed
+       constant to represent it. Then for each of the constructors we add an
+       equality that describes the behavior of the induction principle with that
+       constructor.
 
-    We add the following redundant rule. On the left we show the new rule and on
-    the right we show the proof that it can be derived.
+       The concept of /principle of induction/ that we use here should be taken
+       in the wide sense of /structural induction/ since every set is defined in
+       an inductive way. Of course, not every set that we will define has a
+       recursive nature and thus the introduced induction principle for those
+       sets is not going to be reminiscent of a principle of induction in the
+       traditional sense. {{{jan(Is there a better way to convey this?)}}}
+
+       We use the following notational convention: If \sf{X} is the constant
+       that denotes the set, then we will define the constant that represents
+       the induction principle as \sf{case_X}.
+
+    The rest of this chapter is going to be structured as follows: We define a
+    new set, including all the parts mentioned before, then we write a
+    horizontal black line[fn::The purpose of the horizontal line is to more
+    clearly limit what is the definition of the set and the examples that come
+    afterwards. {{{jan(is this a good idea?}}}] and after that some examples.
+    During the introduction of the first few sets we show how we can embed
+    propositional intuitionistic logic into LF in very direct way. After
+    defining the natural numbers and the identity set we show how we can prove a
+    property on addition by (formalized) induction.
+
+    Let us define the following derivable rule, as it will allow us to write
+    some derivations more succinctly. On the left we show the new rule and on the
+    right we show the proof that it can be derived.
     \begin{mathpar}
     \inferrule[VarType]
     {\ }
@@ -2653,6 +2776,7 @@ thanks
     {P:\set{}⊢P:\set{}}}
     {P:\set{}⊢\sf{El}(P):\sf{Type}}
     \end{mathpar}
+
 **** Function set
      We introduce the constant that denotes the set of functions from elements
      of a set $A$ to elements of a set $B$: \[↣:\set↠\set↠\set\]
@@ -2762,9 +2886,9 @@ thanks
      {{{beginproof}}} By induction on $A$ and using the previous facts. {{{endproof}}}
 
 **** Top set
-      We begin by defining the singleton set. We name it $⊤$. We say that it
+      We now define the singleton set. We name it $⊤$. We say that it
       is a singleton set because it only has one element, namely
-      $\sf{tt}$. The $⊤$ set represents ``true'' in this theory.
+      $\sf{tt}$. The $⊤$ set represents ``true'' in this logic.
 
       We add the constant that represents the set: \[⊤:\set{}\] We introduce the
       constant that is the only element in the set: \[\sf{tt}:\sf{El}(⊤)\] An
@@ -2792,8 +2916,12 @@ thanks
      represents ``false'' in this theory.
 
      We introduce the constant that represents the type: \[⊥:\set{}\] We do
-     not introduce any constants as elements of this set. We introduce an
+     not introduce any constructors for this set. We introduce an
      induction principle: \[\sf{case_⊥}:(P : \el{⊥}↠\set{})↠(a:\el{⊥})↠\el{P\ a}\]
+
+     The justification of this induction principle is that since it is
+     impossible to build a term of type $⊥$ by definition, then from the
+     assumption that we have a term of type $⊥$, follows anything.
 
      -----
 
@@ -2803,7 +2931,7 @@ thanks
      \end{flalign*}
      The $⊥$ on the right of $≔$ is the constant introduced in this section.
 
-     Let us now show that the principle $(⊥→p)^*$ know as /ex falso quodlibet/
+     Let us now show that the principle $(⊥→p)^*$ known as /ex falso quodlibet/
      or /principle of explosion/ holds in LF. For that, we provide a term typed
      $(⊥→p)^*$.
      \begin{mathpar}
@@ -2820,11 +2948,11 @@ thanks
      {P:\set⊢Λy→\sf{case_⊥}\ (λx→P)\ y:\el{⊥↣P}}
      \end{mathpar}
 **** Disjoint unions set
-     Disjoint unions represent two options.
-
-     We introduce the constant: \[⊎ : \set{}↠\set{}↠\set{}\]
-     *Notation*.We will use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead
-     of $⊎\ A\ B$.
+     We introduce the constant: \[⊎ : \set{}↠\set{}↠\set{}\] *Notation*.We will
+     use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead of $⊎\ A\
+     B$. The disjoint union set represents two options, hence, when we have a
+     term of type $A\ ⊎\ B$ it means that we either have a term of type $A$ or a
+     term of type $B$ (and we know which of the two we have).
 
      Since we want to represent two options, we introduce two constructors:
      \begin{flalign*}
@@ -2840,8 +2968,8 @@ thanks
      &↠ (u:\el{A\ ⊎\ B}) \\
      &↠ \el{P\ u}
      \end{flalign*}
-     and the following equalities:
 
+     We also introduce the following rules:
      \begin{mathpar}
      \inferrule[Case$⊎₁$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
      p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
@@ -6060,8 +6188,9 @@ title=Bibliography
 *** GeneralizedVeltmanSemantics/Properties/Verbrugge
     <<src:generalizedveltmansemantics.properties.verbrugge>>
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Verbrugge.tex" export latex
-*** GeneralizedVeltmanSemantics/Properties/Vukovic :noexport:
-    <<src:generalizedveltmansemantics.properties.vukovic>>
+*** GeneralizedVeltmanSemantics/Properties/Vukovic
+    <<src:generalizedveltmansemantics.properties.vukovic>> This file contains
+    the unfinished proof of proposition 2.8 in cite:vukovic2008bisimulations.
   #+include: "latex/GeneralizedVeltmanSemantics/Properties/Vukovic.tex" export latex
 *** GeneralizedVeltmanSemantics/Properties
     <<src:generalizedveltmansemantics.properties>>
