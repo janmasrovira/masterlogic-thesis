@@ -1309,8 +1309,8 @@ thanks
     As a closing remark, we want to emphasize that we do not deem this proof as
     definitely flawed since we have not found a counterexample to the theorem.
     However, the fact that neither us or the author were unable to fill the
-    presented gaps hints that the at least the definitions involved in the proof
-    should be tweaked.
+    presented gaps in this section hints that the at least the definitions
+    involved in the proof should be tweaked.
 
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
