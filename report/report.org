@@ -78,22 +78,6 @@
 #+macro: jan @@latex:\jan{$1}@@
 #+macro: luka @@latex:\luka{$1}@@
 
-{{{defglossary(gvm,model,Generalized Veltman model)}}}
-{{{defglossary(gvf,frame,Generalized Veltman frame)}}}
-{{{defglossary(ovf,frame,Ordinary Veltman frame)}}}
-{{{defglossary(ovm,model,Ordinary Veltman model)}}}
-{{{defglossary(forcing-gen,{\ensuremath{⊩^{gen}_M}},Forcing relation for generalized semantics)}}}
-{{{defglossary(forcing-ord,{\ensuremath{⊩^{ord}_M}},Forcing relation for ordinary semantics)}}}
-{{{defglossary(choice-set,choice set,Choice set)}}}
-{{{defglossary(noetherian,Noetherian,Conversely well-founded relation)}}}
-#+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component is indexed by the first component}}
-#+latex_header: \newglossaryentry{sum type}{name={sum type},description={A disjunction of two ore more types}}
-#+latex_header: \newglossaryentry{decidable model}{name={decidable model},description={A model whose forcing relation is decidable}}
-#+latex_header: \newglossaryentry{multi decidable model}{name={multi-decidable model},description={A model whose forcing relation is decidable for sets}}
-#+latex_header: \newglossaryentry{Rel}{name={\texttt{Rel}},description={Homogeneous relation}}
-#+latex_header: \newglossaryentry{REL}{name={\texttt{REL}},description={Heterogeneous relation}}
-#+latex_header: \newglossaryentry{Pred}{name={\texttt{Pred}},description={A predicate or a subset}}
-
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 #+macro: coq @@latex:\gls{coqprf}\glsadd{coqprf}@@
 #+latex_header: \newcommand{\prin}[1]{\ensuremath{\mathsf{#1}}}
@@ -112,6 +96,24 @@
 #+latex_header: \newcommand{\set}[0]{\ensuremath{\mathsf{Set}}}
 #+latex_header: \newcommand{\type}[0]{\ensuremath{\mathsf{Set}}}
 
+{{{defglossary(gvm,model,Generalized Veltman model)}}}
+{{{defglossary(gvf,frame,Generalized Veltman frame)}}}
+{{{defglossary(ovf,frame,Ordinary Veltman frame)}}}
+{{{defglossary(ovm,model,Ordinary Veltman model)}}}
+{{{defglossary(forcing-gen,{\ensuremath{⊩^{gen}_M}},Forcing relation for generalized semantics)}}}
+{{{defglossary(forcing-ord,{\ensuremath{⊩^{ord}_M}},Forcing relation for ordinary semantics)}}}
+{{{defglossary(choice-set,choice set,Choice set)}}}
+{{{defglossary(noetherian,Noetherian,Conversely well-founded relation)}}}
+{{{defglossary(elemequivworlds,modally equivalent worlds,Two worlds that force the same formulas)}}}
+{{{defglossary(elemequivmodels,modally equivalent models,Two models which have modally equivalent worlds)}}}
+{{{defglossary(il,\il{},Base logic for interpretability logics)}}}
+#+latex_header: \newglossaryentry{dependent-pair}{name={dependent pair},description={A pair in which the type of the second component may depend on the first component}}
+#+latex_header: \newglossaryentry{sum type}{name={sum type},description={A disjunction of two ore more types}}
+#+latex_header: \newglossaryentry{decidable model}{name={decidable model},description={A model whose forcing relation is decidable}}
+#+latex_header: \newglossaryentry{multi decidable model}{name={multi-decidable model},description={A model whose forcing relation is decidable for sets}}
+#+latex_header: \newglossaryentry{Rel}{name={\texttt{Rel}},description={Homogeneous relation}}
+#+latex_header: \newglossaryentry{REL}{name={\texttt{REL}},description={Heterogeneous relation}}
+#+latex_header: \newglossaryentry{Pred}{name={\texttt{Pred}},description={A predicate or a subset}}
 
 # remember to invoke with \ilall{} and not \ilall so that the space at the end
 # is inserted if needed.
@@ -449,11 +451,13 @@ thanks
    4. $⟦A⟧≔\{w:w⊩A\}$;
    5. {{{agda}}} this is Agda's logo. Each proof that is formalized in Agda
       has been tagged with it;
-   5. {{{coq}}} this is Coq's logo. Each proof that is formalized in Coq
+   6. {{{coq}}} this is Coq's logo. Each proof that is formalized in Coq
       has been tagged with it;
-   6. when we write a dot after the quantification of some variables, the scope of
+   7. when we write a dot after the quantification of some variables, the scope of
       the variables extends to the rightmost part of what follows. Hence the
       formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$.
+   8. We use commas to denote conjunction, so $∀x.A(x),B(x)$ should be
+      read as for all $x$ we have $A(x)$ and $B(x)$.
 
 
    In Section [[sec:trans]] and Part [[sec:frame-condition]] we present some diagrams.
@@ -476,9 +480,9 @@ thanks
    related to it. All of these theorems have been verified and their Agda proof
    can be found in [[src:il.properties]].
 
-   {{{begindef}}} The logic \il{} encompasses all classical theorems in the new
-   language (given by C1, C2 and C3), all theorems of \prin{GL} in the new
-   language (given by L and K) plus some new axiom schemas:
+   {{{begindef}}} \glsadd{il} The logic \il{} encompasses all classical theorems
+   in the new language (given by C1, C2 and C3), all theorems of \prin{GL} in
+   the new language (given by L and K) plus some new axiom schemas:
    - C1: $A → (B → A)$;
    - C2: $(A → (B → C)) → ((A → B) → (A → C))$;
    - C3: $(¬ A → ¬ B) → (B → A)$;
@@ -931,6 +935,16 @@ thanks
   requirement that the transformation preserves the truth value of the original
   model.
 
+  {{{begindef}}} *Modally equivalent worlds*. \glsadd{elemequivworlds} Given
+  models $M$ and $M'$, we say that two worlds $w∈M$ and $w'∈M'$ are modally
+  equivalent iff for every formula $A$ we have: \[ M,w⊩A⇔M,w'⊩A\] {{{enddef}}}
+
+  {{{begindef}}} *Modally equivalent models*. \glsadd{elemequivmodels} Given
+  models $M$ and $M'$, we say that $M$ and $M'$ are modally equivalent iff
+  for every world $w∈M$ there is a world $w'∈M'$ such that $w$ and $w'$ are
+  modally equivalent. And vice versa, for every world in $w'∈M'$ there exists
+  a world $w∈M$ such that $w$ and $w'$ are modally equivalent {{{enddef}}}
+
   In Section [[sec:ord-to-gen]] we see a straightforward transformation from an
   ordinary Veltman model into a generalized Veltman model. In Section
   [[sec:verbrugge]] we see an involved transformation from a generalized model into
@@ -939,51 +953,59 @@ thanks
   quasi-transitivity Condition (6). We have slightly improved the result by
   showing that the same transformation also works for Conditions (3), (4) and
   (5). In Section [[sec:gen-to-ord-luka]] we show a transformation that achieves the
-  same as Verbrugge's transformation but it is much simpler. This transformation
-  was suggested by Mikec during online correspondence.
+  same as Verbrugge's transformation but it is much simpler. The simpler
+  transformation was suggested by Mikec during online correspondence.
 
 ** From ordinary to generalized
    <<sec:ord-to-gen>> In this section we present a theorem that shows how an
-   ordinary model naturally gives rise to a generalized model for any of the
-   presented quasi-transitivity conditions. The resulting generalized model has
-   the same set of worlds as the original and truth value is preserved.
+   ordinary model $M$ naturally gives rise to a generalized model $M$ for any of the
+   presented quasi-transitivity conditions. The resulting generalized model $M'$ has
+   the same set of worlds as the original and is modally equivalent to $M$.
 
    {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be an ordinary Veltman model. We define
-   $M'≔⟨W,R,S',V⟩$ where $S'≔\{⟨w,u,\{v\}:⟨w,u,v⟩∈S⟩\}$. Then M' is a generalized
-   Veltman frame with quasi-transitivity condition $(i)∈\{1,…,8\}$.
-   Furthermore, for any world $w$ and formula $A$ we have that
-   \[M,w⊩A⇔M',w⊩A.\]{{{endtheorem}}} {{{beginproof}}} We observe that the
+   ${M'≔⟨W,R,S',V⟩}$ where $S'≔\{⟨w,u,\{v\}:⟨w,u,v⟩∈S\}$. Now we distinguish two
+   cases.
+   - If we want $M'$ to satisfy quasi-transitivity Condition (2) we take the
+     monotone closure of $S'$ as described in Theorem [[theorem:mono]];
+   - for the rest of the quasi-transitivity conditions we keep $S'$ as defined.
+   Then M' is a generalized Veltman frame with quasi-transitivity condition
+   $(i)∈\{1,…,8\}$. Furthermore, for any world $w$ and formula $A$ we have that
+   \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}} {{{beginproof}}} We observe that the
    transitivity condition for the ordinary models $M$ entails the
    quasi-transitivity Condition (6) for the $M'$ generalized model. Keep in mind
    that by definition of $M'$ we only have singleton sets in the third component
    of $S'$. Now assume that $uS'_x\{y\}$ and $yS'_x\{y'\}$. By definition of
    $S'$ it follows that $uS_xyS_xy'$ and by quasi-transitivity of $M$ we have
-   $uS_xy'$ and thus $uS_x\{y'\}$. Then, by theorem [[theorem:trans]] we know that
+   $uS_xy'$ and thus $uS_x\{y'\}$. Then, by Theorem [[theorem:trans]] we know that
    quasi-transitivity Condition (6) implies Conditions (1), (3)-(8), thus, the
    presented transformation works for any of those notions of
-   quasi-transitivity. Moreover, if we wish to obtain a generalized Veltman
-   frame with quasi-transitivity Condition (2) we take monotone closure of $S'$
-   as described in theorem [[theorem:mono]]. We leave the rest of the details to be
+   quasi-transitivity. Moreover, if we chose to obtain a generalized Veltman
+   frame with quasi-transitivity Condition (2), the same reasoning applies since
+   as we know by Theorem [[theorem:mono]], taking the monotone closure does not
+   alter the modal theory of the model. We leave the rest of the details to be
    worked out by the reader. {{{endproof}}}
 
 ** From generalized to ordinary
    <<sec:verbrugge>> In this section we show that given a generalized Veltman
    model $M$ with quasi-transitivity condition $(i)∈\{3,4,5,6\}$, we can build
    an ordinary Veltman model $M'$ such that for every world in $M$ we can find a
-   world in $M'$ with the same truth value.
+   world in $M'$ which is modally equivalent. The definitions and proofs
+   involved in this section can be found formalized in Agda in Section
+   [[src:generalizedveltmansemantics.properties.verbrugge]].
 
    It is worth mentioning that there exists a much simpler transformation which
-   we present in the next Section ([[sec:gen-to-ord-luka]]) and works for the same
-   quasi-transitivity Conditions as the transformation presented here. We still
-   believe that this transformation holds value for historical reasons as it was
-   the first to be sketched by Verbrugge in an unpublished manuscript
-   (cite:Verbrugge). In the manuscript there is a comment where the author says
-   that the transformation may also hold for Condition (2) although she has not
-   checked it yet. Unfortunately some steps in the proof do not work if we take
-   a generalized model with quasi-transitivity Condition (2). In
-   cite:vukovic2008bisimulations a variation of this transformation is presented
-   with the claim that it works for Condition (2). However, as we will comment
-   in section [[sec:flawed-proof]], the proof of the claim is flawed.
+   we will present in the next Section ([[sec:gen-to-ord-luka]]) and works for the
+   same quasi-transitivity conditions as the transformation presented here. We
+   still believe that this transformation holds value for historical reasons. It
+   was the first transformation from generalized to ordinary models and it was
+   written by Verbrugge in an unpublished manuscript (cite:Verbrugge). In that
+   manuscript there is a comment where the author says that the transformation
+   may also hold for Condition (2) although she has not checked it yet.
+   Unfortunately some steps in the proof do not work if we take a generalized
+   model with quasi-transitivity Condition (2). In cite:vukovic2008bisimulations
+   a variation of this transformation is presented with the claim that it works
+   for Condition (2). However, as we will comment in Section [[sec:flawed-proof]],
+   the proof of the claim is in need of repair.
 
    For the rest of this section we fix a generalized Veltman model $M≔⟨W, R, S,
    V⟩$.
@@ -991,23 +1013,39 @@ thanks
    We define an ordinary Veltman model $M'≔⟨W',R',S',V'⟩$ where
    \begin{flalign*}
    W'≔&\{⟨x,A⟩:A⊆W^2, \\ &(W1)\ ∀⟨u,v⟩∈A\ ∃Y(xS_uY,v∈Y), \\
-   & (W2)\ ∀uV(xS_uV⇒∃v∈V(⟨u,v⟩∈A)\}; \\
-   R'≔&\{⟨⟨x,A⟩,⟨y,B⟩⟩ : xRy,∀wz(wRx⇒⟨w,z⟩∈B⇒⟨w,z⟩∈A)\}; \\
+   & (W2)\ ∀u∀V(xS_uV⇒∃v∈V(⟨u,v⟩∈A)\}; \\
+   R'≔&\{⟨⟨x,A⟩,⟨y,B⟩⟩ : xRy,∀w∀z(wRx⇒⟨w,z⟩∈B⇒⟨w,z⟩∈A)\}; \\
    S'≔&\{⟨⟨w,C⟩,⟨x,A⟩,⟨y,B⟩⟩ : ⟨w,C⟩R'⟨x,A⟩,⟨w,C⟩R'⟨y,B⟩, ∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A) \}; \\
-   V'≔&\{⟨⟨x, A⟩,var⟩: ⟨x,var⟩∈V, ⟨x,A⟩∈W'\}.
+   V'≔&\{⟨⟨x, A⟩,p⟩: ⟨x,p⟩∈V, ⟨x,A⟩∈W',p∈\var{}\}.
    \end{flalign*}
 
-   {{{beginlemma}}}
-   The structure $⟨W',R',S',V'⟩$ is an ordinary Veltman model.
-   {{{endlemma}}}
-   {{{beginproof}}}
-   {{{agda}}} It is routine to check that all the requirement are satisfied.
+   {{{beginlemma}}} The structure $⟨W',R',S',V'⟩$ is an ordinary Veltman model.
+   {{{endlemma}}} {{{beginproof}}} {{{agda}}} Here we check that the $S'_w$ is a
+   transitive relation for each $w∈W'$. It is routine to check that the rest of
+   the requirements are satisfied. Assume that we have
+   \[⟨x,A⟩S'_{⟨w,D⟩}⟨y,B⟩S'_{⟨w,D⟩}⟨z,C⟩\]. We want to show
+   $⟨x,A⟩S'_{⟨w,D⟩}⟨z,C⟩$, thus by the definition of $S'$ we need to prove the
+   following:
+   1. $⟨w,D⟩R'⟨x,A⟩$: it follows from the definition of $S'$ and
+      $⟨x,A⟩S'_{⟨w,D⟩}⟨y,B⟩$;
+   2. $⟨w,D⟩R'⟨z,C⟩$: it follows from the definition of $S'$ and
+      $⟨y,B⟩S'_{⟨w,D⟩}⟨z,C⟩$;
+   3. $∀v(⟨w,v⟩∈C⇒⟨w,v⟩∈A)$: from $⟨x,A⟩S'_{⟨w,D⟩}⟨y,B⟩$ and the definition of
+      $S'$ we get that \[∀v(⟨w,v⟩∈B⇒⟨w,v⟩∈A).\] Likewise, from
+      $⟨y,B⟩S'_{⟨w,D⟩}⟨z,C⟩$ and the definition of $S'$ we get that
+      \[∀v(⟨w,v⟩∈C⇒⟨w,v⟩∈B).\] Then, from the composition of the previous
+      formulas we get the desired fact.
    {{{endproof}}}
+
+   We will now introduce two conditions. These conditions offer a convenient way
+   to show that the transformation works for various conditions of
+   quasi-transitivity. In fact, the presented transformation works for
+   generalized Veltman frames with quasi-transitivity Condition 3, 4, 5 or 6.
 
    Let the conditions $(C_0)$ and $(C_1)$ be defined thus:
    \begin{flalign*}
-   (C₀)&≔∀wxV.xS_wV⇒∃y∈V.∀bV'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
-   (C₁)&≔∀wbxV.wRx⇒xS_bV⇒∃v∈V.xS_b\{v\},(bRw⇒wS_b\{v\}).
+   (C₀)&≔∀w∀x∀V.xS_wV⇒∃y∈V.∀b∀V'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
+   (C₁)&≔∀w∀b∀x∀V.wRx⇒xS_bV⇒∃v∈V.xS_b\{v\},(bRw⇒wS_b\{v\}).
    \end{flalign*}
    {{{begintheorem}}}
    If $M$ satisfies both conditions $(C_0)$ and $(C_1)$ then
@@ -1015,7 +1053,7 @@ thanks
    \[w⊩D⇔⟨w,C⟩⊩D\]
    {{{endtheorem}}}
    {{{beginproof}}} {{{agda}}}
-   We proceed by induction on the formula. We only consider the
+   We proceed by induction on the formula. Here we only consider the
    case $D▷E$ as the other cases are easy.
    - \boxed{⇒} Assume $w⊩D▷E$ and let $C$ be such that $⟨w,C⟩∈W'$. We
      want to prove $⟨w,C⟩⊩D▷E$. Assume that for some $⟨x,A⟩∈W'$ we have
@@ -1096,7 +1134,7 @@ thanks
      $⟨y,B⟩⊮E$, which concludes the proof.
    {{{endproof}}}
 
-   {{{begintheorem}}} If a generalized Veltman frame satisfies
+   {{{begintheorem}}} <<thm:conds>> If a generalized Veltman frame satisfies
    quasi-transitivity Condition 3, 4, 5 or 6, then it satisfies conditions
    $(C_0)$ and $(C_1)$. {{{endtheorem}}}
 
@@ -1157,7 +1195,9 @@ thanks
    <<sec:gen-to-ord-luka>> In this section we present a transformation that
    achieves the same effect as the one presented in Section [[sec:verbrugge]].
    However, the process described here is much simpler as it does not modify the
-   set of worlds.
+   set of worlds. The definitions and proofs in this section can be found
+   formalized in Agda in Section
+   [[src:generalizedveltmansemantics.properties.luka]].
 
    {{{begintheorem}}} Let $M$ a generalized Veltman model with
    quasi-transitivity Condition 3, 4, 5 or 6. By theorem [[theorem:trans]] we shall
@@ -1301,16 +1341,16 @@ thanks
     Further in the proof it is claimed[fn::In the original paper a stronger
     property is claimed, but the property highlighted here is the only piece
     missing.] that the following holds: \[⟨w,v₀⟩∈B.\]
-    We find ourselves again in a situation which we have been able to justify.
+    We find ourselves again in a situation which we have not been able to justify.
 
     The partial Agda proof of Proposition 2.8 can be found in
     [[src:generalizedveltmansemantics.properties.vukovic]].
 
     As a closing remark, we want to emphasize that we do not deem this proof as
     definitely flawed since we have not found a counterexample to the theorem.
-    However, the fact that neither us or the author were unable to fill the
-    presented gaps in this section hints that the at least the definitions
-    involved in the proof should be tweaked.
+    However, the fact that we were unable to fill the presented gaps in
+    this section hints that the at least the definitions involved in the proof
+    should be tweaked.
 
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
@@ -1322,9 +1362,6 @@ thanks
 ** The principle \prin{M}
    The \prin{M} principle reads as follows:
    \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C).\]
-
-   # {{{joost(AT SOME STAGE YOU SHOULD BE GIVING CONTEXT HERE. WHEN WAS THE
-   # PRINCIPLE INTRODUCED AND BY WHOM. ALSO\, WHY IS IT IMPORTANT\, ETC.)}}}
 
    The \prin{M} principle is coined after Franco Montagna because the principle
    appeared during discussions between Franco Montagna and Albert Visser about
@@ -3089,7 +3126,7 @@ objects to be the same.
       of the second component depends on the value of the first component.
 
       We introduce the constant for the set: \[Σ : (A : \set)↠(B : \el{A} ↠
-      \set)↠\set\] We introduce a constant to build dependent paris:
+      \set)↠\set\] We introduce a constant to build dependent pairs:
       \[\sf{pair}_Σ : (A : \set)↠(B : A ↠ \set) ↠ (a : \el{A})↠(b :
       \el{B\ a})↠ Σ\ A\ B\] The above constructor takes four arguments: The type
       of the first component, the type of the second component, the term for the
