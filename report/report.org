@@ -400,17 +400,18 @@ thanks
        \href{https://gitlab.com/janmasrovira/interpretability-logics}
              {gitlab.com/janmasrovira/interpretability-logics}
        \end{center}
-       We also provide the code in the annex of this thesis. [TODO: ADD LINK]
-   11. we have reimplemented a small portion of the Agda library in the Coq proof
-       assistant. This portion includes the definitions of the theorems and
-       proofs marked with {{{coq}}}. Namely this subset is composed of the definition
-       of ordinary Veltman semantics, the axiomatization of the logic \il{} and
-       its proof of soundness. The code comprises ~500 lines of code and is
-       available online:
+       We also provide the code in the annex of this thesis. [[src:agda][Link]];
+   11. we have reimplemented a small portion of the Agda library in the Coq
+       proof assistant (cite:coq). This portion includes the definitions of the
+       theorems and proofs marked with {{{coq}}}. Namely this subset is composed
+       of the definition of ordinary Veltman semantics, the axiomatization of
+       the logic \il{} and its proof of soundness. The code comprises ~500 lines
+       of code and is available online:
        \begin{center}
        \href{https://gitlab.com/janmasrovira/coq-interpretability-logics}
             {gitlab.com/janmasrovira/coq-interpretability-logics}
        \end{center}
+       We also provide the code in the annex of this thesis. [[src:coq][Link]].
 
 ** Language
    <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
@@ -1218,7 +1219,6 @@ thanks
    could render the proof invalid. The validity of Proposition 2.8 of
    cite:vukovic2008bisimulations comes into question and until this is resolved,
    we may consider the problem of finding transformation from a generalized
-
    model (with Condition (2)) to an ordinary model such that it preserves some
    structure of the original model to be an open question once again. By
    ``preserves some structure'' we mean that we should have a property of the
@@ -6111,7 +6111,7 @@ title=Bibliography
     The directives available are eta-equality, no-eta-equality, inductive and
     co-inductive. For more information visit cite:agda-doc.
 ** Agda library code
-   Hi
+    <<src:agda>>
 *** All
     <<src:all>>
     This is a helper module which imports everything in the library. It is used
