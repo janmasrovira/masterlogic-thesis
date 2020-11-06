@@ -460,7 +460,6 @@ thanks
    8. We use commas to denote conjunction, so $∀x.A(x),B(x)$ should be
       read as for all $x$ we have $A(x)$ and $B(x)$.
 
-
 *** Diagrams
     Throughout the thesis we present some diagrams to represent ordinary and
     generalized Veltman frames. We believe that diagrams can help the reader
@@ -476,17 +475,22 @@ thanks
 
     - *Curvy arrows*: We use curvy arrows to represent the $S$ relation. For
       instance, if we have $xS_wy$ we will draw a curvy line from $x$ to $y$
-      with label $S_w$ as drawn below:
+      with label $S_w$ as drawn below. In the case that we are drawing a
+      generalized Veltman frame then $Y$ is a set of worlds which we draw as a circle.
       #+attr_latex: :float t :width 0.50\textwidth :placement [H]
       [[file:img/xSwy.pdf]]
 
-    - *Circles*: Circles denote sets of worlds in generalized Veltman frames. As
+    - *Circles and frames*: Circles denote sets of worlds in generalized Veltman frames. As
       expected, we will draw inner circles to denote subsets and intersected
       circles to denote that the intersection is nonempty. For instance, to
       denote that we have $V'⊆V$ we will draw the left picture. If we want to
       express that $V∩V'≠∅$ we will draw the right picture.
+      \nopagebreak[4]
       #+attr_latex: :float t :width 0.35\textwidth :placement [H]
       [[file:img/circles.pdf]]
+
+      We will use framed variables to denote singleton sets. We will represent
+      the singleton set $\{y\}$ as \boxed{y} in a diagram.
 
     - *Quantfier annotations*: When a variable that represents a world or a set
       of worlds in the formula, we may tag that variable with the corresponding
@@ -669,8 +673,14 @@ thanks
     2. $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
     3. if $uS_wv$ then $wRu$ and $wRv$;
+      #+attr_latex: :float nil :width 0.19\textwidth :placement [H]
+      [[file:img/cond1-ord.pdf]]
     4. if $wRu$ then $uS_wu$;
+      #+attr_latex: :float nil :width 0.064\textwidth :placement [H]
+      [[file:img/refl-ord.pdf]]
     5. if $wRu$ and $uRv$ then $uS_wv$;
+      #+attr_latex: :float nil :width 0.16\textwidth :placement [H]
+      [[file:img/RStrans-ord.pdf]]
     6. for every $w$, $S_w$ is transitive.
     {{{enddef}}}
 
@@ -685,8 +695,11 @@ thanks
     1. $w⊮⊥$;
     2. if $p∈\var{}$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $v$ such
-       that $v⊩B$ and $uS_wv$.
+    4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists
+       some $v$ such that $v⊩B$ and $uS_wv$. Below we draw the condition for a
+       world $w$ to force $A▷B$.
+      #+attr_latex: :float nil :width 0.24\textwidth :placement [H]
+      [[file:img/ArhdB-ord.pdf]]
     {{{enddef}}}
 
     If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ to
@@ -727,14 +740,18 @@ thanks
     2. $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
     3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
+       #+attr_latex: :float nil :width 0.26\textwidth :placement [H]
+       [[file:img/cond1-gen.pdf]]
     4. /quasi-reflexivity/: if $wRu$ then $uS_w\{u\}$;
+       #+attr_latex: :float nil :width 0.075\textwidth :placement [H]
+       [[file:img/refl-gen.pdf]]
     5. if $wRu$ and $uRv$ then $uS_w\{v\}$;
+       #+attr_latex: :float nil :width 0.17\textwidth :placement [H]
+       [[file:img/RStrans-gen.pdf]]
     6. /quasi-transitivity/: if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then
        $uS_w\left(⋃_{y∈Y}Z_y\right)$. This is a particular notion of
        quasi-transitivity, throughout this thesis we explore a total of eight
        notions, see Section [[sec:trans]].
-    # 7. $S$ is monotone in the following sense: if $uS_wV⊆Z⊆\{u:wRu\}$ then
-    #    $uS_wZ$.
     {{{enddef}}}
 
     {{{begindef}}}
@@ -750,7 +767,9 @@ thanks
     3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
     4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $Y$ such
        that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
-       have $y⊩B$;
+       have $y⊩B$. Below we draw the condition for a world $w$ to force $A▷B$.
+      #+attr_latex: :float nil :width 0.24\textwidth :placement [H]
+      [[file:img/ArhdB-gen.pdf]]
     {{{enddef}}}
 
     If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ to
