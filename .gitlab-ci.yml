@@ -18,6 +18,7 @@ org2tex:
     paths:
     - report.tex
     - img
+    - pdf
     - refs.bib
     - .latexmkrc
     - readme.org
