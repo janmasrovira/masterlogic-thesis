@@ -21,6 +21,7 @@
 #+latex_header: \usepackage{multicol}
 #+latex_header: \usepackage{stmaryrd}
 #+latex_header: \usepackage{spverbatim}
+#+latex_header: \usepackage{pdfpages}
 
 
 #+latex_header: \bibliography{refs}
@@ -460,15 +461,52 @@ thanks
       read as for all $x$ we have $A(x)$ and $B(x)$.
 
 
-   In Section [[sec:trans]] and Part [[sec:frame-condition]] we present some diagrams.
-   We use straight arrows to represent the $R$ relation and curvy arrows to
-   represent some $S_w$ relation. We sometimes use red ink when an arrow is in a
-   positive position in the formula to emphasize its role. We use discontinuous
-   arrows when it is quantified universally.
+*** Diagrams
+    Throughout the thesis we present some diagrams to represent ordinary and
+    generalized Veltman frames. We believe that diagrams can help the reader
+    have a better understanding of the underlying formula, however, they are not
+    meant to be a replacement as they cannot unambiguously convey all the
+    information in the formula. Here we list some conventions that we use to
+    help the reader understand the presented diagrams diagrams.
 
-   We believe that diagrams can help the reader have a better understanding of
-   the underlying formula, however, they are not meant to be a replacement as
-   they cannot unambiguously convey all the information in the formula.
+    - *Straight arrows*: We use straight arrows to represent the $R$ relation.
+      For instance we represent $xRy$ thus:
+      #+attr_latex: :float t :width 0.20\textwidth :placement [H]
+      [[file:img/xRy.pdf]]
+
+    - *Curvy arrows*: We use curvy arrows to represent the $S$ relation. For
+      instance, if we have $xS_wy$ we will draw a curvy line from $x$ to $y$
+      with label $S_w$ as drawn below:
+      #+attr_latex: :float t :width 0.50\textwidth :placement [H]
+      [[file:img/xSwy.pdf]]
+
+    - *Circles*: Circles denote sets of worlds in generalized Veltman frames. As
+      expected, we will draw inner circles to denote subsets and intersected
+      circles to denote that the intersection is nonempty. For instance, to
+      denote that we have $V'⊆V$ we will draw the left picture. If we want to
+      express that $V∩V'≠∅$ we will draw the right picture.
+      #+attr_latex: :float t :width 0.35\textwidth :placement [H]
+      [[file:img/circles.pdf]]
+
+    - *Quantfier annotations*: When a variable that represents a world or a set
+      of worlds in the formula, we may tag that variable with the corresponding
+      quantifier. We only follow this convention in cases when we think it
+      improves the readability of the diagram. For instance, if we want to
+      express the condition $∀y(∀x(xRy)⇒∃z(yRz))$ we will draw the picture
+      below. As a rule of thumb we do not annotate the quantification of
+      variables which are universally quantified for the whole formula or are
+      free.
+      #+attr_latex: :float nil :width 0.14\textwidth :placement [H]
+      [[file:img/quantifier.pdf]]
+
+    - *Red and black ink*: We use black ink for conditions which appear in a
+      negative position (assumptions) and red ink for conditions which appear in
+      a positive position (consequences). Thus, the intended meaning of color is
+      that ``if everything drawn in black holds, then what is drawn in red must
+      hold''. Consider the transitivity condition $xRyRz⇒xRz$, then we would
+      draw the following:
+      #+attr_latex: :float nil :width 0.14\textwidth :placement [H]
+      [[file:img/notation-trans.pdf]]
 
 ** Logic \il
    <<sec:il>> As explained in the overview (Section [[sec:overview]]) the logic
@@ -6273,3 +6311,9 @@ title=Bibliography
     file:
 
     #+include: "latex/Coq.tex" export latex
+
+** Manuscript by Verbrugge
+   In the following pages we copy a scan of a manuscript by Verbrugge. It
+   has not been processed or edited by us in any way.
+
+   \includepdf[pages=1-]{pdf/Verbrugge-manuscript-1992.pdf}
