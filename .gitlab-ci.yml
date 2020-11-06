@@ -36,4 +36,4 @@ tex2pdf:
   artifacts:
     paths:
     - report.pdf
-    expire_in: 1 year
+    expire_in: 1 month
