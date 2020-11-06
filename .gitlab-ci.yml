@@ -13,7 +13,7 @@ org2tex:
     - mv report.tex report1.tex
     - echo "% !TEX TS-program = xelatex" > header
     - cat header report1.tex > report.tex
-    - cp -r img report.tex refs.bib .latexmkrc ../
+    - cp -r img pdf report.tex refs.bib .latexmkrc ../
   artifacts:
     paths:
     - report.tex
