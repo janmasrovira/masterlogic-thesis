@@ -675,7 +675,7 @@ thanks
     3. if $uS_wv$ then $wRu$ and $wRv$;
       #+attr_latex: :float nil :width 0.19\textwidth :placement [H]
       [[file:img/cond1-ord.pdf]]
-    4. if $wRu$ then $uS_wu$;
+    4. if $wRu$ then $uS_wu$. We refer to this property as reflexivity of $S_w$.
       #+attr_latex: :float nil :width 0.064\textwidth :placement [H]
       [[file:img/refl-ord.pdf]]
     5. if $wRu$ and $uRv$ then $uS_wv$;
@@ -727,7 +727,30 @@ thanks
 
     {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
     $Π⊢_{\il}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
-    then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{coq}}} {{{endproof}}}
+    then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{coq}}} The proof
+    is by induction on the proof $w⊩A$. The cases for necessitation and modus
+    ponens follow immediately from the IH. If $A$ is an instance of C1, C2
+    or C3 then it is routine to check that all of these axioms hold in $w$.
+    For axioms L and K we proceed as we do for \gl{} and Kripke semantics.
+    In Section [[sec:agda-L]] we show how we proved soundness for $L$ in Agda.
+    Finally we need to check soundness for axioms J1--J5.
+    - J1: $□ (A → B) → A ▷ B$. Assume $w⊩□(A→B)$ and $wRu⊩A$, then it follows
+      that $u⊩B$ and by reflexivity of $S_w$ we get $uS_wu⊩B$.
+    - J2: $A ▷ B ∧ B ▷ C → A ▷ C$. Assume $w⊩A▷B$ and $w⊩B▷C$ and $wRu⊩A$. It
+      follows that there exists $v$ such that $uS_wv⊩B$, then we have $wRv$ from
+      definition of ordinary frame and thus there exists $z$ such that $vS_wz⊩C$.
+      Finally by transitivity of $S_w$ we get $uS_wz⊩C$.
+    - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$. Assume $w⊩A▷C$ and $w⊩B▷C$ and
+      $wRu⊩A∨B$. If $u⊩A$ then since $w⊩A▷C$ we have that there exists $v$ such
+      that $uS_wv⊩C$. On the other hand if $u⊩B$ we proceed analogously.
+    - J4: $A ▷ B → ♢ A → ♢ B$. Assume $w⊩A▷B$ and $w⊩♢A$. Then there exists $u$
+      such that $wRu⊩A$. Since $w⊩A▷B$ it follows that there exists $v$ such
+      that $uS_wv⊩B$. Finally by Condition 3 of ordinary frames we have $wRv$ and
+      thus $w⊩ ♢ B$.
+    - J5: $♢ A ▷ A$. Assume that there exists $u$ such that $wRu⊩♢A$. Then there
+      exists $v$ such that $uRv⊩A$. By Condition 5 of ordinary frames we have
+      $uS_wv⊩A$.
+    {{{endproof}}}
 
 *** Generalized Veltman semantics
     {{{begindef}}} cite:mikec2019interpretability A generalized Veltman \gls{gvf}
