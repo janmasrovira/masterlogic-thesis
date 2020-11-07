@@ -1721,12 +1721,6 @@ thanks
    #+attr_latex: :float t :width 0.15\textwidth :placement [H]
    [[file:img/R-ord.pdf]]
 
-   {{{joost(TO NOT OVERLOAD WRITING\, SHALL WE SPEAK OF FRAMES WHEN SPEAKING OF
-   REGULAR/ORDINARY FRAMES AND ONLY INDICATE GENERALISED WHERE NEEDED? LUKA\, WHAT
-   DO YOU THINK?)}}}
-
-\luka{ I agree, that's what Croatian authors do}
-
    {{{begintheorem}}}
    For any ordinary frame $F$, we have that $F$ satisfies the
    $\kord{R}$ condition iff any model based on $F$ forces every instantiation of
@@ -1734,23 +1728,6 @@ thanks
 
    \[F ⊨ \kord{R} ⇔ F ⊩ R\ .\]
    {{{endtheorem}}}
-
-# {{{joost(HERE AND IN THE THESIS IN GENERAL\, I MISS A DISCUSSION ABOUT
-# ASSURINGNESS. THIS SHOULD BE ADDED AND USED. AT THIS PARTICULAR POINT IN YOUR
-# PROOF YOU SHOULD MENTION THAT y IS A C-assuring SUCCESSOR OF x SO THAT YOU
-# OBTAIN (*).)}}}
-
-# {{{luka(Joost\, would you use assuringness/criticality even in semantic
-# context? I would add a note\, something along the lines of "of course\, we can
-# associate a MCS with every world of a model\, if we suppose e.g. that all
-# propositional variables $p_i$ for $i > ...$ are evaluated as false and let $mcs(w) =
-# \{A : w \Vdash A\}$".)}}}
-
-# a world \(y\) such that \(xRy⊩A\) and \((⋆)\ ∀v(yS_xv⇒v⊩C)\).
-
-# {{{joost(MAKE THIS FORMULA DISPLAYED. MOREOVER\, IT IS BETTER TO GENERATE A
-# LABEL. FOR EXAMPLE:)}}}
-
 
    {{{beginproof}}}
    {{{agda}}}
@@ -2816,7 +2793,8 @@ objects to be the same.
 
 *** Defining new sets
     <<sec:def-new-types>> In this section we will define some new sets that will
-    allow us to express...
+    allow us to represent different mathematical objects, such as pairs or
+    natural numbers, in the LF logic.
 
     For each set we will introduce the following:
     1. A typed constant that represents the set.
@@ -2850,9 +2828,9 @@ objects to be the same.
     defining the natural numbers and the identity set we show how we can prove a
     property on addition by (formalized) induction.
 
-    Let us define the following derivable rule, as it will allow us to write
-    some derivations more succinctly. On the left we show the new rule and on the
-    right we show the proof that it can be derived.
+    Let us provide an auxiliary derivable rule. The new rule will allow us to
+    write some derivations more succinctly. On the left we show the new rule and
+    on the right we show the proof that it can be derived.
     \begin{mathpar}
     \inferrule[VarType]
     {\ }
@@ -2877,13 +2855,28 @@ objects to be the same.
      We add a constant to introduce elements in this set:
      \[Λ : (A:\set)↠(B:\set)↠(\el{A}↠\el{B})↠ \el{A\ ↣\ B} \]
 
-     We add an induction principle:
-     \[\sf{case_Λ} : (A:\set)↠(B:\set)↠(\el{A↣B})↠ \el{A}↠\el{B} \]
+     We add an induction principle: \[\sf{case_Λ} :
+     (A:\set)↠(B:\set)↠(\el{A↣B})↠ \el{A}↠\el{B} \] Let us clarify why we use
+     the words /induction principle/ here. As already pointed out in the
+     introduction of this section, every set must be defined in an inductive
+     way. Some sets only have non-recursive constructors, like pairs or the
+     function set being defined here. In the case of the function set we only
+     have the $Λ$ constructor. From the type of $Λ$ we see that in order to
+     build a term of type $\el{A↣B}$ we need to provide a term of type
+     $\el{A}↠\el{B}$. We see that the inductive principle \sf{case_Λ} does works
+     in the opposite direction: from a term of type $\el{A↣B}$ returns a term of
+     type $\el{A}↠\el{B}$. Because of this, the functionality of the \sf{case_Λ}
+     constant is often referred to as /inversion/, /deconstruction/ or
+     /unwrapping/ principle. We believe that in this introduction to sets it
+     helps to use a homogeneous language so we will always use the general term
+     /induction principle/.
+
      And the equality:
      \begin{mathpar}
      \inferrule[case$Λ$]{
      f:\el{A}↠\el{B} }{\sf{case_Λ}\ A\ B\ (Λ\ A\ B\ f)=f:\el{A}↠\el{B}}
      \end{mathpar}
+
 
      The following rules are redundant but they help keeping proofs shorter.
      \begin{mathpar}
@@ -3053,13 +3046,21 @@ objects to be the same.
      We introduce the following induction principle:
      \begin{flalign*}
      \sf{case}_⊎ &: (A:\set{})↠(B:\set{})↠(P : \el{A\ ⊎\ B} ↠ \set{})\\
-     &↠ ((a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)}) \\
-     &↠ ((b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)}) \\
+     &↠ ((a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)}) & \text{case A}\\
+     &↠ ((b:\el{B})↠\el{P\ (\sf{inj}₂\ A\ B\ b)}) & \text{case B}\\
      &↠ (u:\el{A\ ⊎\ B}) \\
      &↠ \el{P\ u}
      \end{flalign*}
+     As we can easily identify from the type of $\sf{case}_⊎$, this induction
+     principle corresponds to a proof by cases. Note that we need to provide a
+     proof for $P$ given an element of $A$ and also a proof of $P$ given an
+     element of $B$.
 
-     We also introduce the following rules:
+     We also introduce the rules below. These rules tells us that when we apply
+     the proof by cases to a disjoint set built with the \sf{inj₁} constructor
+     we apply the proof which corresponds to the first case, whereas if we apply
+     proof by cases to a disjoint set built with the \sf{inj₂} constructor we
+     apply the proof which corresponds to the second case.
      \begin{mathpar}
      \inferrule[Case$⊎₁$]{P:\el{A\ ⊎\ B}↠\set{}\\\\
      p₁:(a:\el{A})↠\el{P\ (\sf{inj}₁\ A\ B\ a)} \\\\
@@ -3091,7 +3092,7 @@ objects to be the same.
      \inferrule[]{… }{P:\set{},Q:\set⊢Λx→\sf{inj₂}\ P\ Q\ x:\el{Q↣(P\ ⊎\ Q)}}
      \end{mathpar}
      Finally we have that $((p→r)→((q→r)→((p∨q)→r)))^*$ is a theorem in LF.
-     Finishing the proof can be made mechanically.
+     Finishing the proof is straightforward.
      \begin{mathpar}
      \inferrule[]{… }{P:\set{},Q:\set{},R:\set{}⊢
      Λf→Λg→Λx→\sf{case}_⊎\ P\ Q\ (λ x→ R)\ (\sf{case_Λ}\ f)\ (\sf{case_Λ}\ g)\ x:\\\\
@@ -3113,7 +3114,11 @@ objects to be the same.
      &↠ (u:\el{A\ × B}) \\
      &↠ \el{P\ u}
      \end{flalign*}
-     and the following equality:
+     The functionality of this induction principle is to unwrap a term of type
+     $\el{A\ ×\ B}$ to access its components.
+
+     We add the following rule, which tells us that the constructor \sf{pair}
+     and the induction principle $\sf{case}_×$ cancel each other.
      \begin{mathpar}
      \inferrule[case$×$]{P:\el{A\ ×\ B}↠\sf{Set}\\\\
      p:(a':\el{A})↠(b':\el{B})↠\el{P\ (\sf{pair}\ A\ B\ a'\ b')}\\\\
@@ -3125,7 +3130,7 @@ objects to be the same.
 
      -----
 
-     Add the following equation to the $⟦.⟧$ map:
+     We extend the $⟦.⟧$ map with the following clause:
      \begin{flalign*}
      ⟦A∧B⟧≔⟦A⟧×⟦B⟧&&
      \end{flalign*}
@@ -3137,7 +3142,7 @@ objects to be the same.
      \begin{mathpar}
      \inferrule[]{… }{P:\set,Q:\set⊢Λx→\sf{case}_×\ P\ Q\ (λ v→ Q)\ (λy→λz→z)\ x:\el{(P×Q)↣Q}}
      \end{mathpar}
-     Lastly we show that $p→(q→(p∧q))^*$ is a theorem in LF.
+     Finally we show that $p→(q→(p∧q))^*$ is a theorem in LF.
      \begin{mathpar}
      \inferrule[]{… }{P:\set,Q:\set⊢Λx→̋Λy →\sf{pair}\ P\ Q\ x\ y: \el{P↣Q↣(P×Q)}}
      \end{mathpar}
@@ -3244,7 +3249,7 @@ objects to be the same.
      \end{flalign*}
 
      In the next section we will see how we can use induction on the natural
-     numbers to prove a property of addition.
+     numbers to prove properties of addition.
 **** Identity set
      We denote the identity set (or equality set) with the $≡$ constant:
      \[≡\ : (S:\set)↠(x:\el{S})↠\el{S}↠\set\]
@@ -3305,9 +3310,7 @@ objects to be the same.
      we see that the return type is $\el{P\ x\ y\ e}$. After replacing $P$ with
      its definition, $x$ by and $n$ and $y$ by $m$ and simplifying via the
      \(\text{$β$-reduction}\) rule we get $\el{\sf{suc}\ n≡_ℕ\sf{suc}\ m}$,
-
      which is what we wanted.
-     # We ask the reader to check that the term is indeed of the claimed type.
 
      We are now ready to prove the theorem. The term that serves as a proof of
      the theorem, or in other words the term that has the specified type, is
@@ -3324,9 +3327,10 @@ objects to be the same.
      using the $\sf{case}_ℕ$ constant.
 
      The first argument of $\sf{case}_ℕ$, namely $(λn'→ \sf{add}\ n'\ 𝟬 ≡_ℕn')$,
-     expresses the property that we want to prove with the induction. We will
-     refer to this argument as $P$. It is easy to observe that $P$ has type
-     $\el{ℕ}↠\set$ as required by the type of $\sf{case}_ℕ$.
+     expresses the property that we want to prove abstracted over the term on
+     which we perform the induction, in our case we abstract $n$ with the
+     variable $n'$. We will refer to this argument as $P$. It is easy to observe
+     that $P$ has type $\el{ℕ}↠\set$ as required by the type of $\sf{case}_ℕ$.
 
      Then, the second argument, which corresponds to the proof for the base case
      has type $\el{P\ 𝟬}$, which in our case translates into $(λn'→ \sf{add}\
@@ -3336,9 +3340,9 @@ objects to be the same.
      type.
 
      The third argument corresponds to the proof of the inductive case. The type
-     for this argument is[fn::We have renamed the variable $n$ in this argument
-     to $m$ to avoid confusion with the previously bound variable $n$. Recall
-     that this can be done thanks to the \(\text{$α$-$=$}\) rule.] $((m:\el{ℕ})↠
+     for this argument is[fn::We renamed the variable $n$ in this argument to
+     $m$ to avoid confusion with the previously bound variable $n$. Recall that
+     this can be done thanks to the \(\text{$α$-$=$}\) rule.] $((m:\el{ℕ})↠
      \el{P\ m} ↠ \el{P\ (\sf{suc}\ m)})$ which in our case translates into
      $((m:\el{ℕ})↠ \el{\sf{add}\ m\ 𝟬 ≡_ℕn} ↠ \el{\sf{add}\ (\sf{suc}\ m)\ 𝟬
      ≡_ℕ\sf{suc}\ m})$. It is easy to see that the lemma we proved before will
