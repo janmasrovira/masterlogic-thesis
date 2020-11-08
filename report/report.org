@@ -80,6 +80,7 @@
 #+macro: luka @@latex:\luka{$1}@@
 
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
+#+macro: agdaimg @@latex:\gls{agdaprf}@@
 #+macro: coq @@latex:\gls{coqprf}\glsadd{coqprf}@@
 #+latex_header: \newcommand{\prin}[1]{\ensuremath{\mathsf{#1}}}
 #+latex_header: \newcommand{\il}[0]{\prin{IL}}
@@ -393,8 +394,8 @@ thanks
    9. during the development of this thesis we have coauthored two publications:
       - /An overview of Generalised Veltman Semantics/ (cite:joosten2020overview);
       - /Generalised Veltman Semantics in Agda/ (cite:masrovira2020generalised).
-   10. we have implemented an Agda library for interpretability logics which
-       includes every theorem and proof marked with {{{agda}}} that is presented
+   10. We have implemented an Agda library for interpretability logics which
+       includes every theorem and proof marked with {{{agdaimg}}} that is presented
        in this thesis. It is worth pointing out that we started from scratch
        since there was no previous published work of interpretability logics in
        Agda, or in any other proof assistant. The code comprises ~5000
@@ -403,8 +404,16 @@ thanks
        \href{https://gitlab.com/janmasrovira/interpretability-logics}
              {gitlab.com/janmasrovira/interpretability-logics}
        \end{center}
-       We also provide the code in the annex of this thesis. [[src:agda][Link]];
-   11. we have reimplemented a small portion of the Agda library in the Coq
+       We also provide the code in the annex of this thesis. [[src:agda][Link]].
+
+       *Note*: Throughout this thesis we present the proofs (in English) of all
+       the lemmas and theorems listed. Often we skip details or we only present
+       part of the proofs. It is important that we emphasize that when we mark a
+       proof with the {{{agdaimg}}} symbol it means that the whole (not only the
+       commented part) proof has been formalized down to the definitions in
+       Agda.
+
+   11. We have reimplemented a small portion of the Agda library in the Coq
        proof assistant (cite:coq). This portion includes the definitions of the
        theorems and proofs marked with {{{coq}}}. Namely this subset is composed
        of the definition of ordinary Veltman semantics, the axiomatization of
@@ -416,32 +425,6 @@ thanks
        \end{center}
        We also provide the code in the annex of this thesis. [[src:coq][Link]].
 
-** Language
-   <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
-   Formulas are defined recursively as usual:
-   1. /Variable/. If $x$ is a variable, then $x$ is a formula. We assume that we
-      have an infinite countable set of variables. In particular we shall define
-      $\var{}≔ℕ$. However, we use non-capital letters $a,b,c,x,y,z…$ to refer to
-      variables.
-   2. /Bottom/. The constant $⊥$ is a formula;
-   3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula;
-   4. /Interprets/. If $A$ and $B$ are formulas, then $(A▷B)$ is a formula.
-   We denote the set of valid formulas as \fm{}.
-
-   We define the usual operators and constants in the following way:
-   1. $¬ A ≔ A → ⊥$;
-   2. $⊤ ≔ ¬ ⊥$;
-   3. $A ∨ B ≔ (¬ A) → B$;
-   4. $A ∧ B ≔ ¬ (A → ¬ B)$;
-   5. $A ↔ B ≔ (A → B) ∧ (B → A)$;
-   6. $□ A ≔ (¬ A) ▷ ⊥$;
-   7. $♢ A ≔ ¬ □ ¬ A$.
-
-   The precedence (from higher to lower) of the operators is in the following
-   order: \[∧,▷,∨,→\]
-
-   The scope of unary symbols $□,♢,¬$ is as small as possible. Thus $□A∧¬¬B$ is
-   the same as $(□A)∧(¬¬B)$.
 ** Notation
    Some notation that we use throughout the report:
    1. If $A$ and $B$ are binary relations, then $wAuBv$ means $wAu$ and $uBv$.
@@ -511,11 +494,36 @@ thanks
       draw the following:
       #+attr_latex: :float nil :width 0.14\textwidth :placement [H]
       [[file:img/notation-trans.pdf]]
+** Language
+   <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
+   Formulas are defined recursively as usual:
+   1. /Variable/. If $x$ is a variable, then $x$ is a formula. We assume that we
+      have an infinite countable set of variables. In particular we shall define
+      $\var{}≔ℕ$. However, we use non-capital letters $a,b,c,x,y,z…$ to refer to
+      variables.
+   2. /Bottom/. The constant $⊥$ is a formula;
+   3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula;
+   4. /Interprets/. If $A$ and $B$ are formulas, then $(A▷B)$ is a formula.
+   We denote the set of valid formulas as \fm{}.
 
+   We define the usual operators and constants in the following way:
+   1. $¬ A ≔ A → ⊥$;
+   2. $⊤ ≔ ¬ ⊥$;
+   3. $A ∨ B ≔ (¬ A) → B$;
+   4. $A ∧ B ≔ ¬ (A → ¬ B)$;
+   5. $A ↔ B ≔ (A → B) ∧ (B → A)$;
+   6. $□ A ≔ (¬ A) ▷ ⊥$;
+   7. $♢ A ≔ ¬ □ ¬ A$.
+
+   The precedence (from higher to lower) of the operators is in the following
+   order: \[∧,▷,∨,→\]
+
+   The scope of unary symbols $□,♢,¬$ is as small as possible. Thus $□A∧¬¬B$ is
+   the same as $(□A)∧(¬¬B)$.
 ** Logic \il
    <<sec:il>> As explained in the overview (Section [[sec:overview]]) the logic
    \il{} is the logic that we use as the base for other interpretability logics.
-   The logic \il{} extends \gl{} with new five axioms schemas. J1-J5 which
+   The logic \il{} extends \gl{} with new five axioms schemas. J1--J5 which
    reflect some facts about interpretations.
 
    After the definition of \il{} we proceed by showing a number of theorems
@@ -663,6 +671,9 @@ thanks
    interpretability logics similar to Kripke semantics for other modal logics.
 
 *** Ordinary Veltman semantics
+    Ordinary Veltman semantics were the first relational semantics for
+    interpretability logics and were introduced by Frank Veltman.
+
     {{{begindef}}} <<def:ordinary-frames>> cite:modal-matters An ordinary
     Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a structure constituted by a non-empty set
     of worlds $W$, a binary relation $R⊆W²$ and a ternary relation $S⊆W×W×W$. We
@@ -675,7 +686,7 @@ thanks
     3. if $uS_wv$ then $wRu$ and $wRv$;
       #+attr_latex: :float nil :width 0.19\textwidth :placement [H]
       [[file:img/cond1-ord.pdf]]
-    4. if $wRu$ then $uS_wu$. We refer to this property as reflexivity of $S_w$.
+    4. if $wRu$ then $uS_wu$;
       #+attr_latex: :float nil :width 0.064\textwidth :placement [H]
       [[file:img/refl-ord.pdf]]
     5. if $wRu$ and $uRv$ then $uS_wv$;
@@ -735,7 +746,7 @@ thanks
     In Section [[sec:agda-L]] we show how we proved soundness for $L$ in Agda.
     Finally we need to check soundness for axioms J1--J5.
     - J1: $□ (A → B) → A ▷ B$. Assume $w⊩□(A→B)$ and $wRu⊩A$, then it follows
-      that $u⊩B$ and by reflexivity of $S_w$ we get $uS_wu⊩B$.
+      that $u⊩B$ and by condition 4 of ordinary frames we get $uS_wu⊩B$.
     - J2: $A ▷ B ∧ B ▷ C → A ▷ C$. Assume $w⊩A▷B$ and $w⊩B▷C$ and $wRu⊩A$. It
       follows that there exists $v$ such that $uS_wv⊩B$, then we have $wRv$ from
       definition of ordinary frame and thus there exists $z$ such that $vS_wz⊩C$.
@@ -753,7 +764,13 @@ thanks
     {{{endproof}}}
 
 *** Generalized Veltman semantics
-    {{{begindef}}} cite:mikec2019interpretability A generalized Veltman \gls{gvf}
+    Generalized Veltman semantics were introduced by Verbrugge in
+    cite:Verbrugge. These semantics generalize ordinary Veltman semantics in the
+    sense that each $S_w$ relates worlds to sets of worlds. Thanks to this
+    change, generalized Veltman semantics turn out to be more convenient and in
+    some cases necessary. {{{jan(mention some examples about the last claim)}}}
+
+    {{{begindef}}} <<def:gen-frame>> A generalized Veltman \gls{gvf}
     $F=⟨W,R,S⟩$ is a structure constituted by a non-empty set of worlds $W$, a binary
     relation $R⊆W²$ and a ternary relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$
     instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
@@ -773,12 +790,11 @@ thanks
        [[file:img/RStrans-gen.pdf]]
     6. /quasi-transitivity/: if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then
        $uS_w\left(⋃_{y∈Y}Z_y\right)$. This is a particular notion of
-       quasi-transitivity, throughout this thesis we explore a total of eight
-       notions, see Section [[sec:trans]].
+       quasi-transitivity which is considered the standard. Throughout this
+       thesis we explore a total of eight notions, see Section [[sec:trans]].
     {{{enddef}}}
 
     {{{begindef}}}
-    <<def:gen-frame>>
     A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
     constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×\var{}$.
     {{{enddef}}}
@@ -811,11 +827,21 @@ thanks
     {{{endproof}}}
 
     {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
-    semantics*. That is, if $Π⊢_{\il}A$ and $M$ is a generalized model with a world
-    $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
+    semantics*. That is, if $Π⊢_{\il}A$ and $M$ is a generalized Veltman model
+    with a world $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
 
-    {{{beginproof}}} {{{agda}}} We have verified this in Agda for all the presented
-    quasi-transitivity conditions in Table [[fig:table-trans]]. {{{endproof}}}
+    {{{beginproof}}} {{{agda}}} We only show the case where $A$ is an instance
+    of the J2 ($A ▷ B ∧ B ▷ C → A ▷ C$) axiom. The rest of the cases are proved
+    in an analogous way to ordinary Semantics. Also, here we only show it the
+    quasi-transitivity property given in Definition [[def:gen-frame]]. However, we
+    have verified this in Agda for all the alternative quasi-transitivity
+    conditions presented in Table [[fig:table-trans]].
+
+    Assume $w⊩A▷B$ and $w⊩B▷C$ and that there exists $u$ such that $wRu⊩A$. It
+    follows that there exists $V$ such that $uS_wV⊩B$. By Condition 3 we have
+    that $∀v∈V.wRv⊩B$. Then for every $v∈V$ we have that there exists $Z_v$ such
+    that $vS_wZ_v⊩C$. It follows from the quasi-transitivity condition that
+    $uS_w(⋃_{v∈V}Z_v)$ and clearly $⋃_{v∈V}Z_v⊩C$. {{{endproof}}}
 
 ** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
@@ -918,7 +944,6 @@ thanks
 
 ** Monotonicity
    Recall the monotonicity condition that we presented in the previous section:
-
   #+begin_center
     if $uS_wV⊆Z⊆\{v:wRv\}$ then $uS_wZ$.
   #+end_center
@@ -946,7 +971,6 @@ thanks
 
 
   {{{beginproof}}} {{{agda}}}
-
   We check conditions listed in definition [[def:gen-frame]].
   - Conditions 1 and 2 are clear since $R$ is unchanged;
   - Condition 3 follows from the fact that in the definition of $S'$ we require
@@ -1005,7 +1029,6 @@ thanks
   the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
   quasi-transitivity (8) we get $v_0S_w \{v_3\}$ and consequently $w⊩¬(p ▷ q)$
   is no longer true.
-
   {{{endremark}}}
 
 * Generalized vs ordinary models
