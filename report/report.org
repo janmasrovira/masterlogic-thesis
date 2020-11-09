@@ -299,7 +299,7 @@ thanks
    language of $\sf{IL}(T)$ extends the language of \sf{GL} with the binary
    modal operator $▷$, thus the language becomes $⟨⊥,→,□,▷⟩$. In order to give a
    more detailed definition of $\sf{IL}(T)$ we first extend the definition of
-   arithmetical realization with an extra clause for the $▷$ case. A
+   arithmetical realization with an extra clause for the $▷$ case. An arithmetical
    realization $*$ is a map from formulas in $\sf{IL}(T)$ to sentences in the
    language of $T$. Moreover, it must satisfy the following constraints:
    \begin{flalign*}
@@ -308,19 +308,21 @@ thanks
    (□A)^*&= \sf{Prov}_T(⌜A⌝) ; \\
    (A▷B)^*&= \sf{Int}_T(⌜A⌝,⌜B⌝).
    \end{flalign*}
-   Then we define \[\sf{IL}(T)≔\{A\ |\ T⊢A^* \text{ for any realization } *\}.\]
+   Then we define the interpretability logic of a theory $T$ in the following
+   way: \[\sf{IL}(T)≔\{A\ |\ T⊢A^* \text{ for any realization } *\ \}.\]
 
    There is an important difference with respect to provability logics that we
    need to highlight here. In provability logics we have that \sf{GL} is an
    axiomatization of the provability logics for all sufficiently strong
    arithmetical theories but we do not have an equivalent Swiss army knife that
-   works for all theories in interpretability logics. Instead, we define
-   different logics for various classes of theories. There is an basic logic
-   which we call \il{} that serves as the basis for all these variants. We
-   define these variants as extensions of \il{} by adding axiom schemas to it as
-   we will see later in this overview. The logic \il{} extends the \sf{GL} logic
-   with five new axiom schemas. We will precisely define logic \il{} and comment
-   on the significance of the new axiom schemas in Section [[sec:il]].
+   works for all theories in interpretability logics. In other words, we do not
+   have a single axiomatization of $\sf{IL}(T)$. Instead, we define different
+   logics for various classes of theories. There is a basic logic which we call
+   \il{} that serves as the base for all these variants. We define these
+   variants as extensions of \il{} by adding axiom schemas to it as we will see
+   later in this overview. The logic \il{} extends the \sf{GL} logic with five
+   new axiom schemas. We will precisely define logic \il{} and comment on the
+   significance of the new axiom schemas in Section [[sec:il]].
 
    The logic \il{} has two relational semantics, which are the main topic of
    this thesis, known as /ordinary Veltman semantics/ (introduced by Frank
@@ -1353,11 +1355,22 @@ thanks
    and name it $y_{xuY}$.
 
    We define $M'≔⟨W,R,S',V⟩$ with $S'≔\{⟨w,x,v⟩:∃Y.wS_xY∧ y_{xwY}=v\}$. Then
-   $M'$ is an ordinary Veltman frame and it holds that for every $w∈W$ and
-   $A∈\fm$ we have \[M,w⊩A⇔M',w⊩A.\]
+   $M'$ is an ordinary Veltman frame. Furthermore models $M$ and $M'$ are
+   modally equivalent, that is, it holds that for every $w∈W$ and $A∈\fm$ we
+   have \[M,w⊩A⇔M',w⊩A.\]
 
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} It is not hard to check that all
-   the conditions hold. {{{endproof}}}
+   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} Here we only check that the
+   transitivity condition holds. It is not hard to check that the rest of the
+   conditions also hold.
+
+   Assume that we have $xS'_wyS'_wz$. By definition of $S'$ it follows that we
+   have $xS'_w\{y\}S'_w\{z\}$ and furthermore $y$ and $z$ satisfy
+   quasi-transitivity Condition 3. In particular for $y$ it holds that
+   $∀Y(yS_wz⇒∃Y'⊆Y∧xS_wY')$. If we set $Y≔\{z\}$ then have that there exists
+   $Y'⊆\{z\}$ such that $xS_wY'$. Since $Y'$ must be nonempty we have that
+   $Y'=\{z\}$ and thus $xS_w\{z\}$. Finally by definition of $S'$ we have
+   $xS'_wz$.
+   {{{endproof}}}
    # I tried reconstructing the remainder of Mladen's proof and got stuck on
    # another issue. Instead of trying to fix it, I started playing with another
    # formulation of the same (or similar) construction which I think is much more
