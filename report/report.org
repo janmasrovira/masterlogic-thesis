@@ -380,20 +380,32 @@ thanks
    2. we have found a generalized frame condition for $\prin{Rⁿ}$. [[theorem:Rⁿ][Link]];
    3. we performed a detailed analysis of the quasi-transitivity conditions
       available in the literature for generalized semantics. [[theorem:trans][Link]];
-   4. we discovered a proof in a published article which needs to be repaired. [[sec:flawed-proof][Link]];
-   5. we worked out all the details of a proof in an unpublished manuscript by
-      Verbrugge (cite:Verbrugge). [[sec:verbrugge][Link]];
-   6. we present the implementation of a verified language to write Hilbert
+   4. we analyzed how a monotonicity condition for generalized semantics that is
+      often assumed or taken as part of the definition for generalized frames
+      interacts with the quasi-transitivity conditions present in the
+      literature. Furthermore, we justify why assuming such condition if it is
+      not required by definition is harmless. [[sec:mono][Link]];
+   5. we discovered a proof in a published article which needs to be repaired. [[sec:flawed-proof][Link]];
+   6. we compare the expressiveness of ordinary and generalized Veltman models.
+      As part of this, we worked out all the details of a proof in an
+      unpublished manuscript by Verbrugge (cite:Verbrugge). We attach this
+      manuscript in Section [[pdf:Verbrugge]]. [[sec:verbrugge][Link]];
+   7. we present the implementation of a verified language to write Hilbert
       style proofs (for the logic \prin{IL}) in Agda with paper-like syntax.
       [[sec:edsl][Link]];
-   7. we give details for an embedding of propositional intuitionistic logic
+   8. we give details for an embedding of propositional intuitionistic logic
       into Martin Löf's logical framework. This result is expected. Our
       contribution has been to provide detailed definitions and proofs, which we
       were unable to find somewhere else. The proof detailed proof that $n+0=n$
       in Martin Löf's logical framework is also original. [[sec:def-new-types][Link]];
    9. during the development of this thesis we have coauthored two publications:
-      - /An overview of Generalised Veltman Semantics/ (cite:joosten2020overview);
+      - /An overview of Generalised Veltman Semantics/
+        (cite:joosten2020overview). In this publication we give an up to date
+        overview of interpretability logics with a focus on generalized semantics.
       - /Generalised Veltman Semantics in Agda/ (cite:masrovira2020generalised).
+        In this publication we focus on the frame conditions for
+        generalized Semantics for the principle \prin{R_1} and the series
+        \prin{R^n}. We also comment on the Agda formalization.
    10. We have implemented an Agda library for interpretability logics which
        includes every theorem and proof marked with {{{agdaimg}}} that is presented
        in this thesis. It is worth pointing out that we started from scratch
@@ -774,7 +786,9 @@ thanks
     cite:Verbrugge. These semantics generalize ordinary Veltman semantics in the
     sense that each $S_w$ relates worlds to sets of worlds. Thanks to this
     change, generalized Veltman semantics turn out to be more convenient and in
-    some cases necessary. {{{jan(mention some examples about the last claim)}}}
+    some cases necessary. For instance, the logic \prin{ILP_0} is complete with
+    respect to generalized Veltman semantics but incomplete with respect to
+    ordinary Veltman semantics.
 
     {{{begindef}}} <<def:gen-frame>> A generalized Veltman \gls{gvf}
     $F=⟨W,R,S⟩$ is a structure constituted by a non-empty set of worlds $W$, a binary
@@ -794,10 +808,14 @@ thanks
     5. if $wRu$ and $uRv$ then $uS_w\{v\}$;
        #+attr_latex: :float nil :width 0.17\textwidth :placement [H]
        [[file:img/RStrans-gen.pdf]]
-    6. /quasi-transitivity/: if $uS_wY$ and $yS_wZ_y$ for all $y∈Y$, then
-       $uS_w\left(⋃_{y∈Y}Z_y\right)$. This is a particular notion of
-       quasi-transitivity which is considered the standard. Throughout this
-       thesis we explore a total of eight notions, see Section [[sec:trans]].
+    6. /quasi-transitivity/: if $uS_xY$ and $yS_xZ_y$ for all $y∈Y$, then
+       $uS_x\left(⋃_{y∈Y}Z_y\right)$.
+       #+attr_latex: :float nil :width 0.32\textwidth :placement [H]
+       [[file:img/trans-2.pdf]]
+
+       This is a particular notion of quasi-transitivity which is considered the
+       standard. Throughout this thesis we explore a total of eight notions, see
+       Section [[sec:trans]].
     {{{enddef}}}
 
     {{{begindef}}}
@@ -869,8 +887,8 @@ thanks
 ** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
    for the quasi-transitivity condition which we present in the table below. See
-   that in definition [[def:gen-frame]] we used Condition (2). Theorem [[theorem:trans]] presents
-   some direct implications between them. Theorems [[theorem:il-sound]] and
+   that in definition [[def:gen-frame]] we used Condition (2). Theorem [[theorem:trans]]
+   presents some direct implications between them. Theorems [[theorem:il-sound]] and
    [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
    for proving completeness of \il{}. It is worth mentioning however, that not
    all of them are sufficiently expressive to prove completeness for extensions
@@ -890,17 +908,10 @@ thanks
 | (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | Joosten et al. '20 \cite{joosten2020overview} |
 | (8) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle}     |
 
-   #+caption: Diagrams for conditions 2, 4 and 6.
+   #+caption: Diagrams for Conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
-   #+attr_latex: :float t :width 0.9\textwidth :placement [H]
+   #+attr_latex: :float t :width 0.96\textwidth :placement [H]
    [[file:img/trans-2-4-6.pdf]]
-
-# I NOW SEE THAT THE TABLE IN YOUR SECTION 1.6 HAS BEEN UPDATED IN OUR PAPER
-
-# OF COURSE, YOU SHOULD ADAPT IT TO YOUR THESIS.
-# SHORTLY WE WILL PUT IT ON THE ARXIV SO THAT YOU CAN INCLUDE A REFERENCE
-
-
 
  # All of the presented quasi-transitivity requirements are adequate for proving
  # IL soundness and completeness. For soundness it is routine to check that every
@@ -940,9 +951,16 @@ thanks
 
  {{{endmulticols}}} {{{endtheorem}}}
 
- {{{beginproof}}}
- {{{agda}}}
- {{{endproof}}}
+ {{{beginproof}}} {{{agda}}} Here we only show item 13: $\sf{Mon} ∧ (6) ⇒ (2)$.
+ Assume that $F$ is a generalized Veltman frame that satisfies the monotonicity
+ condition and the quasi-transitivity Condition 6. Now assume that $uS_xY$ and
+ consider an arbitrary family of sets of worlds $\{Y_y:y∈ Y\}$. Assume also that
+ for every $y∈Y$ we have $yS_xY_y$. Since $Y$ is nonempty we may pick $y_0∈Y$.
+ Then we have that $yS_xY_{y_0}$. Then by quasi-transitivity Condition 6 we have
+ that $uS_xY_{y_0}$ and since for any $y∈Y$ we have $yS_xY_y$ it follows by
+ Condition 3 of a generalized frame that $Y_y⊆\{v:xRv\}$. Finally we see that
+ $Y_{y_0}⊆⋃_{y∈Y}Y_y⊆\{v:xRv\}$ and by monotonicity it follows that
+ $uS_x(⋃_{y∈Y}Y_y)$. {{{endproof}}}
 
  {{{begintheorem}}} <<theorem:trans-extend>> Given an ordinary Veltman model
  $M=⟨W,R,S,V⟩$ we can find some generalized Veltman model $M'=⟨W,R,S',V⟩$, where
@@ -966,6 +984,7 @@ thanks
  {{{endproof}}}
 
 ** Monotonicity
+   <<sec:mono>>
    Recall the monotonicity condition that we presented in the previous section:
   #+begin_center
     if $uS_wV⊆Z⊆\{v:wRv\}$ then $uS_wZ$.
@@ -1480,7 +1499,8 @@ thanks
 
 * Frame conditions
   <<sec:frame-condition>> An interpretability principle is a schema of modal
-  formulas that carries some special significance.
+  formulas that carries some special significance. TODO: comment on Independence
+  and identification of classes of arithmetical theories.
 
   In this section we present a number of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
@@ -6398,14 +6418,16 @@ title=Bibliography
     <<src:principles>>
   #+include: "latex/Principles.tex" export latex
 
-** Coq code
+** Coq library code
     <<src:coq>> Everything that is formalized and proved in Coq is in a single
     file:
 
     #+include: "latex/Coq.tex" export latex
 
-** Manuscript by Verbrugge
-   In the following pages we copy a scan of a manuscript by Verbrugge. It
-   has not been processed or edited by us in any way.
+** Manuscript by Verbrugge: Set Veltman frames and models
+   <<pdf:Verbrugge>>
+   In the following pages we copy a scan of a manuscript by Verbrugge. It has
+   not been processed or edited by us in any way. The original title, in Dutch,
+   is /Verzamelingen-Veltman frames en modellen/.
 
    \includepdf[pages=1-]{pdf/Verbrugge-manuscript-1992.pdf}

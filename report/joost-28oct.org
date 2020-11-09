@@ -58,7 +58,7 @@ mention reminiscence to Neighbourhood semantics here with some references to the
 literature. You can reuse stuff from our Paper on GVS for example reusing
 material from Section 3.1 may be good here.
 
-* TODO
+* DONE
 Section 7
 
 Should the title not be “Quasi transitivity”? Previous remarks apply to this
