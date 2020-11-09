@@ -716,19 +716,25 @@ thanks
     If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ to
     denote that for every valuation we have $⟨F,V⟩⊩A$.
 
-    {{{begincoro}}}
-    <<coro:ord-semantics>>
-    It can be shown that:
+    {{{begincoro}}} <<coro:ord-semantics>> Let $M$ be an ordinary Veltman model
+    and let $w$ be a world in $M$. It can be shown that:
     1. If $A,B∈\fm{}$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
-    1. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
-    2. if $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
-    3. if $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
-    4. if $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
+    2. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
+    3. if $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
+    4. if $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$;
+    5. if $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
     {{{endcoro}}}
     {{{beginproof}}}
     {{{agda}}}
     {{{coq}}}
-    {{{endproof}}}
+    Here we show the case for $w⊩□A$. Assume $w⊩□A$ and let $u$ be a world such
+    that $wRu$. If $u⊩A$ we are done, otherwise we have $u⊩¬A$. As described
+    before $w⊩□A$ is notation for $w⊩(¬ A) ▷ ⊥$, thus there exists $z$ such that
+    $uS_wz⊩⊥$, but this is an absurd.
+
+    For the other direction assume that we have a world $w$ and for every $u$
+    such that $wRu$ we have $u⊩A$. We see that $w⊩(¬A)▷⊥$ clearly holds as there
+    is no $u$ such that $wRu⊩¬A$. {{{endproof}}}
 
     {{{begintheorem}}} *Decidability* If $W$ is finite and $R,S,V$ are decidable relations,
     then the forcing relation associated to the model $M≔⟨W,R,S,V⟩$ is decidable.
@@ -804,9 +810,10 @@ thanks
     1. $w⊮⊥$;
     2. if $p∈\var{}$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
-    4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists some $Y$ such
-       that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that for all $y∈Y$ we
-       have $y⊩B$. Below we draw the condition for a world $w$ to force $A▷B$.
+    4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists
+       some $Y$ such that $Y⊩B$ and $uS_wY$. When we write $Y⊩B$ we mean that
+       for all $y∈Y$ we have $y⊩B$. Below we draw the condition for a world $w$
+       to force $A▷B$.
       #+attr_latex: :float nil :width 0.24\textwidth :placement [H]
       [[file:img/ArhdB-gen.pdf]]
     {{{enddef}}}
@@ -814,16 +821,22 @@ thanks
     If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ to
     denote that for every valuation we have $⟨F,V⟩⊩A$.
 
-    {{{begincoro}}} We can show the same results in Corollary [[coro:ord-semantics]]
-    for generalized semantics:
+    {{{begincoro}}} We can show the same results presented in Corollary
+    [[coro:ord-semantics]] for generalized semantics:
     1. If $A,B∈\fm{}$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
-    1. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
-    2. If $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
-    3. If $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$;
-    4. If $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$.
-    {{{endcoro}}}
-    {{{beginproof}}}
-    {{{agda}}}
+    2. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
+    3. If $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
+    4. If $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$;
+    5. If $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
+    {{{endcoro}}} {{{beginproof}}} {{{agda}}} Here we show the case for $w⊩□A$.
+    The proof goes in a very similar way to ordinary semantics. Assume $w⊩□A$
+    and let $u$ be a world such that $wRu$. If $u⊩A$ we are done, otherwise we
+    have $u⊩¬A$. Since $w⊩□A$ is notation for $w⊩(¬ A) ▷ ⊥$, there exists $Z$
+    such that $uS_wZ⊩⊥$. Since $Z$ is nonempty we have an absurd.
+
+    For the other direction assume that we have a world $w$ and for every $u$
+    such that $wRu$ we have $u⊩A$. We see that $w⊩(¬A)▷⊥$ clearly holds as there
+    is no $u$ such that $wRu⊩¬A$.
     {{{endproof}}}
 
     {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
@@ -856,7 +869,7 @@ thanks
 #+name: fig:table-trans
 #+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
-| Nr. | Semantic requirement for transitivity                                                  | Mentioned in                                  |
+| Nr. | Semantic requirement for quasi-transitivity                                            | First mentioned in                            |
 |-----+----------------------------------------------------------------------------------------+-----------------------------------------------|
 | (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | Joosten et al. '20 \cite{joosten2020overview} |
 | (2) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 '20 \cite{Verbrugge}            |
