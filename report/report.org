@@ -846,15 +846,25 @@ thanks
     {{{beginproof}}} {{{agda}}} We only show the case where $A$ is an instance
     of the J2 ($A ▷ B ∧ B ▷ C → A ▷ C$) axiom. The rest of the cases are proved
     in an analogous way to ordinary Semantics. Also, here we only show it the
-    quasi-transitivity property given in Definition [[def:gen-frame]]. However, we
+    quasi-transitivity property given in Definition [[def:gen-frame]] and also for
+    the quasi-transitivity Condition 8 in Table [[fig:table-trans]]. However, we
     have verified this in Agda for all the alternative quasi-transitivity
     conditions presented in Table [[fig:table-trans]].
 
     Assume $w⊩A▷B$ and $w⊩B▷C$ and that there exists $u$ such that $wRu⊩A$. It
-    follows that there exists $V$ such that $uS_wV⊩B$. By Condition 3 we have
-    that $∀v∈V.wRv⊩B$. Then for every $v∈V$ we have that there exists $Z_v$ such
-    that $vS_wZ_v⊩C$. It follows from the quasi-transitivity condition that
-    $uS_w(⋃_{v∈V}Z_v)$ and clearly $⋃_{v∈V}Z_v⊩C$. {{{endproof}}}
+    follows that there exists $V$ such that $uS_wV⊩B$. By Condition 3 of a
+    generalized frame we have that $∀v∈V.wRv⊩B$. Then for every $v∈V$ we have
+    that there exists $Z_v$ such that $vS_wZ_v⊩C$. It follows from the
+    quasi-transitivity condition that $uS_w(⋃_{v∈V}Z_v)$ and clearly
+    $⋃_{v∈V}Z_v⊩C$.
+
+    Now for quasi-transitivity Condition 8. Assume $w⊩A▷B$ and $w⊩B▷C$ and that
+    there exists $u$ such that $wRu⊩A$. It follows that there exists $V$ such
+    that $uS_wV⊩B$. If $V⊩C$ we are done, otherwise there exists $v∈V$ such that
+    $v⊮C$. By Condition 3 of a generalized frame we have that $wRv$. Since
+    $wRv⊩B$ and $w⊩B▷C$ it follows that there exists $Z$ such that $vS_wZ⊩C$.
+    Finally since $v⊮C$ we know that $v∉Z$ so by quasi-transitivity Condition 8
+    we can conclude $uS_wZ⊩C$. {{{endproof}}}
 
 ** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements

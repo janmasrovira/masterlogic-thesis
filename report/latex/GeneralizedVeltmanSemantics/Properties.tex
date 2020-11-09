@@ -309,8 +309,6 @@ module PGeneric
       [⊩▷] [A] [B] A▷B = ⊩▷ ⇐ λ { {u} Rwu u⊩A → case A▷B Rwu ([A] ⇒ u⊩A) of
         λ { (V ⸴ SwuV ⸴ V⊆𝔹) → V ⸴ SwuV ⸴ (λ {z → [B] ⇐ V⊆𝔹 z})}}
 
-      -- NOTE: you must avoid using S-quasitrans in this module! this is hacky and
-      -- unelegant, but doing it properly would require a lot of work.
       module Properties-Trans where
 
         Trans-4 Trans-7 Trans-8 Trans-3 : Set _
