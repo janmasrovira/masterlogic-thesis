@@ -83,18 +83,18 @@ it is used standardly in the literature.
 * DONE
   On Page 22 you say “in this section” where I guess this should be “in this part
   of the thesis”.
-* TODO
+* DONE
   Comments on this part of your thesis are in the handwritten
   doodles.
 
 Part III
 
-* TODO
+* DONE
 On Page 30. please try to be more eloquent and informative. You can mention
 logics for essentially reflective theories (full induction), finitely
 axiomatised, IL(All), IL(PRA), etc.
 
-* TODO
+* DONE
 Your current “An interpretability principle is a schema of modal formulas that
 carries some special signifi- cance." is way too superficial and is like saying
 “Catalan are nice people, they do things”
@@ -126,7 +126,7 @@ direct translation. This is an important observation we stumbled upon. Maybe
 this discussion can be included in the current Section 21 but then should be
 forward reference in 19.
 
-* TODO
+* DONE
 Section 20
 
 I guess this will be removed? Or otherwise expanded upon?
