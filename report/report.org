@@ -1519,20 +1519,20 @@ thanks
 
   An interpretability principle is a schema of modal formulas that carries some
   special significance. The relevance of a principle mainly stems from two
-  factors: On the one hand we have principles such as \prin{M} that give rise to
-  interpretability logics for certain theories, for instance, \prin{ILM} is the
-  axiomatization of the interpretability logic for \pa{}: \prin{IL(PA)}. On the
+  factors. On the one hand we have principles, such as the principle \prin{M}, 
+  that give rise to  interpretability logics for certain theories. For instance, 
+  \prin{ILM} is the interpretability logic of \pa{}: \prin{IL(PA)}. On the
   other hand we have principles which are valid in all reasonable arithmetical
   theories and thus are interesting in the search of an axiomatization for the
   theory \ilall. For instance, the series of principles \prin{R^n} and
-  \prin{R_n}, which we will present in this part, appear in the best known lower
-  bound for \ilall. Regardless of the area of interest finding the frame
+  \prin{R_n}, which we will present in this part, are central to the best known 
+  lower bound for \ilall. Regardless of the area of interest, finding the frame
   condition for a principle is always the first step towards studying the nature
-  of the principle using either Veltman semantics. Once we have established a
+  of the principle. Once we have established a
   frame condition for a principle, say \prin{X}, one has more tools when
   studying, for instance, modal soundness and completeness of the logic
   \prin{ILX}. Soundness in itself is already an interesting result, but its
-  utility grows when applying it to prove independence results between
+  utility grows when it's applied to prove independence results between
   principles. To prove that two principles \prin{X} and \prin{Y} are independent
   means to show $\prin{ILX}⊬\prin{Y}$ and $\prin{ILY}⊬\prin{X}$, which is done
   by building countermodels (for instance, see cite:joosten-master), as usual in
@@ -1544,8 +1544,8 @@ thanks
 
   As we have briefly mentioned in the overview at the beginning of this thesis,
   a frame condition captures the relational semantic nature of principle. To be
-  more precise, assume that we have a principle \prin{X} which does not
-  necessarily hold in an arbitrary ordinary Veltman frame. A frame condition is
+  more precise, assume that we have a principle \prin{X} which is not
+  necessarily valid in an arbitrary ordinary Veltman frame. A frame condition is
   a first (or higher) order formula $\kord{X}$ such that for any ordinary
   Veltman frame $F$ we have: \[F ⊨ \kord{X} ⇔ F ⊩ \prin{X}.\] In the expression
   above $F ⊨ \kord{M}$ denotes that $F$ models the condition $\kord{M}$ in the
@@ -1553,8 +1553,8 @@ thanks
   that we have $⟨F,V⟩⊩\prin{X}$ for any valuation $V$ and any particular
   instance of \prin{X}. We define frame conditions for generalized Veltman
   frames in an analogous way. As a convention, for a principle \prin{X} we will
-  write \kord{X} and \kgen{X} to denote the frame conditions ordinary and
-  generalized semantics respectively.
+  write \kord{X} and \kgen{X} to denote the frame conditions with respect to
+  ordinary and generalized semantics, respectively.
 
   In Section [[sec:generic-cond]] we will verify in Agda that there is a mechanical
   procedure to obtain frame conditions for any axiom schema. However, the
@@ -1570,25 +1570,25 @@ thanks
   The $R$ relation must be transitive and Noetherian.
   #+end_center
   The same condition expressed in formulas reads as follows (we refer to these
-  formulation as the /original/): \[∀x.∀y.∀z.xRyRz⇒xRz\ ;\] \[∀𝕊.𝕊≠∅⇒∃s∈S∀s'
+  formulation as the /original/): \[∀x.∀y.∀z.xRyRz⇒xRz\ ;\] \[∀𝕊.𝕊≠∅⇒∃s∈𝕊∀s'
   (s\cancel{R}s').\] And now observe the generic frame condition that arises
   from a mechanical procedure[fn::The mechanical procedure for Veltman semantics
   is presented in detail in Section [[sec:generic-cond]].](we will refer to this
   formulation as the /generic/):
-  \[∀𝔸.∀u(wRu⇒(∀u'(wRu'⇒u'∈𝔸))⇒u∈𝔸)⇒∀v(wRu⇒u∈𝔸).\] If we compare the original
+  \[∀𝔸.∀u(wRu⇒(∀u'(uRu'⇒u'∈𝔸))⇒u∈𝔸)⇒∀u(wRu⇒u∈𝔸).\] If we compare the original
   and the generic conditions we see that they are both second order formulas as
   they quantify over sets: We have $∀𝕊$ in the original and $∀𝔸$ in the generic.
   If we do the mental exercise to forget for a moment that we have the concepts
   of /transitivity/ and /Noetherian relation/ in our mathematical metalanguage,
-  we find it impossible to objectively justify why the original formulation is
+  it's not completely obvious how to objectively justify why the original formulation is
   preferred in the literature over the generic formulation. However, the case is
   that we /do/ have the concepts of transitivity and Noetherian relations in our
   commonly used metalanguage and moreover we are used to operating with them.
   Furthermore, it is easy for us to imagine a transitive relation that has no
   infinite ascending chains. On the contrary the picture that is described by
   the generic condition is rather blurry for us. All in all, we see that we can
-  precisely define what is the minimal that a frame condition should be, but the
-  quantification of how good a frame condition is remains open to
+  precisely define the minimal requirement (frame validity) for a frame condition,
+  but comparing the usefulness of a frame condition remains open to
   interpretation. However, we will lean towards conditions which are easy to
   visualize.
 
