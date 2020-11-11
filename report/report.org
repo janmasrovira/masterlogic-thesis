@@ -1583,13 +1583,14 @@ thanks
   we find it impossible to objectively justify why the original formulation is
   preferred in the literature over the generic formulation. However, the case is
   that we /do/ have the concepts of transitivity and Noetherian relations in our
-  commonly used metalanguage and we are used to operating with them. Moreover,
-  it is easy for us to imagine a transitive relation that has no infinite
-  ascending chains. On the contrary the picture that is described by the generic
-  condition is rather blurry for us. All in all, we see that we can precisely
-  define what is the minimal that a frame condition should be, but the
+  commonly used metalanguage and moreover we are used to operating with them.
+  Furthermore, it is easy for us to imagine a transitive relation that has no
+  infinite ascending chains. On the contrary the picture that is described by
+  the generic condition is rather blurry for us. All in all, we see that we can
+  precisely define what is the minimal that a frame condition should be, but the
   quantification of how good a frame condition is remains open to
-  interpretation.
+  interpretation. However, we will lean towards conditions which are easy to
+  visualize.
 
   In this section we present a number of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
@@ -1697,10 +1698,12 @@ thanks
    \[A ▷ B → ♢ A ∧ □ C ▷ B ∧ □ C.\]
 
    The \prin{M₀} principle first appears in
-   cite:Visser:1991:FormalizationOfInterpretability.
-
+   cite:Visser:1991:FormalizationOfInterpretability, where it is proved that
+   \prin{M_0} is arithmetically sound. Moreover it is claimed that Dick de Jongh
+   showed that $\prin{ILM_0W}=\prin{ILW^*}$. With that in mind, the current best
+   lower bound for \ilall could be reformulated as $\sf{ILM_0WR_nR^n}$.
    The logic \prin{ILM_0} is complete with respect to ordinary
-   semantics (cite:modal-matters).
+   and generalized semantics (cite:modal-matters).
 
     # As far as I can see, the first mention of M0 is in "The Formalization of
     # Interpretability" by Visser (1991). Arithmetical soundness of M0 is proved
@@ -1935,12 +1938,12 @@ thanks
      have to see that $xS_wz$. Since $wRxRy$ we have that $xS_wy$ and we have
      $yS_wz$ from before, hence by transitivity of $S_w$ we get $xS_wz$.
 
-   To see that \(z\) is the desired world.
+   # To see that \(z\) is the desired world.
 
-   {{{joost(I WOULD SAY HERE: "WE HAVE TO VERIFY
-   TWO THINGS". THEN YOU MENTION THE TWO THINGS AND THEN YOU PROVE THEM ONE BY ONE.
-   LIKE THIS\, YOU HELP THE NON-EXPERIENCED READER REMIND WHAT IS IT THAT YOU ARE
-   AFTER)}}}
+   # {{{joost(I WOULD SAY HERE: "WE HAVE TO VERIFY
+   # TWO THINGS". THEN YOU MENTION THE TWO THINGS AND THEN YOU PROVE THEM ONE BY ONE.
+   # LIKE THIS\, YOU HELP THE NON-EXPERIENCED READER REMIND WHAT IS IT THAT YOU ARE
+   # AFTER)}}}
 
 
    - \boxed{⇐} Let $a,b,c∈\var{}$ and assume that for some $w,x,y,z$ we have
