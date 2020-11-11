@@ -96,7 +96,7 @@
 #+latex_header: \renewcommand{\sf}[1]{\ensuremath{\mathsf{#1}}}
 #+latex_header: \newcommand{\el}[1]{\ensuremath{\mathsf{El}(#1)}}
 #+latex_header: \newcommand{\set}[0]{\ensuremath{\mathsf{Set}}}
-#+latex_header: \newcommand{\type}[0]{\ensuremath{\mathsf{Set}}}
+#+latex_header: \newcommand{\type}[0]{\ensuremath{\mathsf{Type}}}
 
 {{{defglossary(gvm,model,Generalized Veltman model)}}}
 {{{defglossary(gvf,frame,Generalized Veltman frame)}}}
@@ -1663,7 +1663,7 @@ thanks
    #+name: fig:gen-M-condition
    #+attr_latex: :float t :width 0.35\textwidth :placement [H]
    [[file:img/M-gen.pdf]]
- 
+
    {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
    $\kgen{M}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{M} principle. In symbols:
@@ -2668,7 +2668,7 @@ thanks
 ** Martin Löf's logical framework
    <<sec:martin-lof>> In this section we will present the intuitionistic type
    theory presented in cite:nordstrom1990programming. We will refer to this
-   logic as /Martin Löf's logical framework/ or LF for short. Even though Agda
+   theory as /Martin Löf's logical framework/ or LF for short. Even though Agda
    lacks a well defined specification, LF is considered the basis of Agda's type
    system (cite:sep-type-theory-intuitionistic). Furthermore, Peter Dybjer, who
    is a professor at the Chalmers University of Technology[fn::Where most of the
@@ -2725,9 +2725,9 @@ objects to be the same.
    If $A$ is a set, then the elements of $A$, denoted with \el{A}, in
    conjunction with their equivalence relation forms a type.
    \begin{mathpar}
-   \inferrule[El]{A:\set{} }{\sf{El}(A):\sf{Type}}
+   \inferrule[El]{A:\set{} }{\sf{El}(A):\type{}}
    \and
-   \inferrule[El=]{A=B:\set{} }{\sf{El}(A)=\sf{El}(B):\sf{Type}}
+   \inferrule[El=]{A=B:\set{} }{\sf{El}(A)=\sf{El}(B):\type{}}
    \end{mathpar}
 
 *** Syntax of types old :noexport:
@@ -2798,26 +2798,26 @@ objects to be the same.
     $a₁,…,a_{i-1}$ such that
     \begin{flalign*}
    \label{context-cond}
-   S₁:\sf{Type} &\text{ and } a₁:S₁; \\
-   S₂[x₁↦a₁]:\sf{Type} &\text{ and } a₂:S₂[x₁↦a₁]; \\
+   S₁:\type{} &\text{ and } a₁:S₁; \\
+   S₂[x₁↦a₁]:\type{} &\text{ and } a₂:S₂[x₁↦a₁]; \\
    & … \\
-   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\sf{Type} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}] ;
+   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\type{} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}] ;
     \end{flalign*}
     then it must be that
-    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\sf{Type}.\]
+    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\type{}.\]
     If $Γ$ is a context, we write:
     1. $Γ⊢t:A$ to say that term $t$ has type $A$ in the context $Γ$. We write
        $t:A$ instead of $∅⊢t:A$;
-    2. $Γ⊢S:\sf{Type}$ to say that $S$ is a type in context $Γ$;
+    2. $Γ⊢S:\type{}$ to say that $S$ is a type in context $Γ$;
     3. $Γ⊢a=b:S$ to say that $a$ and $b$ are equal terms of type $S$ in context $Γ$;
-    4. $Γ⊢A=B:\sf{Type}$ to say that $A$ and $B$ are equal types in context $Γ$.
+    4. $Γ⊢A=B:\type{}$ to say that $A$ and $B$ are equal types in context $Γ$.
     In any case, in order to avoid cluttered rules, if the context is the same
     for all the parts of a rule, we will not mention it explicitly. For
     instance, we will prefer to use the notation of the right rule over the
     notation used in the left rule when possible:
     \begin{mathpar}
-    \inferrule[Refl]{Γ⊢A:\sf{Type} \\ Γ⊢a:A}{Γ⊢a=a:A} \and
-    \inferrule[Refl]{A:\sf{Type} \\ a:A}{a=a:A}
+    \inferrule[Refl]{Γ⊢A:\type{} \\ Γ⊢a:A}{Γ⊢a=a:A} \and
+    \inferrule[Refl]{A:\type{} \\ a:A}{a=a:A}
     \end{mathpar}
     Additionally, when the judgment does not depend on the context (\ie{} the
     context is allowed to be empty), we will drop the ``$Γ⊢$'' part.
@@ -2825,7 +2825,7 @@ objects to be the same.
 *** General rules
     As expected, we have the following rule:
     \begin{mathpar}
-    \inferrule[Assum]{Γ⊢A:\sf{Type}}
+    \inferrule[Assum]{Γ⊢A:\type{}}
     {Γ,x:A, Γ'⊢x:A}
     \end{mathpar}
 
@@ -2833,15 +2833,15 @@ objects to be the same.
     for equality on types and on terms.
     For terms we have:
     \begin{mathpar}
-    \inferrule[Refl]{A:\sf{Type} \\ a:A}{a=a:A} \and
-    \inferrule[Sym]{A:\sf{Type} \\ a=b:A}{b=a:A} \and
-    \inferrule[Trans]{A:\sf{Type} \\ a=b:A \\ b=c:A}{a=c:A}
+    \inferrule[Refl]{A:\type{} \\ a:A}{a=a:A} \and
+    \inferrule[Sym]{A:\type{} \\ a=b:A}{b=a:A} \and
+    \inferrule[Trans]{A:\type{} \\ a=b:A \\ b=c:A}{a=c:A}
     \end{mathpar}
     Analogously, for types we have:
     \begin{mathpar}
-    \inferrule[Refl]{A:\type{}}{A=A:\sf{Type}} \and
-    \inferrule[Sym]{ A=B:\type{} }{B=A:\sf{Type}} \and
-    \inferrule[Trans]{A=B:\type{} \\ B=C:\sf{Type}}{A=C:\sf{Type}}
+    \inferrule[Refl]{A:\type{}}{A=A:\type{}} \and
+    \inferrule[Sym]{ A=B:\type{} }{B=A:\type{}} \and
+    \inferrule[Trans]{A=B:\type{} \\ B=C:\type{}}{A=C:\type{}}
     \end{mathpar}
     Note that in the \textsc{Refl} rule the requirement $A:\type{}$ is redundant
     since the assumption $a:A$ already requires $A:\type$. We will sometimes add
@@ -2851,25 +2851,25 @@ objects to be the same.
 
     Furthermore we can substitute equal types.
     \begin{mathpar}
-    \inferrule[Id1]{A=B:\sf{Type}\\a:A }{a:B} \and
-    \inferrule[Id2]{A=B:\sf{Type} \\a=b:A}{a=b:B}
+    \inferrule[Id1]{A=B:\type{}\\a:A }{a:B} \and
+    \inferrule[Id2]{A=B:\type{} \\a=b:A}{a=b:B}
     \end{mathpar}
 
 *** Type family rules
     We say that $A$ is a /family of types/ in the context \[Γ≔x₁:A₁,…,xₙ:Aₙ\] if
-    $Γ⊢A:\sf{Type}$.
+    $Γ⊢A:\type{}$.
 
     We proceed by giving some rules for type families.
 
     Instantiation of a type family:
     \begin{mathpar}
-    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\sf{Type}\\\\
+    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\type{}\\\\
     a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
-    {C[x₁↦a₁,…,xₙ↦aₙ]:\sf{Type}}
+    {C[x₁↦a₁,…,xₙ↦aₙ]:\type{}}
     \end{mathpar}
     Substitution in a type family:
     \begin{mathpar}
-    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\sf{Type}\\\\
+    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\type{}\\\\
     a₁=b₁:A₁\\…\\aₙ=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
     {C[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦b₁,…,xₙ↦bₙ]}
     \end{mathpar}
@@ -2889,7 +2889,7 @@ objects to be the same.
     Substitution of a type family.
     \begin{mathpar}
     \inferrule[]{
-    x₁:A₁,…,xₙ:Aₙ⊢B=C:\sf{Type}
+    x₁:A₁,…,xₙ:Aₙ⊢B=C:\type{}
     \\\\a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
     {B[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦a₁,…,xₙ↦aₙ]:B[x₁↦a₁,…,xₙ↦aₙ]}
     \end{mathpar}
@@ -2910,8 +2910,8 @@ objects to be the same.
     #      type that may depend on $x$, then $(x: A) ↠ B$ is a type. When $B$
     #      is independent of $x$ we may write $A → B$ instead.
     #     \begin{mathpar}
-    #     \inferrule{x∈\sf{Var} \\ A:\sf{Type} \\  [x:A]B:\sf{Type}}
-    #     {(x: A)→ B:\sf{Type}}
+    #     \inferrule{x∈\sf{Var} \\ A:\type{} \\  [x:A]B:\type{}}
+    #     {(x: A)→ B:\type{}}
     #     \end{mathpar}
     #   2. /Variable/.
     #   3. /Constant/.
@@ -2920,7 +2920,7 @@ objects to be the same.
     #   (x:S)→S(x)\]
 
     #   \begin{mathpar}
-    #   \inferrule[Assum]{A:\sf{Type}}
+    #   \inferrule[Assum]{A:\type{}}
     #   {[x:A]⊢x:A}
     #   \end{mathpar}
 
@@ -2938,14 +2938,14 @@ objects to be the same.
     We can form by the following rule the type of functions from a type $A$ to a
     type $B$, where $B$ is a type that may depend on a term of type $A$.
     \begin{mathpar}
-    \inferrule[Fun]{Γ⊢A:\sf{Type}\\Γ,x:A⊢B:\sf{Type}}{Γ⊢(x:A)↠B:\sf{Type}}
+    \inferrule[Fun]{Γ⊢A:\type{}\\Γ,x:A⊢B:\type{}}{Γ⊢(x:A)↠B:\type{}}
     \end{mathpar}
     Note that $↠$ has right associativity.
     As another notational convention, when $B$ does not depend on a term of type $A$,
     we will simply write $A↠B$ instead of $(x:A)↠B$ as shown by the following
     (redundant) rule.
     \begin{mathpar}
-    \inferrule[Fun']{A:\sf{Type}\\B:\sf{Type}}{A↠B:\sf{Type}}
+    \inferrule[Fun']{A:\type{}\\B:\type{}}{A↠B:\type{}}
     \end{mathpar}
     Application and abstraction.
     \begin{mathpar}
@@ -2956,8 +2956,8 @@ objects to be the same.
 
     Substitution in function types:
     \begin{mathpar}
-    \inferrule[]{Γ⊢A=A':\sf{Type}\\\\
-     Γ,x:A⊢B=B':\sf{Type}}
+    \inferrule[]{Γ⊢A=A':\type{}\\\\
+     Γ,x:A⊢B=B':\type{}}
      {Γ⊢(x:A)↠B=(x:A')↠B'}
     \end{mathpar}
 
@@ -2987,8 +2987,8 @@ objects to be the same.
     \inferrule[]{f=f':(x:A)↠B \\ a=a':A}{f\ a=f'\ a':B[x↦a]}
     \end{mathpar}
 
-*** Defining new sets
-    <<sec:def-new-types>> In this section we will define some new sets that will
+*** Defining sets
+    <<sec:def-new-types>> In this section we will define some sets that will
     allow us to represent different mathematical objects, such as pairs or
     natural numbers, in the LF logic.
 
@@ -3030,15 +3030,15 @@ objects to be the same.
     \begin{mathpar}
     \inferrule[VarType]
     {\ }
-    {P:\set{}⊢\sf{El}(P):\sf{Type}}
+    {P:\set{}⊢\sf{El}(P):\type{}}
     \and
     \inferrule*[Left=El]
     {\inferrule*[Left=Assum]
     {\inferrule*[Left=Set]
     {\ }
-    {\set{}:\sf{Type}}}
+    {\set{}:\type{}}}
     {P:\set{}⊢P:\set{}}}
-    {P:\set{}⊢\sf{El}(P):\sf{Type}}
+    {P:\set{}⊢\sf{El}(P):\type{}}
     \end{mathpar}
 
 **** Function set
@@ -3112,7 +3112,7 @@ objects to be the same.
      {\inferrule*[Left=Assum]
      {\inferrule*[Left=VarType]
      {\ }
-     {P:\set{}⊢\sf{El}(P):\sf{Type}}}
+     {P:\set{}⊢\sf{El}(P):\type{}}}
      {P:\set{},x:\sf{El}(P)⊢x:\sf{El}(P)}}
      {P:\set{}⊢Λ\ P\ P\ (λx→x):\el{P↣P}}
      \end{mathpar}
@@ -3124,7 +3124,7 @@ objects to be the same.
      {\inferrule*[Left=Assum]
      {\inferrule*[Left=VarType]
      {\ }
-     {P:\set{}, Q:\set{},y:\sf{EL}(Q)⊢\sf{El}(P):\sf{Type}}}
+     {P:\set{}, Q:\set{},y:\sf{EL}(Q)⊢\sf{El}(P):\type{}}}
      {P:\set{}, Q:\set{},x:\sf{EL}(P),y:\sf{EL}(Q)⊢x:\sf{El}(P)}}
      {P:\set{}, Q:\set{},x:\sf{EL}(P)⊢ Λ\ Q\ P\ (λ y→ x):Q↣P}}
      {P:\set{}, Q:\set{}⊢Λ\ P\ (Q↣P)\ (λx→Λ\ Q\ P\ (λ y→ x)):\el{P↣Q↣P}}
