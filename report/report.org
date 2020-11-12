@@ -96,7 +96,7 @@
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
 #+latex_header: \newcommand{\ilall}[0]{\ensuremath{\mathsf{IL}}(All)}
 #+latex_header: \newcommand{\rep}[1]{⌜#1⌝}
-#+latex_header: \newcommand{\prov}[2]{\prin{Prov}_{#1}(#2)}
+#+latex_header: \newcommand{\prov}[2]{\ensuremath{\sf{Prov}_{#1}(#2)}}
 #+latex_header: \newcommand{\fm}[0]{\ensuremath{\mathsf{Fm}}}
 #+latex_header: \newcommand{\var}[0]{\ensuremath{\mathsf{Var}}}
 #+latex_header: \renewcommand{\sf}[1]{\ensuremath{\mathsf{#1}}}
@@ -223,7 +223,12 @@ thanks
    [[file:./jan_thesis_comments_07_07_2020.pdf][pdf-link]].
 * Introduction
 ** Overview of interpretability logics
-   <<sec:overview>>
+   <<sec:overview>> This thesis studies interpretability logics. These logics
+   were originally conceived (cite:visser1997overview,joosten2020overview) to
+   study the provably structural behaviour of formalized relative
+   interpretability. In this overview we will give some context and definitions
+   to understand what this means.
+
    We begin by giving a short introduction on provability logics. For more
    information refer to cite:sep-logic-provability. The reason to start here is
    that interpretability logics extend provability logics. Furthermore the
@@ -235,31 +240,40 @@ thanks
    how much arithmetical theories like Peano Arithmetic can say about
    themselves, more precisely, about their provability capacity. As we know,
    sufficiently strong arithmetical theories like \pa{} can represent, by means
-   of a clever syntactical encoding, their provability predicate, \prin{Prov},
-   which states ``this formula is provable in $T$''. A landmark result on this
-   predicate is known as Löb's theorem, which states that \pa{} shows
-   $\prov{T}{\rep{A}}→A$ only if \pa{} shows $A$. Löb's theorem can be formalized
-   in the language of \pa{} thus: \[\prov{\pa}{\rep{\prov{\pa}{\rep{A}}
-   →A}}→\prov{\pa}{\rep{A}}.\] This result sparked an interest in studying
-   provability logic from a modal point of view which birthed the axiomatization
-   of the propositional provability logic \gl{}, named after Gödel and Löb. The
-   logic \gl{} extends propositional classical logic and its language consists
-   of the language of propositional logic $⟨→,⊥⟩$ plus the modal operator $□$,
-   which stands for the provability predicate. In this language Löb's theorem
-   reads as \[□(□A→A)→□A.\] The above principle is in fact one of the axioms of
-   \gl{}. The value of \gl{} directly depends on the arithmetical soundness and
-   completeness theorems that we will present shortly, but first we need to
-   introduce the concept of /arithmetical realization/. An arithmetical
-   realization $*$ is a map from modal formulas in the language of \gl{} to
-   arithmetical sentences of $T$ such that it satisfies the following:
+   of a clever syntactical encoding, their provability predicate, \prov{T}{A},
+   which states ``formula $A$ is provable in $T$''. A landmark result on this
+   predicate Gödel's second incompleteness theorem
+   (cite:godel1931formal,sep-goedel-incompleteness) and Löb's theorem
+   (cite:lob1955solution,sep-logic-provability). Gödel second incompleteness
+   theorem states that consistent and sufficiently strong theories like \pa{}
+   cannot proof their own consistency. Löb's theorem, states that \pa{} shows
+   $\prov{T}{\rep{A}}→A$ only if \pa{} proves $A$. Löb's theorem can be
+   formalized in the language of \pa{} thus:
+   \[\pa⊢\prov{\pa}{\rep{\prov{\pa}{\rep{A}} →A}}→\prov{\pa}{\rep{A}}.\] This
+   result sparked an interest in studying provability logic from a modal point
+   of view which birthed the axiomatization of the propositional provability
+   logic \gl{}, named after Gödel and Löb. The logic \gl{} extends propositional
+   classical logic and its language consists of the language of propositional
+   logic $⟨→,⊥⟩$ plus the modal operator $□$, which stands for the provability
+   predicate. In this language Löb's theorem reads as \[□(□A→A)→□A.\] The above
+   /principle/ is in fact one of the axioms of \gl{}. The value of \gl{} directly
+   depends on the arithmetical soundness and completeness theorems that we will
+   present shortly, but first we need to introduce the concept of /arithmetical
+   realization/. An arithmetical realization $*$ is a map from modal formulas in
+   the language of \gl{} to arithmetical sentences of $T$ such that it satisfies
+   the following:
    \begin{flalign*}
+   p^* &\text{ is a $T$-sentence};\\
    ⊥^* &= (0=1) ; \\
    (A → B)^* &= A^*→B^*; \\
    (□A)^* &= \prov{T}{\rep{A}}.
    \end{flalign*}
+   Note that specifying how an arithmetical realization $*$ acts on
+   propositional variables fixes the behaviour of $*$ on all modal formulas.
+
    The arithmetical soundness theorem states that if $\gl{}⊢A$ then $\pa{}⊢A^*$
-   for any realization $*$. Solovay proved that arithmetical completeness, which
-   is the converse of soundness, also holds.
+   for any realization $*$. Solovay proved (cite:solovay1976provability) that
+   arithmetical completeness , which is the converse of soundness, also holds.
 
    Provability logics have Kripke (relational) semantics. As a reminder a Kripke
    model is a tuple $⟨W,R,V⟩$ where $W$ is a non-empty set of worlds, $R$ is a
@@ -270,48 +284,51 @@ thanks
    2. if $p$ is a propositional variable, then $w⊩p$ iff: $⟨w,p⟩∈V$;
    3. if $A$ and $B$ are formulas, then $w⊩A→B$ iff: if $w⊩A$ then $w⊩B$;
    4. if $A$ is a formula, then $w⊩□A$ iff: if $wRu$ then $u⊩A$.
-   In order to have modal soundness and completeness we ought to restrict the
-   class of frames that we consider. We say that a frame $⟨W,R⟩$ is a
-   $\text{\gl{}-frame}$ if $R$ is transitive and conversely well-founded, that
-   is, there are no infinite ascending chains $w₀Rw₁R…$. Then we have that
-   \[\gl{}⊢A⇔⟨W,R,V⟩⊩A \text{ for any \gl{}-frame $⟨W,R⟩$ and valuation $V$.} \]
-   With this we conclude the introduction to provability logics and continue
-   with interpretability logics.
+   In order to state a powerful modal soundness and completeness theorem we
+   ought to restrict the class of frames that we consider. We say that a frame
+   $⟨W,R⟩$ is a $\text{\gl{}-frame}$ if $R$ is transitive and conversely
+   well-founded, that is, there are no infinite ascending chains $w₀Rw₁R…$. Then
+   we have that \[\gl{}⊢A⇔(⟨W,R,V⟩⊩A \text{ for any \gl{}-frame $⟨W,R⟩$ and
+   valuation $V$).} \] With this we conclude the introduction to provability
+   logics and continue with interpretability logics.
 
    We introduce the concept of /interpretation/ as a first step towards
    understanding interpretability logics. Given two theories $V$ and $U$, an
    interpretation of $V$ into $U$ is a translation $f$ from \text{$V$-formulas}
-   to \text{$U$-formulas} such that if $V⊢A$ then $U⊢f(A)$. In the history of
-   mathematics we find numerous examples (cite:visser1997overview) of theorems
-   that use interpretations as a cornerstone in their proofs. For instance,
-   Gödel's incompleteness theorems translate syntactical constructions into
-   natural numbers. As another example we have that Gödel's interpretation of
-   \prin{ZF} plus the axiom of constructibility ($V=L$) in \sf{ZF} serves as a
-   proof of relative consistency of the continuum hypothesis with respect to
-   \prin{ZF}.
+   to \text{$U$-formulas} such that if $V⊢A$ then $U⊢f(A)$. As such, we work
+   with the notion of /theorem's interpretability/. Moreover, we will allow for
+   domain relativization. In the history of mathematics we find numerous
+   examples (cite:visser1997overview) of theorems that use interpretations as a
+   cornerstone in their proofs. For instance, Gödel's incompleteness theorems
+   translate syntactical constructions into natural numbers. As another example
+   we have that Gödel's interpretation of \prin{ZF} plus the axiom of
+   constructibility ($V=L$) in \sf{ZF} serves as a proof of relative consistency
+   of the continuum hypothesis with respect to \prin{ZF}.
 
    Interpretability logics, as the name foretells, studies the behaviour of
    interpretations. There are a number of things that we need to specify. We do
    not study the behaviour of interpretations between two arbitrary theories.
    Instead, we fix a base theory $T$ and we only consider interpretability
-   between finite extensions of such theory. Thus when we say that $T+A$
-   interprets $T+B$ we assume that $A$ and $B$ are sentences. In interpretability
-   logics we only consider first order arithmetical theories which are
-   recursively enumerable and are sequential[fn::A sequential theory is an
-   arithmetical which can code and decode sequences of elements.]. Moreover, we
-   are only concerned with the provable, within $T$, interpretability
-   properties. In other words, we study the behaviour of the binary
-   interpretability predicate $\sf{Int}_T$. Naturally, the predicate
-   $\sf{Int}_T(A,B)$ holds when we can formalize in $T$ that $T+A$
-   interprets $T+B$. For a theory $T$, we denote the logic that describes the
-   behaviour of the interpretability predicate of $T$ as $\sf{IL}(T)$. The
-   language of $\sf{IL}(T)$ extends the language of \sf{GL} with the binary
-   modal operator $▷$, thus the language becomes $⟨⊥,→,□,▷⟩$. In order to give a
-   more detailed definition of $\sf{IL}(T)$ we first extend the definition of
-   arithmetical realization with an extra clause for the $▷$ case. An arithmetical
-   realization $*$ is a map from formulas in $\sf{IL}(T)$ to sentences in the
-   language of $T$. Moreover, it must satisfy the following constraints:
+   between finite extensions of such a theory. Thus when we say that $T+A$
+   interprets $T+B$ we assume that $A$ and $B$ are sentences. In
+   interpretability logics we only consider first order arithmetical theories
+   which are recursively enumerable and are sequential[fn::A sequential theory
+   is an arithmetical which can code and decode sequences of elements.].
+   Moreover, we are only concerned with the provable, within $T$,
+   interpretability properties. In other words, we study the behaviour of the
+   binary formalized interpretability predicate $\sf{Int}_T(.,.)$. Naturally,
+   the predicate $\sf{Int}_T(\rep{A},\rep{B})$ precisely holds when we can
+   formalize in $T$ that $T+A$ interprets $T+B$. For a theory $T$, we denote the
+   logic that describes the behaviour of the interpretability predicate of $T$
+   as $\sf{IL}(T)$. The language of $\sf{IL}(T)$ extends the language of \sf{GL}
+   with the binary modal operator $▷$, thus the language becomes $⟨⊥,→,□,▷⟩$. In
+   order to give a more detailed definition of $\sf{IL}(T)$ we first extend the
+   definition of arithmetical realization with an extra clause for the $▷$ case.
+   An arithmetical realization $*$ is a map from formulas in $\sf{IL}(T)$ to
+   sentences in the language of $T$. Moreover, it must satisfy the following
+   constraints:
    \begin{flalign*}
+   p^* &\text{ is a $T$-sentence};\\
    ⊥^* &= (0=1);\\
    (A→B)^*&= A^*→B^* ; \\
    (□A)^*&= \sf{Prov}_T(⌜A⌝) ; \\
@@ -323,54 +340,60 @@ thanks
    There is an important difference with respect to provability logics that we
    need to highlight here. In provability logics we have that \sf{GL} is an
    axiomatization of the provability logics for all sufficiently strong
-   arithmetical theories but we do not have an equivalent Swiss army knife that
-   works for all theories in interpretability logics. In other words, we do not
-   have a single axiomatization of $\sf{IL}(T)$. Instead, we define different
-   logics for various classes of theories. There is a basic logic which we call
-   \il{} that serves as the base for all these variants. We define these
-   variants as extensions of \il{} by adding axiom schemas to it as we will see
-   later in this overview. The logic \il{} extends the \sf{GL} logic with five
-   new axiom schemas. We will precisely define logic \il{} and comment on the
-   significance of the new axiom schemas in cref:sec:il.
+   consistent arithmetical theories. However, we do not have an equivalent Swiss
+   army knife that works for all theories in interpretability logics. In other
+   words, we do not have a single axiomatization of $\sf{IL}(T)$. Instead, we
+   define different logics for various classes of theories. There is a basic
+   logic which we call \il{} that serves as the base for all these variants. We
+   define these variants as extensions of \il{} by adding axiom schemas to it as
+   we will see later in this overview. The logic \il{} extends the \sf{GL} logic
+   with five new axiom schemas. We will precisely define the logic \il{} and
+   comment on the significance of the new axiom schemas in cref:sec:il.
 
    The logic \il{} has two relational semantics, which are the main topic of
    this thesis, known as /ordinary Veltman semantics/ (introduced by Frank
    Veltman) and /generalized Veltman semantics/ (introduced by Rineke
    Verbrugge). Ordinary Veltman semantics are defined in much the same spirit as
-   Kripke semantics for \sf{GL}, however, ordinary Veltman frames have an
-   additional family of relations indexed by each of the worlds: $\{S_w:w∈W\}$.
+   Kripke semantics for \sf{GL}. However, ordinary Veltman frames have an
+   additional family of relations indexed by each of the
+   worlds[fn::Alternatively, we may refer to $S$ as a ternary relation, where
+   the first component corresponds to the index of the family.]: $\{S_w:w∈W\}$.
    Each of the $S_w$ is a binary relation which relates two worlds. The family
-   of relations $S$ is used to model the behaviour of the $▷$ binary modal
-   operator. In generalized Veltman semantics each of the $S_w$ relations,
-   instead of relating two individual worlds, relates an individual world to a
-   set of worlds. This type of definition seems to be inspired by the
-   neighborhood semantics that exist for other modal logics with unary modal
-   operators. Neighborhood semantics have not been studied yet for
-   interpretability logics. As expected, both kinds of Veltman semantics are
-   suitable for \il{} as we have soundness (which we present in this thesis) and
-   completeness (cite:Veltman-relative) proofs. As we have
-   already mentioned, \il{} is just the logic that we use as a base in
-   interpretability logics, thus, each time we extend it with an axiom scheme
+   of relations $S$ is used to model the behaviour of the binary modal operator
+   $▷$.
+
+   In generalized Veltman semantics each of the $S_w$ relations, instead of
+   relating two individual worlds, relates an individual world to a set of
+   worlds. This type of definition seems to be inspired by the neighborhood
+   semantics that exist for other modal logics with unary modal operators.
+   Neighborhood semantics have not been studied yet for interpretability logics.
+   Both kinds of Veltman semantics are suitable for \il{} as we
+   have soundness (which we present in this thesis) and completeness
+   (cite:Veltman-relative) proofs.
+
+   As we have already mentioned, \il{} is just the logic that we use as a base
+   in interpretability logics, thus, each time we extend it with an axiom scheme
    (or principle, as we call them) we will need to find new semantics for it.
    Given a collection of principles, we get the semantics for the extension of
    \il{} with these principles by finding their frame condition. More precisely,
-   a /frame condition/ for a principle \sf{P} is a first (or higher) order
-   formula such that for every Veltman frame $F$ we have \[F⊨𝒞 ⇔ ⟨F,V⟩⊩\sf{P}
-   \text{ for any valuation $V$ and instance of \sf{P}.} \] To give an example,
+   a /frame condition/ for a principle \sf{X} is a first (or higher) order
+   formula such that for every Veltman frame $F$ we have \[F⊨𝒞 ⇔ ⟨F,V⟩⊩\sf{X}
+   \text{ for any valuation $V$ and instance of \sf{X}.} \] To give an example,
    let us put our focus on the interpretability logic of \sf{PA}. It happens
    that the axiomatization of \sf{IL(PA)} is given by adding the so called
    principle \sf{M} to the logic \il{}. We denote this new logic as $\sf{ILM}$.
-   The principle \prin{M} is defined as follows: \[\sf{M}≔(A ▷ B) → ((A ∧ □ C) ▷ (B
-   ∧ □ C)).\] Then, consider the following condition:
+   The principle \prin{M} is defined as follows: \[\sf{M}≔(A ▷ B) → ((A ∧ □ C) ▷
+   (B ∧ □ C)).\] Then, consider the following condition:
    #+begin_center
-   if $xS_wy$ and $yRz$ then $xRz$.
+   $C_\prin{M}≔$ if $xS_wy$ and $yRz$ then $xRz$.
    #+end_center
-   Then, if we consider the class of Veltman frames that satisfy this condition,
-   we have soundness and completeness of \sf{ILM} and thus the presented
-   condition is a suitable frame condition for \sf{M}. There are plenty of
-   principles similar to \sf{M} in the literature. In this thesis we list a number
-   of interpretability principles, including \sf{M}, and we present their frame
-   condition for both ordinary and generalized Veltman semantics.
+   Then, if we consider the class of Veltman frames that satisfy condition
+   $C_\prin{M}$, we have soundness and completeness of \sf{ILM} and thus the
+   presented condition is a suitable frame condition for \sf{M}. There are
+   plenty of principles similar to \sf{M} in the literature. In this thesis we
+   list a number of interpretability principles, including \sf{M}, and we
+   present their frame condition for both ordinary and generalized Veltman
+   semantics.
 
    Some principles, like \sf{M}, are useful because they allow us to axiomatize
    the interpretability logic for certain classes of theories. However, there
@@ -995,9 +1018,10 @@ thanks
  {{{beginproof}}} We prove it for the quasi-transitivity Condition (2) (the rest
  can be proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
  $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus: \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}.\] It is
- easy to observe that $M'$ satisfies conditions 1--5 from cref:def:gen-frame. It is also easy to see that it satisfies quasi-transitivity (2).
- We show that they force the same formulas by induction on the complexity of the
- formula. The only interesting case is $A▷B$.
+ easy to observe that $M'$ satisfies Conditions 1--5 from cref:def:gen-frame. It
+ is also easy to see that it satisfies quasi-transitivity (2). We show that they
+ force the same formulas by induction on the complexity of the formula. The only
+ interesting case is $A▷B$.
    - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$. It follows that
      there exists some $y$ such that $xS_wy⊩B$. By definition of $M'$ we have
      $xS'_w\{y\}$ and also $\{y\}⊩B$, therefore $M',w⊩A▷B$.
