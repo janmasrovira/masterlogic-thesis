@@ -924,15 +924,14 @@ thanks
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
 | Nr. | Semantic requirement for quasi-transitivity                                            | First mentioned in                            |
 |-----+----------------------------------------------------------------------------------------+-----------------------------------------------|
-| (1) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ ∃ Z⊆ ⋃_{y∈ Y}Y_y ∧ uS_xZ\Big)$ | Joosten et al. '20 \cite{joosten2020overview} |
-| (2) | $uS_xY ⇒ ∀ \, \{ Y_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xY_y) ⇒ uS_x⋃_{y∈ Y}Y_y\Big)$          | Verbrugge '92 '20 \cite{Verbrugge}            |
+| (1) | $uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ ∃ V⊆ ⋃_{y∈ Y}Z_y ∧ uS_xV\Big)$ | Joosten et al. '20 \cite{joosten2020overview} |
+| (2) | $uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ uS_x⋃_{y∈ Y}Z_y\Big)$          | Verbrugge '92 '20 \cite{Verbrugge}            |
 | (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. \cite{joosten2020overview}     |
 | (4) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}             |
 | (5) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. '20 \cite{joosten2020overview} |
 | (6) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}                |
 | (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | Joosten et al. '20 \cite{joosten2020overview} |
 | (8) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle}     |
-
    #+caption: Diagrams for Conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
    #+attr_latex: :float t :width 0.96\textwidth :placement [H]
