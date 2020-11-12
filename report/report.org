@@ -1,3 +1,8 @@
+# [Ss]ection[[:space:]]+\[\[\([^]]*\)]]
+# [Dd]efinition[[:space:]]+\[\[\([^]]*\)]]
+# [tT]able[[:space:]]+\[\[\([^]]*\)]]
+# [tT]heorem[[:space:]]+\[\[\([^]]*\)]]
+# [lL]emma[[:space:]]+\[\[\([^]]*\)]]
 #+latex_compiler: xelatex
 #+latex_class: scrreprt
 #+options: H:4
@@ -22,12 +27,13 @@
 #+latex_header: \usepackage{stmaryrd}
 #+latex_header: \usepackage{spverbatim}
 #+latex_header: \usepackage{pdfpages}
+#+latex_header: \usepackage[capitalise, nameinlink]{cleveref}
 
 
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
 
-#+latex_header: \hypersetup{colorlinks=true,urlcolor=DodgerBlue4,linkcolor=Salmon4,citecolor=Green4}
+#+latex_header: \hypersetup{colorlinks=true,urlcolor=RoyalBlue4,linkcolor=Salmon4,citecolor=Green4}
 #+latex_header: \newcommand{\ie}[0]{i.e.}
 #+latex_header: \newcommand{\todo}[0]{\textcolor{red}{pending}}
 #+latex_header: \newcommand{\pend}[0]{\textcolor{Tomato3}{pending }}
@@ -90,13 +96,15 @@
 #+latex_header: \newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
 #+latex_header: \newcommand{\ilall}[0]{\ensuremath{\mathsf{IL}}(All)}
 #+latex_header: \newcommand{\rep}[1]{⌜#1⌝}
-#+latex_header: \newcommand{\prov}[1]{\prin{Prov}(#1)}
+#+latex_header: \newcommand{\prov}[2]{\prin{Prov}_{#1}(#2)}
 #+latex_header: \newcommand{\fm}[0]{\ensuremath{\mathsf{Fm}}}
 #+latex_header: \newcommand{\var}[0]{\ensuremath{\mathsf{Var}}}
 #+latex_header: \renewcommand{\sf}[1]{\ensuremath{\mathsf{#1}}}
 #+latex_header: \newcommand{\el}[1]{\ensuremath{\mathsf{El}(#1)}}
 #+latex_header: \newcommand{\set}[0]{\ensuremath{\mathsf{Set}}}
 #+latex_header: \newcommand{\type}[0]{\ensuremath{\mathsf{Type}}}
+
+#+latex_header: \newcommand{\this}[0]{chapter}
 
 {{{defglossary(gvm,model,Generalized Veltman model)}}}
 {{{defglossary(gvf,frame,Generalized Veltman frame)}}}
@@ -206,10 +214,11 @@ thanks
 \newpage
 #+toc: headlines 2
 \newpage
+
+
 * [0/2] Pending                                                    :noexport:
 ** [0/2] Apply Luka's comments for review 1
    [[file:./jan_thesis_comments_16_06_20.pdf][pdf-link]].
-*** TODO Fix drawings
 ** TODO Apply Luka's comments for review 2
    [[file:./jan_thesis_comments_07_07_2020.pdf][pdf-link]].
 * Introduction
@@ -229,9 +238,9 @@ thanks
    of a clever syntactical encoding, their provability predicate, \prin{Prov},
    which states ``this formula is provable in $T$''. A landmark result on this
    predicate is known as Löb's theorem, which states that \pa{} shows
-   $\prov{\rep{A}}→A$ only if \pa{} shows $A$. Löb's theorem can be formalized
-   in the language of \pa{} thus: \[\prov{\rep{\prov{\rep{A}}
-   →A}}→\prov{\rep{A}}.\] This result sparked an interest in studying
+   $\prov{T}{\rep{A}}→A$ only if \pa{} shows $A$. Löb's theorem can be formalized
+   in the language of \pa{} thus: \[\prov{\pa}{\rep{\prov{\pa}{\rep{A}}
+   →A}}→\prov{\pa}{\rep{A}}.\] This result sparked an interest in studying
    provability logic from a modal point of view which birthed the axiomatization
    of the propositional provability logic \gl{}, named after Gödel and Löb. The
    logic \gl{} extends propositional classical logic and its language consists
@@ -242,11 +251,11 @@ thanks
    completeness theorems that we will present shortly, but first we need to
    introduce the concept of /arithmetical realization/. An arithmetical
    realization $*$ is a map from modal formulas in the language of \gl{} to
-   arithmetical sentences such that it satisfies the following:
+   arithmetical sentences of $T$ such that it satisfies the following:
    \begin{flalign*}
    ⊥^* &= (0=1) ; \\
    (A → B)^* &= A^*→B^*; \\
-   (□A)^* &= \prov{\rep{A}}.
+   (□A)^* &= \prov{T}{\rep{A}}.
    \end{flalign*}
    The arithmetical soundness theorem states that if $\gl{}⊢A$ then $\pa{}⊢A^*$
    for any realization $*$. Solovay proved that arithmetical completeness, which
@@ -322,7 +331,7 @@ thanks
    variants as extensions of \il{} by adding axiom schemas to it as we will see
    later in this overview. The logic \il{} extends the \sf{GL} logic with five
    new axiom schemas. We will precisely define logic \il{} and comment on the
-   significance of the new axiom schemas in Section [[sec:il]].
+   significance of the new axiom schemas in cref:sec:il.
 
    The logic \il{} has two relational semantics, which are the main topic of
    this thesis, known as /ordinary Veltman semantics/ (introduced by Frank
@@ -351,8 +360,8 @@ thanks
    let us put our focus on the interpretability logic of \sf{PA}. It happens
    that the axiomatization of \sf{IL(PA)} is given by adding the so called
    principle \sf{M} to the logic \il{}. We denote this new logic as $\sf{ILM}$.
-   The principle \prin{M} is defined as follows: \[\sf{M}≔A ▷ B → (A ∧ □ C) ▷ (B
-   ∧ □ C).\] Then, consider the following condition:
+   The principle \prin{M} is defined as follows: \[\sf{M}≔(A ▷ B) → ((A ∧ □ C) ▷ (B
+   ∧ □ C)).\] Then, consider the following condition:
    #+begin_center
    if $xS_wy$ and $yRz$ then $xRz$.
    #+end_center
@@ -378,36 +387,40 @@ thanks
 ** Original contributions
    This thesis includes the following original contributions:
    1. We have found a generalized frame condition for $\prin{R₁}$ (in
-      collaboration with Mikec). [[theorem:R₁][Link]];
-   2. we have found a generalized frame condition for $\prin{Rⁿ}$. [[theorem:Rⁿ][Link]];
-   3. we performed a detailed analysis of the quasi-transitivity conditions
-      available in the literature for generalized semantics. [[theorem:trans][Link]];
-   4. we analyzed how a monotonicity condition for generalized semantics that is
+      collaboration with Mikec). See cref:theorem:R_1.
+   2. We have found a generalized frame condition for $\prin{Rⁿ}$. See
+      cref:theorem:R^n.
+   3. We performed a detailed analysis of the quasi-transitivity conditions
+      available in the literature for generalized semantics. See cref:sec:trans.
+   4. We analyzed how a monotonicity condition for generalized semantics that is
       often assumed or taken as part of the definition for generalized frames
       interacts with the quasi-transitivity conditions present in the
-      literature. Furthermore, we justify why assuming such condition if it is
-      not required by definition is harmless. [[sec:mono][Link]];
-   5. we discovered a proof in a published article which needs to be repaired. [[sec:flawed-proof][Link]];
-   6. we compare the expressiveness of ordinary and generalized Veltman models.
+      literature. Furthermore, we justify why in a sense assuming such condition
+      if it is not required by the definition is harmless. See cref:sec:mono.
+   5. We discovered a proof in a published article which needs to be repaired.
+      See cref:sec:flawed-proof.
+   6. We compare the expressiveness of ordinary and generalized Veltman models.
       As part of this, we worked out all the details of a proof in an
       unpublished manuscript by Verbrugge (cite:Verbrugge). We attach this
-      manuscript in Section [[pdf:Verbrugge]]. [[sec:verbrugge][Link]];
-   7. we present the implementation of a verified language to write Hilbert
+      manuscript in cref:pdf:Verbrugge.
+   7. We present the implementation of a verified language to write Hilbert
       style proofs (for the logic \prin{IL}) in Agda with paper-like syntax.
-      [[sec:edsl][Link]];
-   8. we give details for an embedding of propositional intuitionistic logic
+      See cref:sec:edsl.
+   8. We give details for an embedding of propositional intuitionistic logic
       into Martin Löf's logical framework. This result is expected. Our
       contribution has been to provide detailed definitions and proofs, which we
       were unable to find somewhere else. The proof detailed proof that $n+0=n$
-      in Martin Löf's logical framework is also original. [[sec:def-new-types][Link]];
-   9. during the development of this thesis we have coauthored two publications:
+      in Martin Löf's logical framework is also original. See cref:sec:def-new-types.
+   9. During the development of this thesis we have coauthored two publications:
       - /An overview of Generalised Veltman Semantics/
-        (cite:joosten2020overview). In this publication we give an up to date
+        (cite:joosten2020overview). In this publication we give an up-to-date
         overview of interpretability logics with a focus on generalized semantics.
       - /Generalised Veltman Semantics in Agda/ (cite:masrovira2020generalised).
-        In this publication we focus on the frame conditions for
-        generalized Semantics for the principle \prin{R_1} and the series
-        \prin{R^n}. We also comment on the Agda formalization.
+        In this publication we focus on the frame conditions for generalized
+        Semantics for the principle \prin{R_1} and the series \prin{R^n}. We
+        also comment on the Agda formalization. This extended abstract was
+        presented in August in the peer-reviewed AiML2020 conference in Helsinki
+        (online).
    10. We have implemented an Agda library for interpretability logics which
        includes every theorem and proof marked with {{{agdaimg}}} that is presented
        in this thesis. It is worth pointing out that we started from scratch
@@ -418,13 +431,14 @@ thanks
        \href{https://gitlab.com/janmasrovira/interpretability-logics}
              {gitlab.com/janmasrovira/interpretability-logics}
        \end{center}
-       We also provide the code in the annex of this thesis. [[src:agda][Link]].
+       We also provide the Agda code in the annex of this thesis. See
+       cref:src:agda.
 
        *Note*: Throughout this thesis we present the proofs (in English) of all
        the lemmas and theorems listed. Often we skip details or we only present
        part of the proofs. It is important that we emphasize that when we mark a
-       proof with the {{{agdaimg}}} symbol it means that the whole (not only the
-       commented part) proof has been formalized down to the definitions in
+       proof with the {{{agdaimg}}} symbol it means that the whole proof (not
+       only the commented part) has been formalized down to the definitions in
        Agda.
 
    11. We have reimplemented a small portion of the Agda library in the Coq
@@ -437,11 +451,13 @@ thanks
        \href{https://gitlab.com/janmasrovira/coq-interpretability-logics}
             {gitlab.com/janmasrovira/coq-interpretability-logics}
        \end{center}
-       We also provide the code in the annex of this thesis. [[src:coq][Link]].
+       We also provide the Coq code in the annex of this thesis. See
+       cref:src:coq.
 
 ** Notation
+   <<sec-notation>>
    Some notation that we use throughout the report:
-   1. If $A$ and $B$ are binary relations, then $wAuBv$ means $wAu$ and $uBv$.
+   1. If $R$ and $R'$ are binary relations, then $wRuR'v$ means $wRu$ and $uR'v$.
       For instance $wRuS_xv$ means $wRu$ and $uS_xv$. Another example: $wRu⊩A$
       means $wRu$ and $u⊩A$;
    2. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
@@ -462,6 +478,7 @@ thanks
       and \prin{Y} to the \il{}, and so on.
 
 *** Diagrams
+    <<sec:notation-diagrams>>
     Throughout the thesis we present some diagrams to represent ordinary and
     generalized Veltman frames. We believe that diagrams can help the reader
     have a better understanding of the underlying formula, however, they are not
@@ -513,8 +530,11 @@ thanks
       #+attr_latex: :float nil :width 0.14\textwidth :placement [H]
       [[file:img/notation-trans.pdf]]
 ** Language
-   <<sec:language>> The symbols of interpretability logics are $⊥,→,▷$.
-   Formulas are defined recursively as usual:
+   <<sec:language>>
+
+   The symbols of interpretability logics are $⊥,→,▷$. The set
+   of valid formulas, which we denote with \fm{}, is defined recursively as
+   usual:
    1. /Variable/. If $x$ is a variable, then $x$ is a formula. We assume that we
       have an infinite countable set of variables. In particular we shall define
       $\var{}≔ℕ$. However, we use non-capital letters $a,b,c,x,y,z…$ to refer to
@@ -522,7 +542,6 @@ thanks
    2. /Bottom/. The constant $⊥$ is a formula;
    3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula;
    4. /Interprets/. If $A$ and $B$ are formulas, then $(A▷B)$ is a formula.
-   We denote the set of valid formulas as \fm{}.
 
    We define the usual operators and constants in the following way:
    1. $¬ A ≔ A → ⊥$;
@@ -539,14 +558,14 @@ thanks
    The scope of unary symbols $□,♢,¬$ is as small as possible. Thus $□A∧¬¬B$ is
    the same as $(□A)∧(¬¬B)$.
 ** Logic \il
-   <<sec:il>> As explained in the overview (Section [[sec:overview]]) the logic
+   <<sec:il>> As explained in the overview (cref:sec:overview) the logic
    \il{} is the logic that we use as the base for other interpretability logics.
    The logic \il{} extends \gl{} with new five axioms schemas. J1--J5 which
    reflect some facts about interpretations.
 
    After the definition of \il{} we proceed by showing a number of theorems
    related to it. All of these theorems have been verified and their Agda proof
-   can be found in [[src:il.properties]].
+   can be found in cref:src:il.properties.
 
    {{{begindef}}} \glsadd{il} The logic \il{} encompasses all classical theorems
    in the new language (given by C1, C2 and C3), all theorems of \prin{GL} in
@@ -767,7 +786,7 @@ thanks
     ponens follow immediately from the IH. If $A$ is an instance of C1, C2
     or C3 then it is routine to check that all of these axioms hold in $w$.
     For axioms L and K we proceed as we do for \gl{} and Kripke semantics.
-    In Section [[sec:agda-L]] we show how we proved soundness for $L$ in Agda.
+    In cref:sec:agda-L we show how we proved soundness for $L$ in Agda.
     Finally we need to check soundness for axioms J1--J5.
     - J1: $□ (A → B) → A ▷ B$. Assume $w⊩□(A→B)$ and $wRu⊩A$, then it follows
       that $u⊩B$ and by condition 4 of ordinary frames we get $uS_wu⊩B$.
@@ -821,7 +840,7 @@ thanks
 
        This is a particular notion of quasi-transitivity which is considered the
        standard. Throughout this thesis we explore a total of eight notions, see
-       Section [[sec:trans]].
+       cref:sec:trans.
     {{{enddef}}}
 
     {{{begindef}}}
@@ -870,10 +889,10 @@ thanks
     {{{beginproof}}} {{{agda}}} We only show the case where $A$ is an instance
     of the J2 ($A ▷ B ∧ B ▷ C → A ▷ C$) axiom. The rest of the cases are proved
     in an analogous way to ordinary Semantics. Also, here we only show it the
-    quasi-transitivity property given in Definition [[def:gen-frame]] and also for
-    the quasi-transitivity Condition 8 in Table [[fig:table-trans]]. However, we
+    quasi-transitivity property given in cref:def:gen-frame and also for
+    the quasi-transitivity Condition 8 in cref:fig:table-trans. However, we
     have verified this in Agda for all the alternative quasi-transitivity
-    conditions presented in Table [[fig:table-trans]].
+    conditions presented in cref:fig:table-trans.
 
     Assume $w⊩A▷B$ and $w⊩B▷C$ and that there exists $u$ such that $wRu⊩A$. It
     follows that there exists $V$ such that $uS_wV⊩B$. By Condition 3 of a
@@ -893,12 +912,12 @@ thanks
 ** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
    for the quasi-transitivity condition which we present in the table below. See
-   that in definition [[def:gen-frame]] we used Condition (2). Theorem [[theorem:trans]]
-   presents some direct implications between them. Theorems [[theorem:il-sound]] and
-   [[theorem:trans-extend]] are sufficient to argue that all of them are appropriate
-   for proving completeness of \il{}. It is worth mentioning however, that not
-   all of them are sufficiently expressive to prove completeness for extensions
-   of \il{}.
+   that in cref:def:gen-frame we used Condition (2). cref:theorem:trans presents
+   some direct implications between them.
+   cref:theorem:il-sound,theorem:trans-extend are sufficient to argue that all
+   of them are appropriate for proving completeness of \il{}. It is worth
+   mentioning however, that not all of them are sufficiently expressive to prove
+   completeness for extensions of \il{}.
 
 #+name: fig:table-trans
 #+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
@@ -977,8 +996,7 @@ thanks
  {{{beginproof}}} We prove it for the quasi-transitivity Condition (2) (the rest
  can be proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
  $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus: \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}.\] It is
- easy to observe that $M'$ satisfies conditions 1--5 from definition
- [[def:gen-frame]]. It is also easy to see that it satisfies quasi-transitivity (2).
+ easy to observe that $M'$ satisfies conditions 1--5 from cref:def:gen-frame. It is also easy to see that it satisfies quasi-transitivity (2).
  We show that they force the same formulas by induction on the complexity of the
  formula. The only interesting case is $A▷B$.
    - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$. It follows that
@@ -991,7 +1009,7 @@ thanks
 
 ** Monotonicity
    <<sec:mono>>
-   Recall the monotonicity condition that we presented in the previous section:
+   Recall the monotonicity condition that we presented in the previous chapter:
   #+begin_center
     if $uS_wV⊆Z⊆\{v:wRv\}$ then $uS_wZ$.
   #+end_center
@@ -1019,7 +1037,7 @@ thanks
 
 
   {{{beginproof}}} {{{agda}}}
-  We check conditions listed in definition [[def:gen-frame]].
+  We check conditions listed in cref:def:gen-frame.
   - Conditions 1 and 2 are clear since $R$ is unchanged;
   - Condition 3 follows from the fact that in the definition of $S'$ we require
     $Y'⊆\{u:wRu\}$;
@@ -1051,7 +1069,7 @@ thanks
     $Y'⊮B$, so $M',w⊮A▷B$.
   {{{endproof}}}
 
-  # As we see in Theorem [[theorem:mono]] taking the monotone closure of each $S_w$ does not
+  # As we see in cref:theorem:mono taking the monotone closure of each $S_w$ does not
   # change the forcing relation and the resulting frame satisfies quasi-transitivity
   # Condition (2).
 
@@ -1096,19 +1114,18 @@ thanks
   modally equivalent. And vice versa, for every world in $w'∈M'$ there exists
   a world $w∈M$ such that $w$ and $w'$ are modally equivalent {{{enddef}}}
 
-  In Section [[sec:ord-to-gen]] we see a straightforward transformation from an
-  ordinary Veltman model into a generalized Veltman model. In Section
-  [[sec:verbrugge]] we see an involved transformation from a generalized model into
+  In cref:sec:ord-to-gen we see a straightforward transformation from an
+  ordinary Veltman model into a generalized Veltman model. In cref:sec:verbrugge we see an involved transformation from a generalized model into
   an ordinary model. This transformation is due to Verbrugge and was described
   in cite:Verbrugge. The proof was originally described to work with
   quasi-transitivity Condition (6). We have slightly improved the result by
   showing that the same transformation also works for Conditions (3), (4) and
-  (5). In Section [[sec:gen-to-ord-luka]] we show a transformation that achieves the
+  (5). In cref:sec:gen-to-ord-luka we show a transformation that achieves the
   same as Verbrugge's transformation but it is much simpler. The simpler
   transformation was suggested by Mikec during online correspondence.
 
 ** From ordinary to generalized
-   <<sec:ord-to-gen>> In this section we present a theorem that shows how an
+   <<sec:ord-to-gen>> In this chapter we present a theorem that shows how an
    ordinary model $M$ naturally gives rise to a generalized model $M$ for any of the
    presented quasi-transitivity conditions. The resulting generalized model $M'$ has
    the same set of worlds as the original and is modally equivalent to $M$.
@@ -1117,7 +1134,7 @@ thanks
    ${M'≔⟨W,R,S',V⟩}$ where $S'≔\{⟨w,u,\{v\}:⟨w,u,v⟩∈S\}$. Now we distinguish two
    cases.
    - If we want $M'$ to satisfy quasi-transitivity Condition (2) we take the
-     monotone closure of $S'$ as described in Theorem [[theorem:mono]];
+     monotone closure of $S'$ as described in cref:theorem:mono;
    - for the rest of the quasi-transitivity conditions we keep $S'$ as defined.
    Then M' is a generalized Veltman frame with quasi-transitivity condition
    $(i)∈\{1,…,8\}$. Furthermore, for any world $w$ and formula $A$ we have that
@@ -1127,38 +1144,38 @@ thanks
    that by definition of $M'$ we only have singleton sets in the third component
    of $S'$. Now assume that $uS'_x\{y\}$ and $yS'_x\{y'\}$. By definition of
    $S'$ it follows that $uS_xyS_xy'$ and by quasi-transitivity of $M$ we have
-   $uS_xy'$ and thus $uS_x\{y'\}$. Then, by Theorem [[theorem:trans]] we know that
+   $uS_xy'$ and thus $uS_x\{y'\}$. Then, by cref:theorem:trans we know that
    quasi-transitivity Condition (6) implies Conditions (1), (3)-(8), thus, the
    presented transformation works for any of those notions of
    quasi-transitivity. Moreover, if we chose to obtain a generalized Veltman
    frame with quasi-transitivity Condition (2), the same reasoning applies since
-   as we know by Theorem [[theorem:mono]], taking the monotone closure does not
+   as we know by cref:theorem:mono, taking the monotone closure does not
    alter the modal theory of the model. We leave the rest of the details to be
    worked out by the reader. {{{endproof}}}
 
 ** From generalized to ordinary
-   <<sec:verbrugge>> In this section we show that given a generalized Veltman
+   <<sec:verbrugge>> In this chapter we show that given a generalized Veltman
    model $M$ with quasi-transitivity condition $(i)∈\{3,4,5,6\}$, we can build
    an ordinary Veltman model $M'$ such that for every world in $M$ we can find a
    world in $M'$ which is modally equivalent. The definitions and proofs
-   involved in this section can be found formalized in Agda in Section
-   [[src:generalizedveltmansemantics.properties.verbrugge]].
+   involved in this chapter can be found formalized in Agda in
+   cref:src:generalizedveltmansemantics.properties.verbrugge.
 
    It is worth mentioning that there exists a much simpler transformation which
-   we will present in the next Section ([[sec:gen-to-ord-luka]]) and works for the
-   same quasi-transitivity conditions as the transformation presented here. We
-   still believe that this transformation holds value for historical reasons. It
-   was the first transformation from generalized to ordinary models and it was
+   we will present in cref:sec:gen-to-ord-luka and works for the same
+   quasi-transitivity conditions as the transformation presented here. We still
+   believe that this transformation holds value for historical reasons. It was
+   the first transformation from generalized to ordinary models and it was
    written by Verbrugge in an unpublished manuscript (cite:Verbrugge). In that
    manuscript there is a comment where the author says that the transformation
    may also hold for Condition (2) although she has not checked it yet.
    Unfortunately some steps in the proof do not work if we take a generalized
    model with quasi-transitivity Condition (2). In cite:vukovic2008bisimulations
    a variation of this transformation is presented with the claim that it works
-   for Condition (2). However, as we will comment in Section [[sec:flawed-proof]],
-   the proof of the claim is in need of repair.
+   for Condition (2). However, as we will comment in cref:sec:flawed-proof, the
+   proof of the claim is in need of repair.
 
-   For the rest of this section we fix a generalized Veltman model $M≔⟨W, R, S,
+   For the rest of this chapter we fix a generalized Veltman model $M≔⟨W, R, S,
    V⟩$.
 
    We define an ordinary Veltman model $M'≔⟨W',R',S',V'⟩$ where
@@ -1291,7 +1308,7 @@ thanks
 
    {{{beginproof}}} {{{agda}}} Here we prove the property for a generalized
    Veltman frame satisfying quasi-transitivity Condition 3. Conditions 4, 5 and 6
-   imply Condition 3 as shown in Theorem [[theorem:trans]].
+   imply Condition 3 as shown in cref:theorem:trans.
 
    Assume $F$ is a generalized Veltman frame satisfying quasi-transitivity
    Condition 3.
@@ -1343,15 +1360,14 @@ thanks
      Finally by $xS_b\{v\}$ and [[eq:verb-Sbwx]] we get $wS_b\{v\}$.
    {{{endproof}}}
 ** From generalized to ordinary (a simpler approach)
-   <<sec:gen-to-ord-luka>> In this section we present a transformation that
-   achieves the same effect as the one presented in Section [[sec:verbrugge]].
+   <<sec:gen-to-ord-luka>> In this chapter we present a transformation that
+   achieves the same effect as the one presented in cref:sec:verbrugge.
    However, the process described here is much simpler as it does not modify the
-   set of worlds. The definitions and proofs in this section can be found
-   formalized in Agda in Section
-   [[src:generalizedveltmansemantics.properties.luka]].
+   set of worlds. The definitions and proofs in this chapter can be found
+   formalized in Agda in cref:src:generalizedveltmansemantics.properties.luka.
 
    {{{begintheorem}}} Let $M$ a generalized Veltman model with
-   quasi-transitivity Condition 3, 4, 5 or 6. By theorem [[theorem:trans]] we shall
+   quasi-transitivity Condition 3, 4, 5 or 6. By cref:theorem:trans we shall
    assume without loss of generality that $M$ satisfies quasi-transitivity
    Condition 3. We remind the reader that the condition reads thus: \[uS_xY ⇒
    ∃\, \textcolor{blue}{y}∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'').\] For
@@ -1401,13 +1417,13 @@ thanks
    trivial, whereas in reality it may not be trivial, or in the worst case, it
    may not even be true. If the mistake is overlooked, we may end up building on
    top of an inconsistent basis. Needless to say, this is an unacceptable
-   situation which we should try to avoid at all costs. In this section we
+   situation which we should try to avoid at all costs. In this chapter we
    present an example of a published proof where some steps remain unjustified.
    We discovered these gaps while trying to formalize the proof in Agda. We
    proceed by giving some context to the proof.
 
    The transformations from a generalized to an ordinary Veltman model given in
-   Sections [[sec:verbrugge]] and [[sec:gen-to-ord-luka]] work for simple notions of
+   cref:sec:verbrugge,sec:gen-to-ord-luka work for simple notions of
    quasi-transitivity but do not seem to work directly for Condition (2), which
    is the standard. In cite:vukovic2008bisimulations a transformation which is
    claimed to work for Condition (2) is presented. We studied the transformation
@@ -1452,7 +1468,7 @@ thanks
    proofs. However, the confidence level that they offer certainly outweighs
    their negatives in some situations.
 *** The details
-    In this section we present the details to better understand which are the
+    In this \this{} we present the details to better understand which are the
     problematic steps in the proof. For that, we copy[fn::with very slim
     adaptations to accommodate our notation.] Definitions 2.5, 2.7 and
     Propositions 2.6, 2.8 in cite:vukovic2008bisimulations.
@@ -1475,7 +1491,7 @@ thanks
     Veltman frame, then $\mathrm{of}(M)$ is an ordinary Veltman frame.
     {{{beginproof}}} {{{agda}}} The proof is omitted in the original paper and
     we omit it here too. However, the proof has been formalized in Agda and can
-    be found in Section [[src:generalizedveltmansemantics.properties.vukovic]].
+    be found in cref:src:generalizedveltmansemantics.properties.vukovic.
     {{{endproof}}}
 
     *Definition 2.7* of cite:vukovic2008bisimulations: Let $M=⟨F,V⟩$ be a generalized
@@ -1519,20 +1535,20 @@ thanks
 
   An interpretability principle is a schema of modal formulas that carries some
   special significance. The relevance of a principle mainly stems from two
-  factors. On the one hand we have principles, such as the principle \prin{M}, 
-  that give rise to  interpretability logics for certain theories. For instance, 
+  factors. On the one hand we have principles, such as the principle \prin{M},
+  that give rise to  interpretability logics for certain theories. For instance,
   \prin{ILM} is the interpretability logic of \pa{}: \prin{IL(PA)}. On the
   other hand we have principles which are valid in all reasonable arithmetical
   theories and thus are interesting in the search of an axiomatization for the
   theory \ilall. For instance, the series of principles \prin{R^n} and
-  \prin{R_n}, which we will present in this part, are central to the best known 
+  \prin{R_n}, which we will present in this part, are central to the best known
   lower bound for \ilall. Regardless of the area of interest, finding the frame
   condition for a principle is always the first step towards studying the nature
   of the principle. Once we have established a
   frame condition for a principle, say \prin{X}, one has more tools when
   studying, for instance, modal soundness and completeness of the logic
   \prin{ILX}. Soundness in itself is already an interesting result, but its
-  utility grows when it's applied to prove independence results between
+  utility grows when it is applied to prove independence results between
   principles. To prove that two principles \prin{X} and \prin{Y} are independent
   means to show $\prin{ILX}⊬\prin{Y}$ and $\prin{ILY}⊬\prin{X}$, which is done
   by building countermodels (for instance, see cite:joosten-master), as usual in
@@ -1556,7 +1572,7 @@ thanks
   write \kord{X} and \kgen{X} to denote the frame conditions with respect to
   ordinary and generalized semantics, respectively.
 
-  In Section [[sec:generic-cond]] we will verify in Agda that there is a mechanical
+  In cref:sec:generic-cond we will verify in Agda that there is a mechanical
   procedure to obtain frame conditions for any axiom schema. However, the
   generated condition encodes a quantification over valuations in the frame
   condition and thus it is usually not suitable as an /adequate/ frame
@@ -1573,26 +1589,26 @@ thanks
   formulation as the /original/): \[∀x.∀y.∀z.xRyRz⇒xRz\ ;\] \[∀𝕊.𝕊≠∅⇒∃s∈𝕊∀s'
   (s\cancel{R}s').\] And now observe the generic frame condition that arises
   from a mechanical procedure[fn::The mechanical procedure for Veltman semantics
-  is presented in detail in Section [[sec:generic-cond]].](we will refer to this
+  is presented in detail in cref:sec:generic-cond.](we will refer to this
   formulation as the /generic/):
   \[∀𝔸.∀u(wRu⇒(∀u'(uRu'⇒u'∈𝔸))⇒u∈𝔸)⇒∀u(wRu⇒u∈𝔸).\] If we compare the original
   and the generic conditions we see that they are both second order formulas as
   they quantify over sets: We have $∀𝕊$ in the original and $∀𝔸$ in the generic.
   If we do the mental exercise to forget for a moment that we have the concepts
   of /transitivity/ and /Noetherian relation/ in our mathematical metalanguage,
-  it's not completely obvious how to objectively justify why the original formulation is
-  preferred in the literature over the generic formulation. However, the case is
-  that we /do/ have the concepts of transitivity and Noetherian relations in our
-  commonly used metalanguage and moreover we are used to operating with them.
-  Furthermore, it is easy for us to imagine a transitive relation that has no
-  infinite ascending chains. On the contrary the picture that is described by
-  the generic condition is rather blurry for us. All in all, we see that we can
-  precisely define the minimal requirement (frame validity) for a frame condition,
-  but comparing the usefulness of a frame condition remains open to
-  interpretation. However, we will lean towards conditions which are easy to
-  visualize.
+  it is not completely obvious how to objectively justify why the original
+  formulation is preferred in the literature over the generic formulation.
+  However, the case is that we /do/ have the concepts of transitivity and
+  Noetherian relations in our commonly used metalanguage and moreover we are
+  used to operating with them. Furthermore, it is easy for us to imagine a
+  transitive relation that has no infinite ascending chains. On the contrary the
+  picture that is described by the generic condition is rather blurry for us.
+  All in all, we see that we can precisely define the minimal requirement (frame
+  validity) for a frame condition, but comparing the usefulness of a frame
+  condition remains open to interpretation. However, we will lean towards
+  conditions which are easy to visualize.
 
-  In this section we present a number of principles in conjunction with their
+  In this part we present a number of principles in conjunction with their
   respective frame conditions for ordinary semantics as well as generalized
   semantics. We will prove that all the given conditions satisfy the minimal
   requirement to be considered frame conditions. Moreover, we attach a diagram
@@ -1906,7 +1922,7 @@ thanks
 
    Note that \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
    and \prin{R_n} series of principles which generalize \prin{R} and are
-   discussed in Sections [[sec:Rsub1]] and [[sec:Rsupn]].
+   discussed in cref:sec:Rsub1,sec:Rsupn.
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
 
@@ -1986,7 +2002,7 @@ thanks
    [[file:img/R-gen.pdf]]
 
    {{{begintheorem}}}
-   <<theorem:R⁰>>
+   <<theorem:R^0>>
    For any generalized frame $F$, we have that $F$ satisfies the
    $\kgen{R}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{R} principle. In symbols:
@@ -2095,7 +2111,7 @@ thanks
     \end{flalign*}
 
     {{{begintheorem}}}
-    <<theorem:R₁>>
+    <<theorem:R_1>>
     For any generalized frame $F$, we have that $F$ satisfies the
     $\kgen{R_1}$ condition iff any model based on $F$ forces every instantiation of
     the \prin{R₁} principle. In symbols:
@@ -2170,38 +2186,6 @@ thanks
       which is a contradiction.
 
     {{{endproof}}}
-
-# \newpage
-** The principle \prin{R_2} :noexport:
-  The \prin{R_2} principle reads as follows:
-  \[A₀ ▷ (B₀ ∧ (A₁ ▷ B₁)) → ¬(A₀ ▷ ¬C₀)∧ (E₁▷¬(A₁▷¬C₁))▷ B₀∧(A₁▷B₁)∧□C₀∧(E₁▷A₁)∧(E₁▷B₁∧□C₁)\]
-
-*** Generalized semantics
-    Some definitions:
-
-    The $\kgen{R_2}$ condition reads as follows:
-    \begin{flalign*}
-    &∀w,x,u,𝔹,ℂ,𝔼(wRxRuS_w𝔹, ℂ∈𝒞(x,u) \\
-    ⇒\ & (∃𝔹'⊆𝔹)(xS_w𝔹',R[𝔹']⊆ℂ,(∀v∈𝔹')(∀c∈ℂ)(vRcSₓRₓ^{-1}[𝔼]⇒(∃𝔼'⊆𝔼)cS_v𝔼')))
-    \end{flalign*}
-    \begin{flalign*}
-    &∀w,x,u,𝔹,ℂ,𝔼(wRxRuS_w𝔹, ℂ∈𝒞(x,u) \\
-    ⇒\ & (∃𝔹'⊆𝔹)(xS_w𝔹',R[𝔹']⊆ℂ,(∀v∈𝔹')(∀c∈ℂ)(∃U⊆Rₓ^{-1}[𝔼],vRcSₓU)⇒(∃𝔼'⊆𝔼)cS_v𝔼')))
-    \end{flalign*}
-
-    {{{begintheorem}}}
-    <<theorem:R₂>>
-    For any generalized frame $F$, we have that $F$ satisfies the
-    $\kgen{R_2}$ condition iff any model based on $F$ forces every instantiation of
-    the \prin{R_2} principle. In symbols:
-
-    \[F⊨\kgen{R_2}⇔F⊩R₂\]
-    {{{endtheorem}}}
-
-    {{{beginproof}}}
-    {{{endproof}}}
-
-# \newpage
 
 ** The principle \prin{R¹}
 
@@ -2325,7 +2309,7 @@ thanks
     ⇒\ & ∃V⊆𝔹.x_{n-1}S_wV,R[V]⊆ℂ.
     \end{flalign*}
     {{{beginlemma}}}
-    <<lemma:Rⁿ>>
+    <<lemma:R^n>>
     Let $M$ be a model, let $x$ be a world of $M$ and let $n∈ℕ$. For any $i≤n$ we have
     that if $M , x ⊩ U_i$ then there exist some worlds $y,z,x₀,…,x_{i}$ such that:
     1. $xᵢ=x$;
@@ -2350,7 +2334,7 @@ thanks
     {{{endproof}}}
     {{{endlemma}}}
     {{{begintheorem}}}
-    <<theorem:Rⁿ>>
+    <<theorem:R^n>>
     For any generalized frame $F$, we have that $F$ satisfies
     the $\kgen{Rⁿ}$ condition iff any model based on $F$ forces every
     instantiation of the \prin{Rⁿ} principle. In symbols:
@@ -2361,10 +2345,10 @@ thanks
     {{{beginproof}}}
     {{{agda}}}
 
-    If $n=0$ we refer to theorem [[theorem:R⁰]]. For $n+1$ proceed as follows.
+    If $n=0$ we refer to cref:theorem:R^0. For $n+1$ proceed as follows.
     - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
       Then assume also that $wRx⊩((Dₙ▷A)∧U_n)$. Our goal is to find a set $V$
-      such that $xS_wV⊩B∧□C$. By lemma [[lemma:Rⁿ]] it follows that there exist
+      such that $xS_wV⊩B∧□C$. By cref:lemma:R^n it follows that there exist
       $y,z,x₀,…,x_{n}$ satisfying $1,…,6$. Then let $𝔸≔⟦A⟧$, $𝔹≔⟦B⟧$, $ℂ≔⟦C⟧$
       and for $i≤n$ let $𝔻ᵢ≔⟦Dᵢ⟧$.
 
@@ -2389,7 +2373,7 @@ thanks
 
 ** Generic generalized frame condition
    <<sec:generic-cond>>
-   In this section we present a method that given a formula $A$, builds a second
+   In this \this{} we present a method that given a formula $A$, builds a second
    order formula that is a generalized frame condition for $A$.
 
    {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$ with
@@ -2452,13 +2436,13 @@ thanks
    mathematical concepts through terms, types and a typing relation between
    them. One could think of types as predicates on terms. We write $T:A$ to say
    that term $T$ satisfies predicate $A$, or synonymously, that term $T$ has
-   type $A$. Later in this section we will see that types in /simply typed
+   type $A$. Later in this chapter we will see that types in /simply typed
    lambda calculus/ provide a basic classification of lambda terms. For
    instance, a term representing a natural number will have a different type
    from a lambda term representing a Boolean value. In more expressive type
    theories which feature dependent types, such as /intuitionistic type theory/,
-   we can express complex mathematical properties such as ``$2*n$ is
-   always even'' or that ``any finite sequence of numbers can be sorted''.
+   we can express complex mathematical properties such as ``$2*n$ is always
+   even'' or that ``any finite sequence of numbers can be sorted''.
 
    Type theory has become especially relevant in the following areas.
    - *Programming languages and proof assistants*. Simple (non-dependent) types
@@ -2661,21 +2645,21 @@ thanks
 
 *** Dependently typed lambda calculus
     There is no way to briefly present a description of a type system with
-    dependent types in an analogous from to untyped and simply typed lambda
+    dependent types in an analogous form to untyped and simply typed lambda
     calculus. For this reason, we prefer to dedicate a longer section to it. In
-    the next Section ([[sec:martin-lof]]) we present a full description of a theory
+    the upcoming cref:sec:martin-lof we present a full description of a theory
     which is based on dependent types and is the logical basis of Agda.
 ** Martin Löf's logical framework
-   <<sec:martin-lof>> In this section we will present the intuitionistic type
+   <<sec:martin-lof>> In this \this{} we will present the intuitionistic type
    theory presented in cite:nordstrom1990programming. We will refer to this
    theory as /Martin Löf's logical framework/ or LF for short. Even though Agda
    lacks a well defined specification, LF is considered the basis of Agda's type
    system (cite:sep-type-theory-intuitionistic). Furthermore, Peter Dybjer, who
    is a professor at the Chalmers University of Technology[fn::Where most of the
    development of Agda takes place.], suggested[fn::via email correspondence.]
-   the specific version of LF that we will present in this section. However,
+   the specific version of LF that we will present in this chapter. However,
    there are important differences between LF and Agda's theory that we will
-   comment in Section [[sec:basic-agda]].
+   comment in cref:sec:basic-agda.
 
    Logic LF has four types of judgment:
    1. ``$a$ has type $A$''. We write $a:A$. Crucially, in a type theory that
@@ -2713,7 +2697,7 @@ objects to be the same.
 
    For instance, if we want to define the set of natural numbers, we have two
    canonical elements: /zero/ and the /successor/ of a natural number. The
-   equality relation can be defined as expected. In section [[sec:def-new-types]] we
+   equality relation can be defined as expected. In cref:sec:def-new-types we
    will see how we can define the natural numbers, among other sets, in more
    detail.
 
@@ -2901,7 +2885,7 @@ objects to be the same.
     \end{mathpar}
 
 
-    For now we have no primitive constants. In section [[sec:def-new-types]] we will
+    For now we have no primitive constants. In cref:sec:def-new-types we will
     define some.
 
     # We will proceed by introducing the syntax of
@@ -3553,26 +3537,17 @@ objects to be the same.
 *** Final remarks :noexport:
     With this we conclude the presentation of Martin's Löf logical framework.
     Talk about operational semantics.
-** Martin-Löf dependent type theory :noexport:
-   Martin-Löfs type theory is also known as intuitionistic type theory, and it
-   can serve as the basis for constructive mathematics, furthermore, it can be
-   used as the specification of a programming language.
-
-   The results presented in this section have been gathered from
-   cite:martin1984intuitionistic,sep-type-theory-intuitionistic,nlab:martin-löf_dependent_type_theory.
-
-   See chapter 5 and 14 of cite:nordstrom1990programming.
 ** Basic Agda
    <<sec:basic-agda>>
-   In this section we precisely define a moderate subset of Agda. We have tried
+   In this chapter we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
    is an incomplete simplification and thus is not meant to be a precise
    reference for the real Agda language. We comment on some of the
-   simplifications in Section [[sec:agda-limitations]].
+   simplifications in cref:sec:agda-limitations.
 
    We introduce several concepts that have cyclic dependencies and thus a linear
    presentation is not possible. {{{jan(write something to help the reader.)}}}
-   To ease a first reading we summarize the concepts presented in this section.
+   To ease a first reading we summarize the concepts presented in this chapter.
 
    {{{begindef}}} *Identifier*. An identifier is a sequence of characters which
    do not contain any white space or parentheses (normal =()= or curly ={}=) and
@@ -3591,14 +3566,13 @@ objects to be the same.
    {{{begindef}}} <<def:agda-term>> *Term/Type*. An Agda term is recursively
    defined as shown in the figure below.
 
-   An Agda *type* is a term =A= such that =A : Set ℓ= for some =ℓ=. Definition
-   [[def:agda-well-typed]] gives a description of the Agda typing rules. We want to
+   An Agda *type* is a term =A= such that =A : Set ℓ= for some =ℓ=. cref:def:agda-well-typed gives a description of the Agda typing rules. We want to
    emphasize, and it is obvious from the definition, that all types are also terms.
 
    We use =x= to denote an arbitrary identifier, we use =p₁=, …, =pₙ= to denote
-   arbitrary patterns (see Definition [[def:agda-pattern]]), we use =A,=, =B=, =A₁=,
+   arbitrary patterns (see cref:def:agda-pattern), we use =A,=, =B=, =A₁=,
    =…=, =Aₙ= to denote arbitrary terms and we use =c= to denote an arbitrary
-   constructor (see Definition [[def:agda-constructor]]).
+   constructor (see cref:def:agda-constructor).
 
    # #+caption: The syntax of terms (and types).
    #+name: fig:agda-term
@@ -3625,7 +3599,7 @@ objects to be the same.
    abstraction extends to the rightmost part, hence =λ x → λ y → A B= is the
    same as =(λ x → (λ y → A B))=. Function application has left associativity,
    hence =a b c= is the same as =(a b) c=. Also note that the =i= in =Set i= can
-   be an identifier but for simplicity in this section we restrict the =i= to be
+   be an identifier but for simplicity in this chapter we restrict the =i= to be
    an arbitrary constant natural number.
 
    An example term:
@@ -3662,7 +3636,7 @@ objects to be the same.
   term of type =T'=.
 
   Note that =A : T= and =A' : T'= must be valid according to the typing rules
-  (see Section [[sec:typing-rules]]).
+  (see cref:sec:typing-rules).
 
   When we deal with two terms =A= and =T= which are related by the typing
   relation =A : T= we will use the word =term= for =A= and the word =type= for
@@ -3727,7 +3701,7 @@ objects to be the same.
         =t₁=, …, =tₗ= of type =Q₁=, …, =Qₗ= respectively and may vary for each
         constructor. For that reason, we say that parameters are shared among
         all constructors, while indices are specified on a constructor basis.
-        Refer to Section [[sec:agda-ref-datatype]] for a meaningful example.
+        Refer to cref:sec:agda-ref-datatype for a meaningful example.
 
      The following is fundamental: the only way to build a term of type =D x₁ …
      xₖ t₁ … tₗ= is to build a term of the form =cᵢ w₁ ... wₘ=, for some
@@ -3781,7 +3755,7 @@ objects to be the same.
   # identifier in it is bound. In other words, there are no free identifiers.
 
   # The set of free identifiers is defined as usual (following the syntax defined
-  # in Definition [[def:agda-term]]):
+  # in cref:def:agda-term):
   # \begin{flalign*}
   # &free(x) ≔ ∅  &\text{if identifier $x$ is bound.} \\
   # &free(x) ≔ \{x\} &\text{otherwise.}  \\
@@ -3825,7 +3799,7 @@ objects to be the same.
     The structure of a module implicitly assigns a context to each term in it.
     We usually use the concept of well-typed term in the context of a module, in
     that case, we implicitly refer to the context assigned by the structure of
-    the module. See Definition [[def:agda-check-module]] for a thorough explanation.
+    the module. See cref:def:agda-check-module for a thorough explanation.
     {{{enddef}}}
 
    #+caption: Typing rules for terms.
@@ -4099,7 +4073,7 @@ objects to be the same.
     simplifications.
 
 **** Pattern matching on indexed datatypes
-     The typing rules given in section [[sec:typing-rules]] are not enough to
+     The typing rules given in cref:sec:typing-rules are not enough to
      sensibly deal with datatypes which have indices.
 
      Consider the following example:
@@ -4184,7 +4158,7 @@ objects to be the same.
    constructive nature suggests that a fitting way start the introduction is
    through the BHK interpretation of intuitionistic logic
    (cite:sep-intuitionistic-logic-development). We start with propositional logic
-   and later on (Section [[sec:bhk-fol]]) we continue with first order logic.
+   and later on (cref:sec:bhk-fol) we continue with first order logic.
 
    The BHK interpretation states that:
    1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of $A$
@@ -4197,82 +4171,71 @@ objects to be the same.
 
    According to the BHK interpretation a proof of $A→A$ is an algorithm
    implementing the identity function. We can express this algorithm in Agda by
-   writing the identity lambda term {{{joost(So this is exactly why one
-   other student missed a lot of points. I know that the formal language of Agda
-   (what is that called?) is very extensive. However\, you should formally specify
-   your language or at least chunks of it. What are your symbols\, constructors\,
-   etc. Reading conventions\, etc. It is BAD PRACTICE to have the reader distil
-   this from the practice\, text\, examples and context. I know many introductions
-   to type theory and proof assistants get this actually wrong. Please\, be more
-   precise and formal. Part of your assignment is showing that you have learned
-   this competence in our master. What are the terms? How are they inductively
-   defined? What is your alphabet\, etc.)}}}:
+   writing the identity lambda term {{{joost(So this is exactly why one other
+   student missed a lot of points. I know that the formal language of Agda (what
+   is that called?) is very extensive. However\, you should formally specify
+   your language or at least chunks of it. What are your symbols\,
+   constructors\, etc. Reading conventions\, etc. It is BAD PRACTICE to have the
+   reader distil this from the practice\, text\, examples and context. I know
+   many introductions to type theory and proof assistants get this actually
+   wrong. Please\, be more precise and formal. Part of your assignment is
+   showing that you have learned this competence in our master. What are the
+   terms? How are they inductively defined? What is your alphabet\, etc.)}}}:
    #+begin_src text
-   λ a → a
+           λ a → a
    #+end_src
    {{{joost(full stop?)}}} {{{jan(I prefer not to put stops since they are not
    part of Agda's syntax and it may be confusing to insert them.)}}} See that we
    use the structure =λ arg₁ arg₂ … → term= to define lambda functions. The
    previous term is valid. However, in Agda we must give a name to all the terms
    that we define so we can refer to them in other parts of our code. We will
-   name our term =id=:
-   #+begin_src text
-   id = λ a → a
-   #+end_src
-   When the term that we are defining is a lambda term, we are allowed to move
-   the arguments to the left of the === sign. Furthermore, we should write the
-   type {{{joost(what are types? Where do they historically come from? How are
-   types defined in Agda? Again\, provide a formal definition of correct
-   types)}}} of the function using the =:= symbol. The =:= symbol denotes the
-   typing relation{{{joost(a relation between wellformed types and wellformed
+   name our term =id=: #+begin_src text id = λ a → a #+end_src When the term
+   that we are defining is a lambda term, we are allowed to move the arguments
+   to the left of the === sign. Furthermore, we should write the type
+   {{{joost(what are types? Where do they historically come from? How are types
+   defined in Agda? Again\, provide a formal definition of correct types)}}} of
+   the function using the =:= symbol. The =:= symbol denotes the typing
+   relation{{{joost(a relation between wellformed types and wellformed
    terms?)}}}, hence =a : A= reads as ``term =a= has type =A=''. Sometimes we
-   also say that ``the term =a= is a proof of =A=''.
-   #+begin_src text
-   id : A → A
-   id a = a
-   #+end_src
-   {{{joost(How to parse the last line? Maybe say that we write ”id a” instead of
-   id(a) and that function application goes before =. Do we have both
-   term-equality and type equality? What about equality?)}}} The previous
-   function is only valid if the type =A= has been defined. Since our intention
-   is that it {{{joost(what?)}}} should work for any type, we should rewrite it
-   to be polymorphic {{{joost(ou cannot expect the reader to know what
-   polymorphism is. This should be properly introduced. I would encourage you to
-   rethink the setup of this chapter. You will be judged on your ability to apply
-   logical techniques to exposing a field and clearly transmit ideas and concepts
-   using crystal-clear definitions. Your current exposition is too informal and
-   along the way. If I were in the jury – which I will– I would be annoyed by
-   it.)}}}. We can do that by declaring a type variable =A=. We can do this by
-   adding an extra argument of the form =(A : Set)=. We see that =A= has type
-   =Set=, which is the Agda word for type {{{joost(The new reader will be lost
-   here. So we have concrete types? And we have type variables of type type? Does
-   Set itself have a type? Please\, rethink your presentation.)}}}. Named
-   arguments can be referenced in the right part of the =→=, thus we can write
-   {{{joost((mention right-associativity of the arrow (is it called as
-   such?)))}}}:
-   #+begin_src text
-   id : (A : Set) → A → A
-   id A a = a
-   #+end_src
+   also say that ``the term =a= is a proof of =A=''. #+begin_src text id : A → A
+   id a = a #+end_src {{{joost(How to parse the last line? Maybe say that we
+   write ”id a” instead of id(a) and that function application goes before =. Do
+   we have both term-equality and type equality? What about equality?)}}} The
+   previous function is only valid if the type =A= has been defined. Since our
+   intention is that it {{{joost(what?)}}} should work for any type, we should
+   rewrite it to be polymorphic {{{joost(ou cannot expect the reader to know
+   what polymorphism is. This should be properly introduced. I would encourage
+   you to rethink the setup of this chapter. You will be judged on your ability
+   to apply logical techniques to exposing a field and clearly transmit ideas
+   and concepts using crystal-clear definitions. Your current exposition is too
+   informal and along the way. If I were in the jury – which I will– I would be
+   annoyed by it.)}}}. We can do that by declaring a type variable =A=. We can
+   do this by adding an extra argument of the form =(A : Set)=. We see that =A=
+   has type =Set=, which is the Agda word for type {{{joost(The new reader will
+   be lost here. So we have concrete types? And we have type variables of type
+   type? Does Set itself have a type? Please\, rethink your presentation.)}}}.
+   Named arguments can be referenced in the right part of the =→=, thus we can
+   write {{{joost((mention right-associativity of the arrow (is it called as
+   such?)))}}}: #+begin_src text id : (A : Set) → A → A id A a = a #+end_src
    Since the argument named =A= will always be the type of the second argument
    {{{joost(second argument of what? of the polymorphic identity? Will the
    polymorphic version receive the same name?)}}}, we can infer its value and
-   thus it is recommended to use an implicit argument (see Section
-   [[sec:agda-implicit-args]]).
+   thus it is recommended to use an implicit argument (see
+   cref:sec:agda-implicit-args).
    #+begin_src text
-   id : {A : Set} → A → A
-   id a = a
+   id : {A : Set} → A → A id a = a
    #+end_src
    {{{joost(the reader should be dizzy here: we have defined id using a lambda
    term\, then there are some schemas that follow the format (i deduce\, if
-   correct this must be made explicit) type declaration\, term definition. Can we
-   all give them the same name? Or should we understand that we erase the
-   previous definition and replace it with a new one?)}}} With the technicalities
-   out of the way, we can finally say that we have completed our first Agda proof
-   of $A→A$ according to the BHK interpretation by implementing and typing the
-   identity function in Agda. {{{joost(What does it mean to have a proof in
-   Agda? Note that A to A is a type.... Be precise please. It may be a good place
-   to mention the Curry Howard iso? Anyways\, do it in a structured fashion.)}}}
+   correct this must be made explicit) type declaration\, term definition. Can
+   we all give them the same name? Or should we understand that we erase the
+   previous definition and replace it with a new one?)}}} With the
+   technicalities out of the way, we can finally say that we have completed our
+   first Agda proof of $A→A$ according to the BHK interpretation by implementing
+   and typing the identity function in Agda. {{{joost(What does it mean to have
+   a proof in Agda? Note that A to A is a type.... Be precise please. It may be
+   a good place to mention the Curry Howard iso? Anyways\, do it in a structured
+   fashion.)}}}
 
    Let us see another example involving functions[fn::The =→= function symbol has
    right associativity.].
@@ -4329,7 +4292,7 @@ objects to be the same.
    the right?)}}} Note that we used pattern matching to deconstruct the term and
    access the components of the pair. For the =_×_= type we only have one
    constructor so we only need one case.
-   # Refer to Section [[sec:agda-datatype]] for more details on data type definition
+   # Refer to cref:sec:agda-datatype for more details on data type definition
    # and pattern matching.
 
    Let us show some more examples:
@@ -4487,7 +4450,7 @@ objects to be the same.
     #+end_src
     We proceed by defining equality for the =Bool= type[fn::This definition is
     just for illustrative purposes. It is possible to define polymorphic equality
-    as described in Section [[sec:agda-equality]].]. We use the symbol
+    as described in cref:sec:agda-equality.]. We use the symbol
     =≡= because === is reserved for Agda.
     #+begin_src text
  data _≡_ : Bool → Bool → Set where
@@ -4867,8 +4830,7 @@ objects to be the same.
     There is a variation of this notation which omits the type of the variable as
     it can be inferred in many cases. That is, instead of =Σ[ c ∈ A ] (P c)= we
     would have =∃[ c ] (P c)=. We prefer this notation when possible in the
-    thesis[fn::For instance, in the definition of Veltman semantics in Section
-    [[sec:agda-ord-semantics]].]. See again the =∃-intro= theorem type using this
+    thesis[fn::For instance, in the definition of Veltman semantics in cref:sec:agda-ord-semantics.]. See again the =∃-intro= theorem type using this
     notation:
     #+begin_src text
     ∃-intro : {ℓ ℓ' : Level} {A : Set ℓ} {P : A → Set ℓ'}
@@ -4878,7 +4840,7 @@ objects to be the same.
 *** Equality
     <<sec:agda-equality>>
 
-    In Sections [[sec:agda-nat]] and [[sec:agda-bool]] we have seen how we can define
+    In cref:sec:agda-nat,sec:agda-bool we have seen how we can define
     equality for Booleans and naturals. In this section we explore polymorphic
     equality and some of its properties and limitations. Of course, the main
     advantage of polymorphic equality is that we can use it for every type and
@@ -4958,7 +4920,7 @@ objects to be the same.
     ℕ≡→≡ (s=s aℕ≡b) = cong suc (ℕ≡→≡ aℕ≡b)
     #+end_example
 
-    See Section [[sec:agda-ext]] for a note on extensionality.
+    See cref:sec:agda-ext for a note on extensionality.
 *** Predicates as mathematical sets
     <<sec:sets>>
     In this section when we say /set/ we refer to a subset of an Agda type. The
@@ -5057,15 +5019,14 @@ Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
     #+end_src
 
     We will see that this has a small effect on
-    the definition of generalized Veltman frames in Section
-    [[sec:agda-gen-semantics]].
+    the definition of generalized Veltman frames in cref:sec:agda-gen-semantics.
 
 *** Positivity
     <<sec:positivity>>
 
     In this section we present a technicality as described in the Agda
     documentation (cite:agda-doc) regarding datatype definitions that will become
-    relevant in Section [[sec:agda-ord-semantics]] where we define ordinary Veltman
+    relevant in cref:sec:agda-ord-semantics where we define ordinary Veltman
     semantics.
 
     When defining a datatype =D=, Agda poses an additional requirement on the types
@@ -5098,7 +5059,7 @@ Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
     #+end_src
 * Agda in the thesis
   <<sec:agda-project>>
-  The goal of this section is to guide the reader through some key parts of the
+  The goal of this part is to guide the reader through some key parts of the
   code that we have implemented. It is worth noting that we have started from
   scratch as we believe that no other previous work in interpretability logics
   has been done in Agda.
@@ -5110,8 +5071,7 @@ Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
    2. If we have =f : A → B → C= we say =f= has arguments =A= and =B= and it has
       return type =C=.
 ** Modal formulas
-   Here we present the Agda type that represents a formula as defined in section
-   [[sec:language]].
+   Here we present the Agda type that represents a formula as defined in cref:sec:language.
 
    First we define variables to be natural numbers:
    #+begin_src text
@@ -5157,141 +5117,6 @@ infix 70 □_
   from the previous formula =var 1 ▷ var 0 ↝ ⊥'=. The $r$ in =infixr= stands
   for right associativity.
 
-** Predicates and relations :noexport:
-   In this section we give a short description on how to represent predicates
-   and relations in Agda.
-
-   We define a predicate to have the following type[fn::We leave universe
-   polymorphism out for simplicity.]:\glsadd{Pred}
-   #+begin_src text
-   Pred : Set → Set₁
-   Pred A = A → Set
-   #+end_src
-   Hence, a predicate on the elements of some type =A= is a function from =A= to
-   =Set=.
-
-   Relations follow the same pattern:\glsadd{REL}
-   #+begin_src text
-   REL : Set → Set → Set₁
-   REL A B = A → B → Set
-   #+end_src
-   For homogeneous relations we use the name =Rel=:\glsadd{Rel}
-   #+begin_src text
-   Rel : Set → Set → Set₁
-   Rel A = REL A A
-   #+end_src
-
-   Now consider as an example the natural numbers and the =≤= relation, which is
-   defined inductively according to the following definition.
-   1. For all $a∈ℕ$ we have $0≤a$;
-   2. for all $a,b∈ℕ$ we have that if $a≤b$ then also $a+1≤b+1$.
-   #+begin_src text
-   data Nat : Set where
-     zero : Nat
-     suc : Nat → Nat
-
-   data _≤_ : Rel Nat where
-     z≤n : (a : Nat) → zero ≤ a
-     s≤s : {a b : Nat} → a ≤ b → suc a ≤ suc b
-   #+end_src
-   Note that =≤= is the first indexed type that we present as it is indexed by
-   two natural numbers. Keep in mind that =Rel Nat = Nat → Nat → Set=.
-   If =t : a ≤ b= we say that =t= is a proof that =a= is less or equal than =b=.
-
-   Let us prove that $1≤2$; hence we need to build a term of type =suc zero ≤
-   suc (suc zero)=.
-   #+begin_src text
-   1≤2 : suc zero ≤ suc (suc zero)
-   1≤2 = s≤s (z≤n (suc zero))
-   #+end_src
-   Note that we did not explicitly give parameters =a, b= for the =s≤s=
-   constructor as they are declared in curly braces[fn::Arguments defined in
-   curly braces do not need to be given explicitly so long as Agda can infer its
-   values.] and can be inferred by the type =a ≤ b=. Note that we could have
-   done the same with the argument =a= of =z≤n= but we keep it explicit for
-   illustrating the difference.
-
-   We can also build proofs recursively. Let us prove that =_≤_= is reflexive by
-   induction:
-   #+begin_src text
-   ≤-refl : (a : Nat) → a ≤ a
-   ≤-refl zero = z≤n zero
-   ≤-refl (suc a) = s≤s (≤-refl a)
-   #+end_src
-   A key feature to notice is that we can name arguments and refer to them in
-   subsequent arguments and in the return type. For instance here we have named
-   =a= the first argument, which is a natural number. We use the syntax =(a :
-   Nat)=. And then we use the name =a= to build the return type, that is: =a ≤ a=.
-
-   We can also define the property of transitivity.
-   #+begin_src text
-   Transitive : {A : Set} → Rel A → Set
-   Transitive R = ∀ {a b c} → R a b → R b c → R a c
-   #+end_src
-   We see that a proof that some relation is transitive is a function that given
-   proofs of =R a b= and =R b c= constructs a proof of =R a c=. Notice that the
-   arguments =a b c= are declared implicit as they can be inferred from the types
-   =a ≤ b= and =b ≤ c=. Let us prove that =≤= is transitive:
-   #+begin_src text
-   ≤-trans : Transitive _≤_
-   ≤-trans {a} {b} {c} (z≤n b) b≤c = z≤n c
-   ≤-trans {suc a} {suc b} {suc c} (s≤s a≤b) (s≤s b≤c) = s≤s (≤-trans a≤b b≤c)
-   #+end_src
-   The previous proof works as follows. We perform induction on the proof of =a
-   ≤ b=, that is, the first explicit argument.
-   - Case =z≤n=; we know that =a = zero= and we can easily build a proof of
-     =a ≤ c= by using the =z≤n= constructor.
-   - Case =s≤s a≤b=; then is must be that the second proof is built using the
-     =s≤s= constructor since we have =suc b=. Hence we have =a≤b : a ≤ b= and
-     =b≤c : b ≤ c=. By using a recursive call (induction hypothesis) to
-     =≤-trans= we can build a proof of =a ≤ c=. Finally we can apply the
-     constructor =s≤s= to obtain a proof of =suc a ≤ suc c=.
-** Dependent pairs :noexport:
-    Consider the following non-dependent pair definition (again, we present a non universe
-    polymorphic version for simplicity):
-    #+begin_src text
-data _×_ (A B : Set) : Set where
-  _,_ : A → B → A × B
-    #+end_src
-    Notice that =_×_= is a parameterized type as it has parameters =(A B :
-    Set)=, which are the types of each component of the pair. Parameters are
-    shared parameters by all constructors (in this case there is only one
-    constructor).
-
-    See that we can easily build a pair $⟨0,1⟩$ thus:
-    #+begin_src text
-    p : Nat × Nat
-    p = zero , (suc zero)
-    #+end_src
-
-    We now introduce the notion of \glspl*{dependent-pair}, also called
-    \(Σ\)-pairs. Consider the following definition.
-    #+begin_src text
-data Σ {a b : Level} (A : Seta a) (B : A → Set b) : Set (a ⊔ b) where
-  _,_ : (a : A) → (b : B a) → Σ A B
-    #+end_src
-    The only, although essential, difference, is that the type of the second
-    parameter is indexed by the value of the first. This is specially useful to
-    represent existential quantification. For instance, we can design a type
-    that asserts that some predicate is satisfiable[fn::we could simply write
-    =P= instead of =(λ a → P a)= since eta-reductions are valid in Agda.]:
-    #+begin_src text
-    Satisfiable : {A : Set} → Pred A → Set
-    Satisfiable {A} P = Σ A (λ a → P a)
-    #+end_src
-    For instance:
-    #+begin_src text
-    TODO: show meaningful example of dependent pair
-    #+end_src
-
-    It useful to define the projection of each component:
-    #+begin_src text
-    proj₁ : {A : Set} {B : A → Set} → Σ A B → A
-    proj₁ (a , b) = a
-
-    proj₂ : {A : Set} {B : A → Set} → (p : Σ A B) → B (proj₁ p)
-    proj₂ (a , b) = b
-    #+end_src
 ** Noetherian relations
    <<sec:agda-noetherian>>
     We say that a relation is \gls*{noetherian} if it is conversely
@@ -5342,10 +5167,10 @@ Noetherian⇒Irreflexive : ∀ {ℓR ℓW} {W : Set ℓW} {R : Rel W ℓR}
 Noetherian⇒Irreflexive noetherian Rxx = noetherian (infiniteRefl Rxx)
     #+end_src
 
-    To see another example refer to Section [[sec:agda-L]].
+    To see another example refer to cref:sec:agda-L.
 ** Ordinary semantics
    <<sec:agda-ord-semantics>>
-   In this section we explain how we have represented ordinary Veltman semantics
+   In this chapter we explain how we have represented ordinary Veltman semantics
    in Agda.
 
    To represent ordinary Veltman semantics in Agda, the first step is to
@@ -5371,7 +5196,7 @@ record Frame {ℓW ℓR ℓS : Level} (W : Set ℓW) (R : Rel W ℓR) (S : Rel�
 
    The first component, =witness=, is required to make sure that the set of worlds is
    not empty. The remaining components are the properties that must be satisfied
-   according to definition [[def:ordinary-frames]].
+   according to cref:def:ordinary-frames.
 
    We define a valuation on a frame thus:
    #+begin_src text
@@ -5397,7 +5222,7 @@ data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
    We set a model and a world of that model as parameters as they should be
    shared by all constructors. We leave the formula as an index as it may vary
    depending on the constructor. We should introduce a constructor for each case
-   in definition [[def:ord-forcing]]:
+   in cref:def:ord-forcing:
    1. We do not need a constructor for =⊥'= as its absence implicitly implies that
       we can never build an instance of =M , w ⊩ ⊥'= regardless of =M= and =w=.
    2. if $x∈\var{}$, then $w⊩x$ iff $⟨w,x⟩∈V$;
@@ -5506,7 +5331,7 @@ data _,_⊮_ M w where
    1. =∀ {M w A} → M , w ⊩ A ⇔ ¬ (M , w ⊮ A)=.
    2. =∀ {M w A} → ¬ (M , w ⊩ A) ⇔ M , w ⊮ A=.
    {{{endlemma}}} For part 1 we can prove $⇒$ and for part 2 we can prove $⇐$
-   (see lemma [[lemma:equiv]]). However, it is not possible to prove the remaining
+   (see cref:lemma:equiv). However, it is not possible to prove the remaining
    directions. In general terms, this is due to the fact that in Agda (and in
    intuitionistic logic in general) we can prove that =(¬ A ⊎ B) → A → B= but we
    cannot prove =A → B → (¬ A ⊎ B)=. The reason being that we lack the law of
@@ -5530,7 +5355,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    {{{agda}}}
 
    Under the assumption that we restrict ourselves to decidable models we can
-   prove lemma [[lemma:forcing-neg]].
+   prove cref:lemma:forcing-neg.
    {{{endproof}}}
 
    {{{beginlemma}}} <<lemma:equiv>> The following is true:
@@ -5569,30 +5394,13 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    decidability assumption for 1 ($⇐$), 2 ($⇐$), 3 ($⇐$) and 4 ($⇐$). {{{endproof}}}
 
    From now on, we always restrict ourselves to decidable models as the usage of
-   lemma [[lemma:ord-equiv-dec]] is ubiquitous. If we were to assume that we are
+   cref:lemma:ord-equiv-dec is ubiquitous. If we were to assume that we are
    outside of Agda and that we accept the law of excluded middle as part of our
    metalogic, the mentioned assumption could be dropped.
 
-** Subsets (predicates revisited) :noexport:
-   In Agda, the keyword =Set= refers to an Agda type (insert ref to previous
-   section), which is the closest concept to regular mathematics /set/. In this
-   section when we say /set/ we refer to a subset of an Agda type. The most
-   natural way to represent subsets in Agda is to use predicates. See
-   [[sec:predicates]] for an introduction. A predicate represents the characteristic
-   function of the associated subset. For instance consider the predicate:
-   #+begin_src text
-   even : Pred Nat
-   even = ...
-   #+end_src
-   Then =even= represents the subset of natural numbers that are even. It is
-   important to note that predicates are always restricted to a specific type,
-   in this case =Nat=, and for that reason the term /subset/ may be more adequate.
-
-   Next we present how we represent in Agda common operations on sets.
-   Assume for the below definitions that we have some =A : Set= in scope.
 ** Generalized semantics
-   <<sec:agda-gen-semantics>> In this section we explain how we have represented
-   generalized Veltman semantics in Agda. As explained in Section [[sec:trans]] we
+   <<sec:agda-gen-semantics>> In this chapter we explain how we have represented
+   generalized Veltman semantics in Agda. As explained in cref:sec:trans we
    consider eight different quasi-transitivity properties, thus, we need to
    define everything related to generalized Veltman semantics to be generic with
    respect to the quasi-transitivity condition used, which was certainly
@@ -5601,7 +5409,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    Analogously to ordinary semantics we start by defining a frame. We begin by
    defining a datatype that represents a frame without the quasi-transitivity
    condition. See that we define the type =𝕎 ≔ Pred W ℓW=, which means that a
-   term of type =𝕎= is a subset of =W= (see Section [[sec:sets]] for details on how
+   term of type =𝕎= is a subset of =W= (see cref:sec:sets for details on how
    to represent mathematical sets in Agda). See that the =S-ext= field adds
    extensionality restricted to the third component of the =S= relation.
    #+begin_src text
@@ -5700,9 +5508,9 @@ Frame4 W R S = Frame W R S (Trans-4 W S)
     bot : M , w ⊮ ⊥'
    #+end_example
 
-   Recall that in section [[sec:agda-ord-semantics]] in order to prove some
-   properties we had to assume that the ordinary models where decidable in the
-   sense defined in Definition [[def:ord-decidable-model]]. For generalized
+   Recall that in cref:sec:agda-ord-semantics in order to prove some
+   properties we had to assume that the ordinary models were decidable in the
+   sense of cref:def:ord-decidable-model. For generalized
    semantics we need to make a stronger assumption described in the next
    definition.
 
@@ -5769,8 +5577,7 @@ Frame4 W R S = Frame W R S (Trans-4 W S)
     #+begin_src text
     R-chain : ∀ {w u A} → R w u → M , u ⊮ A → M , w ⊩ □ (□ A ↝ A) → InfiniteChain R w
     #+end_src
-    Recall that infinite chains are defined as coinductive datatypes in Section
-    [[sec:agda-noetherian]]. Hence we proceed by building the infinite chain using
+    Recall that infinite chains are defined as coinductive datatypes in cref:sec:agda-noetherian. Hence we proceed by building the infinite chain using
     copatterns. The first two components are clear:
     #+begin_src text
   InfiniteChain.b (R-chain {w} {u} Rwu uA uF) = u
@@ -5816,7 +5623,7 @@ Frame4 W R S = Frame W R S (Trans-4 W S)
     ⊮ A= and we aim to build a proof of =⊥=. We can build an infinite chain with
     lemma =R-chain= proved above and the facts that =R w u=, =M , u ⊮ A= and =M
     , w ⊩ □ (□ A ↝ A)=. Before the final step it may be useful to recall the
-    definition of a =Noetherian= relation (see Section [[sec:agda-noetherian]]):
+    definition of a =Noetherian= relation (see cref:sec:agda-noetherian):
     #+begin_src text
 Noetherian _<_ = ∀ {a} → ¬ (InfiniteChain _<_ a)
     #+end_src
@@ -5888,8 +5695,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    =MP= for modus ponens and =nec= for necessitation. Note that the
    necessitation rule only accepts \il{} theorems (empty set of assumptions) and
    thus this definition is fitting for local semantics.
-   We have proven several results about \il, which are presented in Section
-   [[sec:il]].
+   We have proven several results about \il, which are presented in cref:sec:il.
 
    Consider the pen and paper syntactic proof of $A→A$.
    \begin{flalign*}
@@ -6064,7 +5870,7 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    most of the complexity lays. Needless to say, as is implemented and verified
    in Agda it is guaranteed to be correct. To reiterate, by correct we mean that
    every proof in the new syntax can be transformed (and definition of the term
-   =■=, which can be found in Section [[src:il.edsl]], is actually the
+   =■=, which can be found in cref:src:il.edsl, is actually the
    algorithm which performs the transformation) to a proof using only axioms and
    rules of \il{} as presented in the previous section. This ends the tour of
    the language.
@@ -6087,15 +5893,14 @@ title=Bibliography
 
 #+latex: \appendix
 * Appendix
-  TODO: include all the necessary unicode characters.
 ** Official Agda reference
-   This section contains a thorough description of some of the topics that were
-   touched in the introduction prior to this section. We believe that the
-   intuition given in the introduction should be enough for the reader to be
-   able to read Section [[sec:agda-project]], however, we encourage the reader to
-   resort to the ensuing reference if they wish for more precise information on
-   the language. The contents of this section have been merely copied from the
-   online Agda documentation (cite:agda-doc).
+   This appendix contains a thorough description of some of the Agda related
+   topics that were discussed in the thesis. We believe that the intuition given
+   in the introduction should be enough for the reader to be able to read
+   cref:sec:agda-project, however, we encourage the reader to resort to the
+   ensuing reference if they wish for more precise information on the language.
+   The contents of this section have been merely copied from the online Agda
+   documentation (cite:agda-doc).
 
 *** Function definitions and pattern matching
     A function is defined by first declaring its type followed by a number of
