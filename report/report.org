@@ -324,14 +324,14 @@ thanks
    Moreover, we are only concerned with the provable, within $T$,
    interpretability properties. In other words, we study the behaviour of the
    binary formalized interpretability predicate $\sf{Int}_T(.,.)$. Naturally,
-   the predicate $\sf{Int}_T(\rep{A},\rep{B})$ precisely holds when we can
-   formalize in $T$ that $T+A$ interprets $T+B$. For a theory $T$, we denote the
-   logic that describes the behaviour of the interpretability predicate of $T$
-   as $\sf{IL}(T)$. The language of $\sf{IL}(T)$ extends the language of \sf{GL}
-   with the binary modal operator $▷$, thus the language becomes $⟨⊥,→,□,▷⟩$. In
-   order to give a more detailed definition of $\sf{IL}(T)$ we first extend the
-   definition of arithmetical realization with an extra clause for the $▷$ case.
-   An arithmetical realization $*$ is a map from formulas in $\sf{IL}(T)$ to
+   the predicate $\sf{Int}_T(\rep{A},\rep{B})$ precisely holds when we can $T+A$
+   interprets $T+B$. For a theory $T$, we denote the logic that describes the
+   behaviour of the interpretability predicate of $T$ as $\sf{IL}(T)$. The
+   language of $\sf{IL}(T)$ extends the language of \sf{GL} with the binary
+   modal operator $▷$, thus the language becomes $⟨⊥,→,□,▷⟩$. In order to give a
+   more detailed definition of $\sf{IL}(T)$ we first extend the definition of
+   arithmetical realization with an extra clause for the $▷$ case. An
+   arithmetical realization $*$ is a map from formulas in $\sf{IL}(T)$ to
    sentences in the language of $T$. Moreover, it must satisfy the following
    constraints:
    \begin{flalign*}
@@ -359,10 +359,10 @@ thanks
 
    The logic \il{} has two relational semantics, which are the main topic of
    this thesis, known as /ordinary Veltman semantics/ (introduced by Frank
-   Veltman) and /generalized Veltman semantics/ (introduced by Rineke
-   Verbrugge). Ordinary Veltman semantics are defined in much the same spirit as
-   Kripke semantics for \sf{GL}. However, ordinary Veltman frames have an
-   additional family of relations indexed by each of the
+   Veltman) and /generalized Veltman semantics/ (introduced by Rineke Verbrugge
+   in cite:Verbrugge). Ordinary Veltman semantics are defined in much the same
+   spirit as Kripke semantics for \sf{GL}. However, ordinary Veltman frames have
+   an additional family of relations indexed by each of the
    worlds[fn::Alternatively, we may refer to $S$ as a ternary relation, where
    the first component corresponds to the index of the family.]: $\{S_w:w∈W\}$.
    Each of the $S_w$ is a binary relation which relates two worlds. The family
@@ -1024,16 +1024,16 @@ thanks
  {{{begintheorem}}} <<theorem:trans-extend>> Given an ordinary Veltman model
  $M=⟨W,R,S,V⟩$ we can find some generalized Veltman model $M'=⟨W,R,S',V⟩$, where
  we can replace our notion of quasi-transitivity by any of the Conditions
- $(i)∈\{1,…,8\}$. Furthermore, for every world $w$ and formula $A$:
+ {{{scond(1)}}}--{{{scond(8)}}}. Furthermore, for every world $w$ and formula $A$:
  \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
 
- {{{beginproof}}} We prove it for the quasi-transitivity {{{cond(2)}}} (the rest
- can be proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
+ {{{beginproof}}} We prove it for the quasi-transitivity {{{cond(2)}}}. The rest
+ can be proven in the same way. Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
  $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus: \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}.\] It is
- easy to observe that $M'$ satisfies {{{genfr(1)}}}, …, {{{genfr(5)}}}. It is also
- easy to see that it satisfies quasi-transitivity {{{cond(2)}}}. We show that
- they force the same formulas by induction on the complexity of the formula. The
- only interesting case is $A▷B$.
+ easy to observe that $M'$ satisfies {{{genfr(1)}}}, …, {{{genfr(5)}}}. It is
+ also easy to see that it satisfies quasi-transitivity {{{cond(2)}}}. We show
+ that they force the same formulas by induction on the complexity of the
+ formula. The only interesting case is $A▷B$.
    - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$. It follows that
      there exists some $y$ such that $xS_wy⊩B$. By definition of $M'$ we have
      $xS'_w\{y\}$ and also $\{y\}⊩B$, therefore $M',w⊩A▷B$.
@@ -1060,8 +1060,8 @@ thanks
   with a valuation. In the following theorem we prove this fact.
 
   {{{begintheorem}}} <<theorem:mono>> Let $F=⟨W,R,S⟩$ be a generalized Veltman
-  frame with quasi-transitivity $(i)∈\{1,…,8\}$. Let $F'=⟨W,R,S'⟩$ where $S'$ is
-  the monotone closure of $S$:
+  frame with quasi-transitivity $i$ for and $i∈\{1,…,8\}$. Let $F'=⟨W,R,S'⟩$
+  where $S'$ is the monotone closure of $S$:
 
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}.\]
 
