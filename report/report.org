@@ -88,6 +88,13 @@
 #+macro: agda @@latex:\gls{agdaprf}\glsadd{agdaprf}@@
 #+macro: agdaimg @@latex:\gls{agdaprf}@@
 #+macro: coq @@latex:\gls{coqprf}\glsadd{coqprf}@@
+#+macro: cond [[cond:$1][Condition $1]]
+#+macro: scond [[cond:$1][$1]]
+#+macro: scondr [[cond:$1][$1]]--[[cond:$2][$2]]
+#+macro: ordfr [[ordfr:$1][OF-$1]]
+#+macro: genfr [[ordfr:$1][GF-$1]]
+#+macro: sgenfr [[ordfr:$1][$1]]
+
 #+latex_header: \newcommand{\prin}[1]{\ensuremath{\mathsf{#1}}}
 #+latex_header: \newcommand{\il}[0]{\prin{IL}}
 #+latex_header: \newcommand{\pa}[0]{\prin{PA}}
@@ -251,12 +258,12 @@ thanks
    formalized in the language of \pa{} thus:
    \[\pa⊢\prov{\pa}{\rep{\prov{\pa}{\rep{A}} →A}}→\prov{\pa}{\rep{A}}.\] This
    result sparked an interest in studying provability logic from a modal point
-   of view which birthed the axiomatization of the propositional provability
+   of view which yielded the axiomatization of the propositional provability
    logic \gl{}, named after Gödel and Löb. The logic \gl{} extends propositional
    classical logic and its language consists of the language of propositional
    logic $⟨→,⊥⟩$ plus the modal operator $□$, which stands for the provability
    predicate. In this language Löb's theorem reads as \[□(□A→A)→□A.\] The above
-   /principle/ is in fact one of the axioms of \gl{}. The value of \gl{} directly
+   /principle/ is in fact one of the axioms of \gl{}. The importance of \gl{}
    depends on the arithmetical soundness and completeness theorems that we will
    present shortly, but first we need to introduce the concept of /arithmetical
    realization/. An arithmetical realization $*$ is a map from modal formulas in
@@ -273,13 +280,13 @@ thanks
 
    The arithmetical soundness theorem states that if $\gl{}⊢A$ then $\pa{}⊢A^*$
    for any realization $*$. Solovay proved (cite:solovay1976provability) that
-   arithmetical completeness , which is the converse of soundness, also holds.
+   arithmetical completeness, which is the converse of soundness, also holds.
 
-   Provability logics have Kripke (relational) semantics. As a reminder a Kripke
-   model is a tuple $⟨W,R,V⟩$ where $W$ is a non-empty set of worlds, $R$ is a
-   binary relation on worlds and $V⊆W×\var{}$ is a valuation. Then we define a
-   forcing relation $⊩$ that relates worlds and modal formulas. We write
-   $w⊩A$ to say that world $w$ forces $A$:
+   Provability logics have Kripke (relational) semantics. As a reminder, a
+   Kripke model is a tuple $⟨W,R,V⟩$ where $W$ is a non-empty set of worlds, $R$
+   is a binary relation on worlds and $V⊆W×\var{}$ is a valuation. Then we
+   define a forcing relation $⊩$ that relates worlds and modal formulas. We
+   write $w⊩A$ to say that world $w$ forces $A$:
    1. $w⊮⊥$;
    2. if $p$ is a propositional variable, then $w⊩p$ iff: $⟨w,p⟩∈V$;
    3. if $A$ and $B$ are formulas, then $w⊩A→B$ iff: if $w⊩A$ then $w⊩B$;
@@ -376,14 +383,14 @@ thanks
    (or principle, as we call them) we will need to find new semantics for it.
    Given a collection of principles, we get the semantics for the extension of
    \il{} with these principles by finding their frame condition. More precisely,
-   a /frame condition/ for a principle \sf{X} is a first (or higher) order
-   formula such that for every Veltman frame $F$ we have \[F⊨𝒞 ⇔ ⟨F,V⟩⊩\sf{X}
-   \text{ for any valuation $V$ and instance of \sf{X}.} \] To give an example,
-   let us put our focus on the interpretability logic of \sf{PA}. It happens
-   that the axiomatization of \sf{IL(PA)} is given by adding the so called
-   principle \sf{M} to the logic \il{}. We denote this new logic as $\sf{ILM}$.
-   The principle \prin{M} is defined as follows: \[\sf{M}≔(A ▷ B) → ((A ∧ □ C) ▷
-   (B ∧ □ C)).\] Then, consider the following condition:
+   a /frame condition/ for a principle \prin{X} is a first (or higher) order
+   formula $𝒞_\prin{X}$ such that for every Veltman frame $F$ we have \[F⊨𝒞_\prin{X} ⇔
+   ⟨F,V⟩⊩\sf{X} \text{ for any valuation $V$ and instance of \prin{X}.} \] To give
+   an example, let us put our focus on the interpretability logic of \sf{PA}. It
+   happens that the axiomatization of \sf{IL(PA)} is given by adding the so
+   called principle \sf{M} to the logic \il{}. We denote this new logic as
+   $\sf{ILM}$. The principle \prin{M} is defined as follows: \[\sf{M}≔(A ▷ B) →
+   ((A ∧ □ C) ▷ (B ∧ □ C)).\] Then, consider the following condition:
    #+begin_center
    $C_\prin{M}≔$ if $xS_wy$ and $yRz$ then $xRz$.
    #+end_center
@@ -714,7 +721,7 @@ thanks
    \begin{flalign*}
    &1.\ A▷A &\text{} \\
    &2.\ (♢A▷A) &\text{by J5} \\
-   &3.\ (A▷A)∧(♢A▷A) &\text{Conjunction theorem (\ref{thm:conjunction})} \\
+   &3.\ (A▷A)∧(♢A▷A) &\text{Conjunction, \cref{thm:conjunction}} \\
    &4.\ (A▷A)∧(♢A▷A)→ ((A ∨ ♢ A) ▷ A)& \text{by J3} \\
    &5.\ (A ∨ ♢ A) ▷ A & \text{by MP 3, 4}
    \end{flalign*}
@@ -740,19 +747,21 @@ thanks
     write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$ instead of $⟨w,u,v⟩∈S$. The
     structure must satisfy the following conditions:
 
-    1. $R$ is transitive;
-    2. $R$ is conversely well-founded. That is, there is no infinite ascending
-       chain $w₁Rw₂R…$;
-    3. if $uS_wv$ then $wRu$ and $wRv$;
+    1. <<ordfr:1>> $R$ is transitive;
+    2. <<ordfr:2>> $R$ is conversely well-founded. That is, there is no infinite
+       ascending chain $w₁Rw₂R…$;
+    3. <<ordfr:3>> if $uS_wv$ then $wRu$ and $wRv$;
       #+attr_latex: :float nil :width 0.19\textwidth :placement [H]
       [[file:img/cond1-ord.pdf]]
-    4. if $wRu$ then $uS_wu$;
+    4. <<ordfr:4>> if $wRu$ then $uS_wu$;
       #+attr_latex: :float nil :width 0.064\textwidth :placement [H]
       [[file:img/refl-ord.pdf]]
-    5. if $wRu$ and $uRv$ then $uS_wv$;
+    5. <<ordfr:5>> if $wRu$ and $uRv$ then $uS_wv$;
       #+attr_latex: :float nil :width 0.16\textwidth :placement [H]
       [[file:img/RStrans-ord.pdf]]
-    6. for every $w$, $S_w$ is transitive.
+    6. <<ordfr:6>> for every $w$, $S_w$ is transitive.
+
+    We will refer to the listed conditions as \(\text{OF-$i$}\) for $1≤i≤6$.
     {{{enddef}}}
 
     {{{begindef}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$ is a structure
@@ -822,10 +831,10 @@ thanks
       that $uS_wv⊩C$. On the other hand if $u⊩B$ we proceed analogously.
     - J4: $A ▷ B → ♢ A → ♢ B$. Assume $w⊩A▷B$ and $w⊩♢A$. Then there exists $u$
       such that $wRu⊩A$. Since $w⊩A▷B$ it follows that there exists $v$ such
-      that $uS_wv⊩B$. Finally by Condition 3 of ordinary frames we have $wRv$ and
-      thus $w⊩ ♢ B$.
+      that $uS_wv⊩B$. Finally by {{{ordfr(3)}}} of ordinary frames we have $wRv$
+      and thus $w⊩ ♢ B$.
     - J5: $♢ A ▷ A$. Assume that there exists $u$ such that $wRu⊩♢A$. Then there
-      exists $v$ such that $uRv⊩A$. By Condition 5 of ordinary frames we have
+      exists $v$ such that $uRv⊩A$. By {{{ordfr(5)}}} of ordinary frames we have
       $uS_wv⊩A$.
     {{{endproof}}}
 
@@ -844,19 +853,19 @@ thanks
     instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
     satisfy the following conditions :
 
-    1. $R$ is transitive; <<R-trans>>
-    2. $R$ is conversely well-founded. That is, there is no infinite ascending
+    1. <<genfr:1>> $R$ is transitive; <<R-trans>>
+    2. <<genfr:2>> $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
-    3. if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
+    3. <<genfr:3>> if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
        #+attr_latex: :float nil :width 0.26\textwidth :placement [H]
        [[file:img/cond1-gen.pdf]]
-    4. /quasi-reflexivity/: if $wRu$ then $uS_w\{u\}$;
+    4. <<genfr:4>> /quasi-reflexivity/: if $wRu$ then $uS_w\{u\}$;
        #+attr_latex: :float nil :width 0.075\textwidth :placement [H]
        [[file:img/refl-gen.pdf]]
-    5. if $wRu$ and $uRv$ then $uS_w\{v\}$;
+    5. <<genfr:5>> if $wRu$ and $uRv$ then $uS_w\{v\}$;
        #+attr_latex: :float nil :width 0.17\textwidth :placement [H]
        [[file:img/RStrans-gen.pdf]]
-    6. /quasi-transitivity/: if $uS_xY$ and $yS_xZ_y$ for all $y∈Y$, then
+    6. <<genfr:6>> /quasi-transitivity/: if $uS_xY$ and $yS_xZ_y$ for all $y∈Y$, then
        $uS_x\left(⋃_{y∈Y}Z_y\right)$.
        #+attr_latex: :float nil :width 0.32\textwidth :placement [H]
        [[file:img/trans-2.pdf]]
@@ -864,6 +873,11 @@ thanks
        This is a particular notion of quasi-transitivity which is considered the
        standard. Throughout this thesis we explore a total of eight notions, see
        cref:sec:trans.
+
+    We will refer to the listed conditions as \(\text{GF-$i$}\) for $1≤i≤5$.
+    Since in this thesis we will consider multiple conditions for
+    quasi-transitivity, we will refer to those as quasi-transitivity Condition
+    $j$ for $1≤j≤8$. If it is clear by the context we may simply say Condition $i$.
     {{{enddef}}}
 
     {{{begindef}}}
@@ -912,30 +926,30 @@ thanks
     {{{beginproof}}} {{{agda}}} We only show the case where $A$ is an instance
     of the J2 ($A ▷ B ∧ B ▷ C → A ▷ C$) axiom. The rest of the cases are proved
     in an analogous way to ordinary Semantics. Also, here we only show it the
-    quasi-transitivity property given in cref:def:gen-frame and also for
-    the quasi-transitivity Condition 8 in cref:fig:table-trans. However, we
-    have verified this in Agda for all the alternative quasi-transitivity
-    conditions presented in cref:fig:table-trans.
+    quasi-transitivity property given in cref:def:gen-frame and also for the
+    quasi-transitivity {{{cond(8)}}} in cref:fig:table-trans. However, we have
+    verified this in Agda for all the alternative quasi-transitivity conditions
+    presented in cref:fig:table-trans.
 
     Assume $w⊩A▷B$ and $w⊩B▷C$ and that there exists $u$ such that $wRu⊩A$. It
-    follows that there exists $V$ such that $uS_wV⊩B$. By Condition 3 of a
+    follows that there exists $V$ such that $uS_wV⊩B$. By {{{genfr(3)}}} of a
     generalized frame we have that $∀v∈V.wRv⊩B$. Then for every $v∈V$ we have
     that there exists $Z_v$ such that $vS_wZ_v⊩C$. It follows from the
     quasi-transitivity condition that $uS_w(⋃_{v∈V}Z_v)$ and clearly
     $⋃_{v∈V}Z_v⊩C$.
 
-    Now for quasi-transitivity Condition 8. Assume $w⊩A▷B$ and $w⊩B▷C$ and that
-    there exists $u$ such that $wRu⊩A$. It follows that there exists $V$ such
-    that $uS_wV⊩B$. If $V⊩C$ we are done, otherwise there exists $v∈V$ such that
-    $v⊮C$. By Condition 3 of a generalized frame we have that $wRv$. Since
-    $wRv⊩B$ and $w⊩B▷C$ it follows that there exists $Z$ such that $vS_wZ⊩C$.
-    Finally since $v⊮C$ we know that $v∉Z$ so by quasi-transitivity Condition 8
-    we can conclude $uS_wZ⊩C$. {{{endproof}}}
+    Now for quasi-transitivity {{{cond(8)}}}. Assume $w⊩A▷B$ and
+    $w⊩B▷C$ and that there exists $u$ such that $wRu⊩A$. It follows that there
+    exists $V$ such that $uS_wV⊩B$. If $V⊩C$ we are done, otherwise there exists
+    $v∈V$ such that $v⊮C$. By {{{genfr(3)}}} of a generalized frame we have that
+    $wRv$. Since $wRv⊩B$ and $w⊩B▷C$ it follows that there exists $Z$ such that
+    $vS_wZ⊩C$. Finally since $v⊮C$ we know that $v∉Z$ so by quasi-transitivity
+    Condition 8 we can conclude $uS_wZ⊩C$. {{{endproof}}}
 
 ** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
    for the quasi-transitivity condition which we present in the table below. See
-   that in cref:def:gen-frame we used Condition (2). cref:theorem:trans presents
+   that in cref:def:gen-frame we used {{{cond(2)}}}. cref:theorem:trans presents
    some direct implications between them.
    cref:theorem:il-sound,theorem:trans-extend are sufficient to argue that all
    of them are appropriate for proving completeness of \il{}. It is worth
@@ -945,16 +959,16 @@ thanks
 #+name: fig:table-trans
 #+caption: Semantic requirements for quasi-transitivity mentioned in the literature.
 #+attr_latex: :align c|l|l :float t :center t :placement [H] :font \small
-| Nr. | Semantic requirement for quasi-transitivity                                            | First mentioned in                            |
-|-----+----------------------------------------------------------------------------------------+-----------------------------------------------|
-| (1) | $uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ ∃ V⊆ ⋃_{y∈ Y}Z_y ∧ uS_xV\Big)$ | Joosten et al. '20 \cite{joosten2020overview} |
-| (2) | $uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ uS_x⋃_{y∈ Y}Z_y\Big)$          | Verbrugge '92 '20 \cite{Verbrugge}            |
-| (3) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. \cite{joosten2020overview}     |
-| (4) | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}             |
-| (5) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. '20 \cite{joosten2020overview} |
-| (6) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}                |
-| (7) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | Joosten et al. '20 \cite{joosten2020overview} |
-| (8) | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle}     |
+| Nr.         | Semantic requirement for quasi-transitivity                                            | First mentioned in                            |
+|-------------+----------------------------------------------------------------------------------------+-----------------------------------------------|
+| <<cond:1>>1 | $uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ ∃ V⊆ ⋃_{y∈ Y}Z_y ∧ uS_xV\Big)$ | Joosten et al. '20 \cite{joosten2020overview} |
+| <<cond:2>>2 | $uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ uS_x⋃_{y∈ Y}Z_y\Big)$          | Verbrugge '92 '20 \cite{Verbrugge}            |
+| <<cond:3>>3 | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. \cite{joosten2020overview}     |
+| <<cond:4>>4 | $uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Joosten '98 \cite{joosten-master}             |
+| <<cond:5>>5 | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')$                             | Joosten et al. '20 \cite{joosten2020overview} |
+| <<cond:6>>6 | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')$                                              | Verbrugge '92 \cite{Verbrugge}                |
+| <<cond:7>>7 | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')$                   | Joosten et al. '20 \cite{joosten2020overview} |
+| <<cond:8>>8 | $uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')$                                   | Goris, Joosten '09 \cite{a-new-principle}     |
    #+caption: Diagrams for Conditions 2, 4 and 6.
    #+name: fig:diagrams-transitivity
    #+attr_latex: :float t :width 0.96\textwidth :placement [H]
@@ -974,7 +988,6 @@ thanks
  The first item should be read as $F⊨\sf{Mon}∧(1)→(2)$.
 
  {{{beginmulticols(3)}}}
-
    1. $\sf{Mon} ∧ (1) ⇒ (2)$
    2. $(2) ⇒ (1)$
    3. $\sf{Mon} ∧ (3) ⇒ (4)$
@@ -995,17 +1008,16 @@ thanks
    18. $(6) ⇒ (8)$
    19. $\sf{Mon} ∧ (7) ⇒ (8)$
    20. $(8) ⇒ (7)$
-
  {{{endmulticols}}} {{{endtheorem}}}
 
  {{{beginproof}}} {{{agda}}} Here we only show item 13: $\sf{Mon} ∧ (6) ⇒ (2)$.
  Assume that $F$ is a generalized Veltman frame that satisfies the monotonicity
- condition and the quasi-transitivity Condition 6. Now assume that $uS_xY$ and
+ condition and the quasi-transitivity {{{cond(6)}}}. Now assume that $uS_xY$ and
  consider an arbitrary family of sets of worlds $\{Y_y:y∈ Y\}$. Assume also that
  for every $y∈Y$ we have $yS_xY_y$. Since $Y$ is nonempty we may pick $y_0∈Y$.
- Then we have that $yS_xY_{y_0}$. Then by quasi-transitivity Condition 6 we have
- that $uS_xY_{y_0}$ and since for any $y∈Y$ we have $yS_xY_y$ it follows by
- Condition 3 of a generalized frame that $Y_y⊆\{v:xRv\}$. Finally we see that
+ Then we have that $yS_xY_{y_0}$. Then by quasi-transitivity {{{cond(6)}}} we
+ have that $uS_xY_{y_0}$ and since for any $y∈Y$ we have $yS_xY_y$ it follows by
+ {{{genfr(3)}}} of a generalized frame that $Y_y⊆\{v:xRv\}$. Finally we see that
  $Y_{y_0}⊆⋃_{y∈Y}Y_y⊆\{v:xRv\}$ and by monotonicity it follows that
  $uS_x(⋃_{y∈Y}Y_y)$. {{{endproof}}}
 
@@ -1015,13 +1027,13 @@ thanks
  $(i)∈\{1,…,8\}$. Furthermore, for every world $w$ and formula $A$:
  \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
 
- {{{beginproof}}} We prove it for the quasi-transitivity Condition (2) (the rest
+ {{{beginproof}}} We prove it for the quasi-transitivity {{{cond(2)}}} (the rest
  can be proven in the same way). Let $M=⟨W,R,S,V⟩$ be an ordinary model. Let
  $M'≔⟨W,R,S',V⟩$ with $S'$ defined thus: \[S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}.\] It is
- easy to observe that $M'$ satisfies Conditions 1--5 from cref:def:gen-frame. It
- is also easy to see that it satisfies quasi-transitivity (2). We show that they
- force the same formulas by induction on the complexity of the formula. The only
- interesting case is $A▷B$.
+ easy to observe that $M'$ satisfies {{{genfr(1)}}}, …, {{{genfr(5)}}}. It is also
+ easy to see that it satisfies quasi-transitivity {{{cond(2)}}}. We show that
+ they force the same formulas by induction on the complexity of the formula. The
+ only interesting case is $A▷B$.
    - Assume $M,w⊩A▷B$ and that for some $x$ we have $wRx⊩A$. It follows that
      there exists some $y$ such that $xS_wy⊩B$. By definition of $M'$ we have
      $xS'_w\{y\}$ and also $\{y\}⊩B$, therefore $M',w⊩A▷B$.
@@ -1054,19 +1066,19 @@ thanks
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}.\]
 
   Then $F'$ is a generalized Veltman frame satisfying quasi-transitivity
-  Condition (2). Furthermore, let $V$ be an arbitrary valuation and $A$ an
+  {{{cond(2)}}}. Furthermore, let $V$ be an arbitrary valuation and $A$ an
   arbitrary formula. Let $M≔⟨F,V⟩$ and $M'≔⟨F',V⟩$. We have that for every world
   $w$: \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
 
 
   {{{beginproof}}} {{{agda}}}
   We check conditions listed in cref:def:gen-frame.
-  - Conditions 1 and 2 are clear since $R$ is unchanged;
-  - Condition 3 follows from the fact that in the definition of $S'$ we require
+  - {{{genfr(1)}}} and {{{genfr(2)}}} are clear since $R$ is unchanged;
+  - {{{genfr(3)}}} follows from the fact that in the definition of $S'$ we require
     $Y'⊆\{u:wRu\}$;
-  - for Conditions 4 and 5 observe that $S⊆S'$. Then, since these conditions hold for
-    $F$ they also hold for $F'$;
-  - for quasi-transitivity Condition (2) assume that $uS'_xY'$ and that for
+  - for {{{genfr(4)}}} and {{{genfr(5)}}} observe that $S⊆S'$. Then, since these
+    conditions hold for $F$ they also hold for $F'$;
+  - for quasi-transitivity {{{cond(2)}}} assume that $uS'_xY'$ and that for
     every $y'∈Y'$ we have $y'S'_xΥ_{y'}$. We need to show that
     $uS'_x⋃_{y'∈Y'}Υ_{y'}$. By definition of $S'$ it follows that there exists
     $Y⊆Y'$ such that $uS_xY$, furthermore, for every $y'∈Y'$ we have that there
@@ -1094,7 +1106,7 @@ thanks
 
   # As we see in cref:theorem:mono taking the monotone closure of each $S_w$ does not
   # change the forcing relation and the resulting frame satisfies quasi-transitivity
-  # Condition (2).
+  # {{{cond(2)}}}.
 
   # The previous lemma allows us to safely assume that monotonicity is a condition
   # for a Veltman frame with quasi-transitivity (2).
@@ -1102,7 +1114,7 @@ thanks
   {{{beginremark}}} Taking the monotone closure of each $S_w$ is essentially
   different than assuming that each $S_w$ is monotone by definition of the
   frame, as then the forcing relation may change. In the following example we
-  present a generalized Veltman model with Condition (8) that showcases such
+  present a generalized Veltman model with {{{cond(8)}}} that showcases such
   behaviour.
 
    #+caption: Example frame: $wRv_0,wRv_1,wRv_2,wRv_3$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
@@ -1116,9 +1128,8 @@ thanks
   $w⊩¬(p ▷ q)$ as $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ and
   $v_0S_w\{v_0\}$ (by quasi-reflexivity) with $v_0⊮q$ and $v_1⊮q$. If we take
   the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
-  quasi-transitivity (8) we get $v_0S_w \{v_3\}$ and consequently $w⊩¬(p ▷ q)$
-  is no longer true.
-  {{{endremark}}}
+  quasi-transitivity {{{cond(8)}}} we get $v_0S_w \{v_3\}$ and consequently
+  $w⊩¬(p ▷ q)$ is no longer true. {{{endremark}}}
 
 * Generalized vs ordinary models
   In this part we explore the expressiveness of ordinary and generalized
@@ -1138,14 +1149,16 @@ thanks
   a world $w∈M$ such that $w$ and $w'$ are modally equivalent {{{enddef}}}
 
   In cref:sec:ord-to-gen we see a straightforward transformation from an
-  ordinary Veltman model into a generalized Veltman model. In cref:sec:verbrugge we see an involved transformation from a generalized model into
-  an ordinary model. This transformation is due to Verbrugge and was described
-  in cite:Verbrugge. The proof was originally described to work with
-  quasi-transitivity Condition (6). We have slightly improved the result by
-  showing that the same transformation also works for Conditions (3), (4) and
-  (5). In cref:sec:gen-to-ord-luka we show a transformation that achieves the
-  same as Verbrugge's transformation but it is much simpler. The simpler
-  transformation was suggested by Mikec during online correspondence.
+  ordinary Veltman model into a generalized Veltman model. In cref:sec:verbrugge
+  we see an involved transformation from a generalized model into an ordinary
+  model. This transformation is due to Verbrugge and was described in
+  cite:Verbrugge. The proof was originally described to work with
+  quasi-transitivity {{{cond(6)}}}. We have slightly improved the result by
+  showing that the same transformation also works for {{{cond(3)}}},
+  {{{scond(4)}}} and {{{scond(5)}}}. In cref:sec:gen-to-ord-luka we show a
+  transformation that achieves the same as Verbrugge's transformation but it is
+  much simpler. The simpler transformation was suggested by Mikec during online
+  correspondence.
 
 ** From ordinary to generalized
    <<sec:ord-to-gen>> In this chapter we present a theorem that shows how an
@@ -1156,25 +1169,25 @@ thanks
    {{{begintheorem}}} Let $M=⟨W,R,S,V⟩$ be an ordinary Veltman model. We define
    ${M'≔⟨W,R,S',V⟩}$ where $S'≔\{⟨w,u,\{v\}:⟨w,u,v⟩∈S\}$. Now we distinguish two
    cases.
-   - If we want $M'$ to satisfy quasi-transitivity Condition (2) we take the
+   - If we want $M'$ to satisfy quasi-transitivity {{{cond(2)}}} we take the
      monotone closure of $S'$ as described in cref:theorem:mono;
    - for the rest of the quasi-transitivity conditions we keep $S'$ as defined.
    Then M' is a generalized Veltman frame with quasi-transitivity condition
    $(i)∈\{1,…,8\}$. Furthermore, for any world $w$ and formula $A$ we have that
    \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}} {{{beginproof}}} We observe that the
    transitivity condition for the ordinary models $M$ entails the
-   quasi-transitivity Condition (6) for the $M'$ generalized model. Keep in mind
+   quasi-transitivity {{{cond(6)}}} for the $M'$ generalized model. Keep in mind
    that by definition of $M'$ we only have singleton sets in the third component
    of $S'$. Now assume that $uS'_x\{y\}$ and $yS'_x\{y'\}$. By definition of
    $S'$ it follows that $uS_xyS_xy'$ and by quasi-transitivity of $M$ we have
    $uS_xy'$ and thus $uS_x\{y'\}$. Then, by cref:theorem:trans we know that
-   quasi-transitivity Condition (6) implies Conditions (1), (3)-(8), thus, the
-   presented transformation works for any of those notions of
-   quasi-transitivity. Moreover, if we chose to obtain a generalized Veltman
-   frame with quasi-transitivity Condition (2), the same reasoning applies since
-   as we know by cref:theorem:mono, taking the monotone closure does not
-   alter the modal theory of the model. We leave the rest of the details to be
-   worked out by the reader. {{{endproof}}}
+   quasi-transitivity {{{cond(6)}}} implies Conditions {{{scond(1)}}},
+   {{{scond(3)}}}--{{{scond(8)}}}, thus, the presented transformation works for
+   any of those notions of quasi-transitivity. Moreover, if we chose to obtain a
+   generalized Veltman frame with quasi-transitivity {{{cond(2)}}}, the same
+   reasoning applies since as we know by cref:theorem:mono, taking the monotone
+   closure does not alter the modal theory of the model. We leave the rest of
+   the details to be worked out by the reader. {{{endproof}}}
 
 ** From generalized to ordinary
    <<sec:verbrugge>> In this chapter we show that given a generalized Veltman
@@ -1191,11 +1204,11 @@ thanks
    the first transformation from generalized to ordinary models and it was
    written by Verbrugge in an unpublished manuscript (cite:Verbrugge). In that
    manuscript there is a comment where the author says that the transformation
-   may also hold for Condition (2) although she has not checked it yet.
+   may also hold for {{{cond(2)}}} although she has not checked it yet.
    Unfortunately some steps in the proof do not work if we take a generalized
-   model with quasi-transitivity Condition (2). In cite:vukovic2008bisimulations
+   model with quasi-transitivity {{{cond(2)}}}. In cite:vukovic2008bisimulations
    a variation of this transformation is presented with the claim that it works
-   for Condition (2). However, as we will comment in cref:sec:flawed-proof, the
+   for {{{cond(2)}}}. However, as we will comment in cref:sec:flawed-proof, the
    proof of the claim is in need of repair.
 
    For the rest of this chapter we fix a generalized Veltman model $M≔⟨W, R, S,
@@ -1230,8 +1243,8 @@ thanks
 
    We will now introduce two conditions. These conditions offer a convenient way
    to show that the transformation works for various conditions of
-   quasi-transitivity. In fact, the presented transformation works for
-   generalized Veltman frames with quasi-transitivity Condition 3, 4, 5 or 6.
+   quasi-transitivity. In fact, the presented transformation works for a
+   generalized Veltman frame with quasi-transitivity {{{cond(3)}}}, 4, 5 or 6.
 
    Let the conditions $(C_0)$ and $(C_1)$ be defined thus:
    \begin{flalign*}
@@ -1262,17 +1275,17 @@ thanks
 
      To show $⟨y,B⟩∈W'$ we need to prove that $(W1)$ and $(W2)$ hold. The
      condition $(W1)$ follows immediately from the definition of $B$. To show
-     $(W2)$ assume that for some $b$ and $V$ we have $yS_bV$. We need to see that
-     there exists $v∈V$ such that $⟨b,v⟩∈B$. From $yS_bV$ and [[eq:verb-y-cond]] we
-     get that there exists $v∈V'$ such that
+     $(W2)$ assume that for some $b$ and $V$ we have $yS_bV$. We need to see
+     that there exists $v∈V$ such that $⟨b,v⟩∈B$. From $yS_bV$ and
+     cref:eq:verb-y-cond we get that there exists $v∈V'$ such that
      \begin{flalign}
      b=w &⇒ xS_b\{v\} \label{eq:verb-b=w}, \\
      bRw &⇒ wS_b\{v\} \label{eq:verb-2}
      \end{flalign}
      To show that $⟨b,v⟩∈B$ we first see that $b=w⇒⟨w,v⟩∈A$. Assume $b=w$, then
-     by \ref{eq:verb-b=w} it follows that $xS_b\{v\}$ and therefore by condition
+     by \cref{eq:verb-b=w} it follows that $xS_b\{v\}$ and therefore by condition
      $(W2)$ for $A$ it follows $⟨b,v⟩∈A$. We proceed likewise and use
-     \ref{eq:verb-2} to show $bRw⇒⟨b,v⟩∈C$. This concludes the proof that
+     \cref{eq:verb-2} to show $bRw⇒⟨b,v⟩∈C$. This concludes the proof that
      $⟨y,B⟩∈W'$.
 
      We now check the conditions for $⟨x,A⟩S'_{⟨w,C⟩}⟨y,B⟩$. We already have
@@ -1306,10 +1319,10 @@ thanks
      \end{flalign}
      The first condition to show $⟨b,v⟩∈A$, namely that $∃Y.xS_bY,v∈Y$, is met
      trivially. For the next condition assume $b=w$, then see that we have
-     $xS_w\{v\}$ by \ref{eq:verb-neg-b=w} and thus by [[eq:verb-neg]] it follows that
-     $v⊮E$. For the remaining condition assume $bRw$, then by \ref{eq:verb-neg-bRw} we
-     have $wS_b\{v\}$ and thus by $(W2)$ for $C$ we have $⟨b,v⟩∈C$. Therefore we
-     conclude $⟨b,v⟩∈A$ and thus $⟨x,A⟩∈W'$.
+     $xS_w\{v\}$ by \cref{eq:verb-neg-b=w} and thus by cref:eq:verb-neg it
+     follows that $v⊮E$. For the remaining condition assume $bRw$, then by
+     \cref{eq:verb-neg-bRw} we have $wS_b\{v\}$ and thus by $(W2)$ for $C$ we
+     have $⟨b,v⟩∈C$. Therefore we conclude $⟨b,v⟩∈A$ and thus $⟨x,A⟩∈W'$.
 
      To see that $⟨w,C⟩R'⟨x,A⟩$ we already have $wRx$ by assumption. The
      remaining condition, $∀bz(bRx⇒⟨b,z⟩∈A⇒⟨b,z⟩∈C)$, follows directly from the
@@ -1326,15 +1339,16 @@ thanks
    {{{endproof}}}
 
    {{{begintheorem}}} <<thm:conds>> If a generalized Veltman frame satisfies
-   quasi-transitivity Condition 3, 4, 5 or 6, then it satisfies conditions
+   quasi-transitivity {{{cond(3)}}}, 4, 5 or 6, then it satisfies conditions
    $(C_0)$ and $(C_1)$. {{{endtheorem}}}
 
    {{{beginproof}}} {{{agda}}} Here we prove the property for a generalized
-   Veltman frame satisfying quasi-transitivity Condition 3. Conditions 4, 5 and 6
-   imply Condition 3 as shown in cref:theorem:trans.
+   Veltman frame satisfying quasi-transitivity {{{cond(3)}}}. Conditions
+   {{{scond(4)}}}--{{{scond(6)}}} imply {{{cond(3)}}} as shown in
+   cref:theorem:trans.
 
    Assume $F$ is a generalized Veltman frame satisfying quasi-transitivity
-   Condition 3.
+   {{{cond(3)}}}.
    It is easy to observe that the following property holds:
    #+name: eq:verb-trans-prop
    \begin{equation}
@@ -1390,12 +1404,12 @@ thanks
    formalized in Agda in cref:src:generalizedveltmansemantics.properties.luka.
 
    {{{begintheorem}}} Let $M$ a generalized Veltman model with
-   quasi-transitivity Condition 3, 4, 5 or 6. By cref:theorem:trans we shall
-   assume without loss of generality that $M$ satisfies quasi-transitivity
-   Condition 3. We remind the reader that the condition reads thus: \[uS_xY ⇒
-   ∃\, \textcolor{blue}{y}∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'').\] For
-   every $⟨x,u,Y⟩$ such that $uS_xY$ we fix the $y$ that is highlighted in blue
-   and name it $y_{xuY}$.
+   quasi-transitivity {{{cond(3)}}}, {{{scond(4)}}}, {{{scond(5)}}} or
+   {{{scond(6)}}}. By cref:theorem:trans we shall assume without loss of
+   generality that $M$ satisfies quasi-transitivity {{{cond(3)}}}. We remind the
+   reader that the condition reads thus: \[uS_xY ⇒ ∃\, \textcolor{blue}{y}∈Y\, ∀
+   Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'').\] For every $⟨x,u,Y⟩$ such that $uS_xY$
+   we fix the $y$ that is highlighted in blue and name it $y_{xuY}$.
 
    We define $M'≔⟨W,R,S',V⟩$ with $S'≔\{⟨w,x,v⟩:∃Y.wS_xY∧ y_{xwY}=v\}$. Then
    $M'$ is an ordinary Veltman frame. Furthermore models $M$ and $M'$ are
@@ -1408,7 +1422,7 @@ thanks
 
    Assume that we have $xS'_wyS'_wz$. By definition of $S'$ it follows that we
    have $xS'_w\{y\}S'_w\{z\}$ and furthermore $y$ and $z$ satisfy
-   quasi-transitivity Condition 3. In particular for $y$ it holds that
+   quasi-transitivity {{{cond(3)}}}. In particular for $y$ it holds that
    $∀Y(yS_wz⇒∃Y'⊆Y∧xS_wY')$. If we set $Y≔\{z\}$ then have that there exists
    $Y'⊆\{z\}$ such that $xS_wY'$. Since $Y'$ must be nonempty we have that
    $Y'=\{z\}$ and thus $xS_w\{z\}$. Finally by definition of $S'$ we have
@@ -1447,9 +1461,9 @@ thanks
 
    The transformations from a generalized to an ordinary Veltman model given in
    cref:sec:verbrugge,sec:gen-to-ord-luka work for simple notions of
-   quasi-transitivity but do not seem to work directly for Condition (2), which
+   quasi-transitivity but do not seem to work directly for {{{cond(2)}}}, which
    is the standard. In cite:vukovic2008bisimulations a transformation which is
-   claimed to work for Condition (2) is presented. We studied the transformation
+   claimed to work for {{{cond(2)}}} is presented. We studied the transformation
    and started to formalize in Agda the proof of its correctness following the
    proof of Proposition 2.8 in cite:vukovic2008bisimulations.
 
@@ -1460,7 +1474,7 @@ thanks
    could render the proof invalid. The validity of Proposition 2.8 of
    cite:vukovic2008bisimulations comes into question and until this is resolved,
    we may consider the problem of finding transformation from a generalized
-   model (with Condition (2)) to an ordinary model such that it preserves some
+   model (with {{{cond(2)}}}) to an ordinary model such that it preserves some
    structure of the original model to be an open question once again. By
    ``preserves some structure'' we mean that we should have a property of the
    form: \[M,w⊩A⇔M',f(w)⊩A\ \ \ \text{for every }w∈W,A∈\fm{}.\] Where $f$ is a
@@ -5467,7 +5481,7 @@ record Frame (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS)
    #+end_example
 
    We now define all the quasi-transitivity conditions. Here we only present
-   Condition (4).
+   {{{cond(4)}}}.
    #+begin_example
   Trans-4 : (W : Set ℓW) → REL₃ W W (Pred W ℓW) ℓS → Set (lsuc ℓW ⊔ ℓS))
   Trans-4 W S = ∀ {x u Y} → S x u Y → ∃[ y ] (y ∈ Y × (∀ {Y'} → S x y Y' → S x u Y'))
@@ -5475,7 +5489,7 @@ record Frame (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS)
 
    And finally we can define a datatype that represents a generalized Veltman
    frame for each of the quasi-transitivity conditions as a simple instantiation
-   of the generic =Frame= defined before. Here we only present Condition (4).
+   of the generic =Frame= defined before. Here we only present {{{cond(4)}}}.
    #+begin_example
 Frame4 : (W : Set ℓW) (R : Rel W ℓR) (S : REL₃ W W (Pred W ℓW) ℓS) → Set _
 Frame4 W R S = Frame W R S (Trans-4 W S)
