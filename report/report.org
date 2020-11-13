@@ -359,24 +359,24 @@ thanks
 
    The logic \il{} has two relational semantics, which are the main topic of
    this thesis, known as /ordinary Veltman semantics/ (introduced by Frank
-   Veltman) and /generalized Veltman semantics/ (introduced by Rineke Verbrugge
-   in cite:Verbrugge). Ordinary Veltman semantics are defined in much the same
-   spirit as Kripke semantics for \sf{GL}. However, ordinary Veltman frames have
-   an additional family of relations indexed by each of the
-   worlds[fn::Alternatively, we may refer to $S$ as a ternary relation, where
-   the first component corresponds to the index of the family.]: $\{S_w:w∈W\}$.
-   Each of the $S_w$ is a binary relation which relates two worlds. The family
-   of relations $S$ is used to model the behaviour of the binary modal operator
-   $▷$.
+   Veltman in cite:Veltman-relative) and /generalized Veltman semantics/
+   (introduced by Rineke Verbrugge in cite:Verbrugge). Ordinary Veltman
+   semantics are defined in much the same spirit as Kripke semantics for
+   \sf{GL}. However, ordinary Veltman frames have an additional family of
+   relations indexed by each of the worlds[fn::Alternatively, we may refer to
+   $S$ as a ternary relation, where the first component corresponds to the index
+   of the family.]: $\{S_w:w∈W\}$. Each of the $S_w$ is a binary relation which
+   relates two worlds. The family of relations $S$ is used to model the
+   behaviour of the binary modal operator $▷$.
 
    In generalized Veltman semantics each of the $S_w$ relations, instead of
    relating two individual worlds, relates an individual world to a set of
    worlds. This type of definition seems to be inspired by the neighborhood
    semantics that exist for other modal logics with unary modal operators.
    Neighborhood semantics have not been studied yet for interpretability logics.
-   Both kinds of Veltman semantics are suitable for \il{} as we
-   have soundness (which we present in this thesis) and completeness
-   (cite:Veltman-relative) proofs.
+   Both kinds of Veltman semantics are suitable for \il{} as we have soundness
+   (which we present in this thesis) and completeness proofs
+   (cite:Veltman-relative).
 
    As we have already mentioned, \il{} is just the logic that we use as a base
    in interpretability logics, thus, each time we extend it with an axiom scheme
@@ -384,13 +384,15 @@ thanks
    Given a collection of principles, we get the semantics for the extension of
    \il{} with these principles by finding their frame condition. More precisely,
    a /frame condition/ for a principle \prin{X} is a first (or higher) order
-   formula $𝒞_\prin{X}$ such that for every Veltman frame $F$ we have \[F⊨𝒞_\prin{X} ⇔
-   ⟨F,V⟩⊩\sf{X} \text{ for any valuation $V$ and instance of \prin{X}.} \] To give
-   an example, let us put our focus on the interpretability logic of \sf{PA}. It
-   happens that the axiomatization of \sf{IL(PA)} is given by adding the so
-   called principle \sf{M} to the logic \il{}. We denote this new logic as
-   $\sf{ILM}$. The principle \prin{M} is defined as follows: \[\sf{M}≔(A ▷ B) →
-   ((A ∧ □ C) ▷ (B ∧ □ C)).\] Then, consider the following condition:
+   formula $𝒞_\prin{X}$ such that for every Veltman frame $F$ we have
+   \[F⊨𝒞_\prin{X} ⇔ ⟨F,V⟩⊩\sf{X} \text{ for any valuation $V$ and instance of
+   \prin{X}.} \] To give an example, let us put our focus on the
+   interpretability logic of \sf{PA}. It happens
+   (cite:berarducci1990interpretability,shavrukov1988logic) that the
+   axiomatization of \sf{IL(PA)} is given by adding the so called principle
+   \sf{M} to the logic \il{}. We denote this new logic as $\sf{ILM}$. The
+   principle \prin{M} is defined as follows: \[\sf{M}≔(A ▷ B) → ((A ∧ □ C) ▷ (B
+   ∧ □ C)).\] Then, consider the following condition:
    #+begin_center
    $C_\prin{M}≔$ if $xS_wy$ and $yRz$ then $xRz$.
    #+end_center
@@ -406,13 +408,17 @@ thanks
    the interpretability logic for certain classes of theories. However, there
    are other principles which are interesting because they are arithmetically
    valid in a large number of theories. These principles play a crucial role in
-   the search of an axiomatization for the theory \ilall{}. The theory \ilall{} is
-   defined to be the intersection of the interpretability logics of all
-   reasonable arithmetical theories. Finding an axiomatization of such theory,
-   as already hinted, remains an open problem, however a lot of progress has
-   been made in the form of finding lower bounds for this logic. In this thesis
-   we study the frame conditions for two series of principles: \prin{R^n} and
-   \prin{R_n}, which appear in the current best known lower bound of \ilall{}.
+   the search of an axiomatization for the theory \ilall{}. The theory \ilall{}
+   is defined to be the intersection of the interpretability logics of all
+   reasonable arithmetical theories
+   (cite:Visser1990,Visser:1991:FormalizationOfInterpretability). Finding an
+   axiomatization of this logic, as already hinted, remains an open problem,
+   however a lot of progress has been made in the form of finding lower bounds
+   for this logic
+   (cite:joosten-master,two-new-series,joosten2020interpretability). In this
+   thesis we study the frame conditions for two series of principles: \prin{R^n}
+   and \prin{R_n}, which appear in the current best known lower bound of
+   \ilall{}.
 
 ** Original contributions
    This thesis includes the following original contributions:
@@ -1659,11 +1665,11 @@ thanks
    appeared during discussions between Franco Montagna and Albert Visser about
    interpretability logic (cite:bilkova2009interpretability).
 
-   The theorems of $\textsf{ILM}$ are the set of interpretability principles
-   that are always provable in theories which are $Σ_1$ sound, have full
-   induction and prove consistency of any of its finite subsystems
-   (cite:visser1997overview,joosten2020overview). An example of such a theory is
-   $\textsf{PA}$.
+   The theorems of $\prin{ILM}$ are the set of interpretability principles that
+   are always provable in theories which are $Σ_1$ sound, have full induction
+   and prove consistency of any of its finite subsystems
+   (cite:berarducci1990interpretability,visser1997overview,joosten2020overview).
+   An example of such a theory is $\textsf{PA}$.
 *** Ordinary semantics
    The frame condition for \prin{M} for ordinary semantics, which we write as $\kord{M}$,
    reads as follows:
