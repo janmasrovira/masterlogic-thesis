@@ -601,19 +601,22 @@ thanks
       $xRyRz⇒xRz$ we would draw the following:
       #+attr_latex: :float nil :width 0.14\textwidth :placement [H]
       [[file:img/notation-trans.pdf]]
-** Language
+** The language of modal interpretability
    <<sec:language>>
 
    The symbols of interpretability logics are $⊥,→,▷$. The set
-   of valid formulas, which we denote with \fm{}, is defined recursively as
+   of well-formed formulas, which we denote with \fm{}, is defined recursively as
    usual:
    1. /Variable/. If $x$ is a variable, then $x$ is a formula. We assume that we
       have an infinite countable set of variables. In particular we shall define
-      $\var{}≔ℕ$. However, we use non-capital letters $a,b,c,x,y,z…$ to refer to
+      $\var{}≔ℕ$. However, we use non-capital letters to refer to
       variables.
-   2. /Bottom/. The constant $⊥$ is a formula;
-   3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula;
+   2. /Bottom/. The constant $⊥$ is a formula.
+   3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula.
    4. /Interprets/. If $A$ and $B$ are formulas, then $(A▷B)$ is a formula.
+
+  We will always drop outer parentheses.
+
 
    We define the usual operators and constants in the following way:
    1. $¬ A ≔ A → ⊥$;
@@ -6388,9 +6391,20 @@ title=Bibliography
     #+include: "latex/Coq.tex" export latex
 
 ** Manuscript by Verbrugge: Set Veltman frames and models
-   <<pdf:Verbrugge>>
-   In the following pages we copy a scan of a manuscript by Verbrugge. It has
-   not been processed or edited by us in any way. The original title, in Dutch,
-   is /Verzamelingen-Veltman frames en modellen/.
+   <<pdf:Verbrugge>> In the following pages we copy a scan of a manuscript by
+   Verbrugge (see notes below). It has not been processed or edited by us in any
+   way. The original title, in Dutch, is /Verzamelingen-Veltman frames en
+   modellen/.
+
+   Annotations are probably from various authors, like Dick de Jongh and
+   possibly others. Verbrugge commented in private correspondence that in
+   particular the ``English translation on Page 1a'' on the first typed page is
+   from her own hand and likely the ``$∖ ∅$'' on that same page
+   and the $\{ \varnothing \}$ on Page 1a (handwritten) too although the latter
+   accolades are not her handwriting. These can most likely be attributed to de
+   Jongh together with the phrase $= KM_1$ on Page 2 of the handwritten part.
+   The double exclamations marks have an uncertain author and they are possibly
+   from somebody else altogether. Possibly the ``Rineke Verbrugge, manuscript,
+   1992'' at the top of the first typed page is from Troelstra’s hand.
 
    \includepdf[pages=1-]{pdf/Verbrugge-manuscript-1992.pdf}
