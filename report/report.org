@@ -218,12 +218,12 @@ interpretability between finite extensions of the theory. Interpretability logic
 study the provable structural behaviour of the interpretability predicate.
 
 Interpretability logics extend the provability logic \gl{}. As such, interpretability logics
-inherit a number of similarities from \gl{}, for instance, the possiblity to give relational semantics.
+inherit a number of similarities from \gl{}, for instance, the possibility to give relational semantics.
 In this thesis we focus on the study of two variations of relational semantics à la Kripke
 known as \textit{ordinary Veltman semantics} and \textit{generalized Veltman semantics}.
 
 In the literature we find various definitions of generalized Veltman semantics. In particular,
-there are several conditions of \textit{quasi-transitivity}, a property that generalized frames must sastisfy.
+there are several conditions of \textit{quasi-transitivity}, a property that generalized frames must satisfy.
 We study the interrelations between all of these conditions and discuss their adequacy.
 
 In this thesis we compare the expressiveness of ordinary and generalized semantics. Furthermore,
