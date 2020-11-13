@@ -22,13 +22,12 @@
 #+latex_header: \usepackage{float}
 #+latex_header: \usepackage{newunicodechar}
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
-#+latex_header: \usepackage[style=ieee]{biblatex}
+#+latex_header: \usepackage[style=numeric-comp]{biblatex}
 #+latex_header: \usepackage{multicol}
 #+latex_header: \usepackage{stmaryrd}
 #+latex_header: \usepackage{spverbatim}
 #+latex_header: \usepackage{pdfpages}
 #+latex_header: \usepackage[capitalise, nameinlink]{cleveref}
-
 
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
@@ -207,16 +206,28 @@
   \end{center}
 \end{titlepage}
 
-#+BEGIN_abstract
-abstract
-#+END_abstract
+\begin{abstract}
+\centering
+\text{\Huge Abstract}
+~\\[1.2cm]
+
+Sufficiently strong arithmetical theories such as \pa{} can formalize the
+their interpretability predicate. This predicate expresses the concept of relativized
+interpretability between finite extensions of the theory. Interpretability logics
+study the provable structural behaviour of the interpretability predicate.
+
+Interpretability logics extend provability logics and 
+
+
+In this thesis we study interpretability logics.
+\end{abstract}
 
 \newpage
 
 \renewcommand{\abstractname}{Acknowledgements}
-#+BEGIN_abstract
+#+begin_abstract
 thanks
-#+END_abstract
+#+end_abstract
 
 \newpage
 #+toc: headlines 2
@@ -499,10 +510,6 @@ thanks
    2. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
    3. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
    4. $⟦A⟧≔\{w:w⊩A\}$;
-   5. {{{agda}}} this is Agda's logo. Each proof that is formalized in Agda
-      has been tagged with it;
-   6. {{{coq}}} this is Coq's logo. Each proof that is formalized in Coq
-      has been tagged with it;
    7. when we write a dot after the quantification of some variables, the scope of
       the variables extends to the rightmost part of what follows. Hence the
       formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$.
@@ -592,7 +599,7 @@ thanks
    order: \[∧,▷,∨,→\]
 
    The scope of unary symbols $□,♢,¬$ is as small as possible. Thus $□A∧¬¬B$ is
-   the same as $(□A)∧(¬¬B)$.
+   the same as $(□A)∧(¬¬B)$. Also, $→$ has right associativity.
 ** Logic \il
    <<sec:il>> As explained in the overview (cref:sec:overview) the logic
    \il{} is the logic that we use as the base for other interpretability logics.
@@ -681,7 +688,7 @@ thanks
    {{{endproof}}}
 
 
-   {{{begintheorem}}} <<thm:conjunction>> \label{thm:conjunction} *Conjunction*.
+   {{{begintheorem}}} \label{thm:conjunction} *Conjunction*.
    $Π⊢_{\il}A∧B$ iff $Π⊢_{\il}A$ and $Π⊢_{\il}B$. {{{endtheorem}}}
    {{{beginproof}}} {{{agda}}} The key part is to show that $Π⊢_\il{}A→B→(A∧B)$,
    $Π⊢_\il{}A∧B→A$ and $Π⊢_\il{}A∧B→B$ as we do in classical logic.
@@ -1964,8 +1971,8 @@ thanks
    and thus giving a strictly better lower bound for \ilall{}.
 
    Note that \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
-   and \prin{R_n} series of principles which generalize \prin{R} and are
-   discussed in cref:sec:Rsub1,sec:Rsupn.
+   and \prin{R_n} series of principles, which generalize \prin{R}, are discussed
+   in cref:sec:Rsub1,sec:Rsupn.
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
 
@@ -2088,8 +2095,9 @@ thanks
    The $R_1$ principle reads as follows:
    \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E)).\]
 
-   It is the second principle of the $\prin{R_n}$ series.
-   The $R_n$ series of principles is defined in cite:two-new-series:
+   It is the second principle of the $\prin{R_n}$ series. The $R_n$ series of
+   principles is defined in cite:two-new-series and it has been named /the slim
+   series/.
 *** Ordinary semantics
 
     The $\kord{R_1}$ frame condition reads as follows:
@@ -2281,40 +2289,6 @@ thanks
       such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
     {{{endproof}}}
 
-** The principle $\prin{R²}$ :noexport:
-   The $R²$ principle reads as follows:
-   \[A ▷ B → (♢ [(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)] ∧ (D ▷ A)) ▷ (B ∧ □ C) \]
-
-*** Generalized semantics
-    The $\kgen{R²}$ condition reads as follows:
-    \begin{flalign*}
-    &∀w,x,y,z,s,𝔸,𝔹,ℂ,𝔻,𝔼.\\
-    &wRxRyRzRs, \\
-    & (∀u.wRu∈𝔸⇒∃V.uS_wV⊆𝔹), \\
-    & (∀u.xRu∈𝔻⇒∃V.uS_xV⊆𝔸), \\
-    & (∀u.yRu∈𝔼⇒∃V.uS_yV⊆𝔻), \\
-    & (∀V.sS_zV⇒V∩ℂ≠0),      \\
-    & s∈𝔻 \\
-    ⇒\ & ∃V⊆𝔹.xS_wV,R[V]⊆ℂ
-    \end{flalign*}
-
-    {{{begintheorem}}}
-    For any generalized frame $F$, we have that $F$ satisfies the
-    $\kgen{R²}$ condition iff any model based on $F$ forces every instantiation of
-    the $R²$ principle. In symbols:
-
-    \[F⊨\kgen{R²}⇔F⊩R²\]
-    {{{endtheorem}}}
-
-    {{{beginproof}}}
-    - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
-      Consider some $x$ such that $wRx⊩♢ [(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)] ∧ (D ▷ A)$.
-      Hence there exists some $y$ such that $xRy⊩(E ▷ D) ∧ ♢ ¬ (E ▷ ¬ C)$. It
-      follows that there exists some $z$ such that $yRz⊩ ¬ (E ▷ ¬ C)$ and thus
-      there exists some $s$ such that $zRs⊩E$ and $(⋆)\ ∀V(sS_zV⇒∃c∈V(c⊩C))$.
-    - \boxed{⇐}
-    {{{endproof}}}
-
 ** The series of principles \prin{Rⁿ}
    <<sec:Rsupn>>
    The \prin{R^n} principle is defined thus:
@@ -2332,8 +2306,7 @@ thanks
    use to give the best known lower bound for the logic \ilall{}, which is
    $\prin{ILWR^nR_n}$.
 
-   The \prin{R^n} series is also referred to as the /broad/ series, whereas
-   \prin{R^n} is referred to as the /slim/ series.
+   The \prin{R^n} series is also referred to as /the broad series/.
 *** Ordinary semantics
     The frame condition for ordinary semantics $\kord{R^n}$ can be found in
     cite:two-new-series.
