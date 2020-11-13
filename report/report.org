@@ -217,12 +217,12 @@ their interpretability predicate. This predicate expresses the concept of relati
 interpretability between finite extensions of the theory. Interpretability logics
 study the provable structural behaviour of the interpretability predicate.
 
-Interpretability logics extend provability logic \gl{}. As such, interpretability logics
+Interpretability logics extend the provability logic \gl{}. As such, interpretability logics
 inherit a number of similarities from \gl{}, for instance, the possiblity to give relational semantics.
 In this thesis we focus on the study of two variations of relational semantics à la Kripke
 known as \textit{ordinary Veltman semantics} and \textit{generalized Veltman semantics}.
 
-In literature we find various definitions of generalized Veltman semantics. In particular,
+In the literature we find various definitions of generalized Veltman semantics. In particular,
 there are several conditions of \textit{quasi-transitivity}, a property that generalized frames must sastisfy.
 We study the interrelations between all of these conditions and discuss their adequacy.
 
@@ -232,12 +232,12 @@ ordinary models to generalized models and vice versa.
 
 We study the frame conditions of various relevant interpretability principles
 present in the literature. Moreover, we provide novel frame conditions for the
-the principle \prin{R_1} and the \prin{R^n} series of principles with respect to generalized
-semantics.
+the principle \prin{R_1} and the \prin{R^n} series of principles from \cite{two-new-series}
+with respect to generalized Veltman semantics.
 
 We have formalized our findings in Agda, which is a state-of-the-art proof assistant
 based on an intuitionistic theory which features dependent types.
-A part from giving a solid base to our claims, we hope that our Agda library will
+Apart from giving a solid base to our claims, we hope that our Agda library will
 provide a rallying point for researchers willing to formalize theorems in the
 field of interpretability logics, or at least, to encourage more research in that direction.
 Our work is, to our knowledge, the first attempt at formalizing interpretability logics in any proof assistant.
@@ -6406,5 +6406,17 @@ title=Bibliography
    The double exclamations marks have an uncertain author and they are possibly
    from somebody else altogether. Possibly the ``Rineke Verbrugge, manuscript,
    1992'' at the top of the first typed page is from Troelstra’s hand.
+
+
+   Annotations are probably from various authors, like Dick de Jongh and
+   possibly others. Verbrugge commented in private correspondence that in
+   particular the “English translation on Page 1a” on the first typed page is
+   from her own hand and likely the “$∖ ∅$” and the two $x$’s on that same page
+   too while the accolades on handwritten Page 1a are not her handwriting. These
+   can most likely be attributed to Dick de Jongh together with the phrase $=
+   KM_1$ on Page 2 of the handwritten part. The double exclamations marks have
+   an uncertain author and they are possibly from somebody else altogether.
+   Possibly the “Rineke Verbrugge, manuscript, 1992” at the top of the first
+   typed page is from Troelstra’s hand.
 
    \includepdf[pages=1-]{pdf/Verbrugge-manuscript-1992.pdf}
