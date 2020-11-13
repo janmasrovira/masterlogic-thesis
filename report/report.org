@@ -28,6 +28,7 @@
 #+latex_header: \usepackage{spverbatim}
 #+latex_header: \usepackage{pdfpages}
 #+latex_header: \usepackage[capitalise, nameinlink]{cleveref}
+#+latex_header: \newcommand{\?}{'\nobreak\hspace{0pt}}
 
 #+latex_header: \bibliography{refs}
 #+latex_header: \makeglossaries
@@ -218,7 +219,7 @@ interpretability between finite extensions of the theory. Interpretability logic
 study the provable structural behaviour of the interpretability predicate.
 
 Interpretability logics extend the provability logic \gl{}. As such, interpretability logics
-inherit a number of similarities from \gl{}, for instance, the possibility to give relational semantics.
+inherit a number of similarities from \gl{}. For instance, the possibility to give relational semantics.
 In this thesis we focus on the study of two variations of relational semantics à la Kripke
 known as \textit{ordinary Veltman semantics} and \textit{generalized Veltman semantics}.
 
@@ -226,8 +227,8 @@ In the literature we find various definitions of generalized Veltman semantics. 
 there are several conditions of \textit{quasi-transitivity}, a property that generalized frames must satisfy.
 We study the interrelations between all of these conditions and discuss their adequacy.
 
-In this thesis we compare the expressiveness of ordinary and generalized semantics. Furthermore,
-we give procedures that under some assumptions transform, while preserving theoremhood,
+In this thesis we compare the expressiveness of ordinary and generalized Veltman semantics. Furthermore,
+we give procedures that under some assumptions transform, while preserving modal theoremhood,
 ordinary models to generalized models and vice versa.
 
 We study the frame conditions of various relevant interpretability principles
@@ -244,6 +245,48 @@ Our work is, to our knowledge, the first attempt at formalizing interpretability
 \end{abstract}
 
 \newpage
+
+\renewcommand{\abstractname}{Resum}
+\begin{abstract}
+\begin{center}
+\text{\Huge Resum}
+\end{center}
+~\\[0.5cm]
+
+Teories aritmètiques suficientment fortes tals com \pa{} poden formalitzar el seu predicat
+d\?interpretabilitat. Aquest predicat expressa el concepte d'interpretabilitat relativitzada
+entre extensions finites de la teoria. Les lògiques d'interpretabilitat estudien
+el comportament estructural desmotrable del predicat d'interpretabilitat.
+
+Les lògiques d'interpretabilitat extenen la lògica de demostrabilitat \gl. Com a tals,
+hereten algunes similaritats de \gl{}. Per exemple, la possibilitat de definir una semàntica
+relacional. En aquesta tesi ens centrem en l'estudi de dues variacions de semàntiques relacionals
+a l'estil Kripke que es coneixen com \textit{semàntica ordinària Veltman} i \textit{semàntica generalitzada Veltman}.
+
+En la literature trobem vàries definicions de semàntica generalitzada Veltman. En particular,
+hi ha diverses condicions de \textit{quasi-transitivitat}, una propietat que els marcs
+ generalitzats de Veltman han de satisfer.
+Estudiem les interrelacions entre aquestes condicions i comentem la seva pertinència.
+
+En aquesta tesi comparem l'expressivitat de les semàntiques Veltman ordinàries i generalitzades.
+A més, descrivim procediments que sota certes hipòtesis transformen, preservant
+els teoremes modals, models ordinaris Veltman a models generalitzats Veltman i vice versa.
+
+Estudiem les conditions de marc per diversos principis d'interpretabilitat que es troben
+en la literatura. A més, donem noves condicions de marc pel principi \prin{R_1}
+i la sèrie de principis \prin{R^n} de \cite{two-new-series} respecte semàntica generalitzada
+Veltman.
+
+Hem formalitzat les nostres aportacions en Agda, que és un assistent de demostració modern
+basat en una lògica intuïcionista amb tipus dependents. A banda de donar solidesa als
+nostres avenços, esperem que la nostra llibreria d'Agda pugui ser un punt de trobada
+pels investigadors que desitgin formalitzar teoremes en el camp de les lògiques d'interpretabilitat,
+o si més no, que encoratgi més investigació en aquesta direcció.
+La nostra llibreria és, que sapiguem, el primer intent de formalitzar lògiques d'interpretabilitat
+en algun assistent de la demostració.
+\end{abstract}
+\newpage
+
 
 \renewcommand{\abstractname}{Acknowledgements}
 #+begin_abstract
