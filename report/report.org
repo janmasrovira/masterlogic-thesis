@@ -210,24 +210,37 @@
 \begin{center}
 \text{\Huge Abstract}
 \end{center}
-~\\[0.8cm]
+~\\[0.5cm]
 
-Sufficiently strong arithmetical theories such as \pa{} can formalize the
+Sufficiently strong arithmetical theories such as \pa{} can formalize
 their interpretability predicate. This predicate expresses the concept of relativized
 interpretability between finite extensions of the theory. Interpretability logics
 study the provable structural behaviour of the interpretability predicate.
 
-Interpretability logics extend provability logic \gl{} and thus inherit a number
-of similarities from such logic, for instance, the possiblity to give relational semantics.
+Interpretability logics extend provability logic \gl{}. As such, interpretability logics
+inherit a number of similarities from \gl{}, for instance, the possiblity to give relational semantics.
 In this thesis we focus on the study of two variations of relational semantics à la Kripke
 known as \textit{ordinary Veltman semantics} and \textit{generalized Veltman semantics}.
 
-In this thesis we compare the expressivness of ordinary and generalized semantics
-and give procedures that under some assumptions transform, while preserving theoremhood,
+In literature we find various definitions of generalized Veltman semantics. In particular,
+there are several conditions of \textit{quasi-transitivity}, a property that generalized frames must sastisfy.
+We study the interrelations between all of these conditions and discuss their adequacy.
+
+In this thesis we compare the expressiveness of ordinary and generalized semantics. Furhtermore,
+we give procedures that under some assumptions transform, while preserving theoremhood,
 ordinary models to generalized models and vice versa.
 
-We study a eight different versions of \textit{generalized Veltman semantics}
+We study the frame conditions of various relevant interpretability principles
+present in the literature. Moreover, we provide novel frame conditions for the
+the principle \prin{R_1} and the \prin{R^n} series of principles with respect to generalized
+semantics.
 
+We have formalized our findings in Agda, which is a state-of-the-art proof assistant
+based on an intuitionistic theory which features dependent types.
+A part from giving a solid base to our claims, we hope that our Agda library will
+provide a rallying point for researchers willing to formalize theorems in the
+field of interpretability logics, or at least, to encourage more research in that direction.
+Our work is, to our knowledge, the first attempt at formalizing interpretability logics in any proof assistant.
 \end{abstract}
 
 \newpage
@@ -695,7 +708,7 @@ thanks
    instance of any of the axioms, we can show that $A→B$ follows from MP, C1 and
    the corresponding axiom. If $B=□B'$ follows from the necessitation rule then
    by definition of the necessitation rule we have $⊢_\il{}B'$ and thus by
-   necessitation, C1 and MP we can prove $$. If $B$ follows from an
+   necessitation, C1 and MP we can prove $Π⊢_\il{}A→□B'$. If $B$ follows from an
    assumption we have two cases. If $B=A$ then we show $⊢_\il{}A→A$ as we do in
    classical logic. If $B∈Π$ we proceed as before using MP, C1. Finally, if $B$
    is the result of a MP application then we have that $A,Π⊢_\il{}C→B$ and
@@ -5824,7 +5837,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    syntax. The eDSL is layer above the definition which allows us to use nice
    syntax while still relying on the simple definition of \il{} we provided in
    the previous chapter. Of course, the main challenge is to prove that we can
-   transform proofs in the nice syntax to proofs in the original format. We will
+   transform proofs in the nice syntax to proofs in the original syntax. We will
    comment on it later on this section.
 
    We proceed by giving a short description of the language, which consists of
