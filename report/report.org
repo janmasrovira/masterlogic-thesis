@@ -207,19 +207,26 @@
 \end{titlepage}
 
 \begin{abstract}
-\centering
+\begin{center}
 \text{\Huge Abstract}
-~\\[1.2cm]
+\end{center}
+~\\[0.8cm]
 
 Sufficiently strong arithmetical theories such as \pa{} can formalize the
 their interpretability predicate. This predicate expresses the concept of relativized
 interpretability between finite extensions of the theory. Interpretability logics
 study the provable structural behaviour of the interpretability predicate.
 
-Interpretability logics extend provability logics and 
+Interpretability logics extend provability logic \gl{} and thus inherit a number
+of similarities from such logic, for instance, the possiblity to give relational semantics.
+In this thesis we focus on the study of two variations of relational semantics à la Kripke
+known as \textit{ordinary Veltman semantics} and \textit{generalized Veltman semantics}.
 
+In this thesis we compare the expressivness of ordinary and generalized semantics
+and give transformations to interchange them under some assumptions.
 
-In this thesis we study interpretability logics.
+We study a eight different versions of \textit{generalized Veltman semantics}
+
 \end{abstract}
 
 \newpage
@@ -509,6 +516,9 @@ thanks
    while reading the remainder of the thesis.
 
 *** Text
+    Here we list a number of notational conventions that we use in the text of
+    the thesis:
+
    1. If $R$ and $R'$ are binary relations, then $wRuR'v$ means $wRu$ and $uR'v$.
       For instance $wRuS_xv$ means $wRu$ and $uS_xv$. Another example: $wRu⊩A$
       means $wRu$ and $u⊩A$.
@@ -992,13 +1002,6 @@ thanks
    #+attr_latex: :float t :width 0.96\textwidth :placement [H]
    [[file:img/trans-2-4-6.pdf]]
 
- # All of the presented quasi-transitivity requirements are adequate for proving
- # IL soundness and completeness. For soundness it is routine to check that every
- # instantiation of $J2$ holds. For the completeness part it is enough to see that
- # any ordinary Veltman model $M=⟨W,R,S,V⟩$ can be transformed into a generalized
- # Veltman model $M'=⟨W,R,S',V⟩$ where $S'≔\{⟨w,x,\{y\}⟩:⟨w,x,y⟩∈S\}$ and see that
- # $M'$ has the same truth value as $M$. This has been verified in Agda.
-
  {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
  \[\sf{Mon}≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the monotonicity condition. The
  following implications hold.
@@ -1074,7 +1077,7 @@ thanks
   assuming the monotonicity condition. By ``can be assumed without harm'', we
   mean that for any generalized Veltman frame, we can find another generalized
   Veltman frame that it satisfies the monotonicity condition and moreover both
-  frames will share truth value when expanded to a generalized Veltman model
+  frames will be modally equivalent when expanded to a generalized Veltman model
   with a valuation. In the following theorem we prove this fact.
 
   {{{begintheorem}}} <<theorem:mono>> Let $F=⟨W,R,S⟩$ be a generalized Veltman
@@ -1150,21 +1153,24 @@ thanks
   $w⊩¬(p ▷ q)$ is no longer true. {{{endremark}}}
 
 * Generalized vs ordinary models
-  In this part we explore the expressiveness of ordinary and generalized
-  Veltman semantics. In particular, we discuss how we can transform an ordinary
-  model into a generalized model and vice versa. Needless to say, we have the
-  requirement that the transformation preserves the truth value of the original
-  model.
+  In this part we explore the expressiveness of ordinary and generalized Veltman
+  semantics. In particular, we discuss how we can transform an ordinary model
+  into a generalized model and vice versa. Needless to say, we have the
+  requirement that the transformation preserves the modal theoremhood of the
+  original model. The notion of modal theoremhood is made precise by
+  cref:def:mod-equiv-world,def:mod-equiv-model.
 
-  {{{begindef}}} *Modally equivalent worlds*. \glsadd{elemequivworlds} Given
-  models $M$ and $M'$, we say that two worlds $w∈M$ and $w'∈M'$ are modally
-  equivalent iff for every formula $A$ we have: \[ M,w⊩A⇔M,w'⊩A\] {{{enddef}}}
+  {{{begindef}}} <<def:mod-equiv-world>> *Modally equivalent worlds*.
+  \glsadd{elemequivworlds} Given models $M$ and $M'$, we say that two worlds
+  $w∈M$ and $w'∈M'$ are modally equivalent iff for every formula $A$ we have: \[
+  M,w⊩A⇔M,w'⊩A.\] {{{enddef}}}
 
-  {{{begindef}}} *Modally equivalent models*. \glsadd{elemequivmodels} Given
-  models $M$ and $M'$, we say that $M$ and $M'$ are modally equivalent iff
-  for every world $w∈M$ there is a world $w'∈M'$ such that $w$ and $w'$ are
-  modally equivalent. And vice versa, for every world in $w'∈M'$ there exists
-  a world $w∈M$ such that $w$ and $w'$ are modally equivalent {{{enddef}}}
+  {{{begindef}}} <<def:mod-equiv-model>> *Modally equivalent models*.
+  \glsadd{elemequivmodels} Given models $M$ and $M'$, we say that $M$ and $M'$
+  are modally equivalent iff for every world $w∈M$ there is a world $w'∈M'$ such
+  that $w$ and $w'$ are modally equivalent. And vice versa, for every world in
+  $w'∈M'$ there exists a world $w∈M$ such that $w$ and $w'$ are modally
+  equivalent {{{enddef}}}
 
   In cref:sec:ord-to-gen we see a straightforward transformation from an
   ordinary Veltman model into a generalized Veltman model. In cref:sec:verbrugge
