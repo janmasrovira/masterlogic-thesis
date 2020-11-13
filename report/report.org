@@ -503,16 +503,22 @@ thanks
 
 ** Notation
    <<sec-notation>>
-   Some notation that we use throughout the report:
+
+   In this chapter we will fix notation that is used throughout the thesis. Of
+   course, it makes most sense to skip the section at first and come back to it
+   while reading the remainder of the thesis.
+
+*** Text
    1. If $R$ and $R'$ are binary relations, then $wRuR'v$ means $wRu$ and $uR'v$.
       For instance $wRuS_xv$ means $wRu$ and $uS_xv$. Another example: $wRu⊩A$
-      means $wRu$ and $u⊩A$;
-   2. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$;
+      means $wRu$ and $u⊩A$.
+   2. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$.
    3. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
-   4. $⟦A⟧≔\{w:w⊩A\}$;
-   7. when we write a dot after the quantification of some variables, the scope of
-      the variables extends to the rightmost part of what follows. Hence the
-      formula  $∀x∃y.Pxy∧∀z.Pyz$ is equivalent to $∀x∃y(Pxy∧∀z(Pyz))$.
+   4. $⟦A⟧≔\{w:w⊩A\}$.
+   7. When we write a dot after the quantification of some variables, the scope
+      of the variables extends to the rightmost part of what follows, of course,
+      without escaping parentheses. Hence the formula $∀x∃y.Pxy∧∀z.Pyz$ is
+      equivalent to $∀x∃y(Pxy∧∀z(Pyz))$.
    8. We use commas to denote conjunction, so $∀x.A(x),B(x)$ should be
       read as for all $x$ we have $A(x)$ and $B(x)$.
    9. If \prin{X} is a principle (or axiom schema), we denote by \prin{ILX} the
@@ -521,13 +527,12 @@ thanks
       and \prin{Y} to the \il{}, and so on.
 
 *** Diagrams
-    <<sec:notation-diagrams>>
-    Throughout the thesis we present some diagrams to represent ordinary and
-    generalized Veltman frames. We believe that diagrams can help the reader
-    have a better understanding of the underlying formula, however, they are not
-    meant to be a replacement as they cannot unambiguously convey all the
-    information in the formula. Here we list some conventions that we use to
-    help the reader understand the presented diagrams diagrams.
+    <<sec:notation-diagrams>> Throughout the thesis we present some diagrams to
+    represent ordinary and generalized Veltman frames. We believe that diagrams
+    can help the reader have a better understanding of the underlying formula.
+    However, diagrams are not meant to be a replacement as they cannot
+    unambiguously convey all the information in the formula. Here we list some
+    conventions that we use to help the reader understand the presented diagrams.
 
     - *Straight arrows*: We use straight arrows to represent the $R$ relation.
       For instance we represent $xRy$ thus:
@@ -559,8 +564,8 @@ thanks
       improves the readability of the diagram. For instance, if we want to
       express the condition $∀y(∀x(xRy)⇒∃z(yRz))$ we will draw the picture
       below. As a rule of thumb we do not annotate the quantification of
-      variables which are universally quantified for the whole formula or are
-      free.
+      variables which are universally quantified for the whole formula or which
+      are free.
       #+attr_latex: :float nil :width 0.14\textwidth :placement [H]
       [[file:img/quantifier.pdf]]
 
@@ -568,8 +573,8 @@ thanks
       negative position (assumptions) and red ink for conditions which appear in
       a positive position (consequences). Thus, the intended meaning of color is
       that ``if everything drawn in black holds, then what is drawn in red must
-      hold''. Consider the transitivity condition $xRyRz⇒xRz$, then we would
-      draw the following:
+      hold''. For instance, in order to represent the transitivity condition
+      $xRyRz⇒xRz$ we would draw the following:
       #+attr_latex: :float nil :width 0.14\textwidth :placement [H]
       [[file:img/notation-trans.pdf]]
 ** Language
