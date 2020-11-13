@@ -223,7 +223,8 @@ In this thesis we focus on the study of two variations of relational semantics �
 known as \textit{ordinary Veltman semantics} and \textit{generalized Veltman semantics}.
 
 In this thesis we compare the expressivness of ordinary and generalized semantics
-and give transformations to interchange them under some assumptions.
+and give procedures that under some assumptions transform, while preserving theoremhood,
+ordinary models to generalized models and vice versa.
 
 We study a eight different versions of \textit{generalized Veltman semantics}
 
@@ -616,10 +617,10 @@ thanks
    The scope of unary symbols $□,♢,¬$ is as small as possible. Thus $□A∧¬¬B$ is
    the same as $(□A)∧(¬¬B)$. Also, $→$ has right associativity.
 ** Logic \il
-   <<sec:il>> As explained in the overview (cref:sec:overview) the logic
-   \il{} is the logic that we use as the base for other interpretability logics.
-   The logic \il{} extends \gl{} with new five axioms schemas. J1--J5 which
-   reflect some facts about interpretations.
+   <<sec:il>> As explained in the overview (cref:sec:overview) the logic \il{}
+   is the logic that we use as the base for other interpretability logics. The
+   logic \il{} extends \gl{} with five new axiom schemas denoted by J1--J5.
+   These new axioms reflect some facts about formalized interpretability.
 
    After the definition of \il{} we proceed by showing a number of theorems
    related to it. All of these theorems have been verified and their Agda proof
@@ -633,37 +634,42 @@ thanks
    - C3: $(¬ A → ¬ B) → (B → A)$;
    - K: $□ (A → B) → □ A → □ B$;
 
-     this provability principle is known as the /distribution axiom/ and implies
+     This provability principle is known as the /distribution axiom/ and implies
      that if we can prove that $A$ implies $B$, then we can prove $B$ from a
      proof of $A$.
-   - L: $□ (□ A → A) → □ A$;
+   - L: $□ (□ A → A) → □ A$.
 
-     this provability principle corresponds to Löbs theorem.
-   - J1: $□ (A → B) → A ▷ B$;
+     This provability principle corresponds to Löbs theorem.
+   - J1: $□ (A → B) → A ▷ B$.
 
-     this interpretability principle expresses the fact that if a theory $T$ can
+     This interpretability principle expresses the fact that if a theory $T$ can
      prove that $A$ is at least as strong as $B$, then $T+A$ interprets $T+B$.
-   - J2: $A ▷ B ∧ B ▷ C → A ▷ C$;
+   - J2: $(A ▷ B) ∧ (B ▷ C) → A ▷ C$.
 
-     this interpretability principle gives us transitivity for interpretations.
-   - J3: $(A ▷ C ∧ B ▷ C) → (A ∨ B) ▷ C$;
+     This interpretability principle gives us transitivity for interpretations.
+   - J3: $((A ▷ C) ∧ (B ▷ C)) → (A ∨ B) ▷ C$.
 
-     this interpretability principle allows us to build interpretations by
+     This interpretability principle allows us to build interpretations by
      cases.
-   - J4: $A ▷ B → ♢ A → ♢ B$;
+   - J4: $A ▷ B → (♢ A → ♢ B)$.
 
-     this interpretability principle reflects the fact that relative
+     This interpretability principle reflects the fact that relative
      interpretability gives us a proof of relative consistency.
-   - J5: $♢ A ▷ A$.
+   - J5: $(♢ A) ▷ A$.
 
-     the last interpretability principle expresses the property that from a
-     consistency proof of $A$ we can build an interpretation to $A$ itself.
+     The last interpretability principle expresses the property that from a
+     consistency proof of $A$ we can build an interpretation of $A$ itself. This
+     reflects the fact that the Henkin construction can be formalized.
+
    If $A$ is an instantiation of any of the previous axiom schemas, then $A$ is
    a theorem of $\il{}$, which we denote with $⊢_{\il}A$. Additionally it has
    the following rules:
-   - Necessitation: if $⊢_{\il}A$ then $⊢_{\il}□A$;
-   - modus ponens: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$;
-   - identity: If $A∈Π$ then $Π⊢_{\il}A$.
+   - /Necessitation/: if $⊢_{\il}A$ then $Π⊢_{\il}□A$. Notice that the
+     necessitation rule requires $A$ to be provable from an empty set of
+     assumptions. In the consequence of the rule ($Π⊢_{\il}□A$) we allow an
+     arbitrary context $Π$.
+   - /Modus ponens/: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$.
+   - /Identity/: If $A∈Π$ then $Π⊢_{\il}A$.
    {{{enddef}}}
 
    {{{beginremark}}} While it is acceptable to have an infinite set of
@@ -677,14 +683,14 @@ thanks
    is done by an induction on the proof. We only need to take care of shifting
    one position the references to assumptions. {{{endproof}}}
 
-   {{{begintheorem}}} *Deduction*.
-   $Π⊢_{\il}A→B$ iff $A,Π⊢_{\il}B$. {{{endtheorem}}}
-   {{{beginproof}}} {{{agda}}}
-   The $⇒$ direction is trivial. For the other direction we proceed by induction
-   on the proof $A,Π⊢_\il{}B$. We need to show that if $A,Π⊢_\il{}B$ then
-   $Π⊢_\il{}A→B$. If $B$ is an instance of any of the axioms, we can show that
-   $A→B$ follows from MP, C1 and the corresponding axiom. If $B$ follows from
-   the necessitation rule we proceed in the same way. If $B$ follows from an
+   {{{begintheorem}}} *Deduction*. $Π⊢_{\il}A→B$ iff $A,Π⊢_{\il}B$.
+   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The $⇒$ direction is trivial.
+   For the other direction we proceed by induction on the proof $A,Π⊢_\il{}B$.
+   We need to show that if $A,Π⊢_\il{}B$ then $Π⊢_\il{}A→B$. If $B$ is an
+   instance of any of the axioms, we can show that $A→B$ follows from MP, C1 and
+   the corresponding axiom. If $B=□B'$ follows from the necessitation rule then
+   by definition of the necessitation rule we have $⊢_\il{}B'$ and thus by
+   necessitation, C1 and MP we can prove $$. If $B$ follows from an
    assumption we have two cases. If $B=A$ then we show $⊢_\il{}A→A$ as we do in
    classical logic. If $B∈Π$ we proceed as before using MP, C1. Finally, if $B$
    is the result of a MP application then we have that $A,Π⊢_\il{}C→B$ and
