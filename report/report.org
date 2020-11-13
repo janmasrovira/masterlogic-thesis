@@ -623,8 +623,12 @@ thanks
    These new axioms reflect some facts about formalized interpretability.
 
    After the definition of \il{} we proceed by showing a number of theorems
-   related to it. All of these theorems have been verified and their Agda proof
-   can be found in cref:src:il.properties.
+   related to it. All of these theorems have been verified by a computer using
+   the proof-assistant Agda. In cref:sec:logic-agda we will explain how Agda
+   works and what it means for a proof to be formally verified in Agda. In
+   cref:sec:agda-thesis we will explain how we have formalized the presented
+   theorems and their respective proofs in Agda. The Agda proofs of the theorems
+   presented in this section can be found in cref:src:il.properties.
 
    {{{begindef}}} \glsadd{il} The logic \il{} encompasses all classical theorems
    in the new language (given by C1, C2 and C3), all theorems of \prin{GL} in
@@ -643,7 +647,8 @@ thanks
    - J1: $□ (A → B) → A ▷ B$.
 
      This interpretability principle expresses the fact that if a theory $T$ can
-     prove that $A$ is at least as strong as $B$, then $T+A$ interprets $T+B$.
+     prove that $A$ is at least as strong as $B$, then $T+A$ interprets $T + B$
+     using the identity interpretation.
    - J2: $(A ▷ B) ∧ (B ▷ C) → A ▷ C$.
 
      This interpretability principle gives us transitivity for interpretations.
@@ -675,13 +680,13 @@ thanks
    {{{beginremark}}} While it is acceptable to have an infinite set of
    assumptions $Π$, when verifying properties in Agda we have restricted
    ourselves to finite sets and thus we assume that $Π$ is finite in the Agda
-   proof. This restriction is not meaningful in the context of this thesis.
+   proof.
    {{{endremark}}}
 
    {{{begintheorem}}} *Weakening*. If $Π⊢_{\il}A$ then $B,Π⊢_{\il}A$.
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The proof is trivial. In Agda it
-   is done by an induction on the proof. We only need to take care of shifting
-   one position the references to assumptions. {{{endproof}}}
+   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The proof is by induction on the
+   proof. In Agda it is done by an induction on the proof. We only need to take
+   care of shifting one position the references to assumptions. {{{endproof}}}
 
    {{{begintheorem}}} *Deduction*. $Π⊢_{\il}A→B$ iff $A,Π⊢_{\il}B$.
    {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The $⇒$ direction is trivial.
@@ -760,11 +765,8 @@ thanks
    &5.\ (A ∨ ♢ A) ▷ A & \text{by MP 3, 4}
    \end{flalign*}
 
-  # ⇨ : Π ⊢ A ▷ (A ∨ ♢ A)
-  # ⇨ = MP J1 (nec ⊢A↝A∨B)
-  # ⇦ : Π ⊢ (A ∨ ♢ A) ▷ A
-  # ⇦ = MP J3 (⊢∧ ⇐ (⊢A▷A ⸴ J5))
-
+   In cref:sec:edsl we will present a verified language to write verified
+   Hilbert style proofs using a computer with paper-like syntax.
    {{{endproof}}}
 
 ** Veltman Semantics
@@ -2444,6 +2446,7 @@ thanks
     Where $a,b$ are different variables.
    {{{endremark}}}
 * The logic of Agda
+  <<sec:logic-agda>>
 
   In this part we give an informal overview of the basic Agda constructions,
   which will hopefully help the reader get an intuition of how dependent types
@@ -5091,7 +5094,7 @@ Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
  absurd = self-app (bad self-app)
     #+end_src
 * Agda in the thesis
-  <<sec:agda-project>>
+  <<sec:agda-thesis>>
   The goal of this part is to guide the reader through some key parts of the
   code that we have implemented. It is worth noting that we have started from
   scratch as we believe that no other previous work in interpretability logics
@@ -5768,26 +5771,26 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    #+end_src
    Although the Agda proofs of $A→A$ and $A▷A$ are short, it is very hard for a
    human to fully understand them with the Agda syntax used above. This problem
-   motivates our next section, in which we present a way to express syntactic
+   motivates our next chapter, in which we present a way to express syntactic
    proofs in Agda using paper-like syntax.
 
-*** An eDSL for syntactic proofs
-    <<sec:edsl>>
-     In this section we present a language for writing Hilbert style proofs for
-     logic \il. This language was first presented by the author of this paper in
-     cite:slug for logic $K$.
+** An eDSL for syntactic proofs
+    <<sec:edsl>> In this chapter we present a verified language for writing
+    Hilbert style proofs for logic \il. This language was first presented by
+    the author of this paper in cite:slug for logic $K$.
 
-     We begin by introducing the concept of eDSL. The acronym eDSL stands for
-     /Embedded Domain Specific Language/. It refers to a small language (a set of
-     functions and datatypes) embedded in another language (in this case Agda)
-     that has been designed to solve a problem in a very specific domain, in this
-     case, Hilbert style proofs.
+    We begin by introducing the concept of eDSL. The acronym eDSL stands for
+    /Embedded Domain Specific Language/. It refers to a small language (a set of
+    functions and datatypes) embedded in another language (in this case Agda)
+    that has been designed to solve a problem in a very specific domain, in this
+    case, Hilbert style proofs.
 
-     We begin by showing how we could write the two syntactic proofs presented
-     in the previous section in our eDSL. Then we will present the language in
-     detail.
+    We begin by showing how we could write the two syntactic proofs presented
+    in the previous section in our eDSL. Then we will present the language in
+    detail.
 
-     First example:
+    The first example shows how we can formalize the proof $⊢_\il{}A→A$ in the
+    new language.
    #+begin_src text
 ⊢A↝A : ∀ {A} → [] ⊢ A ↝ A
 ⊢A↝A {A} =
@@ -5812,14 +5815,16 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 
    We see that our eDSL allows us to write syntactic proofs in a very similar
    human-friendly syntax which is almost identical to the pen and paper usual
-   syntax with the standout benefit that the proof is computer checked. We want
-   to emphasize, as it may be surprising to the reader, that the proofs shown
-   above are actual Agda code. It is crucial to make clear that this eDSL is
-   /not/ an alternative definition of the logic \il{} presented in different
-   syntax. The eDSL is just a layer above the definition which allows us to use
-   nice syntax while still relying on the simple definition of \il{} we provided
-   in the previous section. Of course, we will need to prove that we can
-   transform proofs in the nice syntax to proofs in the old format. We will
+   syntax with the standout benefit that the proof is computer checked. In
+   particular, it is checked by Agda's type checking algorithm.
+
+   We want to emphasize, as it may be surprising to the reader, that the proofs
+   shown above are actual Agda code. It is crucial to make clear that this eDSL
+   is /not/ an alternative definition of the logic \il{} presented in different
+   syntax. The eDSL is layer above the definition which allows us to use nice
+   syntax while still relying on the simple definition of \il{} we provided in
+   the previous chapter. Of course, the main challenge is to prove that we can
+   transform proofs in the nice syntax to proofs in the original format. We will
    comment on it later on this section.
 
    We proceed by giving a short description of the language, which consists of
@@ -5930,7 +5935,7 @@ title=Bibliography
    This appendix contains a thorough description of some of the Agda related
    topics that were discussed in the thesis. We believe that the intuition given
    in the introduction should be enough for the reader to be able to read
-   cref:sec:agda-project, however, we encourage the reader to resort to the
+   cref:sec:agda-thesis, however, we encourage the reader to resort to the
    ensuing reference if they wish for more precise information on the language.
    The contents of this section have been merely copied from the online Agda
    documentation (cite:agda-doc).
