@@ -226,7 +226,7 @@ In the literature we find various definitions of generalized Veltman semantics. 
 there are several conditions of \textit{quasi-transitivity}, a property that generalized frames must sastisfy.
 We study the interrelations between all of these conditions and discuss their adequacy.
 
-In this thesis we compare the expressiveness of ordinary and generalized semantics. Furhtermore,
+In this thesis we compare the expressiveness of ordinary and generalized semantics. Furthermore,
 we give procedures that under some assumptions transform, while preserving theoremhood,
 ordinary models to generalized models and vice versa.
 
