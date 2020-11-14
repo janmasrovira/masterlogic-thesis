@@ -275,10 +275,10 @@ generalitzades. A més, descrivim procediments que sota certes hipòtesis
 transformen, preservant els teoremes modals, models ordinaris Veltman a models
 generalitzats Veltman i viceversa.
 
-Estudiem les condicions de marc per diversos principis d'interpretabilitat que es troben
-en la literatura. A més, donem noves condicions de marc pel principi \prin{R_1}
-i la sèrie de principis \prin{R^n} de \cite{two-new-series} respecte semàntica generalitzada
-Veltman.
+Estudiem les condicions de marc per diversos principis d'interpretabilitat que
+es troben en la literatura. A més, donem noves condicions de marc pel principi
+\prin{R_1} i la sèrie de principis \prin{R^n} presentats en
+\cite{two-new-series} respecte semàntica generalitzada Veltman.
 
 Hem formalitzat les nostres aportacions en Agda, que és un assistent de demostració modern
 basat en una lògica intuïcionista amb tipus dependents. A banda de donar solidesa als
@@ -1764,30 +1764,31 @@ en algun assistent de la demostració.
 * Frame conditions
   <<sec:frame-condition>>
 
+** Introduction to principles and frame conditions
   An interpretability principle is a schema of modal formulas that carries some
   special significance. The relevance of a principle mainly stems from two
   factors. On the one hand we have principles, such as the principle \prin{M},
-  that give rise to  interpretability logics for certain theories. For instance,
-  \prin{ILM} is the interpretability logic of \pa{}: \prin{IL(PA)}. On the
-  other hand we have principles which are valid in all reasonable arithmetical
-  theories and thus are interesting in the search of an axiomatization for the
-  theory \ilall. For instance, the series of principles \prin{R^n} and
-  \prin{R_n}, which we will present in this part, are central to the best known
-  lower bound for \ilall. Regardless of the area of interest, finding the frame
-  condition for a principle is always the first step towards studying the nature
-  of the principle. Once we have established a
-  frame condition for a principle, say \prin{X}, one has more tools when
-  studying, for instance, modal soundness and completeness of the logic
-  \prin{ILX}. Soundness in itself is already an interesting result, but its
-  utility grows when it is applied to prove independence results between
-  principles. To prove that two principles \prin{X} and \prin{Y} are independent
-  means to show $\prin{ILX}⊬\prin{Y}$ and $\prin{ILY}⊬\prin{X}$, which is done
-  by building countermodels (for instance, see cite:joosten-master), as usual in
-  modal logics. To prove that a principle does not entail another principle is a
+  that give rise to interpretability logics for certain theories. For instance,
+  \prin{ILM} is the interpretability logic of \pa{}: $\prin{ILM}=\prin{IL(PA)}$.
+  On the other hand we have principles which are valid in all reasonable
+  arithmetical theories and thus are interesting in the search of an
+  axiomatization for the logic \ilall. For instance, the series of principles
+  \prin{R^n} and \prin{R_n}, which we will present in this part, are central to
+  the best known lower bound for \ilall. Regardless of the area of interest,
+  finding the frame condition for a principle is always the first step towards
+  studying the nature of the principle. Once we have established a frame
+  condition for a principle, say \prin{X}, one has more tools when studying, for
+  instance, modal soundness and completeness of the logic \prin{ILX}. Soundness
+  in itself is already an interesting result, but its utility grows when it is
+  applied to prove independence results between principles. To prove that two
+  principles \prin{X} and \prin{Y} are independent means to show
+  $\prin{ILX}⊬\prin{Y}$ and $\prin{ILY}⊬\prin{X}$, which is done by building
+  countermodels (for instance, see cite:joosten-master), as usual in modal
+  logics. To prove that a principle does not entail another principle is a
   necessary step in order to improve lower bound of \ilall{} since we need to
   show that the new lower bound does indeed not follow from the previous lower
-  bound. In this thesis however, we are not concerned in independence results and
-  we will only focus on the frame conditions.
+  bound. In this thesis however, we are not concerned in independence results
+  and we will only focus on the frame conditions.
 
   As we have briefly mentioned in the overview at the beginning of this thesis,
   a frame condition captures the relational semantic nature of principle. To be
@@ -2629,30 +2630,43 @@ en algun assistent de la demostració.
    For instance, if we want the frame condition for \prin{P₀} we would look at
     \[\kgen{(a ▷ ♢ b → □ (a ▷ b))^*}.\]
     Where $a,b$ are different propositional variables.
-   {{{endremark}}}
+    {{{endremark}}}
 * The logic of Agda
   <<sec:logic-agda>>
 
-  In this part we give an informal overview of the basic Agda constructions,
-  which will hopefully help the reader get an intuition of how dependent types
-  can be used to formalize and prove mathematical properties. We will also
-  highlight some intricacies of the language that are relevant to our thesis.
-  This part of the thesis is not meant to be an exhaustive analysis of the inner
-  workings of Agda, as this falls out of the scope of this thesis. The original
-  author of Agda, Ulf Norell, has suggested[fn::In correspondence via email.]
-  cite:cockx2018elaborating as a good reference for that purpose.
+  The purpose of this part is to give a gradual introduction to Agda.
 
-  As for the logical basis of Agda... Quote from (cite:sep-type-theory-intuitionistic)
-  \begin{quote}
-  Agda is another proof assistant which is based on the logical framework
-  formulation of intuitionistic type theory, but adds numerous features
-  inspired by practical programming languages (\cite{norell:thesis}). It is an
-  intensional theory with decidable judgments and a type-checker similar to
-  Coq’s. However, in contrast to Coq it is based on Martin-Löf’s predicative
-  intuitionistic type theory.
-  \end{quote}
+  In cref:sec:intro-types we will give a short introduction to untyped lambda
+  calculus. Then we will proceed with simply typed lambda calculus. The
+  important takeaway of this chapter is to observe how we can use types to rule
+  out bogus terms.
+
+  In cref:sec:martin-lof we will explain Martin Löf's logical framework. This
+  system features dependent types and thus is a suitable system to formalize
+  propositions and proofs. This system is especially important because it is the
+  basis of Agda's type theory. We will see how we can embed intuitionistic
+  propositional logic into the system and how we can prove some simple
+  properties about natural numbers.
+
+  In cref:sec:basic-agda we give an approximated specification of the Agda
+  language. We must emphasize that it is an /approximation/ because there is no
+  formal specification of Agda. The one we present has been built from the
+  official documentation (cite:agda-doc), Ulf Norell's[fn::Original author of
+  Agda.] PhD thesis (cite:norell:thesis) and personal experience {{{jan(personal
+  experience seems like a joke... but it's true. Is this acceptable?)}}}.
+  Furthermore, by no means we attempt to describe all the language. Rather, we
+  focus on the parts which are more important to understand our implementation,
+  which we will present in cref:sec:agda-thesis.
+
+  In cref:sec:agda-tutorial we present an introductory tutorial to Agda. The
+  spirit of this tutorial is to prioritize intuition over formalization and
+  precision. We believe that . Furthermore, this is the format in which Agda is
+  presented to the public in its official documentation (cite:agda-doc) and some
+  of the most popular learning resources
+  (cite:plfa2019,norell2008dependently,bove2009brief).
 
 ** Introduction to types
+   <<sec:intro-types>>
    Type theory is a branch of mathematical symbolic logic. It formalizes
    mathematical concepts through terms, types and a typing relation between
    them. One could think of types as predicates on terms. We write $T:A$ to say
@@ -2871,9 +2885,9 @@ en algun assistent de la demostració.
     the upcoming cref:sec:martin-lof we present a full description of a theory
     which is based on dependent types and is the logical basis of Agda.
 ** Martin Löf's logical framework
-   <<sec:martin-lof>> In this \this{} we will present the intuitionistic type
+   <<sec:martin-lof>> In this chapter we will present the intuitionistic type
    theory presented in cite:nordstrom1990programming. We will refer to this
-   theory as /Martin Löf's logical framework/ or LF for short. Even though Agda
+   system as /Martin Löf's logical framework/ or LF for short. Even though Agda
    lacks a well defined specification, LF is considered the basis of Agda's type
    system (cite:sep-type-theory-intuitionistic). Furthermore, Peter Dybjer, who
    is a professor at the Chalmers University of Technology[fn::Where most of the
@@ -2882,30 +2896,66 @@ en algun assistent de la demostració.
    there are important differences between LF and Agda's theory that we will
    comment in cref:sec:basic-agda.
 
-   Logic LF has four types of judgment:
-   1. ``$a$ has type $A$''. We write $a:A$. Crucially, in a type theory that
-      follows the paradigm of /propositions as types/ we may interpret the
-      statement $a:A$ in several ways, all of them equivalent in such a paradigm:
+   The system LF has four kinds of judgment. Each kind of judgment is bound to
+   a /context/. We postpone momentarily the definition of context.
+   1. ``$a$ has type $A$ in context $Γ$''. We write $Γ⊢a:A$. Crucially, in a type
+      theory that follows the paradigm of /propositions as types/ we may
+      interpret the statement $a:A$ in several ways, all of them equivalent in
+      such a paradigm:
       - The term $a$ has type $A$;
       - the term $a$ satisfies the proposition $A$;
       - the term $a$ is a proof of the proposition $A$;
       - the term $a$ is a program that satisfies the specification $A$.
-   2. ``$A$ is a type''. We write $A:\mathsf{Type}$.
-   3. ``$A_1$ and $A_2$ are equal types''. We write $A_1=A_2:\mathsf{Type}$.
-   4. ``$a_1$ and $a_2$ are equal elements of the type $A$''. We write $a_1=a_2:A$.
+   2. ``$A$ is a type in context $Γ$''. We write $Γ⊢A:\mathsf{Type}$.
+   3. ``$A_1$ and $A_2$ are equal types in context $Γ$''. We write
+      $Γ⊢A_1=A_2:\mathsf{Type}$.
+   4. ``$a_1$ and $a_2$ are equal elements of the type $A$ in context $Γ$''. We
+      write $Γ⊢a_1=a_2:A$.
 
-   We say that some proposition (or type) $A$ is true if there exists some $t$
-   such that $t:A$.
+   The following definition characterizes what we consider propositions in the
+   LF system.
+   #+begin_definition
+   We say that $A$ is a proposition (or a type) when we have
+   \[∅⊢A:\type\]
 
-   We say that $A$ is a type if we have a precise definition of the objects in
-   that type and a decidable equivalence relation for the objects of the type.
-
-   {{{jan(Quoted definition of type:)}}} (cite:nordstrom1990programming)
-   \begin{quote}
+   The above is the formal definition of a type within the system. However, it
+   might be helpful for the reader to consider a meta definition of what we
+   understand as type in the system. For that, we quote the description given in
+   cite:nordstrom1990programming:
+   #+begin_quote
    What does it mean that something is a type? To know that $A$ is a type is to
-know what it means to be an object of the type, as well as what it means for two
-objects to be the same.
-   \end{quote}
+   know what it means to be an object of the type, as well as what it means for two
+   objects to be the same. The identity between objects must be an equivalence
+   relation and it must be decidable.
+   #+end_quote
+   #+end_definition
+
+   Since types are proposition in LF, we need a way to discern which
+   propositions hold the status of theorem in LF. Such a notion is given by the
+   following definition.
+   #+begin_definition
+   We say that some proposition (or type) $A$ is true in LF if there exists some
+   $t$ such that: \[∅⊢t:A\]
+   #+end_definition
+
+   Before we give the typing rules of the system we need to define the concept
+   of /context/.
+   #+begin_definition
+    *Context*. Intuitively, a context, is a sequence of typed variables, where
+    each type may depend on the preceding variables in the sequence.
+
+    More precisely, a context is a finite sequence of the form \[x₁:S₁,…,xₙ:Sₙ\]
+    Where each $xᵢ$ denotes a variable[fn::Every variable must be different than
+    the rest, that is, for every $i,j$ such that $i≠j$ we have $xᵢ≠xⱼ$.].
+    Furthermore, given arbitrary terms $a₁,…,a_n$ it must hold that:
+    \begin{flalign*}
+    \label{context-cond}
+    ∅⊢S₁:\type{} &\text{ and } ∅⊢a₁:S₁; \\
+    ∅⊢S₂[x₁↦a₁]:\type{} &\text{ and } ∅⊢a₂:S₂[x₁↦a₁]; \\
+    & … \\
+    ∅⊢S_n[x₁↦a₁,…,x_{n-1}↦a_{n-1}]:\type{} &\text{ and } ∅⊢a_n:S_n[x₁↦a₁,…,x_{n-1}→a_{n-1}].
+    \end{flalign*}
+   #+end_definition
 
    The first type that we define is the type \set{}[fn::The concept of /set/
    used here differs from the one in set theory.]. We refer to the objects of
@@ -2958,23 +3008,7 @@ objects to be the same.
     and gives the name to /dependent types/.
 
     As we did with simply typed lambda calculus, we introduce the concept of a
-    /context/. Intuitively, a context, is a sequence of typed variables, where
-    each type may depend on the preceding variables in the sequence.
-
-    More precisely, a context is a finite sequence of the form \[x₁:S₁,…,xₙ:Sₙ\]
-    Where $xᵢ$ denotes a variable[fn::Every variable must be different than the
-    rest, that is, for every $i,j$ such that $i≠j$ we have $xᵢ≠xⱼ$.].
-    Furthermore, for every $1≤i≤ n$ we have that given arbitrary terms
-    $a₁,…,a_{i-1}$ such that
-    \begin{flalign*}
-   \label{context-cond}
-   S₁:\type{} &\text{ and } a₁:S₁; \\
-   S₂[x₁↦a₁]:\type{} &\text{ and } a₂:S₂[x₁↦a₁]; \\
-   & … \\
-   S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}]:\type{} &\text{ and } a_{i-1}:S_{i-1}[x₁↦a₁,…,x_{i-2}↦a_{i-2}] ;
-    \end{flalign*}
-    then it must be that
-    \[Sᵢ[x₁↦a₁,…,x_{i-1}↦a_{i-1}]:\type{}.\]
+    /context/. 
     If $Γ$ is a context, we write:
     1. $Γ⊢t:A$ to say that term $t$ has type $A$ in the context $Γ$. We write
        $t:A$ instead of $∅⊢t:A$;
@@ -3695,6 +3729,25 @@ objects to be the same.
     Talk about operational semantics.
 ** Basic Agda
    <<sec:basic-agda>>
+
+   This part of the thesis is not meant to be an exhaustive analysis of the inner
+   workings of Agda, as this falls out of the scope of this thesis. The original
+   author of Agda, Ulf Norell, has suggested[fn::In correspondence via email.]
+   cite:cockx2018elaborating as a good reference for that purpose.
+
+   As for the logical basis of Agda... Quote from (cite:sep-type-theory-intuitionistic)
+
+   #+begin_quote
+   Agda is another proof assistant which is based on the logical framework
+   formulation of intuitionistic type theory, but adds numerous features
+   inspired by practical programming languages (\cite{norell:thesis}). It is an
+   intensional theory with decidable judgments and a type-checker similar to
+   Coq’s. However, in contrast to Coq it is based on Martin-Löf’s predicative
+   intuitionistic type theory.
+   #+end_quote
+
+
+
    In this chapter we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
    is an incomplete simplification and thus is not meant to be a precise
@@ -4305,6 +4358,7 @@ objects to be the same.
 *** Syntax sugar
 
 ** Agda tutorial
+   <<sec:agda-tutorial>>
 *** BHK interpretation of propositional logic
    Agda is based on an intuitionistic type theory with dependent types that
    extends Per Martin-Löf's type theory (cite:martin1984intuitionistic).
