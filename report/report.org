@@ -291,6 +291,7 @@ en algun assistent de la demostració.
 \renewcommand{\abstractname}{Acknowledgements}
 #+begin_abstract
 thanks
+# verbrugge
 #+end_abstract
 
 \newpage
@@ -940,8 +941,9 @@ thanks
 
     {{{begintheorem}}} *Local soundness for ordinary semantics* {{{agda}}}
     {{{coq}}} If $Π⊢_{\il}A$ and $M$ is an ordinary model with a world
-    $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} The proof
-    is by induction on the proof $w⊩A$. The cases for necessitation and modus
+    $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
+    {{{beginproof}}} The proof
+    is by induction on the proof $Π⊢_{\il}A$. The cases for necessitation and modus
     ponens follow immediately from the IH. If $A$ is an instance of C1, C2 or C3
     then it is routine to check that all of these axioms hold in $w$. For axioms
     L and K we proceed as we do for \gl{} and Kripke semantics. In
@@ -968,8 +970,12 @@ thanks
     {{{endproof}}}
 
 *** Generalized Veltman semantics
-    Generalized Veltman semantics were introduced by Verbrugge in
-    cite:Verbrugge. These semantics generalize ordinary Veltman semantics in the
+    Generalized Veltman semantics were introduced by Verbrugge in an unpublished
+    manuscript (cite:Verbrugge). We were given permission by the author herself
+    to include the manuscript in cref:pdf:Verbrugge, where we also include some
+    comments about the authorship of some handwritten notes in the document.
+
+    Generalized semantics generalize ordinary Veltman semantics in the
     sense that each $S_w$ relates worlds to sets of worlds. Thanks to this
     change, generalized Veltman semantics turn out to be more convenient and in
     some cases necessary. For instance, the logic \prin{ILP_0} is complete with
@@ -988,7 +994,7 @@ thanks
     1. <<genfr:1>> $R$ is transitive; <<R-trans>>
     2. <<genfr:2>> $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
-    3. <<genfr:3>> if $uS_wY$ then $wRu$ and for all $y∈Y$ we have $wRy$;
+    3. <<genfr:3>> if $uS_wY$, then $wRu$ and for all $y∈Y$ we have $wRy$;
        #+attr_latex: :float nil :width 0.26\textwidth :placement [H]
        [[file:img/cond1-gen.pdf]]
     4. <<genfr:4>> /quasi-reflexivity/: if $wRu$ then $uS_w\{u\}$;
@@ -1070,7 +1076,7 @@ thanks
     cref:src:generalizedveltmansemantics.properties. {{{endproof}}}
 
     {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
-    semantics* {{{agda}}} That is, if $Π⊢_{\il}A$ and $M$ is a generalized Veltman model
+    semantics* {{{agda}}} If $Π⊢_{\il}A$ and $M$ is a generalized Veltman model
     with a world $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
 
     {{{beginproof}}} We only show the case where $A$ is an instance
@@ -1659,7 +1665,12 @@ thanks
     adaptations to accommodate our notation.] Definitions 2.5, 2.7 and
     Propositions 2.6, 2.8 in cite:vukovic2008bisimulations.
 
-    *Definition 2.5* of cite:vukovic2008bisimulations: Let $F=⟨W,R,\{S_w:w∈W\}⟩$
+    The definitions and theorems in this section can be found formalized in Agda
+    in cref:src:generalizedveltmansemantics.properties.vukovic. Note that
+    Proposition 2.8 does not have a finished proof due to the reasons that we
+    will expose.
+
+    *Definition 2.5* of cite:vukovic2008bisimulations {{{agda}}} Let $F=⟨W,R,\{S_w:w∈W\}⟩$
     be a generalized Veltman frame. Let $W'$ consist of all pairs $⟨v,C⟩$, where
     $v∈W$ and $C$ is a set of ordered pairs $⟨x,y⟩∈W²$ such that:
     1. If $xRv$, then $⟨x,v⟩∈C$;
@@ -1673,17 +1684,17 @@ thanks
     ∀y(⟨w,y⟩∈C⇒⟨w,y⟩∈B)\]
     We denote an ordered triple $⟨W',R',\{S'_{w'}:w'∈W'\}⟩$ by $\mathrm{of}(F)$.
 
-    *Proposition 2.6* of cite:vukovic2008bisimulations: Let $M$ be a generalized
+    *Proposition 2.6* of cite:vukovic2008bisimulations {{{agda}}} Let $M$ be a generalized
     Veltman frame, then $\mathrm{of}(M)$ is an ordinary Veltman frame.
-    {{{beginproof}}} {{{agda}}} The proof is omitted in the original paper and
+    {{{beginproof}}} The proof is omitted in the original paper and
     we omit it here too. However, the proof has been formalized in Agda and can
     be found in cref:src:generalizedveltmansemantics.properties.vukovic.
     {{{endproof}}}
 
-    *Definition 2.7* of cite:vukovic2008bisimulations: Let $M=⟨F,V⟩$ be a generalized
-    Veltman model, then we define V' by
-    \[⟨⟨w,A⟩,p⟩∈V' \text{ iff: } ⟨w,p⟩∈V.\]
-    We denote the model $⟨\mathrm{of}(F),V'⟩$ by $\mathrm{o}(M)$.
+    *Definition 2.7* of cite:vukovic2008bisimulations {{{agda}}} Let $M=⟨F,V⟩$
+    be a generalized Veltman model, then we define V' by \[⟨⟨w,A⟩,p⟩∈V' \text{
+    iff: } ⟨w,p⟩∈V.\] We denote the model $⟨\mathrm{of}(F),V'⟩$ by
+    $\mathrm{o}(M)$.
 
     *Proposition 2.8* of cite:vukovic2008bisimulations: Let
     $M=⟨W,R,\{S_w:w∈W\},V⟩$ be a generalized Veltman model. Let
@@ -1706,9 +1717,6 @@ thanks
     property is claimed, but the property highlighted here is the only piece
     missing.] that the following holds: \[⟨w,v₀⟩∈B.\]
     We find ourselves again in a situation which we have not been able to justify.
-
-    The partial Agda proof of Proposition 2.8 can be found in
-    [[src:generalizedveltmansemantics.properties.vukovic]].
 
     As a closing remark, we want to emphasize that we do not deem this proof as
     definitely flawed since we have not found a counterexample to the theorem.
@@ -2889,41 +2897,6 @@ objects to be the same.
    \inferrule[El=]{A=B:\set{} }{\sf{El}(A)=\sf{El}(B):\type{}}
    \end{mathpar}
 
-*** Syntax of types old :noexport:
-      We will proceed by introducing the syntax of types:
-      1. /Bottom/. The constant $⊥$ is a type;
-        \begin{mathpar}
-        \inferrule{\ }{⊥:\mathsf{Type}}
-        \end{mathpar}
-      2. /Disjoint sum/. If $A$ and $B$ are types then $A⊎B$ is a type;
-        \begin{mathpar}
-        \inferrule{A:\mathsf{Type} \\  B:\mathsf{Type}}{A⊎B:\mathsf{Type}}
-        \end{mathpar}
-      3. /Dependent product/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
-         type that may depend on $x$, then $Σ\ (x: A)\ B(x)$ is a type. When
-         $B$ is independent of $x$ we may write $A × B$ instead;
-        \begin{mathpar}
-        \inferrule{x∈\mathsf{Var} \\ A:\mathsf{Type} \\  B(x):\mathsf{Type}}{Σ\ (x: A)\ B(x):\mathsf{Type}}
-        \end{mathpar}
-      4. /Dependent function/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
-         type that may depend on $x$, then $(x: A) → B(x)$ is a type. When $B$
-         is independent of $x$ we may write $A → B$ instead.
-        \begin{mathpar}
-        \inferrule{x∈\mathsf{Var} \\ A:\mathsf{Type} \\  B(x):\mathsf{Type}}{(x: A)→ B(x):\mathsf{Type}}
-        \end{mathpar}
-      Summarizing in BNF we have: \[S≔ ⊥ \ |\ S⊎S\ |\ Σ\ (x : S)\ S(x)\ |\
-      (x:S)→S(x)\]
-
-      while identifying in the sense of Heyting (cite:heyting1966intuitionism)
-      the types with the logical constants and operators, namely $∧,∨,→,⊥$.
-      1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of
-         $A$ into a proof of $B$;
-      2. a proof of $A×B$ is a proof of $A$ and a proof of $B$;
-      3. a proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we
-         commit to and according to that, a proof of $A$ or a proof of $B$;
-      4. nothing is a proof of $⊥$;
-      5. $⊤$ is always true and provable.
-
 *** Syntax of types and terms
     In a theory that features dependent types, presenting types and terms
     separately is not possible as they are tightly intertwined. In fact, terms
@@ -3062,36 +3035,6 @@ objects to be the same.
 
     For now we have no primitive constants. In cref:sec:def-new-types we will
     define some.
-
-    # We will proceed by introducing the syntax of
-    #   types:
-    #   1. /Dependent function/. If $x$ is a variable, $A$ is a type and $B(x)$ is a
-    #      type that may depend on $x$, then $(x: A) ↠ B$ is a type. When $B$
-    #      is independent of $x$ we may write $A → B$ instead.
-    #     \begin{mathpar}
-    #     \inferrule{x∈\sf{Var} \\ A:\type{} \\  [x:A]B:\type{}}
-    #     {(x: A)→ B:\type{}}
-    #     \end{mathpar}
-    #   2. /Variable/.
-    #   3. /Constant/.
-    #   3. /Application/.
-    #   Summarizing in BNF we have: \[S≔ ⊥ \ |\ S⊎S\ |\ Σ\ (x : S)\ S(x)\ |\
-    #   (x:S)→S(x)\]
-
-    #   \begin{mathpar}
-    #   \inferrule[Assum]{A:\type{}}
-    #   {[x:A]⊢x:A}
-    #   \end{mathpar}
-
-      # while identifying in the sense of Heyting (cite:heyting1966intuitionism)
-      # the types with the logical constants and operators, namely $∧,∨,→,⊥$.
-      # 1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of
-      #    $A$ into a proof of $B$;
-      # 2. a proof of $A×B$ is a proof of $A$ and a proof of $B$;
-      # 3. a proof of $A∨B$ is an algorithm telling to which of $A$ or $B$ we
-      #    commit to and according to that, a proof of $A$ or a proof of $B$;
-      # 4. nothing is a proof of $⊥$;
-      # 5. $⊤$ is always true and provable.
 
 *** Function and application rules
     We can form by the following rule the type of functions from a type $A$ to a
@@ -3736,7 +3679,8 @@ objects to be the same.
    It is worth noting that syntactically constructors and identifiers are
    subject to the same rules. Agda detects constructors by using the datatype
    definitions in scope. For more information on constructors see the definition
-   of a datatype ([[def:agda-datatype]]). {{{jan(should this be in?)}}} {{{enddef}}}
+   of a datatype (see cref:def:agda-datatype). {{{jan(should this be in?)}}}
+   {{{enddef}}}
 
    {{{begindef}}} <<def:agda-term>> *Term/Type*. An Agda term is recursively
    defined as shown in the figure below.
@@ -5342,7 +5286,7 @@ Noetherian⇒Irreflexive : ∀ {ℓR ℓW} {W : Set ℓW} {R : Rel W ℓR}
 Noetherian⇒Irreflexive noetherian Rxx = noetherian (infiniteRefl Rxx)
     #+end_src
 
-    To see another example refer to cref:sec:agda-L.
+    To see another example we refer the reader to cref:sec:agda-L.
 ** Ordinary semantics
    <<sec:agda-ord-semantics>>
    In this chapter we explain how we have represented ordinary Veltman semantics
@@ -5418,8 +5362,8 @@ data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
 
    Unfortunately the definition above is not valid in Agda. The reason is that
    constructors =rhd= and =impl= both fail the positivity check (see
-   [[sec:positivity]]). For instance, see that in the =impl= constructor type we have
-   =(M , w ⊩ A)= on the left of an arrow =→=.
+   cref:sec:positivity). For instance, see that in the =impl= constructor type
+   we have =(M , w ⊩ A)= on the left of an arrow =→=.
 
    We have circumvented this problem by providing mutually recursive definitions
    for /forcing/ (=_,_⊩_=) and /not forcing/ (=_,_⊮_=). Agda allows the
@@ -5704,12 +5648,10 @@ Frame4 W R S = Frame W R S (Trans-4 W S)
    Observe that any multi-decidable model is also decidable.
    {{{enddef}}}
 
-   {{{beginlemma}}} <<lemma:gen-lemmas>> Assuming that we restrict ourselves to
-   multi-decidable models then properties in lemmas [[lemma:forcing-neg]],
-   [[lemma:equiv]] and [[lemma:ord-equiv-dec]] also hold for generalized semantics.
-   {{{endlemma}}} {{{beginproof}}} {{{agda}}}
-   {{{endproof}}}
-
+   {{{beginlemma}}} <<lemma:gen-lemmas>> {{{agda}}} Assuming that we restrict
+   ourselves to multi-decidable models then properties in
+   cref:lemma:forcing-neg,lemma:equiv,lemma:ord-equiv-dec also hold for
+   generalized semantics. {{{endlemma}}}
 *** A guided Agda proof
     <<sec:agda-L>> In this section we guide the user through a non-trivial Agda
     proof, which will hopefully give the reader a feel of how we can proof
