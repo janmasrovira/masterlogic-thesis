@@ -94,6 +94,7 @@
 #+macro: ordfr [[ordfr:$1][OF-$1]]
 #+macro: genfr [[ordfr:$1][GF-$1]]
 #+macro: sgenfr [[ordfr:$1][$1]]
+#+macro: latex @@latex:$1@@
 
 #+latex_header: \newcommand{\prin}[1]{\ensuremath{\mathsf{#1}}}
 #+latex_header: \newcommand{\il}[0]{\prin{IL}}
@@ -202,16 +203,16 @@
 
     \text{\Large Facultat de Filosofia de Barcelona and}\\
     \text{\Large Facultat de Matemàtiques de Barcelona}\\
-    {\Large July 2020}
+    {\Large November 2020}
 
   \end{center}
 \end{titlepage}
 
-\begin{abstract}
+#+begin_abstract
 \begin{center}
 \text{\Huge Abstract}
-\end{center}
 ~\\[0.5cm]
+\end{center}
 
 Sufficiently strong arithmetical theories such as \pa{} can formalize
 their interpretability predicate. This predicate expresses the concept of relativized
@@ -242,37 +243,39 @@ Apart from giving a solid base to our claims, we hope that our Agda library will
 provide a rallying point for researchers willing to formalize theorems in the
 field of interpretability logics, or at least, to encourage more research in that direction.
 Our work is, to our knowledge, the first attempt at formalizing interpretability logics in any proof assistant.
-\end{abstract}
-
+#+end_abstract
 \newpage
 
 \renewcommand{\abstractname}{Resum}
-\begin{abstract}
+#+begin_abstract
+
 \begin{center}
 \text{\Huge Resum}
-\end{center}
 ~\\[0.5cm]
+\end{center}
 
-Teories aritmètiques suficientment fortes tals com \pa{} poden formalitzar el seu predicat
-d\?interpretabilitat. Aquest predicat expressa el concepte d'interpretabilitat relativitzada
-entre extensions finites de la teoria. Les lògiques d'interpretabilitat estudien
-el comportament estructural desmotrable del predicat d'interpretabilitat.
+Teories aritmètiques suficientment fortes tals com \pa{} poden formalitzar el
+seu predicat {{{latex(d\?interpretabilitat)}}}. Aquest predicat expressa el
+concepte d'interpretabilitat relativitzada entre extensions finites de la
+teoria. Les lògiques d'interpretabilitat estudien el comportament estructural
+demostrable del predicat d'interpretabilitat.
 
-Les lògiques d'interpretabilitat extenen la lògica de demostrabilitat \gl. Com a tals,
-hereten algunes similaritats de \gl{}. Per exemple, la possibilitat de definir una semàntica
+Les lògiques d'interpretabilitat estenen la lògica de demostrabilitat \gl. Com a tals,
+hereten algunes semblances de \gl{}. Per exemple, la possibilitat de definir una semàntica
 relacional. En aquesta tesi ens centrem en l'estudi de dues variacions de semàntiques relacionals
 a l'estil Kripke que es coneixen com \textit{semàntica ordinària Veltman} i \textit{semàntica generalitzada Veltman}.
 
-En la literature trobem vàries definicions de semàntica generalitzada Veltman. En particular,
+En la literatura trobem vàries definicions de semàntica generalitzada Veltman. En particular,
 hi ha diverses condicions de \textit{quasi-transitivitat}, una propietat que els marcs
  generalitzats de Veltman han de satisfer.
 Estudiem les interrelacions entre aquestes condicions i comentem la seva pertinència.
 
-En aquesta tesi comparem l'expressivitat de les semàntiques Veltman ordinàries i generalitzades.
-A més, descrivim procediments que sota certes hipòtesis transformen, preservant
-els teoremes modals, models ordinaris Veltman a models generalitzats Veltman i vice versa.
+En aquesta tesi comparem l'expressivitat de les semàntiques Veltman ordinàries i
+generalitzades. A més, descrivim procediments que sota certes hipòtesis
+transformen, preservant els teoremes modals, models ordinaris Veltman a models
+generalitzats Veltman i viceversa.
 
-Estudiem les conditions de marc per diversos principis d'interpretabilitat que es troben
+Estudiem les condicions de marc per diversos principis d'interpretabilitat que es troben
 en la literatura. A més, donem noves condicions de marc pel principi \prin{R_1}
 i la sèrie de principis \prin{R^n} de \cite{two-new-series} respecte semàntica generalitzada
 Veltman.
@@ -284,14 +287,41 @@ pels investigadors que desitgin formalitzar teoremes en el camp de les lògiques
 o si més no, que encoratgi més investigació en aquesta direcció.
 La nostra llibreria és, que sapiguem, el primer intent de formalitzar lògiques d'interpretabilitat
 en algun assistent de la demostració.
-\end{abstract}
+#+end_abstract
 \newpage
-
 
 \renewcommand{\abstractname}{Acknowledgements}
 #+begin_abstract
-thanks
-# verbrugge
+  \begin{center}
+  \text{\Huge Ackowledgements}
+  ~\\[0.5cm]
+  \end{center}
+
+  # We want to express our gratitude to Rineke Verbrugge. She kindly agreed to
+  # publish a manuscript by hers, which has great historical and mathematical
+  # value, as part of this thesis.
+
+  # We want to express our gratitude to Nicola Olivetti, Rineke Verbrugge and the
+  # rest of the organizing committee for Advances in Modal Logic 2020 (Helsinki)
+  # for allowing us to present there an extended abstract of this thesis. We want
+  # to extend our gratitude to all the reviewers which gave valuable feedback.
+
+  # I want to thank my supervisors Joost and Luka. Their incredible work ethic has
+  # been a source of inspiration throughout this thesis. I am ever grateful for
+  # their patience and valuable corrections.
+
+  # I want to thank Peter Dybjer for introducing me to the wonderful language of
+  # Agda while I was a student at Chalmers. Also I want to thank him for the
+  # pointers regarding the underlying logic of Agda.
+
+  # I would like to thank all the teachers in the Master in Pure and Applied logic
+  # from the University of Barcelona, with a special thanks to Ramon Jansana. The
+  # past two years I have learned many deep and interesting things which make me
+  # feel privileged for having been part of this master.
+
+  # {{{latex(~\\[0.5cm])}}}
+
+  # haha
 #+end_abstract
 
 \newpage
@@ -978,6 +1008,13 @@ thanks
     Generalized semantics generalize ordinary Veltman semantics in the
     sense that each $S_w$ relates worlds to sets of worlds. Thanks to this
     change, generalized Veltman semantics turn out to be more convenient and in
+
+
+    For instance, the logic \prin{ILP_0} (we will define principle \prin{P_0} in
+    cref:sec:prin-p0) is complete with respect to its characteristic class of
+    generalized Veltman frames but incomplete with respect to ordinary Veltman
+    semantics.
+
     some cases necessary. For instance, the logic \prin{ILP_0} is complete with
     respect to generalized Veltman semantics but incomplete with respect to
     ordinary Veltman semantics.
@@ -991,7 +1028,7 @@ thanks
     instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
     satisfy the following conditions:
 
-    1. <<genfr:1>> $R$ is transitive; <<R-trans>>
+    1. <<genfr:1>> $R$ is transitive;
     2. <<genfr:2>> $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
     3. <<genfr:3>> if $uS_wY$, then $wRu$ and for all $y∈Y$ we have $wRy$;
@@ -2014,6 +2051,7 @@ thanks
     cref:src:generalizedveltmansemantics.properties.msub0. {{{endproof}}}
 
 ** The principle \prin{P₀}
+   <<sec:prin-p0>>
    The \prin{P₀} principle reads as follows:
    \[A ▷ ♢ B → □ (A ▷ B).\]
 
