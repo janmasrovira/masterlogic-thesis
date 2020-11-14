@@ -2513,7 +2513,6 @@ thanks
     {{{endtheorem}}}
 
     {{{beginproof}}}
-
     If $n=0$ we refer to cref:theorem:R^0. For $n+1$ proceed as follows.
     - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
       Then assume also that $wRx⊩((Dₙ▷A)∧U_n)$. Our goal is to find a set $V$
@@ -2538,6 +2537,9 @@ thanks
       Now one can routinely check that $w⊩A▷B$ and $x⊩((D_n▷A)∧U_n)$, hence there
       exists $U$ such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$
       and $R[U]⊆ℂ$.
+
+    The Agda proof can be found in
+    cref:src:generalizedveltmansemantics.properties.rsupn.
     {{{endproof}}}
 
 ** Generic generalized frame condition
@@ -2545,39 +2547,42 @@ thanks
    In this \this{} we present a method that given a formula $A$, builds a second
    order formula that is a generalized frame condition for $A$.
 
-   {{{begindef}}} Given a generalized frame $F=⟨W,R,S⟩$ and a formula $A$ with
-   $Var(A)=\{x₁,…,xₙ\}$. Let $ℱ$ be defined by (we write $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$).
+   {{{begindef}}} *Generic frame condition* {{{agda}}} Given a generalized frame
+   $F=⟨W,R,S⟩$ and a formula $A$ with $\sf{Var}(A)=\{x₁,…,xₙ\}$. Consider $n$
+   second order variables $𝕏₁,…,𝕏ₙ$ which range over sets of worlds. We write
+   $𝕏_*$ instead of $𝕏₁,…,𝕏ₙ$. Let $ℱ$ be defined by:
  \begin{flalign*}
    ℱ&:\underbrace{𝒫(W)×⋯×𝒫(W)}_n×\fm{}→𝒫(W) \\
    ℱ(𝕏_*,xᵢ) &≔  𝕏ᵢ;\\
    ℱ(𝕏_*,⊥) &≔ ∅; \\
    ℱ(𝕏_*,A→B) &≔ \{w:w ∈ ℱ(𝕏_*,A) ⇒ w ∈ ℱ(𝕏_*,B)\}; \\
-   ℱ(𝕏_*,A▷B) &≔ \{w:∀ u.(wRu,u∈ℱ(𝕏_*,A))⇒∃Y.uS_wY⊆ℱ(𝕏_*,B))\}. \\
+   ℱ(𝕏_*,A▷B) &≔ \{w:∀ u.(wRu,u∈ℱ(𝕏_*,A))⇒∃Y.uS_wY⊆ℱ(𝕏_*,B))\}.
  \end{flalign*}
 
-   Then define
+   Finally we define the condition $\kgen{A^*}$ thus:
    # \[(A)^*_{gen}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A). \]
-   \[\kgen{A^*}≔∀𝕏_*∀w∈W.w∈ℱ(𝕏_*,A). \]
-
+   \[\kgen{A^*}≔∀𝕏_*∀w.w∈ℱ(𝕏_*,A). \]
    {{{enddef}}}
 
-   {{{begintheorem}}}
-
-   Let $A$ be a formula. For any generalized frame $F$, we have that $F$
-   satisfies the $\kgen{A^*}$ condition iff any model based on $F$ forces $A$.
-   In symbols:
+   The following theorem shows that the previous definition gives a valid frame
+   condition. {{{begintheorem}}} {{{agda}}} Let $A$ be a formula. For any
+   generalized frame $F$, we have that $F$ satisfies the $\kgen{A^*}$ condition
+   iff any model based on $F$ forces $A$. In symbols:
 
      \[F⊨\kgen{A^*}⇔F⊩A.\]
    {{{endtheorem}}}
 
    {{{beginproof}}}
-   {{{agda}}}
+   The proof goes by an easy induction on the formula.
+
+   The Agda proof can be found in
+   cref:src:generalizedveltmansemantics.properties.genericframecond.
    {{{endproof}}}
 
    {{{beginremark}}}
    For instance, if we want the frame condition for \prin{P₀} we would look at
     \[\kgen{(a ▷ ♢ b → □ (a ▷ b))^*}.\]
-    Where $a,b$ are different variables.
+    Where $a,b$ are different propositional variables.
    {{{endremark}}}
 * The logic of Agda
   <<sec:logic-agda>>
