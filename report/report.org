@@ -72,8 +72,8 @@
 #+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{remark}[theorem]{Remark}
 
-#+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A proof formalized in Agda}}
-#+latex_header: \newglossaryentry{coqprf}{name={\includegraphics[height=\baselineskip]{img/coq}},description={A proof formalized in Coq}}
+#+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A definition or theorem formalized in Agda}}
+#+latex_header: \newglossaryentry{coqprf}{name={\includegraphics[height=\baselineskip]{img/coq}},description={A definition or theorem formalized in Coq}}
 
 #+macro: beginmulticols @@latex:\begin{multicols}{$1}@@
 #+macro: endmulticols @@latex:\end{multicols}@@
@@ -536,7 +536,7 @@ thanks
        includes every theorem and proof marked with {{{agdaimg}}} that is presented
        in this thesis. It is worth pointing out that we started from scratch
        since there was no previous published work of interpretability logics in
-       Agda, or in any other proof assistant. The code comprises ~5000
+       Agda, or in any other proof assistant. The library comprises ~5000
        lines of code and is freely available online:
        \begin{center}
        \href{https://gitlab.com/janmasrovira/interpretability-logics}
@@ -556,8 +556,8 @@ thanks
        proof assistant (cite:coq). This portion includes the definitions of the
        theorems and proofs marked with {{{coq}}}. Namely this subset is composed
        of the definition of ordinary Veltman semantics, the axiomatization of
-       the logic \il{} and its proof of soundness. The code comprises ~500 lines
-       of code and is available online:
+       the logic \il{} and its proof of soundness. The library comprises ~500
+       lines of code and is available online:
        \begin{center}
        \href{https://gitlab.com/janmasrovira/coq-interpretability-logics}
             {gitlab.com/janmasrovira/coq-interpretability-logics}
@@ -647,9 +647,10 @@ thanks
 ** The language of modal interpretability
    <<sec:language>>
 
-   The symbols of interpretability logics are $⊥,→,▷$. The set
-   of well-formed formulas, which we denote with \fm{}, is defined recursively as
-   usual:
+   The symbols of interpretability logics are $⊥,→,▷$.
+
+   {{{begindef}}} *Modal formula* {{{agda}}} {{{coq}}} The set of well-formed
+   modal formulas, which we denote with \fm{}, is defined recursively as usual:
    1. /Variable/. If $x$ is a variable, then $x$ is a formula. We assume that we
       have an infinite countable set of variables. In particular we shall define
       $\var{}≔ℕ$. However, we use non-capital letters to refer to
@@ -658,10 +659,11 @@ thanks
    3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula.
    4. /Interprets/. If $A$ and $B$ are formulas, then $(A▷B)$ is a formula.
 
-  We will always drop outer parentheses.
+   We will always drop outer parentheses.
+   {{{enddef}}}
 
-
-   We define the usual operators and constants in the following way:
+   {{{begindef}}} *Convenience operators* {{{agda}}} {{{coq}}} We define the
+   usual operators and constants in the following way:
    1. $¬ A ≔ A → ⊥$;
    2. $⊤ ≔ ¬ ⊥$;
    3. $A ∨ B ≔ (¬ A) → B$;
@@ -670,11 +672,16 @@ thanks
    6. $□ A ≔ (¬ A) ▷ ⊥$;
    7. $♢ A ≔ ¬ □ ¬ A$.
 
-   The precedence (from higher to lower) of the operators is in the following
-   order: \[∧,▷,∨,→\]
+   The precedence from higher to lower of the operators is in the following
+   order: \[∧,∨,▷,→\]
 
    The scope of unary symbols $□,♢,¬$ is as small as possible. Thus $□A∧¬¬B$ is
    the same as $(□A)∧(¬¬B)$. Also, $→$ has right associativity.
+
+   As an example consider: \[A ▷ B → A ∧ □ C ▷ B ∧ □ C\] It should be read as:
+     \[(A ▷ B) → ((A ∧ □ C) ▷ (B ∧ □ C))\] Even though the notation with no
+     parenthesis is acceptable with the rules that we have given, we will often add
+     parentheses to facilitate reading non-trivial formulas. {{{enddef}}}
 ** Logic \il
    <<sec:il>> As explained in the overview (cref:sec:overview) the logic \il{}
    is the logic that we use as the base for other interpretability logics. The
@@ -689,9 +696,10 @@ thanks
    theorems and their respective proofs in Agda. The Agda proofs of the theorems
    presented in this section can be found in cref:src:il.properties.
 
-   {{{begindef}}} \glsadd{il} The logic \il{} encompasses all classical theorems
-   in the new language (given by C1, C2 and C3), all theorems of \prin{GL} in
-   the new language (given by L and K) plus some new axiom schemas:
+   {{{begindef}}} {{{agda}}} {{{coq}}} \glsadd{il} The logic \il{} encompasses
+   all classical theorems in the new language (given by C1, C2 and C3), all
+   theorems of \prin{GL} in the new language (given by L and K) plus some new
+   axiom schemas:
    - C1: $A → (B → A)$;
    - C2: $(A → (B → C)) → ((A → B) → (A → C))$;
    - C3: $(¬ A → ¬ B) → (B → A)$;
@@ -742,13 +750,13 @@ thanks
    proof.
    {{{endremark}}}
 
-   {{{begintheorem}}} *Weakening*. If $Π⊢_{\il}A$ then $B,Π⊢_{\il}A$.
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The proof is by induction on the
+   {{{begintheorem}}} *Weakening* {{{agda}}} If $Π⊢_{\il}A$ then $B,Π⊢_{\il}A$.
+   {{{endtheorem}}} {{{beginproof}}} The proof is by induction on the
    proof. In Agda it is done by an induction on the proof. We only need to take
    care of shifting one position the references to assumptions. {{{endproof}}}
 
-   {{{begintheorem}}} *Deduction*. $Π⊢_{\il}A→B$ iff $A,Π⊢_{\il}B$.
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} The $⇒$ direction is trivial.
+   {{{begintheorem}}} *Deduction* {{{agda}}} $Π⊢_{\il}A→B$ iff $A,Π⊢_{\il}B$.
+   {{{endtheorem}}} {{{beginproof}}} The $⇒$ direction is trivial.
    For the other direction we proceed by induction on the proof $A,Π⊢_\il{}B$.
    We need to show that if $A,Π⊢_\il{}B$ then $Π⊢_\il{}A→B$. If $B$ is an
    instance of any of the axioms, we can show that $A→B$ follows from MP, C1 and
@@ -762,24 +770,23 @@ thanks
    can show $Π⊢_\il{}A→B$ by the C2 axiom and two applications of MP.
    {{{endproof}}}
 
-   {{{begintheorem}}} *Cut*. If $Π⊢_{\il}B$ and $B,Π⊢_{\il}A$ then $Π⊢_{\il}A$.
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} It follows by an easy induction on the
+   {{{begintheorem}}} *Cut* {{{agda}}} If $Π⊢_{\il}B$ and $B,Π⊢_{\il}A$ then $Π⊢_{\il}A$.
+   {{{endtheorem}}} {{{beginproof}}} It follows by an easy induction on the
    proof $Π ⊢_\il{} B$.
    {{{endproof}}}
 
-   {{{begintheorem}}} *Structurality*. If $Π⊢_\il{}A$ and $σ$ is a substitution
-   then $σ[Π]⊢_{\il}σ(A)$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} It
-   follows by an easy induction on the proof $Π⊢_\il{}A$.
-   {{{endproof}}}
+   {{{begintheorem}}} *Structurality* {{{agda}}} If $Π⊢_\il{}A$ and $σ$ is a
+   substitution then $σ[Π]⊢_{\il}σ(A)$. {{{endtheorem}}} {{{beginproof}}} It
+   follows by an easy induction on the proof $Π⊢_\il{}A$. {{{endproof}}}
 
 
-   {{{begintheorem}}} \label{thm:conjunction} *Conjunction*.
+   {{{begintheorem}}} \label{thm:conjunction} *Conjunction* {{{agda}}}
    $Π⊢_{\il}A∧B$ iff $Π⊢_{\il}A$ and $Π⊢_{\il}B$. {{{endtheorem}}}
-   {{{beginproof}}} {{{agda}}} The key part is to show that $Π⊢_\il{}A→B→(A∧B)$,
+   {{{beginproof}}} The key part is to show that $Π⊢_\il{}A→B→(A∧B)$,
    $Π⊢_\il{}A∧B→A$ and $Π⊢_\il{}A∧B→B$ as we do in classical logic.
    {{{endproof}}}
 
-   {{{begintheorem}}} The following holds:
+   {{{begintheorem}}} {{{agda}}} The following formulas are theorems of \il{}:
     1. $⊢_{\il} A → A$;
     2. $⊢_{\il} A ▷ A$;
     3. $⊢_{\il} (A → B) → (B → C) → A → C$;
@@ -804,7 +811,7 @@ thanks
     22. $⊢_{\il} A ↔ B ⇒ ⊢_{\il} ♢ A ↔ ♢ B$;
     23. $⊢_{\il} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
     24. $⊢_{\il} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} All proofs have been formalized
+   {{{endtheorem}}} {{{beginproof}}} All proofs have been formalized
    in Agda. Here we only show two examples. Consider theorems 16 and 17, namely
    $A ▷ (A ∨ ♢ A)$ and $(A ∨ ♢ A) ▷ A$. To prove 16 we assume that we have
    already showed theorem 14, that is, $⊢_{\il}A→A∨B$.
@@ -834,13 +841,19 @@ thanks
 
 *** Ordinary Veltman semantics
     Ordinary Veltman semantics were the first relational semantics for
-    interpretability logics and were introduced by Frank Veltman.
+    interpretability logics and were introduced by Frank Veltman
+    (cite:Veltman-relative).
 
-    {{{begindef}}} <<def:ordinary-frames>> cite:modal-matters An ordinary
-    Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a structure constituted by a non-empty set
-    of worlds $W$, a binary relation $R⊆W²$ and a ternary relation $S⊆W×W×W$. We
-    write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$ instead of $⟨w,u,v⟩∈S$. The
-    structure must satisfy the following conditions:
+    All the definitions in this section have been formalized in Agda and can be
+    found in cref:src:ordinaryframe,src:ordinaryveltmansemantics. Later in
+    cref:sec:agda-ord-semantics we will comment on the Agda implementation of
+    ordinary Veltman semantics.
+
+    {{{begindef}}} {{{agda}}} {{{coq}}} <<def:ordinary-frames>>
+    An ordinary Veltman \gls{ovf} $F=⟨W,R,S⟩$ is a structure
+    constituted by a non-empty set of worlds $W$, a binary relation $R⊆W²$ and a
+    ternary relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$
+    instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following conditions:
 
     1. <<ordfr:1>> $R$ is transitive;
     2. <<ordfr:2>> $R$ is conversely well-founded. That is, there is no infinite
@@ -857,16 +870,29 @@ thanks
     6. <<ordfr:6>> for every $w$, $S_w$ is transitive.
 
     We will refer to the listed conditions as \(\text{OF-$i$}\) for $1≤i≤6$.
+
+    The Agda definition can be found in cref:src:ordinaryframe.
     {{{enddef}}}
 
-    {{{begindef}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$ is a structure
-    constituted by an ordinary Veltman frame $F$ and a valuation $V⊆W×\var{}$. If
-    $F=⟨W,R,S⟩$ we will write $M=⟨W,R,S,V⟩$ instead of $M=⟨⟨W,R,S⟩,V⟩$. {{{enddef}}}
+    As usual, we can build a model by attaching a valuation to a frame. The
+    valuation will tell us which propositional variables are true in each world.
 
-    {{{begindef}}} <<def:ord-forcing>> Given a model $M$, we define a forcing
-    relation $\gls{forcing-ord}⊆W × \fm{}$. We write $M,w⊩A$ instead of
-    $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is clear from the
-    context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
+    {{{begindef}}} {{{agda}}} {{{coq}}} An ordinary Veltman \gls{ovm} $M=⟨F,V⟩$
+    is a structure constituted by an ordinary Veltman frame $F$ and a valuation
+    $V⊆W×\var{}$. If $F=⟨W,R,S⟩$ we will write $M=⟨W,R,S,V⟩$ instead of
+    $M=⟨⟨W,R,S⟩,V⟩$.
+
+    The Agda definition can be found in cref:src:ordinaryveltmansemantics.
+    {{{enddef}}}
+
+
+    We will proceed by defining a forcing relation. The forcing relation tells
+    us what formulas are forced (hold) in each world.
+
+    {{{begindef}}} {{{agda}}} {{{coq}}} <<def:ord-forcing>> Given a model $M$,
+    we define a forcing relation $\gls{forcing-ord}⊆W × \fm{}$. We write $M,w⊩A$
+    instead of $⟨w,A⟩∈\gls*{forcing-ord}$ or simply $w⊩A$ when the model is
+    clear from the context. We write $w⊮A$ when $⟨w,A⟩∉⊩_M$.
     1. $w⊮⊥$;
     2. if $p∈\var{}$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
@@ -875,46 +901,52 @@ thanks
        world $w$ to force $A▷B$.
       #+attr_latex: :float nil :width 0.24\textwidth :placement [H]
       [[file:img/ArhdB-ord.pdf]]
+
+    The Agda definition can be found in cref:src:ordinaryveltmansemantics.
     {{{enddef}}}
 
-    If $F$ is an ordinary Veltman frame and $A$ a formula, we write $F⊩A$ to
-    denote that for every valuation we have $⟨F,V⟩⊩A$.
+    If $M$ is an ordinary Veltman model and $A$ a formula, we write $M⊩A$ to
+    denote that for every world $w$ we have $M,w⊩A$. Similarly, if $F$ is an
+    ordinary Veltman frame and $A$ a formula, we write $F⊩A$ to denote that for
+    every valuation $V$ we have $⟨F,V⟩⊩A$.
 
-    {{{begincoro}}} <<coro:ord-semantics>> Let $M$ be an ordinary Veltman model
-    and let $w$ be a world in $M$. It can be shown that:
+    {{{beginlemma}}} {{{agda}}} {{{coq}}} <<coro:ord-semantics>> Let $M$ be an
+    ordinary Veltman model and let $w$ be a world in $M$. It can be shown that:
     1. If $A,B∈\fm{}$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
     2. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
     3. if $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
     4. if $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$;
     5. if $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
-    {{{endcoro}}}
-    {{{beginproof}}}
-    {{{agda}}}
-    {{{coq}}}
-    Here we show the case for $w⊩□A$. Assume $w⊩□A$ and let $u$ be a world such
-    that $wRu$. If $u⊩A$ we are done, otherwise we have $u⊩¬A$. As described
-    before $w⊩□A$ is notation for $w⊩(¬ A) ▷ ⊥$, thus there exists $z$ such that
-    $uS_wz⊩⊥$, but this is an absurd.
+    {{{endlemma}}} {{{beginproof}}} Here we show the case
+    for $w⊩□A$. Assume $w⊩□A$ and let $u$ be a world such that $wRu$. If $u⊩A$
+    we are done, otherwise we have $u⊩¬A$. As described before $w⊩□A$ is
+    notation for $w⊩(¬ A) ▷ ⊥$, thus there exists $z$ such that $uS_wz⊩⊥$, but
+    this is an absurd.
 
     For the other direction assume that we have a world $w$ and for every $u$
     such that $wRu$ we have $u⊩A$. We see that $w⊩(¬A)▷⊥$ clearly holds as there
-    is no $u$ such that $wRu⊩¬A$. {{{endproof}}}
+    is no $u$ such that $wRu⊩¬A$.
 
-    {{{begintheorem}}} *Decidability* If $W$ is finite and $R,S,V$ are decidable relations,
-    then the forcing relation associated to the model $M≔⟨W,R,S,V⟩$ is decidable.
-    {{{endtheorem}}} {{{beginproof}}} {{{agda}}} We have implemented a verified
-    algorithm that given the mentioned conditions, a world $w$ and a formula
-    $A$, constructs either a proof of $M,w⊩A$ or a proof of $M,w⊮A$. {{{endproof}}}
+    The Agda proof can be found in
+    cref:src:ordinaryveltmansemantics.properties. {{{endproof}}}
 
-    {{{begintheorem}}} *Local soundness for ordinary semantics*. That is, if
-    $Π⊢_{\il}A$ and $M$ is an ordinary model with a world $w$ such that $w⊩Π$,
-    then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} {{{agda}}} {{{coq}}} The proof
+    {{{begintheorem}}} *Decidability* {{{agda}}} If $W$ is finite and $R,S,V$
+    are decidable relations, then the forcing relation associated to the model
+    $M≔⟨W,R,S,V⟩$ is decidable. {{{endtheorem}}} {{{beginproof}}} We have
+    implemented a verified algorithm that given the mentioned conditions, a
+    world $w$ and a formula $A$, constructs either a proof of $M,w⊩A$ or a proof
+    of $M,w⊮A$. The implementation can be found in
+    cref:src:ordinaryveltmansemantics.finite. {{{endproof}}}
+
+    {{{begintheorem}}} *Local soundness for ordinary semantics* {{{agda}}}
+    {{{coq}}} If $Π⊢_{\il}A$ and $M$ is an ordinary model with a world
+    $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}} {{{beginproof}}} The proof
     is by induction on the proof $w⊩A$. The cases for necessitation and modus
-    ponens follow immediately from the IH. If $A$ is an instance of C1, C2
-    or C3 then it is routine to check that all of these axioms hold in $w$.
-    For axioms L and K we proceed as we do for \gl{} and Kripke semantics.
-    In cref:sec:agda-L we show how we proved soundness for $L$ in Agda.
-    Finally we need to check soundness for axioms J1--J5.
+    ponens follow immediately from the IH. If $A$ is an instance of C1, C2 or C3
+    then it is routine to check that all of these axioms hold in $w$. For axioms
+    L and K we proceed as we do for \gl{} and Kripke semantics. In
+    cref:sec:agda-L we show how we proved soundness for L in Agda. Finally we
+    need to check soundness for axioms J1--J5.
     - J1: $□ (A → B) → A ▷ B$. Assume $w⊩□(A→B)$ and $wRu⊩A$, then it follows
       that $u⊩B$ and by condition 4 of ordinary frames we get $uS_wu⊩B$.
     - J2: $A ▷ B ∧ B ▷ C → A ▷ C$. Assume $w⊩A▷B$ and $w⊩B▷C$ and $wRu⊩A$. It
@@ -931,6 +963,8 @@ thanks
     - J5: $♢ A ▷ A$. Assume that there exists $u$ such that $wRu⊩♢A$. Then there
       exists $v$ such that $uRv⊩A$. By {{{ordfr(5)}}} of ordinary frames we have
       $uS_wv⊩A$.
+
+    The Agda proof can be found in cref:src:il.properties.
     {{{endproof}}}
 
 *** Generalized Veltman semantics
@@ -942,11 +976,14 @@ thanks
     respect to generalized Veltman semantics but incomplete with respect to
     ordinary Veltman semantics.
 
-    {{{begindef}}} <<def:gen-frame>> A generalized Veltman \gls{gvf}
+    In cref:sec:agda-gen-semantics we will comment on the Agda implementation of
+    generalized Veltman semantics.
+
+    {{{begindef}}} {{{agda}}} <<def:gen-frame>> A generalized Veltman \gls{gvf}
     $F=⟨W,R,S⟩$ is a structure constituted by a non-empty set of worlds $W$, a binary
     relation $R⊆W²$ and a ternary relation $S⊆W×W×(𝒫(W)∖\{∅\})$. We write $wRu$
     instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
-    satisfy the following conditions :
+    satisfy the following conditions:
 
     1. <<genfr:1>> $R$ is transitive; <<R-trans>>
     2. <<genfr:2>> $R$ is conversely well-founded. That is, there is no infinite ascending
@@ -973,15 +1010,26 @@ thanks
     Since in this thesis we will consider multiple conditions for
     quasi-transitivity, we will refer to those as quasi-transitivity Condition
     $j$ for $1≤j≤8$. If it is clear by the context we may simply say Condition $i$.
+
+    The Agda definition can be found in
+    cref:src:generalizedframe. {{{enddef}}}
+
+    As we did for ordinary semantics, we may endow a generalized frame with a
+    valuation to obtain a generalized model.
+
+    {{{begindef}}} {{{agda}}} A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a
+    structure constituted by a generalized Veltman \gls{gvf} $F$ and a valuation
+    $V⊆W×\var{}$.
+
+    The Agda definition can be found in cref:src:generalizedveltmansemantics.
     {{{enddef}}}
 
-    {{{begindef}}}
-    A generalized Veltman \gls{gvm} $M=⟨F,V⟩$ is a structure
-    constituted by a generalized Veltman \gls{gvf} $F$ and a valuation $V⊆W×\var{}$.
-    {{{enddef}}}
-    {{{begindef}}}
-    Given a model $M$, we define a forcing relation $\gls{forcing-gen}⊆W ×
-    \fm{}$. We use the same notational conventions as in the ordinary semantics.
+    We define the forcing relation in a similarly to ordinary semantics, the
+    only difference being in the case for the operator $▷$.
+
+    {{{begindef}}} {{{agda}}} Given a model $M$, we define a
+    forcing relation $\gls{forcing-gen}⊆W × \fm{}$. We use the same notational
+    conventions as in the ordinary semantics.
     1. $w⊮⊥$;
     2. if $p∈\var{}$, then $w⊩p$ iff $⟨w,p⟩∈V$;
     3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
@@ -991,19 +1039,24 @@ thanks
        to force $A▷B$.
       #+attr_latex: :float nil :width 0.24\textwidth :placement [H]
       [[file:img/ArhdB-gen.pdf]]
+
+    The Agda definition can be found in cref:src:generalizedveltmansemantics.
     {{{enddef}}}
 
-    If $F$ is a generalized Veltman frame and $A$ a formula, we write $F⊩A$ to
-    denote that for every valuation we have $⟨F,V⟩⊩A$.
+    We have the same notation conventions that we have for ordinary semantics:
+    If $M$ is a generalized Veltman model and $A$ a formula, we write $M⊩A$ to
+    denote that for every world $w$ we have $M,w⊩A$. Similarly, if $F$ is a
+    generalized Veltman frame and $A$ a formula, we write $F⊩A$ to denote that
+    for every valuation $V$ we have $⟨F,V⟩⊩A$.
 
-    {{{begincoro}}} We can show the same results presented in Corollary
-    [[coro:ord-semantics]] for generalized semantics:
+    {{{beginlemma}}} {{{agda}}} We can show the same results presented in
+    cref:coro:ord-semantics for generalized semantics:
     1. If $A,B∈\fm{}$, then $w⊩A∧B$ iff $w⊩A$ and $w⊩B$;
     2. If $A,B∈\fm{}$, then $w⊩A∨B$ iff $w⊩A$ or $w⊩B$;
     3. If $A∈\fm{}$, then $w⊩¬A$ iff $w⊮A$;
     4. If $A∈\fm{}$, then $w⊩□A$ iff for every $u$ such that $wRu$ we have $u⊩A$;
     5. If $A∈\fm{}$, then $w⊩♢A$ iff there exists $u$ such that $wRu$ and $u⊩A$.
-    {{{endcoro}}} {{{beginproof}}} {{{agda}}} Here we show the case for $w⊩□A$.
+    {{{endlemma}}} {{{beginproof}}} Here we show the case for $w⊩□A$.
     The proof goes in a very similar way to ordinary semantics. Assume $w⊩□A$
     and let $u$ be a world such that $wRu$. If $u⊩A$ we are done, otherwise we
     have $u⊩¬A$. Since $w⊩□A$ is notation for $w⊩(¬ A) ▷ ⊥$, there exists $Z$
@@ -1012,13 +1065,15 @@ thanks
     For the other direction assume that we have a world $w$ and for every $u$
     such that $wRu$ we have $u⊩A$. We see that $w⊩(¬A)▷⊥$ clearly holds as there
     is no $u$ such that $wRu⊩¬A$.
-    {{{endproof}}}
+
+    The Agda formalization can be found in
+    cref:src:generalizedveltmansemantics.properties. {{{endproof}}}
 
     {{{begintheorem}}} <<theorem:il-sound>> *Local soundness for generalized
-    semantics*. That is, if $Π⊢_{\il}A$ and $M$ is a generalized Veltman model
+    semantics* {{{agda}}} That is, if $Π⊢_{\il}A$ and $M$ is a generalized Veltman model
     with a world $w$ such that $w⊩Π$, then $w⊩A$. {{{endtheorem}}}
 
-    {{{beginproof}}} {{{agda}}} We only show the case where $A$ is an instance
+    {{{beginproof}}} We only show the case where $A$ is an instance
     of the J2 ($A ▷ B ∧ B ▷ C → A ▷ C$) axiom. The rest of the cases are proved
     in an analogous way to ordinary Semantics. Also, here we only show it the
     quasi-transitivity property given in cref:def:gen-frame and also for the
@@ -1039,7 +1094,10 @@ thanks
     $v∈V$ such that $v⊮C$. By {{{genfr(3)}}} of a generalized frame we have that
     $wRv$. Since $wRv⊩B$ and $w⊩B▷C$ it follows that there exists $Z$ such that
     $vS_wZ⊩C$. Finally since $v⊮C$ we know that $v∉Z$ so by quasi-transitivity
-    Condition 8 we can conclude $uS_wZ⊩C$. {{{endproof}}}
+    Condition 8 we can conclude $uS_wZ⊩C$.
+
+    The Agda proof can be found in cref:src:il.properties.
+    {{{endproof}}}
 
 ** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
@@ -1069,9 +1127,9 @@ thanks
    #+attr_latex: :float t :width 0.96\textwidth :placement [H]
    [[file:img/trans-2-4-6.pdf]]
 
- {{{begintheorem}}} <<theorem:trans>> Let $F$ be a generalized Veltman frame. Let
- \[\sf{Mon}≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the monotonicity condition. The
- following implications hold.
+ {{{begintheorem}}} <<theorem:trans>> {{{agda}}} Let $F$ be a generalized
+ Veltman frame. Let \[\sf{Mon}≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the
+ monotonicity condition. The following implications hold.
 
  The first item should be read as $F⊨\sf{Mon}∧(1)→(2)$.
 
@@ -1098,7 +1156,7 @@ thanks
    20. $(8) ⇒ (7)$
  {{{endmulticols}}} {{{endtheorem}}}
 
- {{{beginproof}}} {{{agda}}} Here we only show item 13: $\sf{Mon} ∧ (6) ⇒ (2)$.
+ {{{beginproof}}} Here we only show item 13: $\sf{Mon} ∧ (6) ⇒ (2)$.
  Assume that $F$ is a generalized Veltman frame that satisfies the monotonicity
  condition and the quasi-transitivity {{{cond(6)}}}. Now assume that $uS_xY$ and
  consider an arbitrary family of sets of worlds $\{Y_y:y∈ Y\}$. Assume also that
@@ -1147,7 +1205,7 @@ thanks
   frames will be modally equivalent when expanded to a generalized Veltman model
   with a valuation. In the following theorem we prove this fact.
 
-  {{{begintheorem}}} <<theorem:mono>> Let $F=⟨W,R,S⟩$ be a generalized Veltman
+  {{{begintheorem}}} <<theorem:mono>> {{{agda}}} Let $F=⟨W,R,S⟩$ be a generalized Veltman
   frame with quasi-transitivity $i$ for and $i∈\{1,…,8\}$. Let $F'=⟨W,R,S'⟩$
   where $S'$ is the monotone closure of $S$:
 
@@ -1159,7 +1217,7 @@ thanks
   $w$: \[M,w⊩A⇔M',w⊩A.\] {{{endtheorem}}}
 
 
-  {{{beginproof}}} {{{agda}}}
+  {{{beginproof}}}
   We check conditions listed in cref:def:gen-frame.
   - {{{genfr(1)}}} and {{{genfr(2)}}} are clear since $R$ is unchanged;
   - {{{genfr(3)}}} follows from the fact that in the definition of $S'$ we require
@@ -1207,7 +1265,7 @@ thanks
 
    #+caption: Example frame: $wRv_0,wRv_1,wRv_2,wRv_3$, $v_0S_w\{v_1\}$, $v_2S_w\{v_3\}$.
    #+name: fig:example-trans
-   #+attr_latex: :float t :width 0.28\textwidth :placement [H]
+   #+attr_latex: :float t :width 0.33\textwidth :placement [H]
    [[file:img/example.pdf]]
 
   Let $M$ be a model based on the frame displayed[fn::In the figure we do not
@@ -1314,10 +1372,10 @@ thanks
    V'≔&\{⟨⟨x, A⟩,p⟩: ⟨x,p⟩∈V, ⟨x,A⟩∈W',p∈\var{}\}.
    \end{flalign*}
 
-   {{{beginlemma}}} The structure $⟨W',R',S',V'⟩$ is an ordinary Veltman model.
-   {{{endlemma}}} {{{beginproof}}} {{{agda}}} Here we check that the $S'_w$ is a
-   transitive relation for each $w∈W'$. It is routine to check that the rest of
-   the requirements are satisfied. Assume that we have
+   {{{beginlemma}}} {{{agda}}} The structure $⟨W',R',S',V'⟩$ is an ordinary
+   Veltman model. {{{endlemma}}} {{{beginproof}}} Here we check that the $S'_w$
+   is a transitive relation for each $w∈W'$. It is routine to check that the
+   rest of the requirements are satisfied. Assume that we have
    \[⟨x,A⟩S'_{⟨w,D⟩}⟨y,B⟩S'_{⟨w,D⟩}⟨z,C⟩\]. We want to show
    $⟨x,A⟩S'_{⟨w,D⟩}⟨z,C⟩$, thus by the definition of $S'$ we need to prove the
    following:
@@ -1342,12 +1400,12 @@ thanks
    (C₀)&≔∀w∀x∀V.xS_wV⇒∃y∈V.∀b∀V'.yS_bV'⇒∃v∈V'. (b=w ⇒ xS_b\{v\}), (bRw ⇒ wS_b\{v\}); \\
    (C₁)&≔∀w∀b∀x∀V.wRx⇒xS_bV⇒∃v∈V.xS_b\{v\},(bRw⇒wS_b\{v\}).
    \end{flalign*}
-   {{{begintheorem}}}
+   {{{begintheorem}}} {{{agda}}}
    If $M$ satisfies both conditions $(C_0)$ and $(C_1)$ then
    for any world $⟨w,C⟩∈W'$ and formula $D$:
    \[w⊩D⇔⟨w,C⟩⊩D\]
    {{{endtheorem}}}
-   {{{beginproof}}} {{{agda}}}
+   {{{beginproof}}}
    We proceed by induction on the formula. Here we only consider the
    case $D▷E$ as the other cases are easy.
    - \boxed{⇒} Assume $w⊩D▷E$ and let $C$ be such that $⟨w,C⟩∈W'$. We
@@ -1429,11 +1487,11 @@ thanks
      $⟨y,B⟩⊮E$, which concludes the proof.
    {{{endproof}}}
 
-   {{{begintheorem}}} <<thm:conds>> If a generalized Veltman frame satisfies
-   quasi-transitivity {{{cond(3)}}}, 4, 5 or 6, then it satisfies conditions
-   $(C_0)$ and $(C_1)$. {{{endtheorem}}}
+   {{{begintheorem}}} <<thm:conds>> {{{agda}}} If a generalized Veltman frame
+   satisfies quasi-transitivity {{{cond(3)}}}, 4, 5 or 6, then it satisfies
+   conditions $(C_0)$ and $(C_1)$. {{{endtheorem}}}
 
-   {{{beginproof}}} {{{agda}}} Here we prove the property for a generalized
+   {{{beginproof}}} Here we prove the property for a generalized
    Veltman frame satisfying quasi-transitivity {{{cond(3)}}}. Conditions
    {{{scond(4)}}}--{{{scond(6)}}} imply {{{cond(3)}}} as shown in
    cref:theorem:trans.
@@ -1446,46 +1504,46 @@ thanks
    uS_xY ⇒ ∃\, y∈Y\, ∀ z(yS_x\{z\} ⇒ uS_x\{z\}).
    \end{equation}
    - \boxed{(C₀)} Assume that for some $w,x,V$ we have $xS_wV$. Then by
-     [[eq:verb-trans-prop]] there is some $y∈V$ such that
+     cref:eq:verb-trans-prop there is some $y∈V$ such that
      #+name: eq:verb-trans-y
      \begin{equation}
       ∀ z(yS_w\{z\} ⇒ xS_w\{z\}).
      \end{equation}
 
      Now assume that for some $b,V'$ we have $yS_bV'$. It follows by
-     [[eq:verb-trans-prop]] that there is some $v∈V'$ such that
+     cref:eq:verb-trans-prop that there is some $v∈V'$ such that
      #+name: eq:verb-trans-v
      \begin{equation}
       ∀ z(vS_b\{z\} ⇒ yS_b\{z\}).
      \end{equation}
      Assume that $b=w$, we need to see that $xS_b\{v\}$. From $xS_wV$ and $y∈V$
      it follows that $wRy$. Then by quasi-reflexivity we have $yS_w\{y\}$ and by
-     [[eq:verb-trans-y]] we get $xS_w\{v\}$ which is the same as $xS_b\{v\}$. Assume
+     cref:eq:verb-trans-y we get $xS_w\{v\}$ which is the same as $xS_b\{v\}$. Assume
      that $bRw$, we need to see that $wS_b\{v\}$. From $bRwRy$ we have
-     $wS_b\{y\}$ and from property [[eq:verb-trans-prop]] we get
+     $wS_b\{y\}$ and from property cref:eq:verb-trans-prop we get
      #+name: eq:verb-trans-Sbyz
      \begin{equation}
      ∀z(yS_b\{z\}⇒wS_b\{z\}).
      \end{equation}
      Then since $yS_bV'$ and $v∈V'$ we have $bRv$ so by quasi-reflexivity we have
-     $vS_b\{v\}$. Finally by [[eq:verb-trans-v]] we get $yS_b\{v\}$ and by
-     [[eq:verb-trans-Sbyz]] we get $wS_b\{v\}$.
+     $vS_b\{v\}$. Finally by cref:eq:verb-trans-v we get $yS_b\{v\}$ and by
+     cref:eq:verb-trans-Sbyz we get $wS_b\{v\}$.
    - \boxed{(C_1)} Assume that for some $w,b,x,V$ we have $wRxS_bV$.
-     By [[eq:verb-trans-prop]] it follows that there is some $v∈V$ such that
+     By cref:eq:verb-trans-prop it follows that there is some $v∈V$ such that
      #+name: eq:verb-trans-SbxV
      \begin{equation}
       ∀z(vS_b\{z\} ⇒ xS_b\{z\}).
      \end{equation}
      We first see that $xS_b\{v\}$. From $xS_bV$ and $v∈V$ we get $bRv$ and by
-     quasi-reflexivity we get $vS_b\{v\}$. Then by [[eq:verb-trans-SbxV]] we have
+     quasi-reflexivity we get $vS_b\{v\}$. Then by cref:eq:verb-trans-SbxV we have
      $xS_b\{v\}$. Assume $bRw$, we need to see $wS_b\{v\}$. By quasi-reflexivity
-     we get $vS_b\{v\}$ and by [[eq:verb-trans-SbxV]] we get $xS_b\{v\}$. By $bRwRx$
-     we get $wS_b\{x\}$ and thus by [[eq:verb-trans-prop]] we have
+     we get $vS_b\{v\}$ and by cref:eq:verb-trans-SbxV we get $xS_b\{v\}$. By $bRwRx$
+     we get $wS_b\{x\}$ and thus by cref:eq:verb-trans-prop we have
      #+name: eq:verb-Sbwx
      \begin{equation}
      ∀z(xS_b\{z\}⇒wS_b\{z\}).
      \end{equation}
-     Finally by $xS_b\{v\}$ and [[eq:verb-Sbwx]] we get $wS_b\{v\}$.
+     Finally by $xS_b\{v\}$ and cref:eq:verb-Sbwx we get $wS_b\{v\}$.
    {{{endproof}}}
 ** From generalized to ordinary (a simpler approach)
    <<sec:gen-to-ord-luka>> In this chapter we present a transformation that
@@ -1494,7 +1552,7 @@ thanks
    set of worlds. The definitions and proofs in this chapter can be found
    formalized in Agda in cref:src:generalizedveltmansemantics.properties.luka.
 
-   {{{begintheorem}}} Let $M$ a generalized Veltman model with
+   {{{begintheorem}}} {{{agda}}} Let $M$ a generalized Veltman model with
    quasi-transitivity {{{cond(3)}}}, {{{scond(4)}}}, {{{scond(5)}}} or
    {{{scond(6)}}}. By cref:theorem:trans we shall assume without loss of
    generality that $M$ satisfies quasi-transitivity {{{cond(3)}}}. We remind the
@@ -1507,7 +1565,7 @@ thanks
    modally equivalent, that is, it holds that for every $w∈W$ and $A∈\fm$ we
    have \[M,w⊩A⇔M',w⊩A.\]
 
-   {{{endtheorem}}} {{{beginproof}}} {{{agda}}} Here we only check that the
+   {{{endtheorem}}} {{{beginproof}}} Here we only check that the
    transitivity condition holds. It is not hard to check that the rest of the
    conditions also hold.
 
@@ -1754,7 +1812,7 @@ thanks
    are always provable in theories which are $Σ_1$ sound, have full induction
    and prove consistency of any of its finite subsystems
    (cite:berarducci1990interpretability,visser1997overview,joosten2020overview).
-   An example of such a theory is $\textsf{PA}$.
+   An example of such a theory is \pa{}.
 *** Ordinary semantics
    The frame condition for \prin{M} for ordinary semantics, which we write as $\kord{M}$,
    reads as follows:
@@ -1765,14 +1823,14 @@ thanks
    #+attr_latex: :float t :width 0.20\textwidth :placement [H]
    [[file:img/M-ord.pdf]]
 
-   {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
-   $\kord{M}$ condition iff any model based on $F$ forces every instantiation of the \prin{M}
-   principle. In symbols:
+   {{{begintheorem}}} {{{agda}}} For any ordinary frame $F$, we have that $F$
+   satisfies the $\kord{M}$ condition iff any model based on $F$ forces every
+   instantiation of the \prin{M} principle. In symbols:
 
-   \[F ⊨ \kord{M} ⇔ F ⊩ \prin{M}.\] {{{endtheorem}}}
+   \[F ⊨ \kord{M} ⇔ F ⊩ \prin{M}.\]
+   {{{endtheorem}}}
 
    {{{beginproof}}}
-   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
      Our aim is to find a world $z$ such that $xS_wz⊩B∧□C$. Since $wRx⊩A$ and
@@ -1795,6 +1853,8 @@ thanks
      $xS_wz⇒wRx$, hence $wRx$ and thus there must exist some $v$ such that
      $xS_wv⊩b∧□c$. Since $b$ is only true in $z$ it must be $z⊩b∧□c$. Then,
      because $zRu$ we have $u⊩c$, therefore $xRu$.
+
+   The Agda proof can be found in cref:src:ordinaryveltmansemantics.properties.msub0.
    {{{endproof}}}
 
 *** Generalized semantics
@@ -1808,14 +1868,13 @@ thanks
    #+attr_latex: :float t :width 0.35\textwidth :placement [H]
    [[file:img/M-gen.pdf]]
 
-   {{{begintheorem}}} For any generalized frame $F$, we have that $F$ satisfies the
+   {{{begintheorem}}} {{{agda}}} For any generalized frame $F$, we have that $F$ satisfies the
    $\kgen{M}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{M} principle. In symbols:
 
    \[F ⊨ \kgen{M} ⇔ F ⊩ M.\] {{{endtheorem}}}
 
    {{{beginproof}}}
-   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx$ and $x⊩A∧□C$.
      Our aim is to find a set $Z$ such that $xS_wZ⊩B∧□C$. Since $wRx⊩A$ and
@@ -1836,7 +1895,9 @@ thanks
      there must exist $V'$ such that $uS_wV'⊩b∧□c$. Clearly $V'⊆V$ since $b$ is
      forced exactly in $V$. Now let $v',z$ such that $v'∈V'$ and $v'Rz$. Since
      $v'⊩□c$, then $z⊩c$ and thus $uRz$. Therefore $V'$ is the desired set.
-   {{{endproof}}}
+
+   The Agda proof can be found in
+   cref:src:generalizedveltmansemantics.properties.m. {{{endproof}}}
 ** The principle \prin{M₀}
    The \prin{M₀} principle reads as follows:
    \[A ▷ B → ♢ A ∧ □ C ▷ B ∧ □ C.\]
@@ -1849,33 +1910,33 @@ thanks
    The logic \prin{ILM_0} is complete with respect to ordinary
    and generalized semantics (cite:modal-matters).
 
-    # As far as I can see, the first mention of M0 is in "The Formalization of
-    # Interpretability" by Visser (1991). Arithmetical soundness of M0 is proved
-    # there, and no reference is given, so I guess this is the paper where M0 is
-    # introduced. However, the same source says that Dick de Jongh proved ILM0W =
-    # ILW*. No reference is given, so I'm guessing this was privately communicated
-    # between them. I would formulate it "the principle M0 is introduced in [paper]"
-    # without explicitly attributing the authorship to Visser.
+    # Luka: As far as I can see, the first mention of M0 is in "The
+    # Formalization of Interpretability" by Visser (1991). Arithmetical
+    # soundness of M0 is proved there, and no reference is given, so I guess
+    # this is the paper where M0 is introduced. However, the same source says
+    # that Dick de Jongh proved ILM0W = ILW*. No reference is given, so I'm
+    # guessing this was privately communicated between them. I would formulate
+    # it "the principle M0 is introduced in [paper]" without explicitly
+    # attributing the authorship to Visser.
 
 *** Ordinary semantics
 
     The $\kord{M₀}$ condition reads as follows:
     \[∀w,x,y,z(wRxRyS_wz⇒∀u(zRu⇒xRu)).\]
 
-
    #+caption: Ordinary frame condition for \prin{M₀}.
    #+name: fig:M_0-ord
    #+attr_latex: :float t :width 0.25\textwidth :placement [H]
    [[file:img/M_0-ord.pdf]]
 
-    {{{begintheorem}}} For any ordinary frame $F$, we have that $F$ satisfies the
-    $\kord{M₀}$ condition iff any model based on $F$ forces every instantiation of
-    the \prin{M₀} principle. In symbols:
+    {{{begintheorem}}} {{{agda}}} For any ordinary frame $F$, we have that $F$
+    satisfies the $\kord{M₀}$ condition iff any model based on $F$ forces every
+    instantiation of the \prin{M₀} principle. In symbols:
 
-    \[F ⊨ \kord{M₀} ⇔ F ⊩ \prin{M₀}.\] {{{endtheorem}}}
+    \[F ⊨ \kord{M₀} ⇔ F ⊩ \prin{M₀}.\]
+    {{{endtheorem}}}
 
     {{{beginproof}}}
-    {{{agda}}}
     - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
       that $w⊩A▷B$ and that there exists some $x$ such that $wRx⊩ ♢ A ∧ □ C$. It
       follows that there exists some world $y$ such that $xRy⊩A$, then since
@@ -1898,7 +1959,9 @@ thanks
       must exist some world $v$ such that $xS_wv⊩b∧□c$ but since $b$ is only
       forced in $z$ we have $z=v$ and thus $xS_wz$. To prove the remaining
       implication let $u$ such that $zRu$, then $u⊩c$ and thus $xRu$.
-    {{{endproof}}}
+
+    The Agda proof can be found in
+    cref:src:ordinaryveltmansemantics.properties.msub0. {{{endproof}}}
 *** Generalized semantics
     The $\kgen{M₀}$ condition reads as follows:
     \[∀w,x,y,Y(wRxRyS_wY⇒∃Y'⊆Y(xS_wY',∀y'∈Y'∀z(y'Rz⇒xRz))).\]
@@ -1938,24 +2001,27 @@ thanks
       there must exist some set $Y'$ such that $xS_wY'⊩b∧□c$. Clearly $Y'⊆Y$ since
       $Y'⊩b$. To show the remaining condition pick some $y'∈Y'$ and some $z$
       such that $y'Rz$. Since $Y'⊩□c$ then $z⊩c$ and thus $xRz$.
-    {{{endproof}}}
+
+    The Agda proof can be found in
+    cref:src:generalizedveltmansemantics.properties.msub0. {{{endproof}}}
 
 ** The principle \prin{P₀}
    The \prin{P₀} principle reads as follows:
    \[A ▷ ♢ B → □ (A ▷ B).\]
 
-   We give some context borrowed from cite:joosten2020interpretability. The
-   principle \prin{P₀} was discovered in 1998 by Albert Visser. \prin{P₀}
-   appeared during the search of the modal completeness proof of \prin{ILM_0}.
-   In an attempt to strengthen the logic, Visser modified the frame condition of
-   $\prin{ILM_0}$ to make it stronger and arrive at a stronger principle, which
-   was coined as $\prin{P_0}$. Since the frame condition of $\prin{P_0}$ implies
-   the frame condition of $\prin{M_0}$ every $\text{\prin{ILP_0}-frame}$ is also
-   an $\text{\prin{ILM_0}-frame}$. In cite:joosten-master it is proven that
-   $\prin{ILP_0}⊬\prin{ILM_0}$ using ordinary Veltman semantics. Thus we have
-   that \prin{ILP_0} is modally incomplete with respect to ordinary Semantics.
-   However, it was shown recently in cite:mikec-vukovic20 that \prin{P_0} is in
-   fact complete with respect to generalized Veltman semantics.
+   We give some context to the principle \prin{P₀} borrowed from
+   cite:joosten2020interpretability. The principle \prin{P₀} was discovered in
+   1998 by Albert Visser. \prin{P₀} appeared during the search of the modal
+   completeness proof of \prin{ILM_0}. In an attempt to strengthen the logic,
+   Visser modified the frame condition of $\prin{ILM_0}$ to make it stronger and
+   arrive at a stronger principle, which was coined as $\prin{P_0}$. Since the
+   frame condition of $\prin{P_0}$ implies the frame condition of $\prin{M_0}$
+   every $\text{\prin{ILP_0}-frame}$ is also an $\text{\prin{ILM_0}-frame}$. In
+   cite:joosten-master it is proven that $\prin{ILP_0}⊬\prin{ILM_0}$ using
+   ordinary Veltman semantics. Thus we have that \prin{ILP_0} is modally
+   incomplete with respect to ordinary Semantics. However, it was shown recently
+   in cite:mikec-vukovic20 that \prin{P_0} is in fact complete with respect to
+   generalized Veltman semantics.
 
    The principle \prin{P_0} is valid in all reasonable arithmetical theories and
    thus it should be in \ilall{}.
@@ -1995,6 +2061,9 @@ thanks
      $x⊩a▷b$. Then, since $xRy⊩a$ it follows that there exist some $v$ such that
      $yS_xv⊩b$, but since $b$ is only forced in $u$, it must be $u=v$ and so
      $yS_xu$.
+
+   The Agda proof can be found in
+   cref:src:ordinaryveltmansemantics.properties.psub0.
    {{{endproof}}}
 
 *** Generalized semantics
@@ -2035,6 +2104,9 @@ thanks
      $w⊩□(a▷b)$ and since $wRx$ then $x⊩a▷b$. Also, since $xRy⊩a$ then there
      exists $Z'$ such that $yS_xZ'⊩b$. Clearly $Z'⊩b$ implies $Z'⊆Z$ so we are
      done.
+
+   The Agda proof can be found in
+   cref:src:generalizedveltmansemantics.properties.psub0.
    {{{endproof}}}
 
 ** The principle \prin{R}
@@ -2043,10 +2115,11 @@ thanks
    \[A ▷ B → ¬ (A ▷ ¬C) ▷ (B ∧ □ C)\ .\]
 
    The principle \prin{R} is due to Goris and Joosten. In cite:a-new-principle
-   they show that \prin{R} does follow semantically but not syntactically from
-   \prin{ILP_0W^*}, which was the best known lower bound for \ilall{} in 2011.
-   They also show that \prin{R} is valid in all reasonable arithmetical theories
-   and thus giving a strictly better lower bound for \ilall{}.
+   the authors show that \prin{R} does follow semantically but not syntactically
+   from \prin{ILP_0W^*}, which was the best known lower bound for \ilall{}
+   in 2011. The authors of cite:a-new-principle also show that \prin{R} is valid
+   in all reasonable arithmetical theories and thus giving a strictly better
+   lower bound for \ilall{}.
 
    Note that \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
    and \prin{R_n} series of principles, which generalize \prin{R}, are discussed
@@ -2061,7 +2134,7 @@ thanks
    #+attr_latex: :float t :width 0.15\textwidth :placement [H]
    [[file:img/R-ord.pdf]]
 
-   {{{begintheorem}}}
+   {{{begintheorem}}} {{{agda}}}
    For any ordinary frame $F$, we have that $F$ satisfies the
    $\kord{R}$ condition iff any model based on $F$ forces every instantiation of
    the \prin{R} principle. In symbols:
@@ -2070,7 +2143,6 @@ thanks
    {{{endtheorem}}}
 
    {{{beginproof}}}
-   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and let $w$ be any world. Assume
      that $w⊩A▷B$ and that there is a world $x$ such that $wRx⊩¬(A▷¬C)$. We need
      to see that there is some world $z$ such that $xS_wz⊩B∧□C$. From
@@ -2106,6 +2178,9 @@ thanks
      $v=z$ since $z$ is the only world that forces $b$, hence $xS_wz⊩□c$. Now to
      show $∀v(zRv⇒yS_xv)$ consider some $v$ such that $zRv$. From $z⊩□c$ we get
      $v⊩c$ and thus $yS_xv$.
+
+   The Agda proof can be found in
+   cref:src:ordinaryveltmansemantics.properties.r.
    {{{endproof}}}
 
 *** Generalized semantics
@@ -2129,7 +2204,7 @@ thanks
    #+attr_latex: :float t :width 0.36\textwidth :placement [H]
    [[file:img/R-gen.pdf]]
 
-   {{{begintheorem}}}
+   {{{begintheorem}}} {{{agda}}}
    <<theorem:R^0>>
    For any generalized frame $F$, we have that $F$ satisfies the
    $\kgen{R}$ condition iff any model based on $F$ forces every instantiation of
@@ -2137,8 +2212,8 @@ thanks
 
    \[F ⊨ \kgen{R} ⇔ F ⊩ \prin{R}.\]
    {{{endtheorem}}}
+
    {{{beginproof}}}
-   {{{agda}}}
    - \boxed{⇒} Let $M$ be a model based on $F$ and assume there is a world $w$ such
      that $w⊩A▷B$ and a world $x$ such that $wRx$ and $x⊩¬(A▷¬C)$. We need to
      show that there is a set $Z$ such that $xS_wZ⊩B∧□C$. From $x⊩¬(A▷¬C)$ it
@@ -2166,6 +2241,9 @@ thanks
      this holds since $K∈𝒞(x,y)$. As a consequence of $x⊩¬(a▷¬c)$ we have that
      there exists a set $Y'$ such that $xS_wY'⊩b∧□c$. From $Y'⊩b$ we get $Y'⊆Y$ and
      from $Y'⊩□c$ we get $∀y'∈Y'(∀z(y'Rz→z∈K))$, hence $Y'$ is the desired set.
+
+   The Agda proof can be found in
+   cref:src:generalizedveltmansemantics.properties.r.
    {{{endproof}}}
 
 ** The principle \prin{R₁}
@@ -2180,11 +2258,6 @@ thanks
 
     The $\kord{R_1}$ frame condition reads as follows:
     \[∀w,x,y,z(wRxRyS_wz⇒∀u(zRu⇒yS_xu,∀v(uS_xv⇒∀m(vRm⇒uS_zm))))\]
-
-    # #+caption: Ordinary frame condition for \prin{R₁}
-    # #+name: fig:ord-R₁-condition
-    # #+attr_latex: :float t :width 0.20\textwidth :placement [H]
-    # [[file:img/wip.png]]
 
     {{{begintheorem}}}
     For any ordinary frame $F$, we have that $F$ satisfies the
@@ -2239,7 +2312,7 @@ thanks
     ⇒\ & ∃𝔹'⊆𝔹.xS_w𝔹',R[𝔹']⊆ℂ,∀v∈𝔹'.∀c∈ℂ.(∃U⊆Rₓ^{-1}[𝔼],vRcSₓU)⇒∃𝔼'⊆𝔼.cS_v𝔼'\Big)
     \end{flalign*}
 
-    {{{begintheorem}}}
+    {{{begintheorem}}} {{{agda}}}
     <<theorem:R_1>>
     For any generalized frame $F$, we have that $F$ satisfies the
     $\kgen{R_1}$ condition iff any model based on $F$ forces every instantiation of
@@ -2249,7 +2322,6 @@ thanks
     {{{endtheorem}}}
 
     {{{beginproof}}}
-    {{{agda}}}
     - \boxed{⇒} Let's fix the model and let $w ∈ W$ be arbitrary. Suppose $w⊩ A
       ▷B$, and let $x$ be such that $wRx$ and $x⊩ ¬(A ▷ ¬C) ∧ (D ▷ ♢E)$. It
       follows from $x ⊩¬(A ▷¬C)$ that there exists $u$ such that $xRu$, such
@@ -2314,6 +2386,8 @@ thanks
       the valuation it follows that $Y⊆𝔼$ and thus $c_U\cancel{S}_{v_U} Y$,
       which is a contradiction.
 
+   The Agda proof can be found in
+   cref:src:generalizedveltmansemantics.properties.rsub1.
     {{{endproof}}}
 
 ** The principle \prin{R¹}
@@ -2333,7 +2407,7 @@ thanks
     ⇒\ & ∃V⊆𝔹(xS_wV,R[V]⊆ℂ).
     \end{flalign*}
 
-    {{{begintheorem}}}
+    {{{begintheorem}}} {{{agda}}}
     For any generalized frame $F$, we have that $F$ satisfies the
     $\kgen{R¹}$ condition iff any model based on $F$ forces every instantiation of
     the \prin{R¹} principle. In symbols:
@@ -2343,7 +2417,6 @@ thanks
 
 
     {{{beginproof}}}
-    {{{agda}}}
     - \boxed{⇒} Fix a model $M$ and a world $w$, we are to prove that $w⊩A ▷ B →
       (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C)$. For that assume that $w⊩A▷B$ and that for
       some $x,y,z$ we have $wRxRyRz$ and satisfy the conditions on the left hand
@@ -2365,6 +2438,9 @@ thanks
       \end{flalign*}
       Now one can easily check that $w⊩A▷B$, $x⊩♢¬(D▷¬C)∧(D▷A)$, hence there exists $U$
       such that $xS_wU$ and $U⊩B∧□C$. From that we derive that $U⊆𝔹$ and $R[U]⊆ℂ$.
+
+   The Agda proof can be found in
+   cref:src:generalizedveltmansemantics.properties.rsup1.
     {{{endproof}}}
 
 ** The series of principles \prin{Rⁿ}
@@ -2402,7 +2478,7 @@ thanks
     & z∈𝔻₀ \\
     ⇒\ & ∃V⊆𝔹.x_{n-1}S_wV,R[V]⊆ℂ.
     \end{flalign*}
-    {{{beginlemma}}}
+    {{{beginlemma}}} {{{agda}}}
     <<lemma:R^n>>
     Let $M$ be a model, let $x$ be a world of $M$ and let $n∈ℕ$. For any $i≤n$ we have
     that if $M , x ⊩ U_i$ then there exist some worlds $y,z,x₀,…,x_{i}$ such that:
@@ -2412,9 +2488,8 @@ thanks
     4. for all $j<i$ we have that $M,x_j⊩D_j▷D_{j+1}$;
     5. for all $V$ we have that if $zS_yV$ then $V∩\{w:M,w⊩C\}≠∅$;
     6. $M,z⊩D₀$.
-    {{{beginproof}}}
-    {{{agda}}}
 
+    {{{beginproof}}}
     By induction on $i$.
     - For $i=0$ we have that $x⊩♢¬(D₀▷¬C)$. It follows that there exists some
       $y$ such that $xRy⊩¬(D₀▷¬C)$ and therefore there exists some $z$ such that
@@ -2427,7 +2502,8 @@ thanks
       are met for $i+1$.
     {{{endproof}}}
     {{{endlemma}}}
-    {{{begintheorem}}}
+
+    {{{begintheorem}}} {{{agda}}}
     <<theorem:R^n>>
     For any generalized frame $F$, we have that $F$ satisfies
     the $\kgen{Rⁿ}$ condition iff any model based on $F$ forces every
@@ -2437,7 +2513,6 @@ thanks
     {{{endtheorem}}}
 
     {{{beginproof}}}
-    {{{agda}}}
 
     If $n=0$ we refer to cref:theorem:R^0. For $n+1$ proceed as follows.
     - \boxed{⇒} Fix a model and assume that for some world $w$ we have $w⊩A▷B$.
