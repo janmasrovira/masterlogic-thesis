@@ -618,16 +618,21 @@ en algun assistent de la demostració.
    2. $Y⊩A$ iff for all $y∈Y$ we have $y⊩A$.
    3. $Y⊮A$ iff there is some $y∈Y$ such that $y⊮A$;
    4. $⟦A⟧≔\{w:w⊩A\}$.
-   7. When we write a dot after the quantification of some variables, the scope
+   5. When we write a dot after the quantification of some variables, the scope
       of the variables extends to the rightmost part of what follows, of course,
       without escaping parentheses. Hence the formula $∀x∃y.Pxy∧∀z.Pyz$ is
       equivalent to $∀x∃y(Pxy∧∀z(Pyz))$.
-   8. We use commas to denote conjunction, so $∀x.A(x),B(x)$ should be
+   6. We use commas to denote conjunction, so $∀x.A(x),B(x)$ should be
       read as for all $x$ we have $A(x)$ and $B(x)$.
-   9. If \prin{X} is a principle (or axiom schema), we denote by \prin{ILX} the
+   7. If \prin{X} is a principle (or axiom schema), we denote by \prin{ILX} the
       logic which consists in adding the axiom schema \prin{X} to the logic
       \il{}. We will write \prin{ILXY} to denote that we add principles \prin{X}
       and \prin{Y} to the \il{}, and so on.
+   8. In lambda calculus and Martin Löf's logical framework
+      (cref:sec:logic-agda), we write $e[x↦a]$ to say that all free occurrences
+      of $x$ in $e$ are replaced by $a$. We write $e[x₁↦a₁,…,xₙ↦aₙ]$ instead of
+      $(…(e[x₁↦a₁])…)[xₙ↦aₙ]$.
+
 
 *** Diagrams
     <<sec:notation-diagrams>> Throughout the thesis we present some diagrams to
@@ -1109,7 +1114,7 @@ en algun assistent de la demostració.
     The proof goes in a very similar way to ordinary semantics. Assume $w⊩□A$
     and let $u$ be a world such that $wRu$. If $u⊩A$ we are done, otherwise we
     have $u⊩¬A$. Since $w⊩□A$ is notation for $w⊩(¬ A) ▷ ⊥$, there exists $Z$
-    such that $uS_wZ⊩⊥$. Since $Z$ is nonempty we have an absurd.
+    such that $uS_wZ⊩⊥$. Since $Z$ is nonempty we have a contradiction.
 
     For the other direction assume that we have a world $w$ and for every $u$
     such that $wRu$ we have $u⊩A$. We see that $w⊩(¬A)▷⊥$ clearly holds as there
@@ -1150,9 +1155,10 @@ en algun assistent de la demostració.
 
 ** Quasi-transitivity
    <<sec:trans>> In the literature one can find several semantic requirements
-   for the quasi-transitivity condition which we present in the table below. See
-   that in cref:def:gen-frame we used {{{cond(2)}}}. cref:theorem:trans presents
-   some direct implications between them.
+   for the quasi-transitivity condition which we present in the table below. We
+   observe that in cref:def:gen-frame we used {{{cond(2)}}} from the table
+   below. cref:theorem:trans presents some direct implications between
+   conditions presented in cref:fig:table-trans.
    cref:theorem:il-sound,theorem:trans-extend are sufficient to argue that all
    of them are appropriate for proving completeness of \il{}. It is worth
    mentioning however, that not all of them are sufficiently expressive to prove
@@ -1248,18 +1254,18 @@ en algun assistent de la demostració.
   #+end_center
 
   It happens that this condition can be assumed (and in fact, is a standard
-  assumption in the literature) to be satisfied by generalized Veltman frames
-  without harm. This is desirable as a good number of proofs and definitions
-  (especially definitions related to filtrations) can be simplified when
-  assuming the monotonicity condition. By ``can be assumed without harm'', we
-  mean that for any generalized Veltman frame, we can find another generalized
-  Veltman frame that it satisfies the monotonicity condition and moreover both
-  frames will be modally equivalent when expanded to a generalized Veltman model
-  with a valuation. In the following theorem we prove this fact.
+  assumption in the more recent literature) to be satisfied by generalized
+  Veltman frames without harm. This is desirable as a good number of proofs and
+  definitions (especially definitions related to filtrations) can be simplified
+  when assuming the monotonicity condition. By ``can be assumed without harm'',
+  we mean that for any generalized Veltman frame, we can find another
+  generalized Veltman frame that it satisfies the monotonicity condition and
+  moreover both frames will be modally equivalent when expanded to a generalized
+  Veltman model with a valuation. In the following theorem we prove this fact.
 
-  {{{begintheorem}}} <<theorem:mono>> {{{agda}}} Let $F=⟨W,R,S⟩$ be a generalized Veltman
-  frame with quasi-transitivity $i$ for and $i∈\{1,…,8\}$. Let $F'=⟨W,R,S'⟩$
-  where $S'$ is the monotone closure of $S$:
+  {{{begintheorem}}} <<theorem:mono>> {{{agda}}} Let $F=⟨W,R,S⟩$ be a
+  generalized Veltman frame with quasi-transitivity Condition $i$ for
+  $i∈\{1,…,8\}$. Let $F'=⟨W,R,S'⟩$ where $S'$ is the monotone closure of $S$:
 
   \[S'≔\{⟨w,x,Y'⟩ : ⟨w,x,Y⟩∈S, Y⊆Y'⊆\{u:wRu\}\}.\]
 
@@ -1294,12 +1300,16 @@ en algun assistent de la demostració.
     and $M,Y⊩B$. By IH we have $M',Y⊩B$ and by definition of $S'$ it follows
     that $xS'_wY$, therefore $M',w⊩A▷B$.
   - Assume that $M,w⊮A▷B$. It follows that there is some $x$ such that $wRx$,
-    $M,x⊩A$ and $(⋆)\ ∀Y(xS_wY⇒M,Y⊮B)$. We want to prove that
-    $∀Y'(xS'_wY'⇒M',Y'⊮B)$. Assume that for some $Y'$ we have $xS'_wY'$. By
-    definition of $S'$ it follows there exists some $Y$ such that $Y⊆Y'$ and
-    $xS_wY$. Hence by $(⋆)$ we have that $M,Y⊮B$ and thus there exists $y∈Y$
-    such that $M,y⊮B$. By IH we get that $M',y⊮B$ and since $y∈Y⊆Y'$ we have
-    $Y'⊮B$, so $M',w⊮A▷B$.
+    $M,x⊩A$ and
+    #+name: eq:mono-proof1
+    #+begin_equation
+    ∀Y(xS_wY⇒M,Y⊮B).
+    #+end_equation
+    We want to prove that $∀Y'(xS'_wY'⇒M',Y'⊮B)$. Assume that for some $Y'$ we
+    have $xS'_wY'$. By definition of $S'$ it follows there exists some $Y$ such
+    that $Y⊆Y'$ and $xS_wY$. Hence by cref:eq:mono-proof1 we have that $M,Y⊮B$
+    and thus there exists $y∈Y$ such that $M,y⊮B$. By IH we get that $M',y⊮B$
+    and since $y∈Y⊆Y'$ we have $Y'⊮B$, so $M',w⊮A▷B$.
 
   The Agda proof can be found in cref:src:generalizedframe.properties.
   {{{endproof}}}
@@ -1312,7 +1322,7 @@ en algun assistent de la demostració.
   # for a Veltman frame with quasi-transitivity (2).
 
   {{{beginremark}}} Taking the monotone closure of each $S_w$ is essentially
-  different than assuming that each $S_w$ is monotone by definition of the
+  different from assuming that each $S_w$ is monotone by definition of the
   frame, as then the forcing relation may change. In the following example we
   present a generalized Veltman model with {{{cond(8)}}} that showcases such
   behaviour.
@@ -1323,8 +1333,8 @@ en algun assistent de la demostració.
    [[file:img/example.pdf]]
 
   Let $M$ be a model based on the frame displayed[fn::In the figure we do not
-  show the $S_w$ relations required by quasi-reflexivity for clarity.] in figure
-  [[fig:example-trans]] such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_2\}$. We see that
+  show the $S_w$ relations required by quasi-reflexivity for clarity.] in
+  cref:fig:example-trans such that $⟦p⟧ = \{v_0\}$, $⟦q⟧ = \{v_3\}$. We see that
   $w⊩¬(p ▷ q)$ as $p$ is only true in $v_0$ and we only have $v_0S_w\{v_1\}$ and
   $v_0S_w\{v_0\}$ (by quasi-reflexivity) with $v_0⊮q$ and $v_1⊮q$. If we take
   the monotonic closure of $S$ we have $v_0S_w \{v_1, v_2\}$ and by
@@ -1774,7 +1784,6 @@ en algun assistent de la demostració.
 
 * Frame conditions
   <<sec:frame-condition>>
-
 ** Introduction to principles and frame conditions
   An interpretability principle is a schema of modal formulas that carries some
   special significance. The relevance of a principle mainly stems from two
@@ -1783,9 +1792,9 @@ en algun assistent de la demostració.
   \prin{ILM} is the interpretability logic of \pa{}: $\prin{ILM}=\prin{IL(PA)}$.
   On the other hand we have principles which are valid in all reasonable
   arithmetical theories and thus are interesting in the search of an
-  axiomatization for the logic \ilall. For instance, the series of principles
+  axiomatization for the logic \ilall{}. For instance, the series of principles
   \prin{R^n} and \prin{R_n}, which we will present in this part, are central to
-  the best known lower bound for \ilall. Regardless of the area of interest,
+  the best known lower bound for \ilall{}. Regardless of the area of interest,
   finding the frame condition for a principle is always the first step towards
   studying the nature of the principle. Once we have established a frame
   condition for a principle, say \prin{X}, one has more tools when studying, for
@@ -1858,16 +1867,16 @@ en algun assistent de la demostració.
   representation of most of the presented frame conditions in an attempt to
   convey their visual value.
 ** The principle \prin{M}
-   The \prin{M} principle reads as follows:
-   \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C).\]
 
-   The \prin{M} principle is coined after Franco Montagna because the principle
+   The \prin{M} principle reads as follows: \[A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C).\]
+
+   The \prin{M} principle is named after Franco Montagna because the principle
    appeared during discussions between Franco Montagna and Albert Visser about
    interpretability logic (cite:bilkova2009interpretability).
 
    The theorems of $\prin{ILM}$ are the set of interpretability principles that
-   are always provable in theories which are $Σ_1$ sound, have full induction
-   and prove consistency of any of its finite subsystems
+   are always provable in theories which are {{{latex($Σ_1$-sound)}}} and have
+   full induction.
    (cite:berarducci1990interpretability,visser1997overview,joosten2020overview).
    An example of such a theory is \pa{}.
 *** Ordinary semantics
@@ -1956,25 +1965,18 @@ en algun assistent de la demostració.
    The Agda proof can be found in
    cref:src:generalizedveltmansemantics.properties.m. {{{endproof}}}
 ** The principle \prin{M₀}
+
    The \prin{M₀} principle reads as follows:
    \[A ▷ B → ♢ A ∧ □ C ▷ B ∧ □ C.\]
 
    The \prin{M₀} principle first appears in
    cite:Visser:1991:FormalizationOfInterpretability, where it is proved that
    \prin{M_0} is arithmetically sound. Moreover it is claimed that Dick de Jongh
-   showed that $\prin{ILM_0W}=\prin{ILW^*}$. With that in mind, the current best
-   lower bound for \ilall could be reformulated as $\sf{ILM_0WR_nR^n}$.
-   The logic \prin{ILM_0} is complete with respect to ordinary
-   and generalized semantics (cite:modal-matters).
-
-    # Luka: As far as I can see, the first mention of M0 is in "The
-    # Formalization of Interpretability" by Visser (1991). Arithmetical
-    # soundness of M0 is proved there, and no reference is given, so I guess
-    # this is the paper where M0 is introduced. However, the same source says
-    # that Dick de Jongh proved ILM0W = ILW*. No reference is given, so I'm
-    # guessing this was privately communicated between them. I would formulate
-    # it "the principle M0 is introduced in [paper]" without explicitly
-    # attributing the authorship to Visser.
+   showed that $\prin{ILM_0W}=\prin{ILW^*}$. During a short period of time,
+   \prin{ILM₀} was a candidate to be \ilall{}, however, such possibility was ruled
+   out with the discovery of the principle \prin{P₀}. The logic \prin{ILM_0} is
+   complete with respect to ordinary and generalized semantics
+   (cite:modal-matters).
 
 *** Ordinary semantics
 
@@ -2064,25 +2066,31 @@ en algun assistent de la demostració.
 
 ** The principle \prin{P₀}
    <<sec:prin-p0>>
+
+ # - not super important, but you could make parentheses straight in math-mode (I
+ #   think the command is \textup{...}), e.g. in this formula and similar formulas
+ #   elsewhere: F |= (P_0) <=> F ||- P_0
+
+
    The \prin{P₀} principle reads as follows:
    \[A ▷ ♢ B → □ (A ▷ B).\]
 
-   We give some context to the principle \prin{P₀} borrowed from
+   We give some context to the principle \prin{P₀}, borrowed from
    cite:joosten2020interpretability. The principle \prin{P₀} was discovered in
-   1998 by Albert Visser. \prin{P₀} appeared during the search of the modal
+   1998 by Albert Visser. This principle appeared while trying to develop the
    completeness proof of \prin{ILM_0}. In an attempt to strengthen the logic,
-   Visser modified the frame condition of $\prin{ILM_0}$ to make it stronger and
-   arrive at a stronger principle, which was coined as $\prin{P_0}$. Since the
-   frame condition of $\prin{P_0}$ implies the frame condition of $\prin{M_0}$
-   every $\text{\prin{ILP_0}-frame}$ is also an $\text{\prin{ILM_0}-frame}$. In
+   Visser modified the frame condition of \prin{ILM_0} to make it stronger and
+   arrived at a stronger principle, which was given the name $\prin{P_0}$. The
+   frame condition with respect to ordinary semantics of \prin{P_0} implies the
+   frame condition (with respect to ordinary semantics) of $\prin{M_0}$. In
    cite:joosten-master it is proven that $\prin{ILP_0}⊬\prin{ILM_0}$ using
    ordinary Veltman semantics. Thus we have that \prin{ILP_0} is modally
-   incomplete with respect to ordinary Semantics. However, it was shown recently
+   incomplete with respect to ordinary semantics. However, it was shown recently
    in cite:mikec-vukovic20 that \prin{P_0} is in fact complete with respect to
    generalized Veltman semantics.
 
    The principle \prin{P_0} is valid in all reasonable arithmetical theories and
-   thus it should be in \ilall{}.
+   thus it is in \ilall{}.
 
 *** Ordinary semantics
     The $\kord{P₀}$ condition reads as follows:
@@ -2168,16 +2176,18 @@ en algun assistent de la demostració.
    {{{endproof}}}
 
 ** The principle \prin{R}
+   <<sec:prin-r>>
+
    The \prin{R} principle reads as follows:
 
    \[A ▷ B → ¬ (A ▷ ¬C) ▷ (B ∧ □ C)\ .\]
 
-   The principle \prin{R} is due to Goris and Joosten. In cite:a-new-principle
-   the authors show that \prin{R} does follow semantically but not syntactically
-   from \prin{ILP_0W^*}, which was the best known lower bound for \ilall{}
-   in 2011. The authors of cite:a-new-principle also show that \prin{R} is valid
-   in all reasonable arithmetical theories and thus giving a strictly better
-   lower bound for \ilall{}.
+   The principle \prin{R} was introduced by Goris and Joosten in
+   cite:a-new-principle. The authors show that \prin{R} does follow semantically
+   but not syntactically from \prin{ILP_0W^*}, which was the best known lower
+   bound for \ilall{} in at a time. Goris and Joosten also show that \prin{R} is
+   valid in all reasonable arithmetical theories and thus giving a strictly
+   better lower bound for \ilall{}.
 
    Note that \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
    and \prin{R_n} series of principles, which generalize \prin{R}, are discussed
@@ -2306,11 +2316,12 @@ en algun assistent de la demostració.
 
 ** The principle \prin{R₁}
    <<sec:Rsub1>>
+
    The $R_1$ principle reads as follows:
    \[A ▷ B → (¬(A ▷ ¬C)∧ (D▷♢E))▷(B∧□C∧(D▷E)).\]
 
-   It is the second principle of the $\prin{R_n}$ series. The $R_n$ series of
-   principles is defined in cite:two-new-series and it has been named /the slim
+   It is the second principle of the \prin{R_n} series. The series of principles
+   \prin{R_n} is defined in cite:two-new-series and it has been named /the slim
    series/.
 *** Ordinary semantics
 
@@ -2449,9 +2460,15 @@ en algun assistent de la demostració.
     {{{endproof}}}
 
 ** The principle \prin{R¹}
+   <<sec:prin-rsup1>>
 
    The \prin{R¹} principle reads as follows:
    \[A ▷ B → (♢¬(D ▷ ¬C)∧ (D▷A))▷(B∧□C).\]
+
+   \prin{R¹} is the second principle of the series \prin{R^n}. The series of
+   principles \prin{R_n} is defined in cite:two-new-series and it has been named
+   /the broad series/. In cref:sec:Rsupn we comment on the series \prin{R^n} and
+   present the frame condition with respect to generalized semantics.
 
 *** Generalized semantics
     The $\kgen{R¹}$ condition reads as follows:
@@ -2503,7 +2520,8 @@ en algun assistent de la demostració.
 
 ** The series of principles \prin{Rⁿ}
    <<sec:Rsupn>>
-   The \prin{R^n} principle is defined thus:
+
+   The series of principles \prin{R^n} principle is defined thus:
    \begin{flalign*}
    U_0 &≔ ♢¬(D_0▷¬C) \\
    U_{r+1} &≔ ♢((Dᵣ▷D_{r+1}) ∧ Uᵣ) \\
@@ -2512,11 +2530,10 @@ en algun assistent de la demostració.
    R^{n+1}& ≔ A ▷ B → ((D_{n}▷A) ∧ U_{n}) ▷ B ∧ □ C
    \end{flalign*}
 
-   The \prin{R^n} and \prin{R_n} series of principles are due to Goris and
-   Joosten. Both series are presented in cite:two-new-series. In their article
-   they generalize the principle \prin{R} in two series of principles which they
-   use to give the best known lower bound for the logic \ilall{}, which is
-   $\prin{ILWR^nR_n}$.
+   The principle \prin{R^0} is equivalent to \prin{R}, which we already
+   discussed in cref:sec:prin-r and we already discussed the principle
+   \prin{R^1} in cref:sec:prin-rsup1. In this chapter we deal with these and
+   other principles from the series at once.
 
    The \prin{R^n} series is also referred to as /the broad series/.
 *** Ordinary semantics
@@ -2637,11 +2654,12 @@ en algun assistent de la demostració.
    cref:src:generalizedveltmansemantics.properties.genericframecond.
    {{{endproof}}}
 
-   {{{beginremark}}}
-   For instance, if we want the frame condition for \prin{P₀} we would look at
-    \[\kgen{(a ▷ ♢ b → □ (a ▷ b))^*}.\]
-    Where $a,b$ are different propositional variables.
-    {{{endremark}}}
+   {{{beginremark}}} For instance, if we want the frame condition for \prin{P₀}
+   we would look at \[\kgen{(a ▷ ♢ b → □ (a ▷ b))^*}.\] Where $a,b$ are
+   different propositional variables. {{{endremark}}}
+
+   We suggest a future systematic study that lays down the relations between
+   generic frame conditions and the ones used in practice.
 * The logic of Agda
   <<sec:logic-agda>>
 
@@ -2677,18 +2695,18 @@ en algun assistent de la demostració.
   (cite:plfa2019,norell2008dependently,bove2009brief).
 
 ** Introduction to types
-   <<sec:intro-types>>
-   Type theory is a branch of mathematical symbolic logic. It formalizes
-   mathematical concepts through terms, types and a typing relation between
-   them. One could think of types as predicates on terms. We write $T:A$ to say
-   that term $T$ satisfies predicate $A$, or synonymously, that term $T$ has
-   type $A$. Later in this chapter we will see that types in /simply typed
-   lambda calculus/ provide a basic classification of lambda terms. For
-   instance, a term representing a natural number will have a different type
-   from a lambda term representing a Boolean value. In more expressive type
-   theories which feature dependent types, such as /intuitionistic type theory/,
-   we can express complex mathematical properties such as ``$2*n$ is always
-   even'' or that ``any finite sequence of numbers can be sorted''.
+   <<sec:intro-types>> Type theory is a branch of mathematical symbolic logic.
+   It formalizes mathematical concepts through terms, types and a typing
+   relation between them. One could think of types as predicates on terms. We
+   write $T:A$ to say that term $T$ satisfies predicate $A$, or synonymously,
+   that term $T$ has type $A$. Later in this chapter we will see that types in
+   /simply typed lambda calculus/ provide a basic classification of lambda
+   terms. For instance, a term representing a natural number will have a
+   different type from a lambda term representing a Boolean value. In more
+   expressive type theories which feature dependent types, such as
+   /intuitionistic type theory/, we can express complex mathematical properties
+   such as ``$2*n$ is always even'' or that ``any finite sequence of numbers can
+   be sorted in lexicographical order''.
 
    Type theory has become especially relevant in the following areas.
    - *Programming languages and proof assistants*. Simple (non-dependent) types
@@ -2982,20 +3000,20 @@ en algun assistent de la demostració.
 
    We proceed by defining the concept of /context/.
    #+begin_definition
-    *Context*. Intuitively, a context, is a sequence of typed variables, where
-    each type may depend on the preceding variables in the sequence.
+   *Context*. Intuitively, a context, is a sequence of typed variables, where
+   each type may depend on the preceding variables in the sequence.
 
-    More precisely, a context is a finite sequence of the form \[x₁:S₁,…,xₙ:Sₙ\]
-    Where each $xᵢ$ denotes a variable[fn::Every variable must be different than
-    the rest, that is, for every $i,j$ such that $i≠j$ we have $xᵢ≠xⱼ$.].
-    Furthermore, given arbitrary terms $a₁,…,a_n$ it must hold that:
-    \begin{flalign*}
-    \label{context-cond}
-    ∅⊢S₁:\type{} &\text{ and } ∅⊢a₁:S₁; \\
-    ∅⊢S₂[x₁↦a₁]:\type{} &\text{ and } ∅⊢a₂:S₂[x₁↦a₁]; \\
-    & ⋮ \\
-    ∅⊢S_n[x₁↦a₁,…,x_{n-1}↦a_{n-1}]:\type{} &\text{ and } ∅⊢a_n:S_n[x₁↦a₁,…,x_{n-1}→a_{n-1}].
-    \end{flalign*}
+   More precisely, a context is a finite sequence of the form \[x₁:S₁,…,xₙ:Sₙ\]
+   Where each $xᵢ$ denotes a variable[fn::Every variable must be different than
+   the rest, that is, for every $i,j$ such that $i≠j$ we have $xᵢ≠xⱼ$.].
+   Furthermore, given arbitrary terms $a₁,…,a_n$ it must hold that:
+   \begin{flalign*}
+   \label{context-cond}
+   ∅⊢S₁:\type{} &\text{ and } ∅⊢a₁:S₁; \\
+   ∅⊢S₂[x₁↦a₁]:\type{} &\text{ and } ∅⊢a₂:S₂[x₁↦a₁]; \\
+   & ⋮ \\
+   ∅⊢S_n[x₁↦a₁,…,x_{n-1}↦a_{n-1}]:\type{} &\text{ and } ∅⊢a_n:S_n[x₁↦a₁,…,x_{n-1}→a_{n-1}].
+   \end{flalign*}
    #+end_definition
 
    We will now introduce a type for the first time. We introduce the type
@@ -3007,6 +3025,7 @@ en algun assistent de la demostració.
    As we see the previous rule has no assumptions, hence we have that
    $∅⊢\set:\type$ is valid in LF.
 
+   \pagebreak[4]
    The nature of the type \set{} is given by the following meta definition.
    #+begin_definition
    *Set*. A /set/ is an inductive description of how its
@@ -3033,8 +3052,8 @@ en algun assistent de la demostració.
    returns a \type{}, which represents the elements of the set.
 
    Later in the chapter (cref:sec:family-types) we will define the concept of
-   /family of types/ and we will see that \el{.} is family of types over \set{}
-   (cref:example:el-family).
+   /family of types/ and we will see (in cref:example:el-family) that \el{.} is
+   family of types over \set{}.
    #+end_definition
 
    We are now ready to introduce the first structural rule. The following rule
@@ -3137,7 +3156,6 @@ en algun assistent de la demostració.
     \end{mathpar}
     Additionally, when the judgment does not depend on the context (\ie{} the
     context is allowed to be empty), we will drop the ``$Γ⊢$'' part.
-
 
 *** Rules for types and terms
     <<sec:rules-types-terms>>
