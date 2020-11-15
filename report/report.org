@@ -724,7 +724,7 @@ en algun assistent de la demostració.
      parenthesis is acceptable with the rules that we have given, we will often add
      parentheses to facilitate reading non-trivial formulas. {{{enddef}}}
 ** Logic \il
-   <<sec:il>> As explained in the overview (cref:sec:overview) the logic \il{}
+   <<sec:il>> As explained in the overview (cref:sec:overview), the logic \il{}
    is the logic that we use as the base for other interpretability logics. The
    logic \il{} extends \gl{} with five new axiom schemas denoted by J1--J5.
    These new axioms reflect some facts about formalized interpretability.
@@ -3171,14 +3171,15 @@ en algun assistent de la demostració.
     \end{mathpar}
     The subtle generalization to allow $B$ to depend on a term of type $A$ has
     incredible consequences for the system. So much so that it gives name the
-    paradigm of /dependent types/. We must be patient as we are not yet ready to
-    show an example that materializes this potential.
+    paradigm of /dependent types/.
 
-    Note that $↠$ has right associativity. Also, as another notational
-    convention, when $B$ does not depend on a term of type $A$, or in other
-    words, when $x$ does not appear free in $B$, we will simply write $A↠B$
-    instead of $(x:A)↠B$. This convention motivates the following simplified
-    rule which corresponds to the function type in simply typed lambda calculus:
+    When we have $(x:A)↠B$ we say that $A$ is the type of the argument and that
+    $B$ is the /return type/. Also, we set $↠$ to have right associativity.
+
+    When $B$ does not depend on a term of type $A$, or in other words, when $x$
+    does not appear free in $B$, we will simply write $A↠B$ instead of
+    $(x:A)↠B$. This notation convention motivates the following simplified rule
+    which corresponds to the function type in simply typed lambda calculus:
     \begin{mathpar}
     \inferrule[Fun']{Γ⊢A:\type{}\\Γ⊢B:\type{}}{Γ⊢A↠B:\type{}}
     \end{mathpar}
@@ -3237,11 +3238,13 @@ en algun assistent de la demostració.
     a:B[x↦a]$. Thus, exhibiting the fact that indeed the type of an application
     depends not only on the type of the function but also on the argument itself.
 
-    Application has left associativity. Thus, $f\ a\ b=(f\ a)\ b$.
+    Application has left associativity. Thus, $f\ a\ b=(f\ a)\ b$. Also,
+    application binds stronger that abstraction, thus $λ x→ f\ b\ x$ is equivalent
+    to $λ x→ (f\ b\ x)$.
+
 
     In mathematics, when we have $f(x)≔2+x$ we expect that $f(3)=2+3$. The rule
     of \text{$β$-reduction} or simply \textsc{$β$-=} tells us exactly that.
-
     More precisely, the \textsc{$β$-=} rule tells us that if we have $(λx→b)\
     a$, then we can substitute the variable $x$ in the body $b$ by the term $a$.
     It is important to notice that the term $a$ is also substituted in the type
@@ -3407,13 +3410,49 @@ en algun assistent de la demostració.
 *** Defining sets
     <<sec:def-new-types>> In this section we will define some sets that will
     allow us to represent different mathematical objects, such as pairs or
-    natural numbers, in the LF logic.
+    natural numbers, in the system LF.
+
+    For each set we will introduce the following (we will be purposely vague in
+    this summary. A more precise list is given a few lines below).
+    1. A constant that denotes the set.
+    2. Some (zero or more) constants to build elements in the set.
+    3. A way to interact with the elements of the set.
+
+    The subsequent sections are going to be structured as follows: We define a
+    new set, including all the parts mentioned before. then we give some
+    examples. During the introduction of the first few sets we show how we can
+    embed propositional intuitionistic logic into LF. After defining the natural
+    numbers and the identity set we show how we can prove a property on addition
+    by (formalized) induction.
+
+    We believe that the summary above is enough to continue to cref:sec:fun-set.
+    In fact, we recommend the reader to continue to cref:sec:fun-set and come
+    back to read the remainder of this section once they have seen some examples
+    of sets.
+
+    We proceed by repeating the summary above with more precision. We want to
+    stress that the following details do not add much to the intuition of the
+    system and we add them just for reference.
 
     For each set we will introduce the following:
-    1. A typed constant that represents the set.
-    2. One or more[fn::With the exception of the empty set, which has no
-       constants to introduce new elements.] constants to introduce elements of
-       the set. We call these constants /constructors/ of the set.
+    1. A typed constant $\sf{T}:S$ that represents the set. By that we mean that
+       we add a rule of the form $∅⊢\sf{T}:S$ to the system. Moreover the
+       following must hold:
+       - \sf{T} is a fresh constant;
+       - $S$ is of the form $(x₁:A₁)↠…↠(xₙ:Aₙ)↠\set{}$;
+       - we have $∅⊢S:\type$.
+    2. Zero or more[fn::The empty set is the only set which has no constants to
+       introduce new elements.] typed constants \(\sf{c₁}:C₁,…,\sf{cₙ}:Cₙ\) to
+       introduce elements of the set. We call these constants /constructors/ of
+       the set. Furthermore each $C_i$ must be of the form
+       \[(y₁:A₁)↠…↠(yₙ:Aₙ)↠(z₁:B₁)↠…↠(zₘ:Bₘ)↠\sf{T}\ y₁\ …\ yₙ\]
+
+       The reader should notice the following:
+       - The types of the first $n$ arguments of each constructor must coincide
+         with the types of the arguments of $S$.
+       - Furthermore, the return type of the constructor (the type after the
+         rightmost arrow) must be $T$ applied to the first $n$ arguments of the
+         constructor. In this case $\sf{T}\ y₁\ …\ yₙ$.
     3. A way to interact with the elements of the set. This is done via an
        induction principle. The induction principle is defined by giving a typed
        constant to represent it. Then for each of the constructors we add an
@@ -3425,33 +3464,44 @@ en algun assistent de la demostració.
        an inductive way. Of course, not every set that we will define has a
        recursive nature and thus the introduced induction principle for those
        sets is not going to be reminiscent of a principle of induction in the
-       traditional sense. {{{jan(Is there a better way to convey this?)}}}
+       traditional sense.
 
        We use the following notational convention: If \sf{X} is the constant
        that denotes the set, then we will define the constant that represents
        the induction principle as \sf{case_X}.
 
     The rest of this chapter is going to be structured as follows: We define a
-    new set, including all the parts mentioned before, then we write a
-    horizontal black line[fn::The purpose of the horizontal line is to more
-    clearly limit what is the definition of the set and the examples that come
-    afterwards. {{{jan(is this a good idea?}}}] and after that some examples.
-    During the introduction of the first few sets we show how we can embed
-    propositional intuitionistic logic into LF in very direct way. After
-    defining the natural numbers and the identity set we show how we can prove a
-    property on addition by (formalized) induction.
+    new set, including all the parts mentioned before. then we give some
+    examples. During the introduction of the first few sets we show how we can
+    embed propositional intuitionistic logic into LF. After defining the natural
+    numbers and the identity set we show how we can prove a property on addition
+    by (formalized) induction.
 
 **** Function set
-     We introduce the constant that denotes the set of functions from elements
-     of a set $A$ to elements of a set $B$: \[↣:\set↠\set↠\set\]
-     *Notation*: We will use
-     infix notation and write $A\ ↣\ B$ instead of $↣\ A\ B$. Also, $↣$ has
-     right associativity.
+     <<sec:fun-set>>
 
-     We add a constant to introduce elements in this set:
-     \[Λ : (A:\set)↠(B:\set)↠(\el{A}↠\el{B})↠ \el{A\ ↣\ B} \]
+     We introduce the typed constant that denotes the set of functions from
+     elements of a set $A$ to elements of a set $B$: \[↣:\set↠\set↠\set\] When
+     we say that we introduce a typed constant to the language is shorthand for
+     saying that we introduce a rule to assert that the new constant can be
+     proven to have the given type from the empty set. In our case, it
+     corresponds to the following rule:
+     \begin{mathpar}
+      \inferrule[]{\ }{∅⊢\ ↣:\set↠\set↠\set}
+     \end{mathpar}
 
-     We add an induction principle: \[\sf{case_Λ} :
+     *Notation*: We will use infix notation and write $A\ ↣\ B$ instead of $↣\
+     A\ B$. Also, $↣$ has right associativity.
+
+     We add a constructor to introduce elements in this set: \[Λ :
+     (A:\set)↠(B:\set)↠(\el{A}↠\el{B})↠ \el{A\ ↣\ B} \] As we can see, the
+     return type of $Λ$ is $\el{A\ ↣\ B}$. As such, if we apply $Λ$ to a set
+     $A$, a set $B$ and a function from elements of $A$ to elements of $B$ we
+     get an element of the set $A\ ↣\ B$. In this case we will not introduce
+     more constructors, thus, applying $Λ$ to the corresponding arguments will
+     be the only way to build an element of the function set.
+
+     We proceed by adding an induction principle: \[\sf{case_Λ} :
      (A:\set)↠(B:\set)↠(\el{A↣B})↠ \el{A}↠\el{B} \] Let us clarify why we use
      the words /induction principle/ here. As already pointed out in the
      introduction of this section, every set must be defined in an inductive
