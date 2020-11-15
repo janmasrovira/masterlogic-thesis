@@ -63,7 +63,10 @@
 
 
 #+latex_header: \newtheorem{theorem}{Theorem}
+#+latex_header: \numberwithin{theorem}{chapter}
+
 #+latex_header: \theoremstyle{definition}
+
 #+latex_header: \newtheorem{corollary}[theorem]{Corollary}
 #+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{lemma}[theorem]{Lemma}
@@ -954,7 +957,7 @@ en algun assistent de la demostració.
     for $w⊩□A$. Assume $w⊩□A$ and let $u$ be a world such that $wRu$. If $u⊩A$
     we are done, otherwise we have $u⊩¬A$. As described before $w⊩□A$ is
     notation for $w⊩(¬ A) ▷ ⊥$, thus there exists $z$ such that $uS_wz⊩⊥$, but
-    this is an absurd.
+    this is a contradiction.
 
     For the other direction assume that we have a world $w$ and for every $u$
     such that $wRu$ we have $u⊩A$. We see that $w⊩(¬A)▷⊥$ clearly holds as there
