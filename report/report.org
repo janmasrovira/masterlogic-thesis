@@ -891,21 +891,21 @@ en algun assistent de la demostració.
     ternary relation $S⊆W×W×W$. We write $wRu$ instead of $⟨w,u⟩∈R$ and $uS_wv$
     instead of $⟨w,u,v⟩∈S$. The structure must satisfy the following conditions:
 
-    1. <<ordfr:1>> $R$ is transitive;
-    2. <<ordfr:2>> $R$ is conversely well-founded. That is, there is no infinite
+    #+begin_itemize
+    \item[OF-1:] <<ordfr:1>> $R$ is transitive;
+    \item[OF-2:] <<ordfr:2>> $R$ is conversely well-founded. That is, there is no infinite
        ascending chain $w₁Rw₂R…$;
-    3. <<ordfr:3>> if $uS_wv$ then $wRu$ and $wRv$;
+    \item[OF-3:]  <<ordfr:3>> if $uS_wv$ then $wRu$ and $wRv$;
       #+attr_latex: :float nil :width 0.19\textwidth :placement [H]
       [[file:img/cond1-ord.pdf]]
-    4. <<ordfr:4>> if $wRu$ then $uS_wu$;
+    \item[OF-4:]  <<ordfr:4>> if $wRu$ then $uS_wu$;
       #+attr_latex: :float nil :width 0.064\textwidth :placement [H]
       [[file:img/refl-ord.pdf]]
-    5. <<ordfr:5>> if $wRu$ and $uRv$ then $uS_wv$;
+    \item[OF-5:]  <<ordfr:5>> if $wRu$ and $uRv$ then $uS_wv$;
       #+attr_latex: :float nil :width 0.16\textwidth :placement [H]
       [[file:img/RStrans-ord.pdf]]
-    6. <<ordfr:6>> for every $w$, $S_w$ is transitive.
-
-    We will refer to the listed conditions as \(\text{OF-$i$}\) for $1≤i≤6$.
+    \item[OF-6:] <<ordfr:6>> for every $w$, $S_w$ is transitive.
+    #+end_itemize
 
     The Agda definition can be found in cref:src:ordinaryframe.
     {{{enddef}}}
@@ -1033,31 +1033,32 @@ en algun assistent de la demostració.
     instead of $⟨w,u⟩∈R$ and $uS_wY$ instead of $⟨w,u,Y⟩∈S$. The structure must
     satisfy the following conditions:
 
-    1. <<genfr:1>> $R$ is transitive;
-    2. <<genfr:2>> $R$ is conversely well-founded. That is, there is no infinite ascending
+
+    #+begin_itemize
+    \item[GF-1:] <<genfr:1>> $R$ is transitive;
+    \item[GF-2:] <<genfr:2>> $R$ is conversely well-founded. That is, there is no infinite ascending
        chain $w₁Rw₂R…$;
-    3. <<genfr:3>> if $uS_wY$, then $wRu$ and for all $y∈Y$ we have $wRy$;
+    \item[GF-3:] <<genfr:3>> if $uS_wY$, then $wRu$ and for all $y∈Y$ we have $wRy$;
        #+attr_latex: :float nil :width 0.26\textwidth :placement [H]
        [[file:img/cond1-gen.pdf]]
-    4. <<genfr:4>> /quasi-reflexivity/: if $wRu$ then $uS_w\{u\}$;
+    \item[GF-4:] <<genfr:4>> /quasi-reflexivity/: if $wRu$ then $uS_w\{u\}$;
        #+attr_latex: :float nil :width 0.075\textwidth :placement [H]
        [[file:img/refl-gen.pdf]]
-    5. <<genfr:5>> if $wRu$ and $uRv$ then $uS_w\{v\}$;
+    \item[GF-5:] <<genfr:5>> if $wRu$ and $uRv$ then $uS_w\{v\}$;
        #+attr_latex: :float nil :width 0.17\textwidth :placement [H]
        [[file:img/RStrans-gen.pdf]]
-    6. <<genfr:6>> /quasi-transitivity/: if $uS_xY$ and $yS_xZ_y$ for all $y∈Y$, then
+    \item <<genfr:6>> /quasi-transitivity/: if $uS_xY$ and $yS_xZ_y$ for all $y∈Y$, then
        $uS_x\left(⋃_{y∈Y}Z_y\right)$.
        #+attr_latex: :float nil :width 0.32\textwidth :placement [H]
        [[file:img/trans-2.pdf]]
 
-       This is a particular notion of quasi-transitivity which is considered the
-       standard. Throughout this thesis we explore a total of eight notions, see
-       cref:sec:trans.
-
-    We will refer to the listed conditions as \(\text{GF-$i$}\) for $1≤i≤5$.
-    Since in this thesis we will consider multiple conditions for
-    quasi-transitivity, we will refer to those as quasi-transitivity Condition
-    $j$ for $1≤j≤8$. If it is clear by the context we may simply say Condition $i$.
+       Notice that we did not label the last condition GF-6. The reason is that
+       the above condition is a particular (the standard) condition of
+       quasi-transitivity. However, throughout this thesis we explore a total of
+       eight notions, see cref:sec:trans. Because of that, we will refer to
+       those as quasi-transitivity Condition $j$ for $1≤j≤8$. If it is clear by
+       the context we may simply say Condition $i$.
+    #+end_itemize
 
     The Agda definition can be found in
     cref:src:generalizedframe. {{{enddef}}}
@@ -1213,7 +1214,10 @@ en algun assistent de la demostració.
  have that $uS_xY_{y_0}$ and since for any $y∈Y$ we have $yS_xY_y$ it follows by
  {{{genfr(3)}}} of a generalized frame that $Y_y⊆\{v:xRv\}$. Finally we see that
  $Y_{y_0}⊆⋃_{y∈Y}Y_y⊆\{v:xRv\}$ and by monotonicity it follows that
- $uS_x(⋃_{y∈Y}Y_y)$. {{{endproof}}}
+ $uS_x(⋃_{y∈Y}Y_y)$.
+
+ The Agda proof can be found in cref:src:generalizedframe.properties.
+ {{{endproof}}}
 
  {{{begintheorem}}} <<theorem:trans-extend>> Given an ordinary Veltman model
  $M=⟨W,R,S,V⟩$ we can find some generalized Veltman model $M'=⟨W,R,S',V⟩$, where
@@ -1296,6 +1300,8 @@ en algun assistent de la demostració.
     $xS_wY$. Hence by $(⋆)$ we have that $M,Y⊮B$ and thus there exists $y∈Y$
     such that $M,y⊮B$. By IH we get that $M',y⊮B$ and since $y∈Y⊆Y'$ we have
     $Y'⊮B$, so $M',w⊮A▷B$.
+
+  The Agda proof can be found in cref:src:generalizedframe.properties.
   {{{endproof}}}
 
   # As we see in cref:theorem:mono taking the monotone closure of each $S_w$ does not
