@@ -71,6 +71,8 @@
 #+latex_header: \newtheorem{definition}[theorem]{Definition}
 #+latex_header: \theoremstyle{definition}
 #+latex_header: \newtheorem{remark}[theorem]{Remark}
+#+latex_header: \theoremstyle{definition}
+#+latex_header: \newtheorem{example2}[theorem]{Example}
 
 #+latex_header: \newglossaryentry{agdaprf}{name={\includegraphics[height=\baselineskip]{img/agda}},description={A definition or theorem formalized in Agda}}
 #+latex_header: \newglossaryentry{coqprf}{name={\includegraphics[height=\baselineskip]{img/coq}},description={A definition or theorem formalized in Coq}}
@@ -2896,6 +2898,13 @@ en algun assistent de la demostració.
    there are important differences between LF and Agda's theory that we will
    comment in cref:sec:basic-agda.
 
+   System LF is complex and has a lot of cyclic dependencies in the definitions.
+   As such, it is impossible to give a linear presentation. For that, we ask the
+   reader to have some patience when following this chapter. It may be a good
+   idea to skim through the chapter and then read it more thoroughly for a
+   second time.
+
+*** Basic definitions
    The system LF has four kinds of judgment. Each kind of judgment is bound to
    a /context/. We postpone momentarily the definition of context.
    1. ``$a$ has type $A$ in context $Γ$''. We write $Γ⊢a:A$. Crucially, in a type
@@ -2908,14 +2917,21 @@ en algun assistent de la demostració.
       - the term $a$ is a program that satisfies the specification $A$.
    2. ``$A$ is a type in context $Γ$''. We write $Γ⊢A:\mathsf{Type}$.
    3. ``$A_1$ and $A_2$ are equal types in context $Γ$''. We write
-      $Γ⊢A_1=A_2:\mathsf{Type}$.
+      $Γ⊢A_1=A_2:\mathsf{Type}$. It is important to remark that the $=$ sign is
+      part of the judgment and is not part of the syntax of types and terms.
    4. ``$a_1$ and $a_2$ are equal elements of the type $A$ in context $Γ$''. We
-      write $Γ⊢a_1=a_2:A$.
+      write $Γ⊢a_1=a_2:A$. As before, the $=$ sign is part of the judgment.
+
+   Notice that we have not yet defined what is the syntax of terms nor types. We
+   need to postpone the definition because in order to describe how we can build
+   types and terms we first need to define several basic concepts. We will
+   define the syntax of types and terms in cref:sec:rules-types-terms.
 
    The following definition characterizes what we consider propositions in the
    LF system.
    #+begin_definition
-   We say that $A$ is a proposition (or a type) when we have
+   *Proposition*.
+   We say that $A$ is a proposition (or a type) when we have:
    \[∅⊢A:\type\]
 
    The above is the formal definition of a type within the system. However, it
@@ -2931,15 +2947,29 @@ en algun assistent de la demostració.
    #+end_definition
 
    Since types are proposition in LF, we need a way to discern which
-   propositions hold the status of theorem in LF. Such a notion is given by the
+   propositions hold the status of theorem. Such a notion is given by the
    following definition.
    #+begin_definition
-   We say that some proposition (or type) $A$ is true in LF if there exists some
+   *Theorem*. We say that some proposition (or type) $A$ is true in LF if there exists some
    $t$ such that: \[∅⊢t:A\]
    #+end_definition
 
-   Before we give the typing rules of the system we need to define the concept
-   of /context/.
+   The following definition gives a precise statement on what it means for
+   two terms to be indiscernible in LF.
+   #+begin_definition
+   *Equality of terms*. We say that two terms $t$ and $t'$ of type $A$
+   are equal in LF if we have:
+   \[∅⊢t=t':A\]
+   #+end_definition
+
+   Similarly we define when two types are considered to be the same in LF.
+   #+begin_definition
+   *Equality of types*. We say that two types $T$ and $T'$
+   are equal in LF if we have:
+   \[∅⊢T=T':\type\]
+   #+end_definition
+
+   We proceed by defining the concept of /context/.
    #+begin_definition
     *Context*. Intuitively, a context, is a sequence of typed variables, where
     each type may depend on the preceding variables in the sequence.
@@ -2957,14 +2987,22 @@ en algun assistent de la demostració.
     \end{flalign*}
    #+end_definition
 
-   The first type that we define is the type \set{}[fn::The concept of /set/
-   used here differs from the one in set theory.]. We refer to the objects of
-   the type \set{} as /sets/. A /set/ is an inductive description of how its
+   We will now introduce a type for the first time. We introduce the type
+   \set{}[fn::The concept of /set/ used here differs from the one in set
+   theory.].
+   \begin{mathpar}
+   \inferrule[Set]{\ }{Γ⊢\mathsf{Set}:\mathsf{Type}}
+   \end{mathpar}
+   As we see the previous rule has no assumptions, hence we have that
+   $∅⊢\set:\type$ is valid in LF.
+
+   The nature of the type \set{} is given by the following meta definition.
+   #+begin_definition
+   *Set*. A /set/ is an inductive description of how its
    /canonical elements/ are built, plus a decidable equality relation between
    them. Two sets are equal if any canonical element of one set is a canonical
    element of the other set and moreover, if any two equal canonical elements in
-   one set also are equal in the other set. {{{jan(what are canonical elements
-   exactly? sadly there is no precise definition in the article)}}}
+   one set also are equal in the other set.
 
    For instance, if we want to define the set of natural numbers, we have two
    canonical elements: /zero/ and the /successor/ of a natural number. The
@@ -2972,20 +3010,90 @@ en algun assistent de la demostració.
    will see how we can define the natural numbers, among other sets, in more
    detail.
 
-   Hence we have the axiom:
-   \begin{mathpar}
-   \inferrule[Set]{\ }{\mathsf{Set}:\mathsf{Type}}
-   \end{mathpar}
-
    If $A$ is a set, then the elements of $A$, denoted with \el{A}, in
-   conjunction with their equivalence relation forms a type.
+   conjunction with their equivalence relation form a type. As such, we add the
+   following rules:
    \begin{mathpar}
-   \inferrule[El]{A:\set{} }{\sf{El}(A):\type{}}
+   \inferrule[El]{Γ⊢A:\set{} }{Γ⊢\el{A}:\type{}}
    \and
-   \inferrule[El=]{A=B:\set{} }{\sf{El}(A)=\sf{El}(B):\type{}}
+   \inferrule[El=]{Γ⊢A=B:\set{} }{Γ⊢\el{A}=\el{B}:\type{}}
+   \end{mathpar}
+   Note that \el{.} is a primitive which takes a \set{} as an argument and
+   returns a \type{}, which represents the elements of the set.
+
+   Later in the chapter we will define the concept of /family of types/ and we
+   will see that \el{.} is family of types over \set{}.
+   #+end_definition
+
+   We are now ready to introduce the first structural rule. The following rule
+   allows us to use assumptions in the context:
+   \begin{mathpar}
+   \inferrule[Assum]{Γ⊢A:\type{}}
+   {Γ,x:A, Γ'⊢x:A}
    \end{mathpar}
 
-*** Syntax of types and terms
+   Finally we can build our first derivation:
+   #+begin_example2
+   The derivation below shows that we can fully formalize in the system that we
+   have an arbitrary set $P$ as an assumption and show that $\el{P}$ is a type.
+   \begin{mathpar}
+   \inferrule*[Left=El]
+   {\inferrule*[Left=Assum]
+   {\inferrule*[Left=Set]
+   {\ }
+   {Γ⊢\set{}:\type{}}}
+   {Γ,P:\set{},Γ'⊢P:\set{}}}
+   {Γ,P:\set{},Γ'⊢\sf{El}(P):\type{}}
+   \end{mathpar}
+   #+end_example2
+
+   It turns out that this is a common pattern that we will use in the examples
+   later in the chapter. Thus, it is convenient to define a shortcut rule:
+   \begin{mathpar}
+   \inferrule[VarType]
+   {\ }
+   {Γ,P:\set{},Γ'⊢\sf{El}(P):\type{}}
+   \end{mathpar}
+
+   We proceed by giving some rules that express that equality, both for types
+   and terms, is indeed an equivalence relation.
+
+   For equality on terms we have:
+   \begin{mathpar}
+   \inferrule[Refl]{Γ⊢a:A}{Γ⊢a=a:A} \and
+   \inferrule[Sym]{Γ⊢a=b:A}{Γ⊢b=a:A} \and
+   \inferrule[Trans]{Γ⊢a=b:A \\ Γ⊢b=c:A}{Γ⊢a=c:A}
+   \end{mathpar}
+   Analogously, for equality on types we have:
+   \begin{mathpar}
+   \inferrule[ReflTy]{Γ⊢A:\type{}}{Γ⊢A=A:\type{}} \and
+   \inferrule[SymTy]{ Γ⊢A=B:\type{} }{Γ⊢B=A:\type{}} \and
+   \inferrule[TransTy]{Γ⊢A=B:\type{} \\ Γ⊢B=C:\type{}}{Γ⊢A=C:\type{}}
+   \end{mathpar}
+
+   Furthermore we can substitute equal types.
+   \begin{mathpar}
+   \inferrule[Id1]{Γ⊢A=B:\type{}\\Γ⊢a:A }{Γ⊢a:B} \and
+   \inferrule[Id2]{Γ⊢A=B:\type{} \\Γ⊢a=b:A}{Γ⊢a=b:B}
+   \end{mathpar}
+
+   #+begin_example2
+   Let us show a trivial example. By using the shortcut rule \textsc{VarType}
+   that we defined before we can show that type of the elements of an arbitrary
+   set $S$ is indeed equal to itself:
+   \begin{mathpar}
+   \inferrule*[Left=ReflTy]  {
+   \inferrule*[Left=VarType]{\ }
+   {P:\set⊢\el{P}:\type}
+   }{P:\set⊢\el{P}=\el{P}:\type{}}
+   \end{mathpar}
+   #+end_example2
+
+   With the rules that we have given so far it is not possible to prove a
+   judgment of the kind $Γ⊢a:A$ nor $Γ⊢a=b:A$. We will be able to do so in the
+   next section.
+
+*** Syntax of types and terms :noexport:
     In a theory that features dependent types, presenting types and terms
     separately is not possible as they are tightly intertwined. In fact, terms
     may appear inside types and vice versa. We will first give a short intuitive
@@ -3007,14 +3115,6 @@ en algun assistent de la demostració.
     indexed by a term of type $A$). As we will see, this is the cornerstone of
     and gives the name to /dependent types/.
 
-    As we did with simply typed lambda calculus, we introduce the concept of a
-    /context/. 
-    If $Γ$ is a context, we write:
-    1. $Γ⊢t:A$ to say that term $t$ has type $A$ in the context $Γ$. We write
-       $t:A$ instead of $∅⊢t:A$;
-    2. $Γ⊢S:\type{}$ to say that $S$ is a type in context $Γ$;
-    3. $Γ⊢a=b:S$ to say that $a$ and $b$ are equal terms of type $S$ in context $Γ$;
-    4. $Γ⊢A=B:\type{}$ to say that $A$ and $B$ are equal types in context $Γ$.
     In any case, in order to avoid cluttered rules, if the context is the same
     for all the parts of a rule, we will not mention it explicitly. For
     instance, we will prefer to use the notation of the right rule over the
@@ -3026,40 +3126,162 @@ en algun assistent de la demostració.
     Additionally, when the judgment does not depend on the context (\ie{} the
     context is allowed to be empty), we will drop the ``$Γ⊢$'' part.
 
-*** General rules
-    As expected, we have the following rule:
+
+*** Rules for types and terms
+    <<sec:rules-types-terms>>
+
+    We are finally ready to introduce the syntax of terms and types. The syntax
+    is introduced by means of typing rules.
+
+    We first introduce the syntax of the dependent function type. The dependent
+    function type is the type of functions from a type $A$ to a type $B$, where
+    $B$ is a type that may depend on an arbitrary term of type $A$.
     \begin{mathpar}
-    \inferrule[Assum]{Γ⊢A:\type{}}
-    {Γ,x:A, Γ'⊢x:A}
+    \inferrule[Fun]{Γ⊢A:\type{}\\Γ,x:A⊢B:\type{}}{Γ⊢(x:A)↠B:\type{}}
+    \end{mathpar}
+    The subtle generalization to allow $B$ to depend on a term of type $A$ has
+    incredible consequences for the system. So much so that it gives name the
+    paradigm of /dependent types/. We must be patient as we are not yet ready to
+    show an example that materializes this potential.
+
+    Note that $↠$ has right associativity. Also, as another notational
+    convention, when $B$ does not depend on a term of type $A$, or in other
+    words, when $x$ does not appear free in $B$, we will simply write $A↠B$
+    instead of $(x:A)↠B$. This convention motivates the following simplified
+    rule which corresponds to the function type in simply typed lambda calculus:
+    \begin{mathpar}
+    \inferrule[Fun']{Γ⊢A:\type{}\\Γ⊢B:\type{}}{Γ⊢A↠B:\type{}}
     \end{mathpar}
 
-    Since equality is an equivalence relation we have the corresponding rules
-    for equality on types and on terms.
-    For terms we have:
+    #+begin_example2
+    <<example:id-type>>
+    As an easy example, we show how for arbitrary set $P$ we can build the
+    function type from elements of $P$ to elements of $P$.
     \begin{mathpar}
-    \inferrule[Refl]{A:\type{} \\ a:A}{a=a:A} \and
-    \inferrule[Sym]{A:\type{} \\ a=b:A}{b=a:A} \and
-    \inferrule[Trans]{A:\type{} \\ a=b:A \\ b=c:A}{a=c:A}
+    \inferrule*[Left=Fun]
+     {\inferrule*[Left=VarType]
+     {\ }
+     {P:\set⊢\el{P}:\type}\\ \hspace{3em}
+     \inferrule*[Left=VarType]{\ }
+     {P:\set,x:\el{P}⊢\el{P}:\type}}
+     {P:\set⊢(x:\el{P})↠\el{P}:\type}
     \end{mathpar}
-    Analogously, for types we have:
+    #+end_example2
+
+    We have seen how we can build the dependent function type so the natural
+    question is to ask how we can build terms of that type. The answer lies in
+    the simple construction of a lambda abstraction, which is very reminiscent
+    of the lambda abstraction of simply typed lambda calculus.
     \begin{mathpar}
-    \inferrule[Refl]{A:\type{}}{A=A:\type{}} \and
-    \inferrule[Sym]{ A=B:\type{} }{B=A:\type{}} \and
-    \inferrule[Trans]{A=B:\type{} \\ B=C:\type{}}{A=C:\type{}}
+    \inferrule[Abs]{Γ,x:A⊢b:B}{Γ⊢λx→b:(x:A)↠B}
     \end{mathpar}
-    Note that in the \textsc{Refl} rule the requirement $A:\type{}$ is redundant
-    since the assumption $a:A$ already requires $A:\type$. We will sometimes add
-    redundant assumptions when we believe it helps with the readability of the
-    rule.
+    As a notational convention we have that expression on the right of the $→$
+    extends to the rightmost part, without escaping parenthesis.
 
-
-    Furthermore we can substitute equal types.
+    #+begin_example2
+    To follow up on cref:example:id-type we show how we can build a term that
+    has the type $\el{P}↠\el{P}$ presented in that example. Unsirprisingly, the
+    term that we are after is the lambda term $λ(x:\el{P})→x$. For the
+    experienced reader it should be obvious that term represents the identity
+    function. For the novel reader we will see it in cref:example:id-fun.
+    We will often refer to terms of a type of the form $(x:A)↠B$ as functions.
+    Without further ado we show that $P:\set⊢λx→x:(x:\el{P})↠\el{P}$.
     \begin{mathpar}
-    \inferrule[Id1]{A=B:\type{}\\a:A }{a:B} \and
-    \inferrule[Id2]{A=B:\type{} \\a=b:A}{a=b:B}
+    \inferrule*[Left=Abs]
+     {\inferrule*[Left=Assum]
+     {\inferrule*[Left=VarType]{\ }
+     {P:\set⊢\el{P}:\type} }
+     {P:\set,x:\el{P}⊢x:\el{P}}}
+     {P:\set⊢λx→x:(x:\el{P})↠\el{P}}
+    \end{mathpar}
+    #+end_example2
+
+    In order for a function to be useful we need to be able to apply it to an
+    argument. The following rule allows us to do precisely that. More precisely,
+    if we have a term $f$ of type $(x:A)↠B$ and a term $a$ of type $A$, then we
+    can build a term $f\ a$ of type $B[x↦a]$.
+    \begin{mathpar}
+    \inferrule[App]{Γ⊢f:(x:A)↠B \\ Γ⊢a:A}{Γ⊢f\ a:B[x↦a]}
+    \end{mathpar}
+    The most important detail to notice is that in the consequence we have $f\
+    a:B[x↦a]$. Thus, exhibiting the fact that indeed the type of an application
+    depends not only on the type of the function but also on the argument itself.
+
+    Application has left associativity. Thus, $f\ a\ b=(f\ a)\ b$.
+
+    In mathematics, when we have $f(x)≔2+x$ we expect that $f(3)=2+3$. The rule
+    of \text{$β$-reduction} or simply \textsc{$β$-=} tells us exactly that.
+
+    More precisely, the \textsc{$β$-=} rule tells us that if we have $(λx→b)\
+    a$, then we can substitute the variable $x$ in the body $b$ by the term $a$.
+    It is important to notice that the term $a$ is also substituted in the type
+    $B$:
+    \begin{mathpar}
+    \inferrule[$β$-$=$]{Γ⊢a:A \\ Γ,x:A⊢b:B}{Γ⊢(λx→b)\ a=b[x↦a]:B[x↦a]}
     \end{mathpar}
 
-*** Type family rules
+    #+begin_example2
+    <<example:id-fun>> Let us now argue why we identify the term $λx→x$ with the
+    identity function. For that, we will show that $P:\set,a:\el{P}⊢(λx→x)\
+    a=a:\el{P}$.
+    \begin{mathpar}
+    \inferrule*[Left=\textsc{$β$-$=$}]
+    {
+     \inferrule*[Left=Assum]{…}
+     {P:\set,a:\el{P}⊢a:\el{P}}
+     \\ \hspace{2em}
+     \inferrule*[Left=Assum]{…}
+     {P:\set,a:\el{P},x:\el{P}⊢x:\el{P}}
+    }
+    {P:\set,a:\el{P}⊢(λx→x)\ a=a:\el{P}}
+    \end{mathpar}
+    At this point the reader should be able to fill in the $…$ gaps.
+    #+end_example2
+
+    In mathematics, we are used to renaming variables without affecting, if we
+    are careful, the meaning of the expression that we are operating on. For
+    instance the definitions $f(x)≔2+x$ and $f(y)≔2+y$ are essentially the same
+    in any conceivable practical system. This equivalence is usually known as
+    \(α\text{-equivalence}\). In the LF system, \(α\text{-equivalence}\) given
+    by the \text{$α$-$=$} rule which we define below. Such rule tells us that we
+    can rename the abstracted variable of lambda abstraction terms.
+    \begin{mathpar}
+    \inferrule[$α$-$=$]
+     {Γ,x:A⊢b:B}
+     {Γ⊢λx→b=λy→(b[x↦y]):(z:A)↠B}
+    \end{mathpar}
+    It is important to remark that $y$ must not occur free in $b$.
+
+    In mathematics, if we have $f(x)≔g(x)$ we expect that $f=g$. The
+    \text{$η$-$=$} rule expresses such equivalence. In other words, the rule
+    tells us that abstraction and application cancel each other out.
+    \begin{mathpar}
+    \inferrule[$η$-$=$]{Γ⊢g:(x:A)↠B}
+    {Γ⊢λx→g\ x=g:(x:A)↠B}
+    \end{mathpar}
+
+    The following three rules tell us that we can replace equal terms in
+    subterms.
+
+    The \text{$ξ$-$=$} rule tells us that we can replace equal bodies of lambda
+    terms.
+    \begin{mathpar}
+    \inferrule[$ξ$-$=$]{Γ,x:A⊢b=b':B}{Γ⊢λx→b=λx→b':(x:A)↠B}
+    \end{mathpar}
+
+    Substitution in a function application.
+    \begin{mathpar}
+    \inferrule[SubsApp]{Γ⊢f=f':(x:A)↠B \\ Γ⊢a=a':A}{Γ⊢f\ a=f'\ a':B[x↦a]}
+    \end{mathpar}
+
+    Substitution in function types:
+    \begin{mathpar}
+    \inferrule[SubsFun]{Γ⊢A=A':\type{}\\
+     Γ,x:A⊢B=B':\type{}}
+     {Γ⊢(x:A)↠B=(x:A')↠B'}
+    \end{mathpar}
+
+*** Families of types rules
     We say that $A$ is a /family of types/ in the context \[Γ≔x₁:A₁,…,xₙ:Aₙ\] if
     $Γ⊢A:\type{}$.
 
@@ -3108,59 +3330,6 @@ en algun assistent de la demostració.
     For now we have no primitive constants. In cref:sec:def-new-types we will
     define some.
 
-*** Function and application rules
-    We can form by the following rule the type of functions from a type $A$ to a
-    type $B$, where $B$ is a type that may depend on a term of type $A$.
-    \begin{mathpar}
-    \inferrule[Fun]{Γ⊢A:\type{}\\Γ,x:A⊢B:\type{}}{Γ⊢(x:A)↠B:\type{}}
-    \end{mathpar}
-    Note that $↠$ has right associativity.
-    As another notational convention, when $B$ does not depend on a term of type $A$,
-    we will simply write $A↠B$ instead of $(x:A)↠B$ as shown by the following
-    (redundant) rule.
-    \begin{mathpar}
-    \inferrule[Fun']{A:\type{}\\B:\type{}}{A↠B:\type{}}
-    \end{mathpar}
-    Application and abstraction.
-    \begin{mathpar}
-    \inferrule[App]{f:(x:A)↠B \\ a:A}{f\ a:B[x↦a]}
-    \and \inferrule[Abs]{Γ,x:A⊢b:B}{Γ⊢λx→b:(x:A)↠B}
-    \end{mathpar}
-    Application has left associativity.
-
-    Substitution in function types:
-    \begin{mathpar}
-    \inferrule[]{Γ⊢A=A':\type{}\\\\
-     Γ,x:A⊢B=B':\type{}}
-     {Γ⊢(x:A)↠B=(x:A')↠B'}
-    \end{mathpar}
-
-    The rule of \text{$β$-reduction}. Notice how we have the substitution $x↦a$
-    also in the type $B$.
-    \begin{mathpar}
-    \inferrule[$β$-$=$]{Γ⊢a:A \\ Γ,x:A⊢b:B}{Γ⊢(λx→b)\ a=b[x↦a]:B[x↦a]}
-    \end{mathpar}
-    The \text{$ξ$-$=$} rule tells us that we can replace equal bodies of lambda
-    abstraction terms.
-    \begin{mathpar}
-    \inferrule[$ξ$-$=$]{Γ,x:A⊢b=b':B}{Γ⊢λx→b=λx→b':(x:A)↠B}
-    \end{mathpar}
-    The \text{$α$-$=$} rule tells us that we can rename the abstracted variable
-    of lambda abstraction terms. In this rule we assume that $y$ does not
-    occur free in $b$.
-    \begin{mathpar}
-    \inferrule[$α$-$=$]{b:B[x:A]}{λx→b=λy→b[x↦y]:(x:A)↠B}
-    \end{mathpar}
-    The \text{$η$-$=$} rule tells us that abstraction and application cancel
-    each other out. In this rule we assume that $y$ does not occur free in $b$.
-    \begin{mathpar}
-    \inferrule[$η$-$=$]{c:(x:A)↠B}{λx→b=λy→b[x↦y]:λ(x:A)↠B}
-    \end{mathpar}
-    Substitution in a function application.
-    \begin{mathpar}
-    \inferrule[]{f=f':(x:A)↠B \\ a=a':A}{f\ a=f'\ a':B[x↦a]}
-    \end{mathpar}
-
 *** Defining sets
     <<sec:def-new-types>> In this section we will define some sets that will
     allow us to represent different mathematical objects, such as pairs or
@@ -3197,23 +3366,6 @@ en algun assistent de la demostració.
     propositional intuitionistic logic into LF in very direct way. After
     defining the natural numbers and the identity set we show how we can prove a
     property on addition by (formalized) induction.
-
-    Let us provide an auxiliary derivable rule. The new rule will allow us to
-    write some derivations more succinctly. On the left we show the new rule and
-    on the right we show the proof that it can be derived.
-    \begin{mathpar}
-    \inferrule[VarType]
-    {\ }
-    {P:\set{}⊢\sf{El}(P):\type{}}
-    \and
-    \inferrule*[Left=El]
-    {\inferrule*[Left=Assum]
-    {\inferrule*[Left=Set]
-    {\ }
-    {\set{}:\type{}}}
-    {P:\set{}⊢P:\set{}}}
-    {P:\set{}⊢\sf{El}(P):\type{}}
-    \end{mathpar}
 
 **** Function set
      We introduce the constant that denotes the set of functions from elements
