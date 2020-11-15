@@ -2902,7 +2902,9 @@ en algun assistent de la demostració.
    As such, it is impossible to give a linear presentation. For that, we ask the
    reader to have some patience when following this chapter. It may be a good
    idea to skim through the chapter and then read it more thoroughly for a
-   second time.
+   second time. Additionally, it is likely, specially for someone new to type
+   theory, that everything will remain very abstract until we start introducing
+   sets in cref:sec:def-new-types.
 
 *** Basic definitions
    The system LF has four kinds of judgment. Each kind of judgment is bound to
@@ -2982,7 +2984,7 @@ en algun assistent de la demostració.
     \label{context-cond}
     ∅⊢S₁:\type{} &\text{ and } ∅⊢a₁:S₁; \\
     ∅⊢S₂[x₁↦a₁]:\type{} &\text{ and } ∅⊢a₂:S₂[x₁↦a₁]; \\
-    & … \\
+    & ⋮ \\
     ∅⊢S_n[x₁↦a₁,…,x_{n-1}↦a_{n-1}]:\type{} &\text{ and } ∅⊢a_n:S_n[x₁↦a₁,…,x_{n-1}→a_{n-1}].
     \end{flalign*}
    #+end_definition
@@ -3021,8 +3023,9 @@ en algun assistent de la demostració.
    Note that \el{.} is a primitive which takes a \set{} as an argument and
    returns a \type{}, which represents the elements of the set.
 
-   Later in the chapter we will define the concept of /family of types/ and we
-   will see that \el{.} is family of types over \set{}.
+   Later in the chapter (cref:sec:family-types) we will define the concept of
+   /family of types/ and we will see that \el{.} is family of types over \set{}
+   (cref:example:el-family).
    #+end_definition
 
    We are now ready to introduce the first structural rule. The following rule
@@ -3073,8 +3076,8 @@ en algun assistent de la demostració.
 
    Furthermore we can substitute equal types.
    \begin{mathpar}
-   \inferrule[Id1]{Γ⊢A=B:\type{}\\Γ⊢a:A }{Γ⊢a:B} \and
-   \inferrule[Id2]{Γ⊢A=B:\type{} \\Γ⊢a=b:A}{Γ⊢a=b:B}
+   \inferrule[SubsTy1]{Γ⊢A=B:\type{}\\Γ⊢a:A }{Γ⊢a:B} \and
+   \inferrule[SubsTy2]{Γ⊢A=B:\type{} \\Γ⊢a=b:A}{Γ⊢a=b:B}
    \end{mathpar}
 
    #+begin_example2
@@ -3260,8 +3263,8 @@ en algun assistent de la demostració.
     {Γ⊢λx→g\ x=g:(x:A)↠B}
     \end{mathpar}
 
-    The following three rules tell us that we can replace equal terms in
-    subterms.
+    The following allows us to replace equal terms and types inside other terms
+    and types.
 
     The \text{$ξ$-$=$} rule tells us that we can replace equal bodies of lambda
     terms.
@@ -3269,66 +3272,110 @@ en algun assistent de la demostració.
     \inferrule[$ξ$-$=$]{Γ,x:A⊢b=b':B}{Γ⊢λx→b=λx→b':(x:A)↠B}
     \end{mathpar}
 
-    Substitution in a function application.
+    We can perform substitution in a function application.
     \begin{mathpar}
     \inferrule[SubsApp]{Γ⊢f=f':(x:A)↠B \\ Γ⊢a=a':A}{Γ⊢f\ a=f'\ a':B[x↦a]}
     \end{mathpar}
 
-    Substitution in function types:
+    Likewise, we can perform substitution in function types:
     \begin{mathpar}
     \inferrule[SubsFun]{Γ⊢A=A':\type{}\\
      Γ,x:A⊢B=B':\type{}}
      {Γ⊢(x:A)↠B=(x:A')↠B'}
     \end{mathpar}
 
-*** Families of types rules
-    We say that $A$ is a /family of types/ in the context \[Γ≔x₁:A₁,…,xₙ:Aₙ\] if
-    $Γ⊢A:\type{}$.
+    At this point, we have introduced most of the system but still we cannot
+    show any judgment of the form $∅⊢a:A$. For that, we will need to wait until
+    cref:sec:def-new-types, where we introduce concrete sets to the language.
 
-    We proceed by giving some rules for type families.
+*** Families of types
+    <<sec:family-types>>
+    In this section we present the concept of /family of types/. This is a
+    technical concept that does not add much to the intuition of the system. As
+    such, we suggest the reader to skip it on a first read and go back to
+    it later.
+
+    #+begin_definition
+    *Family of types*. We say that $A$ is a family of types in the
+    context $Γ$ iff $Γ⊢A:\type{}$ and is extensional with respect to the
+    context. To be extensional with respect to the context means the following.
+    If $x₁:S₁,…,xₙ:Sₙ⊢A$ and the following holds:
+    \begin{flalign*}
+    ∅⊢a₁&=b₁:S₁; \\
+    ∅⊢a₂&=b₂:S₁[x₁↦a₁]; \\
+    &⋮ \\
+    ∅⊢aₙ&=bₙ:Sₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}].
+    \end{flalign*}
+    Then it must be that:
+    \[∅⊢A[x₁↦a₁,…,x_{n-1}↦a_{n-1}]=A[x₁↦b₁,…,x_{n-1}↦b_{n-1}]. \]
+
+    Note that in the case where $Γ=∅$, while $A$ is still a family of types by
+    definition, we will usually simply say that $A$ is a type.
+
+    If we have that $A$ is a family of types in the context $x:B$ we will say
+    that $A$ is a family of types over $B$. Likewise, if $A$ is a family of
+    types in the context $x:B,y:C$ we will say that is a family of types over
+    $B$ and $C$. And so on.
+    #+end_definition
+
+    #+begin_example2
+    <<example:el-family>>
+    As we have previously commented, $\el{P}$ is a family of types over \set. To
+    check that, we observe that $P:\set⊢\el{P}$ follows from rule
+    \textsc{VarType}. Moreover, extensionality is given by the \textsc{El-$=$}
+    rule.
+    #+end_example2
+
+    We proceed by giving some rules for type families. Note that in the upcoming
+    rules we have two assumptions, one on top the other. This is due to spacing
+    and readability reasons. The intended meaning is the same as if the two
+    hypotheses were side by side.
 
     Instantiation of a type family:
     \begin{mathpar}
-    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\type{}\\\\
-    a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
-    {C[x₁↦a₁,…,xₙ↦aₙ]:\type{}}
+    \inferrule[TF1]{x₁:A₁,…,xₙ:Aₙ⊢C:\type{}\\\\
+    ∅⊢a₁:A₁\\…\\∅⊢aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {∅⊢C[x₁↦a₁,…,xₙ↦aₙ]:\type{}}
     \end{mathpar}
+
     Substitution in a type family:
     \begin{mathpar}
-    \inferrule[]{x₁:A₁,…,xₙ:Aₙ⊢C:\type{}\\\\
-    a₁=b₁:A₁\\…\\aₙ=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
-    {C[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦b₁,…,xₙ↦bₙ]}
+    \inferrule[TF2]{x₁:A₁,…,xₙ:Aₙ⊢C:\type{}\\\\
+    ∅⊢a₁=b₁:A₁\\…\\∅⊢aₙ=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {∅⊢C[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦b₁,…,xₙ↦bₙ]}
     \end{mathpar}
+
     Instantiation of a term of a type family:
     \begin{mathpar}
-    \inferrule[]{
-    x₁:A₁,…,xₙ:Aₙ⊢c:C\\\\a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
-    {c[x₁↦a₁,…,xₙ↦aₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
+    \inferrule[TF3]{
+    x₁:A₁,…,xₙ:Aₙ⊢c:C\\\\
+     ∅⊢a₁:A₁\\…\\∅⊢aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {∅⊢c[x₁↦a₁,…,xₙ↦aₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
     \end{mathpar}
+
     Substitution in term of a type family:
     \begin{mathpar}
-    \inferrule[]{
+    \inferrule[TF4]{
     x₁:A₁,…,xₙ:Aₙ⊢c:C\\\\
-    a₁=b₁:A₁\\…\\aₙ=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
-    {c[x₁↦a₁,…,xₙ↦aₙ]=c[x₁↦b₁,…,xₙ↦bₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
+    ∅⊢a₁=b₁:A₁\\…\\∅⊢aₙ=bₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {∅⊢c[x₁↦a₁,…,xₙ↦aₙ]=c[x₁↦b₁,…,xₙ↦bₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
     \end{mathpar}
+
     Substitution of a type family.
     \begin{mathpar}
-    \inferrule[]{
-    x₁:A₁,…,xₙ:Aₙ⊢B=C:\type{}
-    \\\\a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
-    {B[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦a₁,…,xₙ↦aₙ]:B[x₁↦a₁,…,xₙ↦aₙ]}
+    \inferrule[TF5]{
+    x₁:A₁,…,xₙ:Aₙ⊢B=C:\type{} \\\\
+    ∅⊢a₁:A₁\\…\\∅⊢aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {∅⊢B[x₁↦a₁,…,xₙ↦aₙ]=C[x₁↦a₁,…,xₙ↦aₙ]:B[x₁↦a₁,…,xₙ↦aₙ]}
     \end{mathpar}
+
     Substitution of a type family term.
     \begin{mathpar}
-    \inferrule[]{
-    x₁:A₁,…,xₙ:Aₙ⊢b=c:C\\\\a₁:A₁\\…\\aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
-    {b[x₁↦a₁,…,xₙ↦aₙ]=c[x₁↦a₁,…,xₙ↦aₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
+    \inferrule[TF6]{
+    x₁:A₁,…,xₙ:Aₙ⊢b=c:C\\\\
+     ∅⊢a₁:A₁\\…\\∅⊢aₙ:Aₙ[x₁↦a₁,…,x_{n-1}↦a_{n-1}]}
+    {∅⊢b[x₁↦a₁,…,xₙ↦aₙ]=c[x₁↦a₁,…,xₙ↦aₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
     \end{mathpar}
-
-
-    For now we have no primitive constants. In cref:sec:def-new-types we will
-    define some.
 
 *** Defining sets
     <<sec:def-new-types>> In this section we will define some sets that will
