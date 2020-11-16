@@ -6262,9 +6262,10 @@ data _⊢_ (Π : List Fm) : Fm → Set where
   C1 : ∀ {A B} → Π ⊢ A ↝ (B ↝ A)
   C2 : ∀ {A B C} → Π ⊢ (A ↝ (B ↝ C)) ↝ ((A ↝ B) ↝ (A ↝ C))
   C3 : ∀ {A B} → Π ⊢ (¬' A ↝ ¬' B) ↝ (B ↝ A)
-  -- IL axioms
+  -- GL axioms
   K : ∀ {A B} → Π ⊢ (□ (A ↝ B)) ↝ (□ A ↝ □ B)
   L : ∀ {A} → Π ⊢ □ (□ A ↝ A) ↝ □ A
+  -- IL axioms
   J1 : ∀ {A B} → Π ⊢ □ (A ↝ B) ↝ A ▷ B
   J2 : ∀ {A B C} → Π ⊢ A ▷ B ∧ B ▷ C ↝ A ▷ C
   J3 : ∀ {A B C} → Π ⊢ (A ▷ C ∧ B ▷ C) ↝ (A ∨ B) ▷ C
