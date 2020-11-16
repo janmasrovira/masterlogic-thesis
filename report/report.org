@@ -2687,17 +2687,16 @@ en algun assistent de la demostració.
   language. We must emphasize that it is an /approximation/ because there is no
   formal specification of Agda. The one we present has been built from the
   official documentation (cite:agda-doc), Ulf Norell's[fn::Original author of
-  Agda.] PhD thesis (cite:norell:thesis) and personal experience {{{jan(personal
-  experience seems like a joke... but it's true. Is this acceptable?)}}}.
+  Agda.] PhD thesis (cite:norell:thesis) and personal experience.
   Furthermore, by no means we attempt to describe all the language. Rather, we
   focus on the parts which are more important to understand our implementation,
   which we will present in cref:sec:agda-thesis.
 
   In cref:sec:agda-tutorial we present an introductory tutorial to Agda. The
   spirit of this tutorial is to prioritize intuition over formalization and
-  precision. We believe that . Furthermore, this is the format in which Agda is
-  presented to the public in its official documentation (cite:agda-doc) and some
-  of the most popular learning resources
+  precision. The informal format is the one in which Agda is presented to the
+  public in its official documentation (cite:agda-doc) and some of the most
+  popular learning resources
   (cite:plfa2019,norell2008dependently,bove2009brief).
 
 ** Introduction to types
@@ -4663,12 +4662,12 @@ en algun assistent de la demostració.
    As we have already mentioned, Agda is based on an intuitionistic type theory
    with dependent types that extends Per Martin-Löf's type theory
    (cite:martin1984intuitionistic). Agda's constructive nature suggests that a
-   fitting way start the introduction is through the BHK interpretation of
+   fitting way to start the introduction is through the BHK interpretation of
    intuitionistic logic (cite:sep-intuitionistic-logic-development). We start
    with propositional logic. During this part, the reader will notice that the
    first steps in this tutorial are going to be reminiscent of the embedding of
    propositional logic into LF we presented in cref:sec:def-new-types. Later in
-   the chapter (cref:sec:bhk-fol) we will continue with first order logic and
+   the chapter (cref:sec:bhk-fol) we will continue with first-order logic and
    explain how to represent relations and quantifiers in Agda.
 
    The BHK interpretation states that:
@@ -4729,15 +4728,15 @@ en algun assistent de la demostració.
    hand, using =id2= we would write =id2 t=. We observe that the argument ={A :
    Set}= is inferred from =t= and is not needed to be explicitly given.
 
-   Let us identify propositional formulas restricted implication with Agda
-   types. We define the map $*$ as follows:
+   Let us identify propositional formulas which contain only the implication
+   connective with Agda types. We define the map $*$ as follows:
    - If $p$ is a variable, then $p^*$ is =P=, where =P : Set=.
-   - $(A→B)^*≔A^* \texttt{ → }B^*$. Note that the =→= on the left of the $≔$
+   - $(A→B)^*≔A^* \texttt{ → }B^*$. Note that the =→= on the right of the $≔$
      is Agda's arrow type.
    Then, if $F$ is a propositional formula with variables $p₁,…,pₙ$ we define
    \[
-   ⟦F⟧≔ \texttt{\{P₁ : Set\} → … → \{P₁ : Set\} → F*}\] Note that in Agda we can
-   write ={P₁ … Pₙ : Set} → F*= instead of ={P₁ : Set} → … → {P₁ : Set} → F*=.
+   ⟦F⟧≔ \texttt{\{P₁ : Set\} → … → \{Pₙ : Set\} → F*}\] Note that in Agda we can
+   write ={P₁ … Pₙ : Set} → F*= instead of ={P₁ : Set} → … → {Pₙ : Set} → F*=.
 
    We will say that an Agda type =Prop= is a theorem if we can provide a definition
    of the following form:
@@ -4770,7 +4769,7 @@ en algun assistent de la demostració.
    application is denoted by juxtaposition and has left associativity.
 
    Let us now put our attention on proofs that revolve around conjunction.
-   First, we need to define introduce a new type. In Agda we can introduce new
+   First, we need to define a new type. In Agda we can introduce new
    types by means of a datatype definition (we refer the reader to
    cref:def:agda-datatype for a precise definition). Recall from
    cref:sec:basic-agda that we call datatypes the types which have been defined
