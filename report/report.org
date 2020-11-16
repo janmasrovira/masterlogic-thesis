@@ -315,14 +315,16 @@ en algun assistent de la demostració.
   # been a source of inspiration throughout this thesis. I am ever grateful for
   # their patience and valuable corrections.
 
+  # I want to thank Esperanza Buitrago for proof-reading the thesis and
+  # providing helpful feedback.
+
   # I want to thank Peter Dybjer for introducing me to the wonderful language of
   # Agda while I was a student at Chalmers. Also I want to thank him for the
   # pointers regarding the underlying logic of Agda.
 
-  # I would like to thank all the teachers in the Master in Pure and Applied logic
-  # from the University of Barcelona, with a special thanks to Ramon Jansana. The
-  # past two years I have learned many deep and interesting things which make me
-  # feel privileged for having been part of this master.
+  # I would like to thank all the teachers in the Master in Pure and Applied
+  # logic from the University of Barcelona, with a special thanks to Ramon
+  # Jansana. I feel privileged for having been part of this master.
 
   # {{{latex(~\\[0.5cm])}}}
 
@@ -632,7 +634,6 @@ en algun assistent de la demostració.
       (cref:sec:logic-agda), we write $e[x↦a]$ to say that all free occurrences
       of $x$ in $e$ are replaced by $a$. We write $e[x₁↦a₁,…,xₙ↦aₙ]$ instead of
       $(…(e[x₁↦a₁])…)[xₙ↦aₙ]$.
-
 
 *** Diagrams
     <<sec:notation-diagrams>> Throughout the thesis we present some diagrams to
@@ -1789,40 +1790,44 @@ en algun assistent de la demostració.
   special significance. The relevance of a principle mainly stems from two
   factors. On the one hand we have principles, such as the principle \prin{M},
   that give rise to interpretability logics for certain theories. For instance,
-  \prin{ILM} is the interpretability logic of \pa{}: $\prin{ILM}=\prin{IL(PA)}$.
-  On the other hand we have principles which are valid in all reasonable
-  arithmetical theories and thus are interesting in the search of an
-  axiomatization for the logic \ilall{}. For instance, the series of principles
-  \prin{R^n} and \prin{R_n}, which we will present in this part, are central to
-  the best known lower bound for \ilall{}. Regardless of the area of interest,
-  finding the frame condition for a principle is always the first step towards
-  studying the nature of the principle. Once we have established a frame
-  condition for a principle, say \prin{X}, one has more tools when studying, for
-  instance, modal soundness and completeness of the logic \prin{ILX}. Soundness
-  in itself is already an interesting result, but its utility grows when it is
+  \prin{ILM} is the interpretability logic of \pa{}: $\prin{ILM}=\prin{IL(PA)}$
+  (cite:shavrukov1988logic,berarducci1990interpretability). On the other hand we
+  have principles which are valid in all reasonable arithmetical theories and
+  thus are interesting in the search of an axiomatization for the logic
+  \ilall{}. For instance, the series of principles \prin{R^n} and \prin{R_n}
+  (cite:two-new-series), which we will present in this part, are central to the
+  best known lower bound for \ilall{}.
+
+  Regardless of the area of interest, finding the frame condition for a
+  principle is always the first step towards studying the nature of the
+  principle. Once we have established a frame condition for a principle, say
+  \prin{X}, one has more tools when studying, for instance, modal soundness and
+  completeness of the logic \prin{ILX}. Soundness in itself is already an
+  interesting result, but the usefulness of a soundness theorem grows when it is
   applied to prove independence results between principles. To prove that two
   principles \prin{X} and \prin{Y} are independent means to show
   $\prin{ILX}⊬\prin{Y}$ and $\prin{ILY}⊬\prin{X}$, which is done by building
   countermodels (for instance, see cite:joosten-master), as usual in modal
   logics. To prove that a principle does not entail another principle is a
-  necessary step in order to improve lower bound of \ilall{} since we need to
+  necessary step in order to improve the lower bound of \ilall{} since we need to
   show that the new lower bound does indeed not follow from the previous lower
-  bound. In this thesis however, we are not concerned in independence results
+  bound. In this thesis however, we are not concerned with independence results
   and we will only focus on the frame conditions.
 
   As we have briefly mentioned in the overview at the beginning of this thesis,
-  a frame condition captures the relational semantic nature of principle. To be
-  more precise, assume that we have a principle \prin{X} which is not
-  necessarily valid in an arbitrary ordinary Veltman frame. A frame condition is
-  a first (or higher) order formula $\kord{X}$ such that for any ordinary
-  Veltman frame $F$ we have: \[F ⊨ \kord{X} ⇔ F ⊩ \prin{X}.\] In the expression
-  above $F ⊨ \kord{M}$ denotes that $F$ models the condition $\kord{M}$ in the
-  sense of a first (or higher) order structure. The $F ⊩ \prin{X}$ part means
-  that we have $⟨F,V⟩⊩\prin{X}$ for any valuation $V$ and any particular
-  instance of \prin{X}. We define frame conditions for generalized Veltman
-  frames in an analogous way. As a convention, for a principle \prin{X} we will
-  write \kord{X} and \kgen{X} to denote the frame conditions with respect to
-  ordinary and generalized semantics, respectively.
+  a frame condition captures the relational semantic nature of the
+  principle. To be more precise, assume that we have a
+  principle \prin{X} which is not necessarily valid in an arbitrary ordinary
+  Veltman frame. A frame condition is a first (or higher) order formula
+  $\kord{X}$ such that for any ordinary Veltman frame $F$ we have: \[F ⊨
+  \kord{X} ⇔ F ⊩ \prin{X}.\] In the expression above, $F ⊨ \kord{M}$ denotes
+  that $F$ models the condition $\kord{M}$ in the sense of a first (or higher)
+  order structure. The $F ⊩ \prin{X}$ part means that we have $⟨F,V⟩⊩\prin{X}$
+  for any valuation $V$ and any particular instance of \prin{X}. We define frame
+  conditions for generalized Veltman frames in an analogous way. As a
+  convention, for a principle \prin{X} we will write \kord{X} and \kgen{X} to
+  denote the frame conditions with respect to ordinary and generalized
+  semantics, respectively.
 
   In cref:sec:generic-cond we will verify in Agda that there is a mechanical
   procedure to obtain frame conditions for any axiom schema. However, the
@@ -1841,8 +1846,9 @@ en algun assistent de la demostració.
   formulation as the /original/): \[∀x.∀y.∀z.xRyRz⇒xRz\ ;\] \[∀𝕊.𝕊≠∅⇒∃s∈𝕊∀s'
   (s\cancel{R}s').\] And now observe the generic frame condition that arises
   from a mechanical procedure[fn::The mechanical procedure for Veltman semantics
-  is presented in detail in cref:sec:generic-cond.](we will refer to this
-  formulation as the /generic/):
+  is presented in detail in cref:sec:generic-cond. Basically, the procedure
+  consists in writing the definition of a frame condition as a second order
+  formula.](we will refer to this formulation as the /generic/):
   \[∀𝔸.∀u(wRu⇒(∀u'(uRu'⇒u'∈𝔸))⇒u∈𝔸)⇒∀u(wRu⇒u∈𝔸).\] If we compare the original
   and the generic conditions we see that they are both second order formulas as
   they quantify over sets: We have $∀𝕊$ in the original and $∀𝔸$ in the generic.
@@ -3748,6 +3754,7 @@ en algun assistent de la demostració.
      \el{(P↣R)↣(Q↣R)↣(P⊎Q)↣R} }
      \end{mathpar}
 **** Pairs set
+     <<sec:pairs-set>>
      The following constant which represents the set of pairs:
      \[×:\set{}↠\set{}↠\set{}\]
      *Notation*. We will use infix notation for $×$, hence we will write $A\ × B$ instead
@@ -4699,10 +4706,10 @@ en algun assistent de la demostració.
    The definition =id A a = a= should be read as $\sf{id}(A)(a)≔a$. The
    definition =id : (A : Set) → A → A= should be read as follows: Given an
    arbitrary type =A= and a term of type =A=, it returns a term of type =A=. It
-   may be helpful to the reader to identify =(A : Set) → A → A= with the LF type
-   $(A:\set)↠\el{A}↠\el{A}$. The Agda type checking algorithm is in charge of
-   checking the implementation of =id= matches the specified type.
-   For instance, if we wrote the following:
+   may be helpful to the reader to identify the Agda type =(A : Set) → A → A=
+   with the LF type $(A:\set)↠\el{A}↠\el{A}$. The Agda type checking algorithm
+   is in charge of checking the implementation of =id= matches the specified
+   type. For instance, if we wrote the following:
    #+begin_src text
    id-bad : (A : Set) → A → A
    id-bad A a = A
@@ -4738,59 +4745,53 @@ en algun assistent de la demostració.
    #+end_src
    Let us now see that $⟦A→A⟧$ is a theorem in Agda. It suffices to observe that
    $⟦A→A⟧$ is equal to ={A : Set} → A → A=, which is the type of =id2=. Hence
-   =id2= is indeed a proof that $⟦A→A⟧$ is an Agda theorem.
+   =id2= is indeed a proof that $⟦A→A⟧$ is an Agda theorem. However, it is more
+   than that. Agda is a programming language, so the programs that we define in
+   Agda are executable. For instance, we can ask the system to evaluate the
+   expression =id2 t=, which evaluates to =t=, as expected. The capability of
+   evaluating expressions reflects the fact that the =id2= function we defined
+   is a perfect candidate to be a proof of $A→A$ according to the BHK
+   interpretation. How the evaluation of expression works falls out of the scope
+   of this tutorial. We refer the reader to the Agda documentation
+   (cite:agda-doc) for that.
 
-   We can finally say that we have completed our first Agda proof of $A→A$
-   according to the BHK interpretation by implementing and typing the identity
-   function in Agda. {{{joost(What does it mean to have a proof in Agda? Note
-   that A to A is a type.... Be precise please. It may be a good place to
-   mention the Curry Howard iso? Anyways\, do it in a structured fashion.)}}}
-
-   Let us see another example involving functions[fn::The =→= function symbol has
-   right associativity.].
+   \pagebreak[4]
+   Let us see another example involving functions. The following Agda definition
+   shows that $⟦(A→(B→C))→(B→(A→C))⟧$ is an Agda theorem.
    #+begin_src text
    commute : {A B C : Set} → (A → B → C) → B → A → C
    commute f b a = f a b
    #+end_src
-   We see that =commute= has three arguments, namely =f : A → B → C=, =b : B= and
-   =a : A=. Then in the right hand side of the === sign we have =f a b=, which
-   should read as ``term =f= applied to =a= and =b='' {{{joost(It is good to
-   recall this and I would leave it here. But, there should be another structure
-   of this section. Maybe something like: basic ideas (what are types, terms,
-   etc.), syntax, reading conventions (left associativity of application, right
-   associativity of implication/abstraction), computation, etc.)}}}. Notice how
-   function application is denoted by simple juxtaposition.
+   We see that =commute= has three arguments, namely =f : A → B → C=, =b : B=
+   and =a : A=. Then in the right hand side of the === sign we have =f a b=,
+   which should read as ``term =f= applied to =a= and =b=''. Notice how function
+   application is denoted by juxtaposition and has left associativity.
 
-   Let us now put our attention on proofs that revolve around conjunction. For
-   instance, let us prove that $A∧ B → B ∧ A$. {{{joost(Again\, you mean 𝐴 ∧ 𝐵 → 𝐵
-   ∧ 𝐴 as proposition? Or as type? What does it mean to prove something in
-   Agda?)}}} In order to represent $A∧B$ in Agda we need to define a so called
-   /product type/. A product type is in rough terms the type of a tuple. Consider
-   the following pair definition:
+   Let us now put our attention on proofs that revolve around conjunction.
+   First, we need to define introduce a new type. In Agda we can introduce new
+   types by means of a datatype definition (we refer the reader to
+   cref:def:agda-datatype for a precise definition). Recall from
+   cref:sec:basic-agda that we call datatypes the types which have been defined
+   by the user by means of a datatype definition.
+
+   The definition below defines the pair datatype (the semantics of this datatype
+   are analogous to the pair set we defined for LF in cref:sec:pairs-set).
    #+begin_src text
  data _×_ (A B : Set) : Set where
    _,_ : A → B → A × B
    #+end_src
-   {{{joost(Help\, what is this syntax? What is the iterated ”:” supposed to
-   mean? Is ”data” part of predefined syntax? Or is it a name? What about the
-   bars? So\, we are now seeing something new? This is no longer of the format
-   ”type declaration\, term definition of the corresponding type”? We are
-   defining new types? So this is another functionality of Agda? What of the
-   things exposed here form part of the type constructors? We classic logicians
-   get lost by so much computer science implicitness.)}}} This definition defines
-   a new datatype {{{joost(help\, Help\, HELP\, HEEEELLP!!!!! All of a sudden
-   there are datatypes? So\, they are different from types?)}}}called =_×_= with
-   parameters =(A B : Set)=. Datatypes with parameters are called parameterized
-   datatypes. Parameters are shared among all constructors {{{joost(What does
-   this sentence mean?)}}} . It has a single constructor named =_,_=. Underscores
-   are used to denote infix operators. We see that the type of the constructor
-   =_,_= is =A → B → A × B=. {{{joost(So underscore times underscore A B is the
-   same as A times B?)}}} This tells us that =_,_= is a constructor that takes an
-   argument of type =A= (or a proof of =A=), an argument of type =B= and then
-   returns a term of type =A × B=. A constructor is a special kind of function
-   {{{joost(from types to types?)}}} that is used to build terms of their
-   corresponding datatype. When we /pattern match/ (or deconstruct) a term we
-   will have a case for each possible constructor of the type of that term.
+   A pair type is in rough terms the type of a tuple. More precisely, the
+   definition defines a new datatype called =_×_=. It has two parameters: =(A
+   B : Set)=. These parameters are the types of the components of the pair. It
+   has a single constructor named =_,_=. Underscores are used to denote infix
+   operators. Thus we have that =_,_ A B= is the same as =A , B=. We observe
+   that the type of the constructor =_,_= is =A → B → A × B=. This tells us that
+   =_,_= is a constructor that takes an argument of type =A=, an argument of
+   type =B=, and then returns a term of type =A × B=. Recall that when we
+   /pattern match/ (or deconstruct) a term we will have a case for each possible
+   constructor of the type of that term.
+
+   For instance, let us prove that $⟦A∧ B → B ∧ A⟧$.
 
    Let us give a proof of the theorem $A∧ B → B ∧ A$:
    #+begin_src text
@@ -6384,7 +6385,7 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    rules of \il{} as presented in the previous section. This ends the tour of
    the language.
 
-   We strongly believe in the practical utility of this language as it can be
+   We strongly believe in the practical usefulness of this language as it can be
    used by logicians that are not Agda experts due to its simple and familiar
    syntax. We are all aware that long syntactic proofs are error prone. This
    language completely removes such problem. Of course, there is some room for
