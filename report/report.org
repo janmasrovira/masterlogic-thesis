@@ -2202,7 +2202,7 @@ en algun assistent de la demostració.
    better lower bound for \ilall{}.
 
    The principle \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
-   and \prin{R_n} series of principles, which generalize \prin{R}, are discussed
+   and \prin{R_n} series of principles, which generalize \prin{R}, will be discussed
    in cref:sec:Rsub1,sec:Rsupn.
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
@@ -2912,7 +2912,6 @@ en algun assistent de la demostració.
      the non-normalizing term we presented before cannot be typed for any
      choice of $A$. \[(λ(x:A).x\ x)\ (λ(x:A).x\ x)\]
 
-     \jan{is next paragraph needed?}
      Strong normalization is a desirable property, but it comes at the price of
      losing equivalence to Turing machines as there are many computable
      functions that cannot be expressed in simply typed lambda calculus.
@@ -3748,8 +3747,7 @@ en algun assistent de la demostració.
      \begin{flalign*}
      ⟦A∨B⟧≔⟦A⟧⊎⟦B⟧ & &
      \end{flalign*}
-     We show that $(p→(p∨q))^*$ is a theorem in LF. {{{jan(should I provide a
-     full proof?)}}}
+     We show that $(p→(p∨q))^*$ is a theorem in LF.
      \begin{mathpar}
      \inferrule[]{… }{P:\set,Q:\set⊢Λx→\sf{inj₁}\ P\ Q\ x:\el{P↣(P\ ⊎\ Q)}}
      \end{mathpar}
