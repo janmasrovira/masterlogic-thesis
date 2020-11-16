@@ -22,7 +22,7 @@
 #+latex_header: \usepackage{float}
 #+latex_header: \usepackage{newunicodechar}
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
-#+latex_header: \usepackage[style=numeric-comp, maxcitenames=10]{biblatex}
+#+latex_header: \usepackage[style=numeric-comp, maxbibnames=10]{biblatex}
 #+latex_header: \usepackage{multicol}
 #+latex_header: \usepackage{stmaryrd}
 #+latex_header: \usepackage{spverbatim}
@@ -367,7 +367,7 @@ en algun assistent de la demostració.
    (cite:godel1931formal,sep-goedel-incompleteness) and Löb's theorem
    (cite:lob1955solution,sep-logic-provability). Gödel second incompleteness
    theorem states that consistent and sufficiently strong theories like \pa{}
-   cannot proof their own consistency. Löb's theorem, states that \pa{} shows
+   cannot proof their own consistency. Löb's theorem, states that \pa{} proves
    $\prov{T}{\rep{A}}→A$ only if \pa{} proves $A$. Löb's theorem can be
    formalized in the language of \pa{} thus:
    \[\pa⊢\prov{\pa}{\rep{\prov{\pa}{\rep{A}} →A}}→\prov{\pa}{\rep{A}}.\] This
