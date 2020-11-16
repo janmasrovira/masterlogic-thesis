@@ -1179,13 +1179,15 @@ en algun assistent de la demostració.
    #+attr_latex: :float t :width 0.96\textwidth :placement [H]
    [[file:img/trans-2-4-6.pdf]]
 
+   \pagebreak
  {{{begintheorem}}} <<theorem:trans>> {{{agda}}} Let $F$ be a generalized
  Veltman frame. Let \[\sf{Mon}≔∀w,u,V,Z(uS_wV⊆Z⊆\{u:wRu\}⇒uS_wZ)\] represent the
  monotonicity condition. The following implications hold.
 
  The first item should be read as $F⊨\sf{Mon}∧(1)→(2)$.
 
- {{{beginmulticols(3)}}}
+ #+attr_latex: :options {3}
+ #+begin_multicols
    1. $\sf{Mon} ∧ (1) ⇒ (2)$
    2. $(2) ⇒ (1)$
    3. $\sf{Mon} ∧ (3) ⇒ (4)$
@@ -1206,7 +1208,15 @@ en algun assistent de la demostració.
    18. $(6) ⇒ (8)$
    19. $\sf{Mon} ∧ (7) ⇒ (8)$
    20. $(8) ⇒ (7)$
- {{{endmulticols}}} {{{endtheorem}}}
+ #+end_multicols
+ # {{{endmulticols}}}
+
+ #+caption: Graphical representation of cref:theorem:trans. Blue lines require monotonicity.
+ #+name: fig:diagrams-implications
+ #+attr_latex: :float t :width 0.45\textwidth :placement [H]
+ [[file:img/trans-impl.pdf]]
+
+ {{{endtheorem}}}
 
  {{{beginproof}}} Here we only show item 13: $\sf{Mon} ∧ (6) ⇒ (2)$.
  Assume that $F$ is a generalized Veltman frame that satisfies the monotonicity
@@ -4023,27 +4033,15 @@ en algun assistent de la demostració.
    author of Agda, Ulf Norell, has suggested[fn::In correspondence via email.]
    cite:cockx2018elaborating as a good reference for that purpose.
 
-   As for the logical basis of Agda... Quote from (cite:sep-type-theory-intuitionistic)
-
-   #+begin_quote
-   Agda is another proof assistant which is based on the logical framework
-   formulation of intuitionistic type theory, but adds numerous features
-   inspired by practical programming languages (\cite{norell:thesis}). It is an
-   intensional theory with decidable judgments and a type-checker similar to
-   Coq’s. However, in contrast to Coq it is based on Martin-Löf’s predicative
-   intuitionistic type theory.
-   #+end_quote
-
    In this chapter we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
-   is an incomplete simplification and thus is not meant to be a precise
-   reference for the real Agda language.
+   is an incomplete simplification and thus is not meant to be a reference for
+   the real Agda language.
    # We comment on some of the
    # simplifications in cref:sec:agda-limitations.
 
    We introduce several concepts that have cyclic dependencies and thus a linear
-   presentation is not possible. {{{jan(write something to help the reader.)}}}
-   To ease a first reading we summarize the concepts presented in this chapter.
+   presentation is not possible.
 
    {{{begindef}}} *Identifier*. An identifier is a sequence of characters which
    do not contain any white space or parentheses (normal =()= or curly ={}=) and
@@ -4052,19 +4050,16 @@ en algun assistent de la demostració.
    practical purposes, we can assume we have an infinite set of identifiers.
 
    Some of the Agda reserved keywords are =λ=, =∀=, =→=, ===,
-   =data=, =where=, =:=. {{{jan(I don't think this has to be exhaustive.)}}}
+   =data=, =where=, =:=.
 
    It is worth noting that syntactically constructors and identifiers are
    subject to the same rules. Agda detects constructors by using the datatype
    definitions in scope. For more information on constructors see the definition
-   of a datatype (see cref:def:agda-datatype). {{{jan(should this be in?)}}}
+   of a datatype in cref:def:agda-datatype.
    {{{enddef}}}
 
    {{{begindef}}} <<def:agda-term>> *Term/Type*. An Agda term is recursively
    defined as shown in the figure below.
-
-   An Agda *type* is a term =A= such that =A : Set ℓ= for some =ℓ=. cref:def:agda-well-typed gives a description of the Agda typing rules. We want to
-   emphasize, and it is obvious from the definition, that all types are also terms.
 
    We use =x= to denote an arbitrary identifier, we use =p₁=, …, =pₙ= to denote
    arbitrary patterns (see cref:def:agda-pattern), we use =A,=, =B=, =A₁=,
@@ -4074,22 +4069,16 @@ en algun assistent de la demostració.
    # #+caption: The syntax of terms (and types).
    #+name: fig:agda-term
    #+attr_latex: :align llll :float t :center t :placement [H]
-    | $term$ | $≔$   | =f=                        | identifier;                               |
+    | $term$ | $≔$   | =x=                        | identifier;                               |
     |        | \vert | =(x : A) → B=              | function type;                            |
     |        | \vert | =λ x → A=                  | lambda abstraction;                       |
     |        | \vert | =λ {p₁ → A₁; … ; pₙ → Aₙ}= | lambda abstraction with pattern matching; |
     |        | \vert | =A B=                      | function application;                     |
     |        | \vert | =Set ℓ=                    | universe $(ℓ∈ω)$.                         |
-
-   {{{jan(Is the following presentation preferred?)}}}
-   #+name: fig:agda-term2
-   #+attr_latex: :align llll :float t :center t :placement [H]
-    | $term$ | $≔$   | =iden=                           | identifier;                               |
-    |        | \vert | =(iden : type) → term=           | function type;                       |
-    |        | \vert | =λ iden → term=                  | lambda abstraction;                       |
-    |        | \vert | =λ {pat → term; … ; pat → term}= | lambda abstraction with pattern matching; |
-    |        | \vert | =term term=                      | function application;                     |
-    |        | \vert | =Set ℓ=                          | universe $(ℓ∈ω)$.                         |
+   We say that an Agda term =A= is a *type* if we have =A : Set ℓ= for some =ℓ=.
+   In cref:def:agda-well-typed we give a description of the typing relation =:=.
+   We want to emphasize, and it is clear from the definition, that all types
+   are also terms.
 
    The =→= in the function type has right associativity, hence =(a : A) → (b :
    B) → C= is the same as =(a : A) → ((b : B) → C)=. The =→= in the lambda
@@ -4133,10 +4122,6 @@ en algun assistent de la demostració.
 
   Note that =A : T= and =A' : T'= must be valid according to the typing rules
   (see cref:sec:typing-rules).
-
-  When we deal with two terms =A= and =T= which are related by the typing
-  relation =A : T= we will use the word =term= for =A= and the word =type= for
-  =T=. {{{jan(This should probably be stated in the section before. WIP)}}}
 
   Function definitions are evaluated in order, thus, in =T'= and in =A'= we can
   refer to =x=. However, neither in =A= or =T= we can refer to =y=.
@@ -4331,7 +4316,6 @@ en algun assistent de la demostració.
      ∀i∈\{1,…,n-1\}.\ Γ⊢_Ρpᵢ:Bᵢ[b₁↦p₁, …,b_{i-1}↦p_{i-1}]   }{Γ⊢_Ρc\ p₁\ …\ pₙ : D\ x₁\ …\ xₙ\ t₁\ …\ tₙ}
    \end{mathpar}
    \end{figure}
-   {{{jan(explain $[b₁↦p₁]$)}}}
 
    Let $\overline{D}≔D\ x₁\ …\ xₙ\ t₁\ …\ tₙ$. We now define
    $τ(Γ,\overline{D},p)$, which is the set of identifiers bound by pattern $p$
@@ -4366,8 +4350,7 @@ en algun assistent de la demostració.
     It may be worth noticing that sometimes the annotation =x : A= may be
     redundant since the type of =t= can be automatically inferred to be =A= from
     the rules. Type inference is widely used in the real Agda language, however,
-    in this presentation we skip it for simplicity. We lightly touch the topic in
-    section {{{jan(???)}}}.
+    in this presentation we skip it for simplicity.
 
     However, for simplicity we do not differentiate between type inference
     and type checking. assume that the annotation is always required.
@@ -5302,13 +5285,15 @@ en algun assistent de la demostració.
     Pred A ℓ = A → Set ℓ
     #+end_src
 
-    We proceed by giving a representation of the universal quantifier:
+    We proceed by giving a representation of the universal quantifier. In the
+    following definition the parameter =D= represents the domain and =P= the
+    predicate.
     #+begin_src text
- data ∀[_] {a ℓ : Level} (A : Set a) (P : Pred A ℓ) : Set (a ⊔ ℓ) where
-   proof∀ : ((a : A) → P a) → ∀[ A ] P
+ data ∀[_] {a ℓ : Level} (D : Set a) (P : Pred D ℓ) : Set (a ⊔ ℓ) where
+   proof∀ : ((e : D) → P e) → ∀[ D ] P
     #+end_src
-    The definition is straightforward. In fact this datatype is just a wrapper
-    for a function of type =(a : A) → P a=.
+    In fact this datatype is just a wrapper for a function of type =(e : D) → P
+    e=.
 
     For instance, let us prove that every successor of a natural number is
     different than zero:
@@ -5332,9 +5317,9 @@ en algun assistent de la demostració.
     ∀-elim (proof∀ f) a = f a
     #+end_src
 
-    We now move on to the existential quantifier. Recall that according to the
-    BHK interpretation a proof $∃x.P(x)$ is an element $c$ of the domain and a
-    proof that $P(c)$. The first plan could be to use the pair type we defined
+    We now continue with the existential quantifier. Recall that according to
+    the BHK interpretation a proof $∃x.P(x)$ is an element $c$ of the domain and
+    a proof that $P(c)$. The first plan could be to use the pair type we defined
     before to contain the needed elements. We repeat the definition here:
     #+begin_src text
  data _×_ (A B : Set) : Set where
@@ -6249,7 +6234,7 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    =MP= for modus ponens and =nec= for necessitation. Note that the
    necessitation rule only accepts \il{} theorems (empty set of assumptions) and
    thus this definition is fitting for local semantics.
-   We have proven several results about \il, which are presented in cref:sec:il.
+   We have formalized several results about \il, which are presented in cref:sec:il.
 
    Consider the pen and paper syntactic proof of $A→A$.
    \begin{flalign*}
@@ -6357,12 +6342,12 @@ data _⊢_ (Π : List Fm) : Fm → Set where
    3. =[_]_ByMP_=. This instruction applies the modus ponens rule to two
       formulas in previous lines referenced by their number.
    4. =■=. The proof must be closed using this instruction.
-   Every instruction must be increasingly numbered starting at 0.
+   Every instruction must be numbered in increasing order starting at 0.
 
    Thanks to the design of the language, if the user mistakenly numbers one of
    the instructions Agda will report an error indicating where the error is. If
    the user improperly instantiates an axiom scheme or theorem or references an
-   incorrect line, it will also be prompted with an error. Summarizing, an error
+   incorrect line, they will also be prompted with an error. Summarizing, an error
    will appear if the proof has any deficiency. This holds true as the eDSL is
    implemented in Agda and thus it is verified.
 
@@ -6393,7 +6378,7 @@ data HilbertProof : List Fm → Fm → Nat → Set where
 
    Then we define the front end syntax for each of the constructors. For
    instance, the definition of the =[_]_By_= instruction is as follows (we omit
-   the type for simplicity as it is the same the type of the constructor =by=).
+   the type for simplicity as it is the same as the type of the constructor =by=).
    #+begin_src text
 infixl 10 _[_]_By_
 _[_]_By_ : ...
@@ -6669,9 +6654,10 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
     cₙ : Aₙ
     #+end_src
 
-    The name D of the data type and the names =c₁=, …, =cₙ= of the constructors
-    must be new w.r.t. the current signature and context, and the types =A₁=, …,
-    =Aₙ= must be function types ending in =D=, i.e. they must be of the form
+    The name =D= of the data type and the names =c₁=, …, =cₙ= of the
+    constructors must be new w.r.t. the current signature and context, and the
+    types =A₁=, …, =Aₙ= must be function types ending in =D=, i.e. they must be
+    of the form
     #+begin_example
     (y₁ : B₁) → ... → (yₘ : Bₘ) → D
     #+end_example
@@ -6689,19 +6675,16 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
     can vary from constructor to constructor. They are declared after the colon
     as function arguments to =Set=. For example, fixed-length vectors can be
     defined by indexing them over their length of type =Nat=:
-
     #+begin_example
     data Vector (A : Set) : Nat → Set where
       []  : Vector A zero
       _∷_ : {n : Nat} → A → Vector A n → Vector A (suc n)
     #+end_example
-
     Notice that the parameter =A= is bound once for all constructors, while the
     index ={n : Nat}= must be bound locally in the constructor =_∷_=.
 
     Indexed datatypes can also be used to describe predicates, for example the
     predicate =Even : Nat → Set= can be defined as follows:
-
     #+begin_example
     data Even : Nat → Set where
       even-zero  : Even zero
