@@ -4798,23 +4798,23 @@ en algun assistent de la demostració.
    (A∧B)^*≔A^*\texttt{ × }B^* &&
    \end{flalign*}
 
-   Let us give a proof of the theorem $⟦A∧ B → B ∧ A⟧$:
-   #+begin_src text
-   swap : {A B : Set} → A × B → B × A
-   swap (a , b) = b , a
-   #+end_src
-   Note that we used pattern matching to deconstruct the term and access the
-   components of the pair. Observe that when we deconstruct an argument using
-   pattern matching we need put parenthesis around the argument.
-
-   We proceed by giving some examples involving conjunction.
-
-   We can show that $⟦A→(B→A∧B)⟧$ is an theorem in Agda by simply applying the
+   We can show that $⟦A→(B→A∧B)⟧$ is a theorem in Agda by simply applying the
    constructor =_,_=:
    #+begin_src text
    p1 : {A B : Set} → A → B → A × B
    p1 a b = a , b
    #+end_src
+
+   In order to show that $⟦A∧B→B∧A⟧$ is a theorem we need to access to
+   components of the argument. We can do so by deconstructing the argument with
+   pattern matching as shown below. Note that when we use pattern matching on an
+   argument we need to put parentheses around it.
+   #+begin_src text
+   swap : {A B : Set} → A × B → B × A
+   swap (a , b) = b , a
+   #+end_src
+
+   We proceed by giving some more examples involving conjunction.
 
    We show that we can prove $⟦A∧B→A⟧$ and $⟦A∧B→B⟧$. We need to pattern match
    on the argument to access to corresponding component and return it.
@@ -4824,6 +4824,13 @@ en algun assistent de la demostració.
 
      proj₂ : {A B : Set} → A × B → B
      proj₂ (a , b) = b
+   #+end_src
+
+   Observe how we can use =proj₁= and =proj₂= to provide an alternative proof of
+   $⟦A∧B→B∧A⟧$:
+   #+begin_src text
+   swap' : {A B : Set} → A × B → B × A
+   swap' ab = (proj₁ ab) , (proj₂ ab)
    #+end_src
 
    \pagebreak[4]
@@ -6176,7 +6183,7 @@ Noetherian _<_ = ∀ {a} → ¬ (InfiniteChain _<_ a)
   ⊩L {w} {A} = ⊩↝ ⇐ λ w⊩□⟨□A→A⟩ → ⊩□ ⇐ λ {u} Rwu → ⊩⇔¬⊮ ⇐
     λ {u⊮A → R-noetherian (R-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
     #+end_src
-** \il{} and syntactic proofs
+** Logic \il{} and syntactic proofs
    Here we present our efforts on formalizing syntactic \il{} proofs in Agda. We
    restrict ourselves to finite sets of assumptions.
 
@@ -6412,14 +6419,15 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    can be ameliorated as we can use the deduction theorem outside of the eDSL
    and then include the result by using a =[_]_By_= instruction.
 
+* Glossary and bibliography
 \printglossary
 
 \printbibliography[
-heading=bibintoc,
-title=Bibliography
-]
+ heading=bibintoc,
+ title=Bibliography
+ ]
 
-#+latex: \appendix
+ #+latex: \appendix
 * Appendix
 ** Official Agda reference
    This appendix contains a thorough description of some of the Agda related
