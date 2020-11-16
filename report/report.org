@@ -4809,13 +4809,15 @@ en algun assistent de la demostració.
 
    We proceed by giving some examples involving conjunction.
 
-   We can show that ⟦A→(B→A∧B)⟧ is an theorem in Agda:
+   We can show that $⟦A→(B→A∧B)⟧$ is an theorem in Agda by simply applying the
+   constructor =_,_=:
    #+begin_src text
    p1 : {A B : Set} → A → B → A × B
    p1 a b = a , b
    #+end_src
 
-   We show that we can prove $⟦A∧B→A⟧$ and $⟦A∧B→B⟧$:
+   We show that we can prove $⟦A∧B→A⟧$ and $⟦A∧B→B⟧$. We need to pattern match
+   on the argument to access to corresponding component and return it.
    #+begin_src text
      proj₁ : {A B : Set} → A × B → A
      proj₁ (a , b) = a
