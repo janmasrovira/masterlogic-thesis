@@ -281,7 +281,7 @@ transformen, preservant els teoremes modals, models ordinaris Veltman a models
 generalitzats Veltman i viceversa.
 
 Estudiem les condicions de marc per diversos principis d'interpretabilitat que
-es troben en la literatura. A més, donem noves condicions de marc pel principi
+es troben a la literatura. A més, donem noves condicions de marc pel principi
 \prin{R_1} i la sèrie de principis \prin{R^n} presentats en
 \cite{two-new-series} respecte semàntica generalitzada Veltman.
 
@@ -302,33 +302,29 @@ en algun assistent de la demostració.
   ~\\[0.5cm]
   \end{center}
 
-  # We want to express our gratitude to Rineke Verbrugge. She kindly agreed to
-  # publish a manuscript by hers, which has great historical and mathematical
-  # value, as part of this thesis.
+  We want to express our gratitude to Rineke Verbrugge. She kindly agreed to
+  publish a manuscript by hers, which has great historical and mathematical
+  value, as an appendix of this thesis.
 
-  # We want to express our gratitude to Nicola Olivetti, Rineke Verbrugge and the
-  # rest of the organizing committee for Advances in Modal Logic 2020 (Helsinki)
-  # for allowing us to present there an extended abstract of this thesis. We want
-  # to extend our gratitude to all the reviewers which gave valuable feedback.
+  We want to express our gratitude to Nicola Olivetti, Rineke Verbrugge and the
+  rest of the organizing committee of Advances in Modal Logic 2020 (Helsinki)
+  for allowing us to present there an extended abstract of this thesis. We want
+  to extend our gratitude to all the reviewers which gave valuable feedback.
 
-  # I want to thank my supervisors Joost and Luka. Their incredible work ethic has
-  # been a source of inspiration throughout this thesis. I am ever grateful for
-  # their patience and valuable corrections.
+  I want to thank my supervisors Joost and Luka. Their incredible work ethic and
+  vast knowledge on the field have been a source of inspiration throughout this
+  thesis. I am ever grateful for their patience and valuable corrections.
 
-  # I want to thank Esperanza Buitrago for proof-reading the thesis and
-  # providing helpful feedback.
+  I want to thank Esperanza Buitrago for proof-reading the thesis and
+  providing helpful feedback.
 
   # I want to thank Peter Dybjer for introducing me to the wonderful language of
   # Agda while I was a student at Chalmers. Also I want to thank him for the
   # pointers regarding the underlying logic of Agda.
 
-  # I would like to thank all the teachers in the Master in Pure and Applied
-  # logic from the University of Barcelona, with a special thanks to Ramon
-  # Jansana. I feel privileged for having been part of this master.
-
-  # {{{latex(~\\[0.5cm])}}}
-
-  # haha
+  I would like to thank all the teachers in the Master in Pure and Applied
+  logic from the University of Barcelona, with a special thanks to Ramon
+  Jansana. I feel privileged for having been part of this master.
 #+end_abstract
 
 \newpage
@@ -1260,8 +1256,8 @@ en algun assistent de la demostració.
   definitions (especially definitions related to filtrations) can be simplified
   when assuming the monotonicity condition. By ``can be assumed without harm'',
   we mean that for any generalized Veltman frame, we can find another
-  generalized Veltman frame that it satisfies the monotonicity condition and
-  moreover both frames will be modally equivalent when expanded to a generalized
+  generalized Veltman frame that satisfies the monotonicity condition.
+  Moreover, both frames will be modally equivalent when expanded to a generalized
   Veltman model with a valuation. In the following theorem we prove this fact.
 
   {{{begintheorem}}} <<theorem:mono>> {{{agda}}} Let $F=⟨W,R,S⟩$ be a
@@ -2625,10 +2621,10 @@ en algun assistent de la demostració.
     cref:src:generalizedveltmansemantics.properties.rsupn.
     {{{endproof}}}
 
-** Generic generalized frame condition
-   <<sec:generic-cond>>
-   In this \this{} we present a method that given a formula $A$, builds a second
-   order formula that is a generalized frame condition for $A$.
+** Generic frame condition
+   <<sec:generic-cond>> In this chapter we present a method that given a formula
+   $A$, builds a second order formula that is a generalized frame condition for
+   $A$.
 
    {{{begindef}}} *Generic frame condition* {{{agda}}} Given a generalized frame
    $F=⟨W,R,S⟩$ and a formula $A$ with $\sf{Var}(A)=\{x₁,…,xₙ\}$. Consider $n$
@@ -2665,6 +2661,9 @@ en algun assistent de la demostració.
    {{{beginremark}}} For instance, if we want the frame condition for \prin{P₀}
    we would look at \[\kgen{(a ▷ ♢ b → □ (a ▷ b))^*}.\] Where $a,b$ are
    different propositional variables. {{{endremark}}}
+
+   It is easy to see that the presented method can be adapted to generate a
+   frame condition for ordinary semantics.
 
    We suggest a future systematic study that lays down the relations between
    generic frame conditions and the ones used in practice.
@@ -3909,6 +3908,7 @@ en algun assistent de la demostració.
      In the next section we will see how we can use induction on the natural
      numbers to prove properties of addition.
 **** Identity set
+     <<sec:identity-set>>
      We denote the identity set (or equality set) with the $≡$ constant:
      \[≡\ : (S:\set)↠(x:\el{S})↠\el{S}↠\set\]
      *Notation*. We will write $A\ ≡_S\ B$ instead of $≡\ S\ A\ B$.
@@ -4894,10 +4894,10 @@ en algun assistent de la demostració.
    wrong : {A B : Set} → A ⊎ B → A
    wrong : (inj₁ a) = a
    #+end_src
-   The answer is that Agda complains. As explained in cref:sec:agda-totality
-   Agda requires all of the definitions to be total, and thus when we split an
-   argument into cases using pattern matching, it checks that the cases are
-   exhaustive.
+   The answer is that Agda rejects the above definition. As explained in
+   cref:sec:agda-totality Agda requires all the definitions to be total. As
+   such, when we split an argument into cases using pattern matching, it checks
+   that the cases are exhaustive.
 
    We proceed with $⊥$. We can define a datatype which we call /bottom type/ or
    /empty type/.
@@ -4911,23 +4911,33 @@ en algun assistent de la demostració.
    ¬ : Set → Set
    ¬ A = A → ⊥
    #+end_src
-   The principle of explosion {{{joost(Allauakbar\, what is this principle?)}}}
-   can be trivially proved as shown below. Agda uses =()= to denote the empty or
-   impossible pattern.
+
+   We extend the $*$ map with the following clauses (note that the =⊥= and =¬=
+   on the left of the symbol $≔$ refer to the Agda symbols):
+   \begin{flalign*}
+   ⊥^*&≔\texttt{⊥} \\
+   (¬A)^*&≔\texttt{¬}(A^*)
+   \end{flalign*}
+
+   The principle of explosion (/ex falso quodlibet/) $⟦⊥→A⟧$ can be proved as
+   shown below:
    #+begin_src text
    explosion : {A : Set} → ⊥ → A
    explosion ()
    #+end_src
-   {{{joost(I feel I need some extra explanation here. So explosion () is a term
-   of type A. Where is that A reflected in the term? Should explosion not have two
-   arguments here?)}}} Since the =⊥= type has no constructors, we get the empty
-   pattern when pattern matching against the argument of type =⊥=.
+   We see that we have a new pattern: =()=. Agda uses the pattern =()= to denote
+   the impossible pattern. When one of the arguments matches the impossible
+   pattern then there is no need to provide a definition of the function. In
+   this case we match the impossible pattern because the type =⊥= has not
+   constructors. For more information on the absurd pattern we refer the reader
+   to cref:sec:agda-doc-absurd.
 
-   As we are in an intuitionistic logic the following properties are not
-   provable[fn::See that we use the symbol =¬= in the name of the term =¬¬elim=.
-   Here the =¬= symbol is just part of the name and serves the same purpose of
-   any other character. Hence it is important to note that =¬a= (just a name with
-   the =¬= character) is different from =¬ a= (the negation of =a=).]:
+   As we are in an intuitionistic logic the we cannot show $⟦¬¬A→A⟧$ nor
+   $⟦A∨¬A⟧$[fn::Observe that in the Agda code we use the symbol =¬= in the name
+   of the term =¬¬elim=. Here the =¬= symbol is just part of the name and serves
+   the same purpose of any other character. Hence it is important to note that
+   =¬a= (just a name with the =¬= character) is different from =¬ a= (the
+   negation of =a=).]:
    #+begin_src text
    ¬¬elim : {A : Set} → ¬ (¬ A) → A
    ¬¬elim = ?             -- not provable
@@ -4935,41 +4945,42 @@ en algun assistent de la demostració.
    excluded-middle : {A : Set} → A ⊎ (¬ A)
    excluded-middle = ?    -- not provable
    #+end_src
-   However, we can show that $¬¬¬A→¬A$:
+   However, we can show that $⟦A→¬¬A⟧$ and $⟦¬¬¬A→¬A⟧$:
    #+begin_src text
-   ¬¬¬elim : {A : Set} → ¬ (¬ (¬ A)) → ¬ A
-   ¬¬¬elim ¬¬¬a a = ¬¬¬a (λ ¬a → ¬a a)
-   #+end_src
-   It might help the reader to see that =¬ (¬ (¬ A)) → ¬ A = (((A → ⊥) → ⊥) → ⊥)
-   → A → ⊥=. {{{joost(Give the reader some more explanation. What is the lambda
-   doing there? How does this work? Maybe compare it with a proof in ND (natural
-   deduction) of the corresponding proposition?)}}}
+     ¬¬intro : {A : Set} → A → ¬ (¬ A)
+     ¬¬intro a ¬a = ¬a a
 
-   Some more examples:
-   #+begin_src text
-   p1 : {A B : Set} A → ¬ A → B
-   p1 a ¬a = explosion (¬a a)
+     ¬¬¬elim : {A : Set} → ¬ (¬ (¬ A)) → ¬ A
+     ¬¬¬elim ¬¬¬a a = ¬¬¬a (¬¬intro a)
    #+end_src
-   {{{joost(Are we overwriting p1 again? Again\, how do we see that explosion
-   generates something of type B?)}}}
 
-   We finally climb to the $⊤$ by defining a datatype which we call the
-   /unit type/.
+   We can build an alternative proof of $⟦¬¬¬A→¬A⟧$ that does not use =¬¬intro=
+   by replacing it with a lambda term:
    #+begin_src text
-   data ⊤ : Set where
-     tt : ⊤
+   ¬¬¬elim' : {A : Set} → ¬ (¬ (¬ A)) → ¬ A
+   ¬¬¬elim' ¬¬¬a a = ¬¬¬a (λ ¬a → ¬a a)
    #+end_src
-   We see that this type has a single constructor (=tt=) with no parameters, hence there
-   only exists one term with this type, namely =tt=. Some examples:
-   #+begin_src text
-   ⊤⊤ : ⊤ × ⊤
-   ⊤⊤ = tt , tt
 
-   ¬¬⊤ : ¬ (¬ ⊤)
-   ¬¬⊤ ¬⊤ = ¬⊤ tt
+   Consider the proof of $⟦A→¬A→B⟧$.
+   #+begin_src text
+   p6 : {A B : Set} A → ¬ A → B
+   p6 a ¬a = explosion (¬a a)
    #+end_src
-   {{{joost(What is the purpose of those examples? Make that clear: we prove
-   theorems about Top here)}}} This concludes the first part of the introduction.
+   We have two arguments, =a : A= and =¬a : ¬ A=. It is easy to see that the
+   type of =¬a a= is =⊥=. Also, recall that the type of =explosion= is[fn::we
+   have renamed the bound variable =A= to =C= to avoid confusion with the =A= in
+   =A → ¬ B → B=.] ={C : Set} → ⊥ → C=. Then, in the definition above, since we
+   expect a term of type =B=, Agda can infer that implicit argument ={C : Set}=
+   is equal to =B= and thus =explosion (¬a a)= has type =B=. For illustrative
+   purposes, let us rewrite the same proof but with the implicit arguments made
+   explicit. We can make implicit arguments explicit by surrounding them with
+   ={}= as shown below:
+   #+begin_src text
+   p6' : {A B : Set} A → ¬ A → B
+   p6' {A} {B} a ¬a = explosion {B} (¬a a)
+   #+end_src
+
+   This concludes the first part of the introduction.
 
 *** Booleans and case analysis
     <<sec:agda-bool>> The /true or false/ concept is ubiquitous in computer
@@ -4996,7 +5007,7 @@ en algun assistent de la demostració.
     and true b = b
     #+end_src
     We proceed by defining equality for the =Bool= type[fn::This definition is
-    just for illustrative purposes. It is possible to define polymorphic equality
+    just for illustrative purposes. It is possible to define generic equality
     as described in cref:sec:agda-equality.]. We use the symbol
     =≡= because === is reserved for Agda.
     #+begin_src text
@@ -5388,28 +5399,32 @@ en algun assistent de la demostració.
     <<sec:agda-equality>>
 
     In cref:sec:agda-nat,sec:agda-bool we have seen how we can define
-    equality for Booleans and naturals. In this section we explore polymorphic
+    equality for Booleans and naturals. In this section we explore a generic
     equality and some of its properties and limitations. Of course, the main
-    advantage of polymorphic equality is that we can use it for every type and
+    advantage of generic equality is that we can use it for every type and
     thus there is no need to redefine it for every new datatype that we
     define.
 
-    Below we present a slight simplification of polymorphic equality as defined in
-    cite:agda-stdlib.
+    Below we present a slight simplification of generic equality as defined in
+    cite:agda-stdlib. The semantics of this generic equality type defined in
+    this section are analogous to the identity set for the system LF presented
+    in cref:sec:identity-set.
     #+begin_example
  data _≡_ {a : Level} {A : Set a} (x : A) : A → Set a where
    refl : x ≡ x
     #+end_example
 
-    It may help the reader to read the following description of the polymorphic
-    equality datatype defined above taken from cite:plfa2019: For any type =A=
-    and for any =x= of type =A=, the constructor =refl= provides evidence that =x
-    ≡ x=. Hence, every value is equal to itself, and we have no other way of
-    showing values equal. The definition features an asymmetry, in that the first
-    argument to =_≡_= is given by the parameter =x : A=, while the second is
-    given by an index in =A → Set a=. The first argument to =_≡_= can be a
-    parameter because it does not vary, while the second must be an index, so it
-    can be required to be equal to the first.
+    It may help the reader to read the following description of the generic
+    equality datatype defined above taken from cite:plfa2019:
+    #+begin_quote
+    For any type =A= and for any =x= of type =A=, the constructor =refl=
+    provides evidence that =x ≡ x=. Hence, every value is equal to itself, and
+    we have no other way of showing values equal. The definition features an
+    asymmetry, in that the first argument to =_≡_= is given by the parameter
+    =x : A=, while the second is given by an index in =A → Set a=. The first
+    argument to =_≡_= can be a parameter because it does not vary, while the
+    second must be an index, so it can be required to be equal to the first.
+    #+end_quote
 
     It is easy to see that equality is a reflexive relation.
     #+begin_src text
@@ -5546,17 +5561,10 @@ Extensionality a b =
   ((x : A) → f x ≡ g x) → f ≡ g
     #+end_src
 
-    {{{jan(give simplified version without dependent function?)}}}
-
-    #+begin_src text
-Extensionality : (a b : Level) → Set _
-Extensionality a b = {A : Set a} {B : Set b} {f g : A → B} →
-  ((x : A) → f x ≡ g x) → f ≡ g
-    #+end_src
     It is usually the case that we accept the axiom of extensionality as part of
     our metalogic as it is part of the most popular logical framework
-    $\textsf{ZFC}$, however, in Agda the property of extensionality is not an axiom
-    nor a provable theorem.
+    $\textsf{ZF}$, however, in Agda the property of extensionality is not an
+    axiom nor a provable theorem.
 
     An direct consequence of the lack of extensionality is that we cannot show
     equality of sets by double inclusion.
@@ -6492,6 +6500,33 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
        the function.
     4. The function should be terminating on all possible inputs.
 
+*** Absurd patterns
+    <<sec:agda-doc-absurd>>
+
+    Absurd patterns can be used when none of the constructors for a particular
+    argument would be valid. The syntax for an absurd pattern is =()=.
+
+    As an example, if we have a datatype Even defined as follows:
+    #+begin_src text
+    data Even : Nat → Set where
+     even-zero  : Even zero
+     even-plus2 : {n : Nat} → Even n → Even (suc (suc n))
+    #+end_src text
+
+    Then we can define a function =one-not-even : Even 1 → ⊥= by using an absurd
+    pattern:
+    #+begin_src text
+    one-not-even : Even 1 → ⊥
+    one-not-even ()
+    #+end_src
+    Note that if the left-hand side of a clause contains an absurd pattern, its
+    right-hand side must be omitted.
+
+    In general, when matching on an argument of type =D i₁ … iₙ= with an absurd
+    pattern, Agda will attempt for each constructor =c : (x₁ : A₁) → … → (xₘ :
+    Aₘ) → D j₁ … jₙ= of the datatype =D= to unify =i₁ … iₙ= with =j₁ … jₙ=. The
+    absurd pattern will only be accepted if all of these unifications end in a
+    conflict.
 *** Implicit arguments and automatic inference
     <<sec:agda-implicit-args>>
 
