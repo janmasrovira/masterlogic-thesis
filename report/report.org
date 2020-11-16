@@ -336,12 +336,6 @@ en algun assistent de la demostració.
 #+toc: headlines 2
 \newpage
 
-
-* [0/2] Pending                                                    :noexport:
-** [0/2] Apply Luka's comments for review 1
-   [[file:./jan_thesis_comments_16_06_20.pdf][pdf-link]].
-** TODO Apply Luka's comments for review 2
-   [[file:./jan_thesis_comments_07_07_2020.pdf][pdf-link]].
 * Introduction
 ** Overview of interpretability logics
    <<sec:overview>> This thesis studies interpretability logics. These logics
@@ -4576,7 +4570,8 @@ en algun assistent de la demostració.
        =false= pattern. The coverage algorithm (the algorithm which checks
        the exhaustivity of patterns) is described in
        cite:norell:thesis.
-    2. There are no infinite loops. For instance
+    2. There are no infinite loops. For instance, the following definition is
+       rejected.
        #+begin_example
        loop : (A : Set 0) → A
        loop = λ A → loop A
