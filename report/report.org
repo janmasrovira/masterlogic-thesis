@@ -327,9 +327,9 @@ en algun assistent de la demostració.
   logic from the University of Barcelona, with a special thanks to Ramon
   Jansana. I feel privileged for having been part of this master.
 
-  I want to share the joy that I am feeling at the time of this submission with
-  my very good friends from the master Martín and Stefano. I really hope that we
-  can meet again somewhere in Raval rather sooner than later.
+  I want to share the joy that I am feeling at the time of finishing this thesis
+  with my very good friends from the master Martín and Stefano. I really hope
+  that we can meet again somewhere in Raval rather sooner than later.
 #+end_abstract
 
 \newpage
@@ -2943,7 +2943,7 @@ en algun assistent de la demostració.
    development of Agda takes place.], suggested[fn::via email correspondence.]
    the specific version of LF that we will present in this chapter. However,
    there are important differences between LF and Agda's theory that we will
-   comment in cref:sec:basic-agda.
+   comment in cref:sec:lof-agda.
 
    System LF is complex and has a lot of cyclic dependencies in the definitions.
    As such, it is impossible to give a linear presentation. For that, we ask the
@@ -3427,7 +3427,7 @@ en algun assistent de la demostració.
     {∅⊢b[x₁↦a₁,…,xₙ↦aₙ]=c[x₁↦a₁,…,xₙ↦aₙ]:C[x₁↦a₁,…,xₙ↦aₙ]}
     \end{mathpar}
 
-*** Defining sets
+*** Introducing sets
     <<sec:def-new-types>> In this section we will define some sets that will
     allow us to represent different mathematical objects, such as pairs or
     natural numbers, in the system LF.
@@ -4025,9 +4025,51 @@ en algun assistent de la demostració.
      want to perform the induction and prove the property. We just give it $n$,
      which is bound by the initial $λn→…$. This concludes our proof.
 
-*** Final remarks :noexport:
+*** Main differences with Agda's type system
+    <<sec:lof-agda>> In this section we briefly highlight some of the
+    differences between LF and Agda.
+
+    *Hierarchy of sets*. The most important difference between LF and Agda is
+    that Agda does not has the concepts of \type{} and \set{}, where
+    $\set{}:\type$. For instance, in LF we do not have an answer to ``what is
+    the type of \type{}?''. Agda solves this problem an infinite hierarchy of
+    sets $\set₀:\set₁:…$. It is important to note that the word $\type$ does not
+    exist in Agda, instead, there is only the hierarchy of sets. For instance,
+    small types such as the type of natural numbers reside in $\set₀$.
+    Predicates on natural numbers reside in $\set₁$, and so on. For a more
+    detailed description we refer the reader to
+    cref:sec:universe-hierarchy,sec:agda-doc-universes.
+
+    *Extensible language*. Agda allows the introduction of new types within the
+    language. Of course, in order to avoid bogus types that could cause the
+    soundness of the system to be compromised, the types defined by the user are
+    subject to some restrictions. For instance, positivity checking
+    (cref:sec:positivity).
+
+    *Pattern matching*. Agda has a generic way, called pattern matching, to
+    deconstruct terms and do case splits based on the constructors of the
+    corresponding type. We refer the reader to cref:sec:basic-agda for more
+    information.
+
+    *Induction by proof of termination*. Agda does not have explicit induction
+    principles. In Agda, recursive calls and induction hypotheses are the same.
+    In order to ensure that the system remains sound Agda checks for termination
+    on the recursive calls, which is the same as saying that we use the
+    induction hypotheses on something provably smaller.
+
+*** Towards Agda :noexport:
+    We have seen a formal definition of a system based on dependent types. But
+    how do we go from LF to Agda? That is an answer that we cannot fully answer
+    here, but we will give some pointers in that direction.
+
+    *Type checking algorithm*. Of course, we want the proof assistant to tell us
+    if a proof we wrote is indeed correct (according to the system). For that,
+    we need to provide an algorithm that checks if a term has a given type.
+
+
     With this we conclude the presentation of Martin's Löf logical framework.
     Talk about operational semantics.
+
 ** Basic Agda
    <<sec:basic-agda>>
 
@@ -5540,7 +5582,7 @@ en algun assistent de la demostració.
     that if two sets have the same elements, then they are equal. As in Agda we
     represent sets as functions we reword extensionality for functions: if two
     functions have the same domain and coincide for every element in their domain then
-    they are equal. In symbols: \[∀fg.(∀x.f(x)=g(x))⇒f=g.\]
+    they are equal. In symbols: \[∀f∀g.(∀x.f(x)=g(x))⇒f=g.\]
 
     In Agda we can represent this concept thus (cite:agda-stdlib):
     #+begin_src text
@@ -5662,12 +5704,12 @@ infix 70 □_
   for right associativity.
 
 ** Noetherian relations
-   <<sec:agda-noetherian>>
-    We say that a relation is \gls*{noetherian} if it is conversely
-    well-founded. We begin by formalizing the concept of infinite ascending
-    chain in Agda. In order to do that, we define a coinductive record datatype
-    (cite:agda-doc,norell:thesis). A coinductive record is allowed to be
-    infinite.
+   <<sec:agda-noetherian>> We say that a relation is \gls*{noetherian} if it is
+    conversely well-founded. We begin by formalizing the concept of infinite
+    ascending chain in Agda. In order to do that, we define a coinductive record
+    datatype (cite:agda-doc,norell:thesis). A coinductive record is allowed to
+    be infinite. In other words, it does not need to have a non-recursive
+    constructor.
     #+begin_src text
 record InfiniteChain {ℓW ℓR} {W : Set ℓW} (_<_ : Rel W ℓR) (a : W)
   : Set (ℓR ⊔ ℓW)where
@@ -5767,17 +5809,18 @@ data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
    shared by all constructors. We leave the formula as an index as it may vary
    depending on the constructor. We should introduce a constructor for each case
    in cref:def:ord-forcing:
-   1. We do not need a constructor for =⊥'= as its absence implicitly implies that
-      we can never build an instance of =M , w ⊩ ⊥'= regardless of =M= and =w=.
-   2. if $x∈\var{}$, then $w⊩x$ iff $⟨w,x⟩∈V$;
+   1. We do not need a constructor for =⊥'= as its absence implicitly implies
+      that we can never build an instance of =M , w ⊩ ⊥'= regardless of =M= and
+      =w=.
+   2. If $x∈\var{}$, then $w⊩x$ iff $⟨w,x⟩∈V$:
       #+begin_src text
   var : {p : Var} → p ∈ V w → M , w ⊩ var p
       #+end_src
-   3. if $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$;
+   3. If $A,B∈\fm{}$, then $w⊩A→B$ iff if $w⊩A$ then $w⊩B$:
       #+begin_src text
   impl : {A B : Fm} → ((M , w ⊩ A) → (M , w ⊩ B)) → M , w ⊩ (A ↝ B)
       #+end_src
-   4. if $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
+   4. If $A,B∈\fm{}$, then $w⊩A▷B$ iff if $wRu$ and $u⊩A$ then there exists $v$ such
       that $v⊩B$ and $uS_wv$.
       #+begin_src text
    rhd : {A B : Fm} →
@@ -5785,9 +5828,9 @@ data _,_⊩_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
      → M , w ⊩ A ▷ B
       #+end_src
 
-   Unfortunately the definition above is not valid in Agda. The reason is that
+   Unfortunately the definition above is not accepted by Agda. The reason is that
    constructors =rhd= and =impl= both fail the positivity check (see
-   cref:sec:positivity). For instance, see that in the =impl= constructor type
+   cref:sec:positivity). For instance, observe that in the =impl= constructor type
    we have =(M , w ⊩ A)= on the left of an arrow =→=.
 
    We have circumvented this problem by providing mutually recursive definitions
@@ -5833,6 +5876,7 @@ data _,_⊮_ (M : Model {ℓW} {ℓR} {ℓS} W R S V) (w : W)
        #+begin_src text
   impl : {A B : Fm} → M , w ⊩ A → M , w ⊮ B → M , w ⊮ A ↝ B
        #+end_src
+       \pagebreak
    4. For interpretability (=▷=).
     1. Forcing (=_,_⊩_=).
        #+begin_src text
@@ -5868,8 +5912,10 @@ data _,_⊮_ M w where
 
    To prove that =_,_⊩= and =_,_⊮= are indeed the negation of each other
    we should prove two lemmas. We define =A ⇔ B ≔ A → B × B → A=. Then the lemma in
-   Agda types is as follows:
+   Agda types is as follows.
+
    {{{beginlemma}}}
+   {{{agda}}}
    <<lemma:forcing-neg>>
    \hfill
    1. =∀ {M w A} → M , w ⊩ A ⇔ ¬ (M , w ⊮ A)=.
@@ -5883,7 +5929,7 @@ data _,_⊮_ M w where
    remaining directions we need to assume that the forcing relation is
    decidable.
 
-   {{{begindef}}} <<def:ord-decidable-model>>
+   {{{begindef}}} {{{agda}}} <<def:ord-decidable-model>>
 
    We say that =M= is \gls*{decidable model} if for any world =w= and formula
    =A= we have that either =M , w ⊩ A= or =M , w ⊮ A=.
@@ -5896,13 +5942,12 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    {{{enddef}}}
 
    {{{beginproof}}}
-   {{{agda}}}
-
    Under the assumption that we restrict ourselves to decidable models we can
    prove cref:lemma:forcing-neg.
    {{{endproof}}}
 
-   {{{beginlemma}}} <<lemma:equiv>> The following is true:
+   {{{beginlemma}}} {{{agda}}} {{{coq}}} <<lemma:equiv>> The following
+   properties on the forcing relation are true:
 
    1. =⊩⊥ : ∀ {M w} → ¬ (M , w ⊩ ⊥')=;
    2. =⊮→¬⊩ : ∀ {M w A} → M , w ⊮ A → ¬ (M , w ⊩ A)=;
@@ -5922,19 +5967,19 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    16. =⊩↝⇨ : ∀ {M w A B} → M , w ⊩ A ↝ B → M , w ⊩ A → M , w ⊩ B=;
    17. =⊩▷⇨ : ∀ {M w A B} → M , w ⊩ A ▷ B → (∀ {u} → R w u → M , u ⊩ A → ∃[ v ] (S w u v × M , v ⊩ B)=.
    {{{endlemma}}}
-   {{{beginproof}}} {{{agda}}} {{{coq}}} The above properties have been proven
+   {{{beginproof}}} The above properties have been proven
    in Agda and Coq without assuming that the model is decidable. {{{endproof}}}
 
 
-   {{{beginlemma}}} <<lemma:ord-equiv-dec>> The following series of equivalences
-   can be proven for decidable models.
+   {{{beginlemma}}} {{{agda}}} {{{coq}}} <<lemma:ord-equiv-dec>> The following
+   series of equivalences can be proven for decidable models.
 
    1. =⊩↝ : ∀ {w A B} → M , w ⊩ A ↝ B ⇔ (M , w ⊩ A → M , w ⊩ B)=;
    2. =⊩▷ : ∀ {w A B} → M , w ⊩ A ▷ B ⇔
       (∀ {u} → R w u → M , u ⊩ A → ∃[ v ] (S w u v × M , v ⊩ B))=;
    3. =⊩⇔¬⊮ : ∀ {w A} → M , w ⊩ A ⇔ (¬ M , w ⊮ A)=;
    4. =⊮⇔¬⊩ : ∀ {w A} → M , w ⊮ A ⇔ (¬ M , w ⊩ A)=.
-   {{{endlemma}}} {{{beginproof}}} {{{agda}}} {{{coq}}} Note that we only need the
+   {{{endlemma}}} {{{beginproof}}} Note that we only need the
    decidability assumption for 1 ($⇐$), 2 ($⇐$), 3 ($⇐$) and 4 ($⇐$). {{{endproof}}}
 
    From now on, we always restrict ourselves to decidable models as the usage of
@@ -6058,7 +6103,7 @@ Frame4 W R S = Frame W R S (Trans-4 W S)
    semantics we need to make a stronger assumption described in the next
    definition.
 
-   {{{begindef}}} We say that =M= is \gls*{multi decidable model} if for any set
+   {{{begindef}}} {{{agda}}} We say that =M= is \gls*{multi decidable model} if for any set
    of worlds =Y= and formula =A= we can decide whether
    1. for every element =y= in =Y= we have =M , y ⊮ A=; or
    2. there is an element =y= in =Y= such that =M , y ⊮ A=.
@@ -6070,8 +6115,11 @@ Frame4 W R S = Frame W R S (Trans-4 W S)
   MultiDecidableModel {ℓW = ℓW} {W = W} M =
     ∀ (Y : Pred W ℓW) A → Y ⊆ M ,_⊩ A ⊎ Satisfiable (Y ∩ (M ,_⊮ A))
    #+end_src
-   Observe that any multi-decidable model is also decidable.
    {{{enddef}}}
+
+   {{{beginlemma}}} {{{agda}}}
+   Every multi-decidable model is also decidable.
+   {{{endlemma}}}
 
    {{{beginlemma}}} <<lemma:gen-lemmas>> {{{agda}}} Assuming that we restrict
    ourselves to multi-decidable models then properties in
@@ -6082,7 +6130,7 @@ Frame4 W R S = Frame W R S (Trans-4 W S)
     proof, which will hopefully give the reader a feel of how we can proof
     generalized Veltman semantic properties in Agda. We prove that for any
     generalized Veltman model $M$ and world $w$ we have that $w$ forces Löb's
-    axiom. In symbols: \[∀MwA.\ M , w ⊩ □ (□ A → A) → □ A.\] Note that since
+    axiom. In symbols: \[∀M∀w∀A.\ M , w ⊩ □ (□ A → A) → □ A.\] Note that since
     Löb's axiom is in $\textsf{IL}$ we need to show this as part of the
     soundness proof.
 
@@ -6778,6 +6826,7 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
     The directives available are eta-equality, no-eta-equality, inductive and
     co-inductive. For more information visit cite:agda-doc.
 *** Universes
+    <<sec:agda-doc-universes>>
     Russell’s paradox implies that the collection of all sets is not itself a
     set. Namely, if there were such a set =U=, then one could form the subset
     =A ⊆ U= of all sets that do not contain themselves. Then we would have =A ∈
@@ -7055,18 +7104,6 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    Verbrugge (see notes below). It has not been processed or edited by us in any
    way. The original title, in Dutch, is /Verzamelingen-Veltman frames en
    modellen/.
-
-   Annotations are probably from various authors, like Dick de Jongh and
-   possibly others. Verbrugge commented in private correspondence that in
-   particular the ``English translation on Page 1a'' on the first typed page is
-   from her own hand and likely the ``$∖ ∅$'' on that same page
-   and the $\{ \varnothing \}$ on Page 1a (handwritten) too although the latter
-   accolades are not her handwriting. These can most likely be attributed to de
-   Jongh together with the phrase $= KM_1$ on Page 2 of the handwritten part.
-   The double exclamations marks have an uncertain author and they are possibly
-   from somebody else altogether. Possibly the ``Rineke Verbrugge, manuscript,
-   1992'' at the top of the first typed page is from Troelstra’s hand.
-
 
    Annotations are probably from various authors, like Dick de Jongh and
    possibly others. Verbrugge commented in private correspondence that in
