@@ -4734,8 +4734,9 @@ en algun assistent de la demostració.
    - If $p$ is a variable, then $p^*$ is =P=, where =P : Set=.
    - $(A→B)^*≔A^* \texttt{ → }B^*$. Note that the =→= on the left of the $≔$
      is Agda's arrow type.
-   Then, if $F$ is a propositional formula with variables $p₁,…,pₙ$ we define \[
-   ⟦F⟧≔ \texttt{{P₁ : Set} → … → {P₁ : Set} → F*}\] Note that in Agda we can
+   Then, if $F$ is a propositional formula with variables $p₁,…,pₙ$ we define
+   \[
+   ⟦F⟧≔ \texttt{\{P₁ : Set\} → … → \{P₁ : Set\} → F*}\] Note that in Agda we can
    write ={P₁ … Pₙ : Set} → F*= instead of ={P₁ : Set} → … → {P₁ : Set} → F*=.
 
    We will say that an Agda type =Prop= is a theorem if we can provide a definition
