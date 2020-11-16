@@ -298,7 +298,7 @@ en algun assistent de la demostració.
 \renewcommand{\abstractname}{Acknowledgements}
 #+begin_abstract
   \begin{center}
-  \text{\Huge Ackowledgements}
+  \text{\Huge Acknowledgments}
   ~\\[0.5cm]
   \end{center}
 
@@ -2201,9 +2201,9 @@ en algun assistent de la demostració.
    valid in all reasonable arithmetical theories and thus giving a strictly
    better lower bound for \ilall{}.
 
-   The principle \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
-   and \prin{R_n} series of principles, which generalize \prin{R}, will be discussed
-   in cref:sec:Rsub1,sec:Rsupn.
+   The principle \prin{R} is the same as \prin{R_0} and \prin{R^0}. The
+   \prin{R^n} and \prin{R_n} series of principles, which generalize \prin{R},
+   will be discussed in cref:sec:Rsub1,sec:Rsupn.
 *** Ordinary semantics
     The $\kord{R}$ condition reads as follows:
 
