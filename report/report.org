@@ -3538,6 +3538,9 @@ en algun assistent de la demostració.
      very convenient and adds no ambiguity since $f\ a$ on its own would never
      be a valid term.
 
+     In each of the sections where we define a set we will draw a horizontal
+     line such as the one below to separate the definition of the set from the
+     corresponding examples.
      -----
 
      Consider the fragment of intuitionistic logic with only implication. If $A$
@@ -3672,7 +3675,7 @@ en algun assistent de la demostració.
             {\inferrule*[Left=Assum]{\ }{P:\set, x:\el{⊥}⊢P:\set}}
             {P:\set(λx→P):\el{⊥}↠\set}}
      {P:\set,y:\el{⊥}⊢\sf{case_⊥}\ (λx→P):\el{⊥}↠\el{P}}
-        \\ \inferrule*[Left=Assum]{\ }{y:\el{⊥}⊢y:\el{⊥}}}
+        \\\hspace{1.2em} \inferrule*[Left=Assum]{\ }{y:\el{⊥}⊢y:\el{⊥}}}
      {P:\set,y:\el{⊥}⊢\sf{case_⊥}\ (λx→P)\ y:\el{P}}}
      {P:\set⊢Λy→\sf{case_⊥}\ (λx→P)\ y:\el{⊥↣P}}
      \end{mathpar}
@@ -4027,8 +4030,9 @@ en algun assistent de la demostració.
    In this chapter we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
    is an incomplete simplification and thus is not meant to be a precise
-   reference for the real Agda language. We comment on some of the
-   simplifications in cref:sec:agda-limitations.
+   reference for the real Agda language.
+   # We comment on some of the
+   # simplifications in cref:sec:agda-limitations.
 
    We introduce several concepts that have cyclic dependencies and thus a linear
    presentation is not possible. {{{jan(write something to help the reader.)}}}
@@ -4551,7 +4555,7 @@ en algun assistent de la demostració.
        sophisticated enough to accept the definition of the Ackermann function
        (cite:agda-doc), which is non-primitive recursive.
 
-*** Limitations
+*** Limitations :noexport:
     <<sec:agda-limitations>>
     As mentioned at the beginning of this section we did not give a complete
     presentation of the language due to its complexity. Moreover, we had to
@@ -4624,28 +4628,40 @@ en algun assistent de la demostració.
      property = λ b → λ { is-true → ? }
      #+end_example
 
-     {{{jan(move this comment?)}}}
-     See the Chapter 2 of cite:norell:thesis for an overview of how pattern
-     matching works in real Agda, including the unification algorithm.
-
-**** Absurd patterns
-**** Unreachable patterns
-**** Universes
-*** Syntax sugar
+**** Absurd patterns :noexport:
+**** Unreachable patterns :noexport:
+**** Universes :noexport:
+*** Syntax sugar :noexport:
 
 ** Agda tutorial
    <<sec:agda-tutorial>>
 *** BHK interpretation of propositional logic
-   Agda is based on an intuitionistic type theory with dependent types that
-   extends Per Martin-Löf's type theory (cite:martin1984intuitionistic).
-   {{{joost(Really\, who are you writing for? I guess we can assume that all
-   professor (and thus\, intended readers) know what intuitionistic logic is.
-   However\, ML type theory and dependent types need explanation. So this sentence
-   is in need of some more context\, pointers and or explanation.)}}} Agda's
-   constructive nature suggests that a fitting way start the introduction is
-   through the BHK interpretation of intuitionistic logic
-   (cite:sep-intuitionistic-logic-development). We start with propositional logic
-   and later on (cref:sec:bhk-fol) we continue with first order logic.
+
+   In this section we present an informal tutorial of Agda. We introduce new
+   syntax by means of example and we introduce new concepts appealing to the
+   reader intuition. We guide the refer to cref:sec:basic-agda for a more
+   precise definition of the language. In the official Agda reference
+   (cite:agda-doc), the informal approach is always preferred.
+
+   # {{{jan(this should probably be in the Basic Agda section)}}}
+   # We believe[fn::This is an opinion by the author of this thesis which has not
+   # been contrasted with the Agda developers.] that such an approach is chosen
+   # for mainly two reasons. First, Agda is a remarkably extensive software which
+   # is rapidly evolving, thus, the lack of a formal specification facilitates the
+   # incorporation of new features to the language. Second, Agda itself is not
+   # verified and thus any attempt of a formal specification would still be
+   # suspect of not being completely faithful to the implementation.
+
+   As we have already mentioned, Agda is based on an intuitionistic type theory
+   with dependent types that extends Per Martin-Löf's type theory
+   (cite:martin1984intuitionistic). Agda's constructive nature suggests that a
+   fitting way start the introduction is through the BHK interpretation of
+   intuitionistic logic (cite:sep-intuitionistic-logic-development). We start
+   with propositional logic. During this part, the reader will notice that the
+   first steps in this tutorial are going to be reminiscent of the embedding of
+   propositional logic into LF we presented in cref:sec:def-new-types. Later in
+   the chapter (cref:sec:bhk-fol) we will continue with first order logic and
+   explain how to represent relations and quantifiers in Agda.
 
    The BHK interpretation states that:
    1. A proof of $A→B$ is an algorithm that transforms an arbitrary proof of $A$
@@ -4658,71 +4674,77 @@ en algun assistent de la demostració.
 
    According to the BHK interpretation a proof of $A→A$ is an algorithm
    implementing the identity function. We can express this algorithm in Agda by
-   writing the identity lambda term {{{joost(So this is exactly why one other
-   student missed a lot of points. I know that the formal language of Agda (what
-   is that called?) is very extensive. However\, you should formally specify
-   your language or at least chunks of it. What are your symbols\,
-   constructors\, etc. Reading conventions\, etc. It is BAD PRACTICE to have the
-   reader distil this from the practice\, text\, examples and context. I know
-   many introductions to type theory and proof assistants get this actually
-   wrong. Please\, be more precise and formal. Part of your assignment is
-   showing that you have learned this competence in our master. What are the
-   terms? How are they inductively defined? What is your alphabet\, etc.)}}}:
+   writing the identity lambda term:
    #+begin_src text
            λ a → a
    #+end_src
-   {{{joost(full stop?)}}} {{{jan(I prefer not to put stops since they are not
-   part of Agda's syntax and it may be confusing to insert them.)}}} See that we
-   use the structure =λ arg₁ arg₂ … → term= to define lambda functions. The
-   previous term is valid. However, in Agda we must give a name to all the terms
-   that we define so we can refer to them in other parts of our code. We will
-   name our term =id=: #+begin_src text id = λ a → a #+end_src When the term
-   that we are defining is a lambda term, we are allowed to move the arguments
-   to the left of the === sign. Furthermore, we should write the type
-   {{{joost(what are types? Where do they historically come from? How are types
-   defined in Agda? Again\, provide a formal definition of correct types)}}} of
-   the function using the =:= symbol. The =:= symbol denotes the typing
-   relation{{{joost(a relation between wellformed types and wellformed
-   terms?)}}}, hence =a : A= reads as ``term =a= has type =A=''. Sometimes we
-   also say that ``the term =a= is a proof of =A=''. #+begin_src text id : A → A
-   id a = a #+end_src {{{joost(How to parse the last line? Maybe say that we
-   write ”id a” instead of id(a) and that function application goes before =. Do
-   we have both term-equality and type equality? What about equality?)}}} The
-   previous function is only valid if the type =A= has been defined. Since our
-   intention is that it {{{joost(what?)}}} should work for any type, we should
-   rewrite it to be polymorphic {{{joost(ou cannot expect the reader to know
-   what polymorphism is. This should be properly introduced. I would encourage
-   you to rethink the setup of this chapter. You will be judged on your ability
-   to apply logical techniques to exposing a field and clearly transmit ideas
-   and concepts using crystal-clear definitions. Your current exposition is too
-   informal and along the way. If I were in the jury – which I will– I would be
-   annoyed by it.)}}}. We can do that by declaring a type variable =A=. We can
-   do this by adding an extra argument of the form =(A : Set)=. We see that =A=
-   has type =Set=, which is the Agda word for type {{{joost(The new reader will
-   be lost here. So we have concrete types? And we have type variables of type
-   type? Does Set itself have a type? Please\, rethink your presentation.)}}}.
-   Named arguments can be referenced in the right part of the =→=, thus we can
-   write {{{joost((mention right-associativity of the arrow (is it called as
-   such?)))}}}: #+begin_src text id : (A : Set) → A → A id A a = a #+end_src
-   Since the argument named =A= will always be the type of the second argument
-   {{{joost(second argument of what? of the polymorphic identity? Will the
-   polymorphic version receive the same name?)}}}, we can infer its value and
-   thus it is recommended to use an implicit argument (see
-   cref:sec:agda-implicit-args).
+   More generally, in order to build lambda terms we will use the syntax =λ arg₁
+   arg₂ … → term=. The term =λ a → a= is well-formed. However, in Agda we must
+   give a name to all the terms that we define so we can refer to them in other
+   parts of our code. We give a name to a term by prepending =name == to the
+   term. We name our term =id=:
    #+begin_src text
-   id : {A : Set} → A → A id a = a
+   id = λ a → a
    #+end_src
-   {{{joost(the reader should be dizzy here: we have defined id using a lambda
-   term\, then there are some schemas that follow the format (i deduce\, if
-   correct this must be made explicit) type declaration\, term definition. Can
-   we all give them the same name? Or should we understand that we erase the
-   previous definition and replace it with a new one?)}}} With the
-   technicalities out of the way, we can finally say that we have completed our
-   first Agda proof of $A→A$ according to the BHK interpretation by implementing
-   and typing the identity function in Agda. {{{joost(What does it mean to have
-   a proof in Agda? Note that A to A is a type.... Be precise please. It may be
-   a good place to mention the Curry Howard iso? Anyways\, do it in a structured
-   fashion.)}}}
+   When the term that we are defining is a lambda term, we are allowed to move
+   the arguments to the left of the === sign. Furthermore, we should write the
+   type of the function using the =:= symbol. The =:= symbol denotes the typing
+   relation between terms and types, hence =a : A= reads as ``term
+   =a= has type =A=''. Sometimes we also say that ``the term =a= is a proof of
+   =A=''.
+   #+begin_src text
+   id : (A : Set) → A → A
+   id A a = a
+   #+end_src
+   The definition =id A a = a= should be read as $\sf{id}(A)(a)≔a$. The
+   definition =id : (A : Set) → A → A= should be read as follows: Given an
+   arbitrary type =A= and a term of type =A=, it returns a term of type =A=. It
+   may be helpful to the reader to identify =(A : Set) → A → A= with the LF type
+   $(A:\set)↠\el{A}↠\el{A}$. The Agda type checking algorithm is in charge of
+   checking the implementation of =id= matches the specified type.
+   For instance, if we wrote the following:
+   #+begin_src text
+   id-bad : (A : Set) → A → A
+   id-bad A a = A
+   #+end_src
+   Agda would complain that =A= is of type =Set= and not of type =A=.
+
+   Since the argument named =A= will always be exactly the type of the second
+   argument of =id=, Agda can infer it and thus it is recommended to use an
+   implicit argument (see cref:sec:agda-implicit-args).
+   #+begin_src text
+   id2 : {A : Set} → A → A
+   id2 a = a
+   #+end_src
+   For instance, assume we have a term =t= of type =B= and we want to apply the
+   identity function to it. If we use =id= we would write =id B t=. On the other
+   hand, using =id2= we would write =id2 t=. We observe that the argument ={A :
+   Set}= is inferred from =t= and is not needed to be explicitly given.
+
+   Let us identify propositional formulas restricted implication with Agda
+   types. We define the map $*$ as follows:
+   - If $p$ is a variable, then $p^*$ is =P=, where =P : Set=.
+   - $(A→B)^*≔A^* \texttt{ → }B^*$. Note that the =→= on the left of the $≔$
+     is Agda's arrow type.
+   Then, if $F$ is a propositional formula with variables $p₁,…,pₙ$ we define \[
+   ⟦F⟧≔ \texttt{{P₁ : Set} → … → {P₁ : Set} → F*}\] Note that in Agda we can
+   write ={P₁ … Pₙ : Set} → F*= instead of ={P₁ : Set} → … → {P₁ : Set} → F*=.
+
+   We will say that an Agda type =Prop= is a theorem if we can provide a definition
+   of the following form:
+   #+begin_src text
+   thm : Prop
+   thm arg₁ … argₙ = proof
+   #+end_src
+   Let us now see that $⟦A→A⟧$ is a theorem in Agda. It suffices to observe that
+   $⟦A→A⟧$ is equal ={A : Set} → A → A=, which is the type of =id2=. Hence =id2=
+   is indeed a proof that $⟦A→A⟧$ is an Agda theorem.
+
+   We can finally say that we have completed our first Agda proof of $A→A$
+   according to the BHK interpretation by implementing and typing the identity
+   function in Agda. {{{joost(What does it mean to have a proof in Agda? Note
+   that A to A is a type.... Be precise please. It may be a good place to
+   mention the Curry Howard iso? Anyways\, do it in a structured fashion.)}}}
 
    Let us see another example involving functions[fn::The =→= function symbol has
    right associativity.].
