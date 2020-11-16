@@ -22,7 +22,7 @@
 #+latex_header: \usepackage{float}
 #+latex_header: \usepackage{newunicodechar}
 #+latex_header: \usepackage[toc,indexonlyfirst,docdef=restricted]{glossaries-extra}
-#+latex_header: \usepackage[style=numeric-comp]{biblatex}
+#+latex_header: \usepackage[style=numeric-comp, maxcitenames=10]{biblatex}
 #+latex_header: \usepackage{multicol}
 #+latex_header: \usepackage{stmaryrd}
 #+latex_header: \usepackage{spverbatim}
@@ -302,14 +302,15 @@ en algun assistent de la demostració.
   ~\\[0.5cm]
   \end{center}
 
-  We want to express our gratitude to Rineke Verbrugge. She kindly agreed to
-  publish a manuscript by hers, which has great historical and mathematical
-  value, as an appendix of this thesis.
-
   We want to express our gratitude to Nicola Olivetti, Rineke Verbrugge and the
   rest of the organizing committee of Advances in Modal Logic 2020 (Helsinki)
   for allowing us to present there an extended abstract of this thesis. We want
-  to extend our gratitude to all the reviewers which gave valuable feedback.
+  to extend our gratitude to all the reviewers who gave valuable feedback.
+
+  We want to express our gratitude to Rineke Verbrugge. She kindly agreed to
+  publish a manuscript by hers, which has significant value historical and
+  mathematical value in the field of interpretability logics, as an appendix of
+  this thesis.
 
   I want to thank my supervisors Joost and Luka. Their incredible work ethic and
   vast knowledge on the field have been a source of inspiration throughout this
@@ -325,6 +326,10 @@ en algun assistent de la demostració.
   I would like to thank all the teachers in the Master in Pure and Applied
   logic from the University of Barcelona, with a special thanks to Ramon
   Jansana. I feel privileged for having been part of this master.
+
+  I want to share the joy that I am feeling at the time of this submission with
+  my very good friends from the master Martín and Stefano. I really hope that we
+  can meet again somewhere in Raval rather sooner than later.
 #+end_abstract
 
 \newpage
@@ -6277,8 +6282,9 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 
 ** An eDSL for syntactic proofs
     <<sec:edsl>> In this chapter we present a verified language for writing
-    Hilbert style proofs for logic \il. This language was first presented by
-    the author of this paper in cite:slug for logic $K$.
+    Hilbert style proofs for logic \il. The language has been designed and
+    implemented by the author of this thesis. It was first presented in
+    cite:slug for logic $K$.
 
     We begin by introducing the concept of eDSL. The acronym eDSL stands for
     /Embedded Domain Specific Language/. It refers to a small language (a set of
