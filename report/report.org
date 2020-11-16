@@ -3686,6 +3686,7 @@ en algun assistent de la demostració.
      {P:\set⊢Λy→\sf{case_⊥}\ (λx→P)\ y:\el{⊥↣P}}
      \end{mathpar}
 **** Disjoint unions set
+     <<sec:disjoint-set>>
      We introduce the constant: \[⊎ : \set{}↠\set{}↠\set{}\] *Notation*.We will
      use infix notation for $⊎$, hence we will write $A\ ⊎\ B$ instead of $⊎\ A\
      B$. The disjoint union set represents two options, hence, when we have a
@@ -4646,7 +4647,7 @@ en algun assistent de la demostració.
 
    In this section we present an informal tutorial of Agda. We introduce new
    syntax by means of example and we introduce new concepts appealing to the
-   reader intuition. We guide the refer to cref:sec:basic-agda for a more
+   reader intuition. We guide the reader to cref:sec:basic-agda for a more
    precise definition of the language. In the official Agda reference
    (cite:agda-doc), the informal approach is always preferred.
 
@@ -4680,7 +4681,7 @@ en algun assistent de la demostració.
    5. $⊤$ is always true and provable.
 
    According to the BHK interpretation a proof of $A→A$ is an algorithm
-   implementing the identity function. We can express this algorithm in Agda by
+   implementing the identity function. We can implement this algorithm in Agda by
    writing the identity lambda term:
    #+begin_src text
            λ a → a
@@ -4791,67 +4792,81 @@ en algun assistent de la demostració.
    /pattern match/ (or deconstruct) a term we will have a case for each possible
    constructor of the type of that term.
 
-   For instance, let us prove that $⟦A∧ B → B ∧ A⟧$.
+   We proceed by extending the map $*$ with the following clause:
+   \begin{flalign*}
+   (A∧B)^*≔A^*\texttt{ × }B^* &&
+   \end{flalign*}
 
-   Let us give a proof of the theorem $A∧ B → B ∧ A$:
+   Let us give a proof of the theorem $⟦A∧ B → B ∧ A⟧$:
    #+begin_src text
    swap : {A B : Set} → A × B → B × A
    swap (a , b) = b , a
    #+end_src
-   {{{joost(Why are there parenthesis on the left of the equality sign and not on
-   the right?)}}} Note that we used pattern matching to deconstruct the term and
-   access the components of the pair. For the =_×_= type we only have one
-   constructor so we only need one case.
-   # Refer to cref:sec:agda-datatype for more details on data type definition
-   # and pattern matching.
+   Note that we used pattern matching to deconstruct the term and access the
+   components of the pair. Observe that when we deconstruct an argument using
+   pattern matching we need put parenthesis around the argument.
 
-   Let us show some more examples:
+   We proceed by giving some examples involving conjunction.
+
+   We can show that ⟦A→(B→A∧B)⟧ is an theorem in Agda:
    #+begin_src text
    p1 : {A B : Set} → A → B → A × B
    p1 a b = a , b
+   #+end_src
 
-   p2 : {A B : Set} → A × B → A
-   p2 (a , b) = a
+   We show that we can prove $⟦A∧B→A⟧$ and $⟦A∧B→B⟧$:
+   #+begin_src text
+     proj₁ : {A B : Set} → A × B → A
+     proj₁ (a , b) = a
 
+     proj₂ : {A B : Set} → A × B → B
+     proj₂ (a , b) = b
+   #+end_src
+
+   \pagebreak[4]
+   We show that we can prove $⟦(A → B → C) → ((A ∧ B) → C)⟧$.
+   #+begin_src text
    p3 : {A B C : Set} → (A → B → C) → (A × B) → C
    p3 f (a , b) = f a b
-
-   p4 : {A B C : Set} → ((A × B) × C) → (A × (B × C))
-   p4 ((a , b) , c) = a , (b , c)
    #+end_src
-   {{{joost(maybe you can give informative names to the defined terms? Like
-   ”Currying” for p1\, ”Projection” for p2? etc. Why are there parenthesis in p2
-   but not in p1? Also\, in p3 and p4 one could have added parenthesis. Say when
-   we may omit them.)}}} Now that we are familiarized with conjunction and
-   product types we can proceed by exploring disjunction. In order to express
-   options we can define a new datatype called sum type thus:
+   Now that we are familiarized with the pair type we can proceed by exploring
+   disjunction.
+
+   In order to express options we can define a new datatype called sum type thus
+   (the semantics of this datatype are analogous to the disjoint union set we
+   defined for LF in cref:sec:disjoint-set):
    #+begin_src text
  data _⊎_ (A B : Set) : Set where
    inj₁ : A → A ⊎ B
    inj₂ : B → A ⊎ B
    #+end_src
    We see that the main difference with respect to the pair type is that now we
-   have two constructors {{{joost(I think you can somewhere include a general
-   discussion on constructors. What are they\, what do they? What is their syntax
-   and use?)}}} which we named =inj₁= and =inj₂=. The constructor =inj₁= is used
-   to build a proof of =A ⊎ B= by providing a proof of =A=. The constructor
-   =inj₂= builds a proof of =A ⊎ B= given a proof of =B=.
+   have two constructors which we named =inj₁= and =inj₂=. The constructor
+   =inj₁= is used to build a term of type =A ⊎ B= by providing a term with type
+   =A=. The constructor =inj₂= builds a term of type =A ⊎ B= given a proof of =B=.
 
-   Since we have two constructors, when pattern matching against an argument of
-   this type we will need to define two cases (if we want to access its
-   contents). See as an example the following theorems {{{joost(theorems? who
-   heard theorems? what are theorems?)}}}:
+   We extend the $*$ map with the following clause:
+   \begin{flalign*}
+   (A ∨ B)^* ≔ A^* \texttt{ ⊎ } B^*
+   \end{flalign*}
+
+   We show how we can prove $⟦A∨B→B∨A⟧$.
    #+begin_src text
-   p1: {A B : Set} → A ⊎ B → B ⊎ A
-   p1 (inj₁ a) = inj₂ a
-   p1 (inj₂ b) = inj₁ b
-
-   p2 : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
-   p2 (inj₁ a) f g = f a
-   p2 (inj₂ b) f g = g b
+   p4: {A B : Set} → A ⊎ B → B ⊎ A
+   p4 (inj₁ a) = inj₂ a
+   p4 (inj₂ b) = inj₁ b
    #+end_src
-   {{{joost(Note that you have already defined p1 and p2. Are you overwriting
-   them?)}}} The reader may have raised the following question in their mind:
+   We observe that since we have the =⊎= type has two constructors, when pattern
+   matching against an argument of type =A ⊎ B= we need to define two cases, one
+   for each constructor.
+
+
+   #+begin_src text
+   p5 : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
+   p5 (inj₁ a) f g = f a
+   p5 (inj₂ b) f g = g b
+   #+end_src
+   The reader may have raised the following question in their mind:
    what if we leave out a case for the sum type? {{{joost(What do you mean? In
    defining a term for a non-inhabited type I guess\, but that is not clear from
    what you write.)}}} In other words, is the following definition acceptable?
