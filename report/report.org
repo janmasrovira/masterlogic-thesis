@@ -4827,6 +4827,8 @@ en algun assistent de la demostració.
      proj₂ : {A B : Set} → A × B → B
      proj₂ (a , b) = b
    #+end_src
+   If we ask Agda to evaluate an expression of the form =proj₁ (a , b)= the
+   result will be =a=.
 
    Observe how we can use =proj₁= and =proj₂= to provide an alternative proof of
    $⟦A∧B→B∧A⟧$:
@@ -4835,7 +4837,6 @@ en algun assistent de la demostració.
    swap' ab = (proj₁ ab) , (proj₂ ab)
    #+end_src
 
-   \pagebreak[4]
    We show that we can prove $⟦(A → B → C) → ((A ∧ B) → C)⟧$.
    #+begin_src text
    p3 : {A B C : Set} → (A → B → C) → (A × B) → C
@@ -4932,7 +4933,7 @@ en algun assistent de la demostració.
    constructors. For more information on the absurd pattern we refer the reader
    to cref:sec:agda-doc-absurd.
 
-   As we are in an intuitionistic logic the we cannot show $⟦¬¬A→A⟧$ nor
+   As we are in an intuitionistic logic then we cannot show $⟦¬¬A→A⟧$ nor
    $⟦A∨¬A⟧$[fn::Observe that in the Agda code we use the symbol =¬= in the name
    of the term =¬¬elim=. Here the =¬= symbol is just part of the name and serves
    the same purpose of any other character. Hence it is important to note that
@@ -6789,6 +6790,148 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
 
     The directives available are eta-equality, no-eta-equality, inductive and
     co-inductive. For more information visit cite:agda-doc.
+*** Universes
+    Russell’s paradox implies that the collection of all sets is not itself a
+    set. Namely, if there were such a set =U=, then one could form the subset
+    =A ⊆ U= of all sets that do not contain themselves. Then we would have =A ∈
+    A= if and only if =A ∉ A=, a contradiction.
+
+    For similar reasons, not every Agda type is a Set. For example, we have
+    #+begin_example
+    Bool : Set
+    Nat : Set
+    #+end_example
+    but not =Set : Set=. However, it is often convenient for =Set= to have a type
+    of its own, and so in Agda, it is given the type =Set₁=:
+    #+begin_example
+    Set : Set₁
+    #+end_example
+
+    In many ways, expressions of type =Set₁= behave just like expressions of
+    type =Set=; for example, they can be used as types of other things. However,
+    the elements of =Set₁= are potentially larger; when =A : Set₁=, then =A= is
+    sometimes called a large set. In turn, we have:
+    #+begin_example
+    Set₁ : Set₂
+    Set₂ : Set₃
+    #+end_example
+    and so on. A type whose elements are types is called a universe; Agda
+    provides an infinite number of universes =Set=, =Set₁=, =Set₂=, =Set₃=, …,
+    each of which is an element of the next one. In fact, Set itself is just an
+    abbreviation for =Set₀=. The subscript n is called the level of the universe
+    =Setₙ=.
+
+    A note on syntax: you can also write =Set1=, =Set2=, etc., instead of =Set₁=,
+    =Set₂=. To enter a subscript in the Emacs mode, type =\_1=.
+
+**** Universe example
+     So why are universes useful? Because sometimes it is necessary to define,
+     and prove theorems about, functions that operate not just on sets but on
+     large sets. In fact, most Agda users sooner or later experience an error
+     message where Agda complains that \texttt{Set₁ != Set}. These errors usually
+     mean that a small set was used where a large one was expected, or vice
+     versa.
+
+     For example, suppose you have defined the usual datatypes for lists and
+     Cartesian products:
+     #+begin_example
+     data List (A : Set) : Set where
+       [] : List A
+       _::_ : A → List A → List A
+
+     data _×_ (A B : Set) : Set where
+      _,_ : A → B → A × B
+
+     infixr 5 _::_
+     infixr 4 _,_
+     infixr 2 _×_
+     #+end_example
+
+     Now suppose you would like to define an operator =Prod= that inputs a list
+     of =n= sets and takes their Cartesian product, like this:
+     #+begin_example
+     Prod (A :: B :: C :: []) = A × B × C
+     #+end_example
+
+     There is only one small problem with this definition. The type of =Prod=
+     should be:
+     #+begin_example
+     Prod : List Set → Set
+     #+end_example
+
+     However, the definition of =List A= specified that =A= had to be a =Set=.
+     Therefore, =List Set= is not a valid type. The solution is to define a
+     special version of the =List= operator that works for large sets:
+     #+begin_example
+     data List₁ (A : Set₁) : Set₁ where
+       []   : List₁ A
+       _::_ : A → List₁ A → List₁ A
+
+     With this, we can indeed define:
+
+     Prod : List₁ Set → Set
+     Prod []        = ⊤
+     Prod (A :: As) = A × Prod As
+     #+end_example
+
+**** Universe polymorphism
+
+     Although we were able to give a type to the =Prod= operator by defining a
+     special notion of large list, this quickly gets tiresome. Sooner or later,
+     we find that we require yet another list type =List₂=, and it doesn’t stop
+     there. Also every function on lists (such as append) must be re-defined, and
+     every theorem about such functions must be re-proved, for every possible
+     level.
+
+     The solution to this problem is universe polymorphism. Agda provides a
+     special primitive type =Level=, whose elements are possible levels of
+     universes. In fact, the notation for the =n= th universe, =Setₙ=, is just an
+     abbreviation for =Set n=, where =n : Level= is a level. We can use this to
+     write a polymorphic =List= operator that works at any level. The library
+     =Agda.Primitive= must be imported to access the =Level= type. The definition
+     then looks like this:
+     #+begin_example
+     open import Agda.Primitive
+
+     data List {n : Level} (A : Set n) : Set n where
+     []   : List A
+     _::_ : A → List A → List A
+     #+end_example
+
+     This new operator works at all levels; for example, we have
+     #+begin_example
+     List Nat : Set
+     List Set : Set₁
+     List Set₁ : Set₂
+     #+end_example
+**** Level arithmetic
+
+   Even though we don’t have the number of levels specified, we know that there
+   is a lowest level =lzero=, and for each level =n=, there exists some higher
+   level =lsuc n=; therefore, the set of levels is infinite. In addition, we can
+   also take the least upper bound =n ⊔ m= of two levels. In summary, the following
+   (and only the following) operations on levels are provided:
+
+   #+begin_src text
+   lzero : Level
+   lsuc  : (n : Level) → Level
+   _⊔_   : (n m : Level) → Level
+   #+end_src
+   This is sufficient for most purposes; for example, we can define the Cartesian
+   product of two types of arbitrary (and not necessarily equal) levels like
+   this:
+   #+begin_example
+   data _×_ {n m : Level} (A : Set n) (B : Set m) : Set (n ⊔ m) where
+      _,_ : A → B → A × B
+   #+end_example
+
+   With this definition, we have, for example:
+   #+begin_example
+   Nat × Nat : Set
+   Nat x Set : Set₁
+   Set × Set : Set₁
+   #+end_example
+
 ** Agda library code
     <<src:agda>>
 *** All
