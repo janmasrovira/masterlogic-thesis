@@ -4737,8 +4737,8 @@ en algun assistent de la demostració.
    thm arg₁ … argₙ = proof
    #+end_src
    Let us now see that $⟦A→A⟧$ is a theorem in Agda. It suffices to observe that
-   $⟦A→A⟧$ is equal ={A : Set} → A → A=, which is the type of =id2=. Hence =id2=
-   is indeed a proof that $⟦A→A⟧$ is an Agda theorem.
+   $⟦A→A⟧$ is equal to ={A : Set} → A → A=, which is the type of =id2=. Hence
+   =id2= is indeed a proof that $⟦A→A⟧$ is an Agda theorem.
 
    We can finally say that we have completed our first Agda proof of $A→A$
    according to the BHK interpretation by implementing and typing the identity
