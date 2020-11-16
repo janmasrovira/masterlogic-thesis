@@ -2195,7 +2195,7 @@ en algun assistent de la demostració.
    valid in all reasonable arithmetical theories and thus giving a strictly
    better lower bound for \ilall{}.
 
-   Note that \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
+   The principle \prin{R} is the same as \prin{R_0} and \prin{R^0}. The \prin{R^n}
    and \prin{R_n} series of principles, which generalize \prin{R}, are discussed
    in cref:sec:Rsub1,sec:Rsupn.
 *** Ordinary semantics
@@ -2376,7 +2376,9 @@ en algun assistent de la demostració.
     {{{endproof}}}
 
 *** Generalized semantics
-    Some definitions:
+    The results presented in this section are a joint work with Luka Mikec.
+
+    We start by giving some definitions:
     1. $R^{-1}[E] ≔ \{x : ∃y∈E. xRy\}$. $E$ denotes a set.
     2. $Rₓ^{-1}[E]≔R^{-1}[E]∩R[x]$. $E$ denotes a set.
 
@@ -4032,8 +4034,6 @@ en algun assistent de la demostració.
    intuitionistic type theory.
    #+end_quote
 
-
-
    In this chapter we precisely define a moderate subset of Agda. We have tried
    to remain faithful to the semantics of the real Agda language, however, this
    is an incomplete simplification and thus is not meant to be a precise
@@ -4104,7 +4104,6 @@ en algun assistent de la demostració.
    λ (A : Set 0) → λ (B : Set 0) → (f : A → B) → (a : A) → B
    #+end_example
    {{{enddef}}}
-
 
   {{{begindef}}} *Function definition*. A function definition is used to bind a
   new[fn::By new we mean that is has not yet been bound by another definition.]
@@ -4730,20 +4729,24 @@ en algun assistent de la demostració.
 
    Let us identify propositional formulas which contain only the implication
    connective with Agda types. We define the map $*$ as follows:
-   - If $p$ is a variable, then $p^*$ is =P=, where =P : Set=.
-   - $(A→B)^*≔A^* \texttt{ → }B^*$. Note that the =→= on the right of the $≔$
-     is Agda's arrow type.
+   - If $p$ is a variable, then $p^*≔\texttt{P}$, where =P : Set=.
+   - $(A→B)^*≔A^* \texttt{ → }B^*$. Note that the =→= on the right of the symbol
+     $≔$ is Agda's arrow type.
    Then, if $F$ is a propositional formula with variables $p₁,…,pₙ$ we define
    \[
    ⟦F⟧≔ \texttt{\{P₁ : Set\} → … → \{Pₙ : Set\} → F*}\] Note that in Agda we can
    write ={P₁ … Pₙ : Set} → F*= instead of ={P₁ : Set} → … → {Pₙ : Set} → F*=.
 
-   We will say that an Agda type =Prop= is a theorem if we can provide a definition
-   of the following form:
+   We will say that an Agda type =T= is a theorem if we can provide a function
+   definition of type =T=. In the simplest form, the definition will be of the
+   following form:
    #+begin_src text
-   thm : Prop
-   thm arg₁ … argₙ = proof
+   thm : T
+   thm = proof
    #+end_src
+   Where =thm= is the name of the theorem. For the general form we refer the
+   reader to the Agda documentation in cref:sec:agda-doc-fun-defs.
+
    Let us now see that $⟦A→A⟧$ is a theorem in Agda. It suffices to observe that
    $⟦A→A⟧$ is equal to ={A : Set} → A → A=, which is the type of =id2=. Hence
    =id2= is indeed a proof that $⟦A→A⟧$ is an Agda theorem. However, it is more
@@ -4763,10 +4766,10 @@ en algun assistent de la demostració.
    commute : {A B C : Set} → (A → B → C) → B → A → C
    commute f b a = f a b
    #+end_src
-   We see that =commute= has three arguments, namely =f : A → B → C=, =b : B=
-   and =a : A=. Then in the right hand side of the === sign we have =f a b=,
-   which should read as ``term =f= applied to =a= and =b=''. Notice how function
-   application is denoted by juxtaposition and has left associativity.
+   We see that =commute= has three explicit arguments, namely =f : A → B → C=,
+   =b : B= and =a : A=. Then in the right hand side of the === sign we have =f a
+   b=, which should read as ``term =f= applied to =a= and =b=''. Notice how
+   function application is denoted by juxtaposition and has left associativity.
 
    Let us now put our attention on proofs that revolve around conjunction.
    First, we need to define a new type. In Agda we can introduce new
@@ -4794,7 +4797,7 @@ en algun assistent de la demostració.
 
    We proceed by extending the map $*$ with the following clause:
    \begin{flalign*}
-   (A∧B)^*≔A^*\texttt{ × }B^* &&
+   (A∧B)^*≔A^*\texttt{ × }B^*
    \end{flalign*}
 
    We can show that $⟦A→(B→A∧B)⟧$ is a theorem in Agda by simply applying the
@@ -4815,8 +4818,8 @@ en algun assistent de la demostració.
 
    We proceed by giving some more examples involving conjunction.
 
-   We show that we can prove $⟦A∧B→A⟧$ and $⟦A∧B→B⟧$. We need to pattern match
-   on the argument to access to corresponding component and return it.
+   We show that we can prove $⟦A∧B→A⟧$ and $⟦A∧B→B⟧$. It suffices to pattern
+   match on the argument to access to corresponding component and return it.
    #+begin_src text
      proj₁ : {A B : Set} → A × B → A
      proj₁ (a , b) = a
@@ -4838,6 +4841,10 @@ en algun assistent de la demostració.
    p3 : {A B C : Set} → (A → B → C) → (A × B) → C
    p3 f (a , b) = f a b
    #+end_src
+   As we can see, we use pattern matching to extract the components of the pair
+   and then apply =f= to them.
+
+
    Now that we are familiarized with the pair type we can proceed by exploring
    disjunction.
 
@@ -4852,7 +4859,8 @@ en algun assistent de la demostració.
    We see that the main difference with respect to the pair type is that now we
    have two constructors which we named =inj₁= and =inj₂=. The constructor
    =inj₁= is used to build a term of type =A ⊎ B= by providing a term with type
-   =A=. The constructor =inj₂= builds a term of type =A ⊎ B= given a proof of =B=.
+   =A=. The constructor =inj₂= builds a term of type =A ⊎ B= given a term of
+   type =B=.
 
    We extend the $*$ map with the following clause:
    \begin{flalign*}
@@ -4867,24 +4875,29 @@ en algun assistent de la demostració.
    #+end_src
    We observe that since we have the =⊎= type has two constructors, when pattern
    matching against an argument of type =A ⊎ B= we need to define two cases, one
-   for each constructor.
+   for each constructor. In the first case, when we have =inj₁ a= on the left of
+   the equal sign we know that =a= is of type =A= by the definition of the
+   =inj₁= constructor. Hence, we can build a term of type =B ⊎ A= by applying
+   =inj₂= to =a=. The second case is symmetric to the first case.
 
-
+   Let us see another example, we show $⟦(A∨B)→(A→C)→(B→C)→C⟧$.
    #+begin_src text
    p5 : {A B : Set} → A ⊎ B → (A → C) → (B → C) → C
    p5 (inj₁ a) f g = f a
    p5 (inj₂ b) f g = g b
    #+end_src
-   The reader may have raised the following question in their mind:
-   what if we leave out a case for the sum type? {{{joost(What do you mean? In
-   defining a term for a non-inhabited type I guess\, but that is not clear from
-   what you write.)}}} In other words, is the following definition acceptable?
+
+   The reader may have raised the following question in their mind: when we
+   pattern match an argument of type =A ⊎ B=, what if we do not include one
+   of the cases? In other words, what happens if we try to prove $⟦A∨B→A⟧$?
    #+begin_src text
    wrong : {A B : Set} → A ⊎ B → A
    wrong : (inj₁ a) = a
    #+end_src
-   The answer is no. Agda rejects it as it requires all of the definitions to be
-   exhaustive, otherwise it would not be a sound system.
+   The answer is that Agda complains. As explained in cref:sec:agda-totality
+   Agda requires all of the definitions to be total, and thus when we split an
+   argument into cases using pattern matching, it checks that the cases are
+   exhaustive.
 
    We proceed with $⊥$. We can define a datatype which we call /bottom type/ or
    /empty type/.
@@ -6438,6 +6451,7 @@ _■ : ∀ {n Σ A} → HilbertProof Σ A n → Σ ⊢ A
    documentation (cite:agda-doc).
 
 *** Function definitions and pattern matching
+    <<sec:agda-doc-fun-defs>>
     A function is defined by first declaring its type followed by a number of
     equations called clauses. Each clause consists of the function being defined
     applied to a number of patterns, followed by = and a term called the
