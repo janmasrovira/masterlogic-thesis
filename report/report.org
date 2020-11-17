@@ -2924,7 +2924,7 @@ en algun assistent de la demostració.
 *** Dependently typed lambda calculus
     There is no way to briefly present a description of a type system with
     dependent types in an analogous form to untyped and simply typed lambda
-    calculus. For this reason, we prefer to dedicate a longer section to it. In
+    calculus. For this reason, we prefer to dedicate a whole chapter to it. In
     the upcoming cref:sec:martin-lof we present a full description of a theory
     which is based on dependent types and is the logical basis of Agda.
 ** Martin Löf's logical framework
