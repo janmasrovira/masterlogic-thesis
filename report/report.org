@@ -308,7 +308,7 @@ en algun assistent de la demostració.
   to extend our gratitude to all the reviewers who gave valuable feedback.
 
   We want to express our gratitude to Rineke Verbrugge. She kindly agreed to
-  publish a manuscript by hers, which has significant value historical and
+  publish a manuscript by hers, which has significant historical and
   mathematical value in the field of interpretability logics, as an appendix of
   this thesis.
 
