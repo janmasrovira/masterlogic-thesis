@@ -5645,13 +5645,33 @@ Extensionality a b =
   scratch as we believe that no other previous work in interpretability logics
   has been done in Agda.
 
-  The implementation relies on the Agda standard library (cite:agda-stdlib).
+  In cref:sec:agda-fm we give the inductive definition of modal formulas in
+  Agda. We also show how we can define the non-primitive operators.
 
-** Naming conventions :noexport:
-   1. If we have =f : T= we say that =f= has type =T= or that =f= is a proof of =T=.
-   2. If we have =f : A → B → C= we say =f= has arguments =A= and =B= and it has
-      return type =C=.
+  In cref:sec:agda-noetherian we show how we have define Noetherian relations in
+  Agda. We introduce the concepts of coinductive type and proof by coinduction
+  in Agda.
+
+  In cref:sec:agda-ord-semantics we describe how we defined ordinary frames.
+  Moreover, we explain how we implemented the forcing relation, as it is
+  non-trivial to implement in Agda due to the restriction of positivity on
+  datatype definitions.
+
+  In cref:sec:agda-ord-semantics we comment how we adapted the definitions for
+  generalized Veltman semantics. Furthermore, we include a guided Agda proof
+  which shows that Löb's axiom is forced in every world and model.
+
+  In cref:sec:agda-il we give an Agda implementation of the logic \il. We also show
+  how we can use to prove some theorems of \il.
+
+  In cref:sec:agda-il we present a language, that we implemented, for writing
+  verified Hilbert style proofs in Agda. All of that, with paper-like syntax.
+
+  The implementation relies on Agda 2.6.1 and the Agda standard library
+  (cite:agda-stdlib).
+
 ** Modal formulas
+   <<sec:agda-fm>>
    Here we present the Agda type that represents a formula as defined in cref:sec:language.
 
    First we define variables to be natural numbers:
@@ -5749,7 +5769,7 @@ Noetherian⇒Irreflexive noetherian Rxx = noetherian (infiniteRefl Rxx)
     #+end_src
 
     To see another example we refer the reader to cref:sec:agda-L.
-** Ordinary semantics
+** Ordinary Veltman semantics
    <<sec:agda-ord-semantics>>
    In this chapter we explain how we have represented ordinary Veltman semantics
    in Agda.
@@ -5982,7 +6002,7 @@ DecidableModel M = ∀ w A → M , w ⊩ A ⊎ M , w ⊮ A
    outside of Agda and that we accept the law of excluded middle as part of our
    metalogic, the mentioned assumption could be dropped.
 
-** Generalized semantics
+** Generalized Veltman semantics
    <<sec:agda-gen-semantics>> In this chapter we explain how we have represented
    generalized Veltman semantics in Agda. As explained in cref:sec:trans we
    consider eight different quasi-transitivity properties, thus, we need to
@@ -6236,6 +6256,7 @@ Noetherian _<_ = ∀ {a} → ¬ (InfiniteChain _<_ a)
     λ {u⊮A → R-noetherian (R-chain Rwu u⊮A w⊩□⟨□A→A⟩)}
     #+end_src
 ** Logic \il{} and syntactic proofs
+   <<sec:agda-il>>
    Here we present our efforts on formalizing syntactic \il{} proofs in Agda. We
    restrict ourselves to finite sets of assumptions.
 
