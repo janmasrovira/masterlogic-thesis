@@ -25,3 +25,7 @@ report/report.pdf
 *.xdy
 /report/img/tikz/*.pdf
 /ref/
+*.nav
+*.snm
+*.vrb
+/presentation/pres.pdf
