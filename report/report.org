@@ -202,7 +202,7 @@
 
     \begin{figure}[H]
       \centering
-      \includegraphics[width=9cm]{img/ub_logo}
+      \includegraphics[width=9cm]{img/ub-logo}
     \end{figure}
     \vfill
 
