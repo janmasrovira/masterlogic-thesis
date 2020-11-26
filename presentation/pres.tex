@@ -12,6 +12,7 @@
 \usepackage{hyperref}
 \usepackage{xspace}
 \usepackage{textcomp}
+\usepackage{fancyvrb}
 \setmonofont{FreeMono}
 
 \usepackage[style=authoryear]{biblatex}
@@ -46,6 +47,7 @@
 \newcommand{\prin}[1]{\ensuremath{\textbf{\textup{#1}}}\xspace}
 \newcommand{\il}{\prin{IL}}
 \newcommand{\ilm}{\prin{ILM}}
+\newcommand{\ilall}[0]{\ensuremath{\mathsf{IL}}(All)}
 \newcommand{\gl}{\prin{GL}}
 \newcommand{\zf}{\prin{ZF}}
 \newcommand{\ch}{\prin{CH}}
@@ -53,6 +55,9 @@
 \newcommand{\rn}{\ensuremath{\prin{R}^n}\xspace}
 \newcommand{\rsn}{\ensuremath{\prin{R}_n}\xspace}
 \newcommand{\principle}[1]{\text{$\mathsf{#1}$}}
+\renewcommand{\sf}[1]{\ensuremath{\mathsf{#1}}}
+\newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
+\newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
 
 \begin{document}
 
@@ -63,23 +68,27 @@
   \frametitle{Introduction}
   \begin{itemize}
   \item Agda is a \textbf{proof assistant} based on dependent type theory.
-    \break \pause
-  \item Generalized Veltman semantics are a kind of relational semantics (à la
-    Kripke) for \textbf{interpretability logics}.
-  \end{itemize}
+    \break{} \pause{}
+  \item Veltman semantics are a kind of relational semantics (à la
+    Kripke) for \textbf{interpretability logics}:
+    \begin{itemize}
+    \item Ordinary Veltman semantics.
+    \item Generalized Veltman semantics.
+    \end{itemize}
+\end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Examples of interpretations}
   Examples of interpretations (\cite{visser1997overview}):
-  \pause
+  \pause{}
   \vspace{0.4cm}
   \begin{itemize}
   \item The interpretation of arithmetic in set theory.
-    \pause
-  \item Gödel's interpretation of $\zf+\veql$ in \zf
-       shows consistency of \zf + \ch w.r.t. \zf.
-    \pause
+    \pause{}
+  \item Gödel's interpretation of $\zf+\veql$ in \zf{}
+       shows consistency of \zf{} + \ch{} w.r.t. \zf{}.
+    \pause{}
   \item The interpretation of elementary syntax in arithmetic. Important for
     Gödel's incompleteness theorems.
   \end{itemize}
@@ -88,15 +97,15 @@
 \section{Interpretability Logics}
 \begin{frame}
   \frametitle{Interpretability Logics}
-  In the logic of provability \gl we have that:
+  In the logic of provability \gl{} we have that:
   \begin{itemize}
     \item $□A$ means ``A is provable''.
     \item $♢A$ means ``A is consistent''. Note that $♢A=¬□¬A$.
   \end{itemize}
-  The aim of \gl is to describe and prove the structural behaviour of the
+  The aim of \gl{} is to describe and prove the structural behaviour of the
   provability predicate.
 
-  \pause \vspace{0.2cm}
+  \pause{}\vspace{0.2cm}
 
   Interpretability logics extend the provability logic \gl. The language is
   $⟨→,⊥,□,▷⟩$ and we can define $♢,∧,∨$ in the usual way.
@@ -106,15 +115,14 @@
   Given a reasonable arithmetical theory $\prin{T}$ the aim is to find the logic
   $\prin{IL(T)}$ which describes the structural behaviour of its
   interpretability predicate.
-  \[\prin{IL(T)}⊢A⇔ \prin{T}⊢A^*\text{, for any realisation *.} \]
+  \[\prin{IL(T)}⊢A⇔ \prin{T}⊢A^*\text{, for any realization *.} \]
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Arithmetical realisation}
+  \frametitle{Arithmetical realization}
   Given an arithmetical theory $\prin{T}$ with language $ℒ$, an arithmetical
-  realisation $*$ is a map from interpretability formulas to sentences of
-  $ℒ$.
+  realization $*$ is a map from interpretability formulas to $ℒ$-sentences such that:
   \begin{itemize}
     \item $p^*$ is a sentence of $ℒ$;
     \item $⊥^*$ is $0=1$;
@@ -122,29 +130,32 @@
     \item $(A \rhd B)^* = \mathsf{Int}_{\prin{T}}(\ulcorner A^* \urcorner, \ulcorner B^*\urcorner)$;
     \item $(□A)^* = \mathsf{Prov}_{\prin{T}}(\ulcorner A^* \urcorner)$.
   \end{itemize}
-  %   \pause
+
+  % Note that it suffices to set the behaviour of the realization for
+  % propositional variables.
+  %   \pause{}
   %   We are concerned with interpretability with respect to some theory $T$.
   %   \[T+A▷T+B\]
 \end{frame}
 
 \begin{frame}
   \frametitle{Logic \il}
-  The logic \il is contained in almost all interpretability logics.
+  The logic \il{} is contained in almost all interpretability logics.
 
   \vspace{0.3cm} The rules are modus ponens and necessitation. It has all the
-  theorems of \gl plus the following axioms schemes: \pause
+  theorems of \gl{} plus the following axioms schemes: \pause{}
 
   % In particular, you should add a pair of brackets in J3 and two in J2, on in
   % J4 (we’re not type-theorists)
   \begin{itemize}
   \item J1: $□ (A → B) → (A ▷ B)$;
-    \pause
+    \pause{}
   \item J2: $(A ▷ B) ∧ (B ▷ C) → (A ▷ C)$;
-    \pause
+    \pause{}
   \item J3: $(A ▷ C) ∧ (B ▷ C) → (A ∨ B) ▷ C$;
-    \pause
+    \pause{}
   \item J4: $(A ▷ B) → (♢ A → ♢ B)$;
-    \pause
+    \pause{}
   \item J5: $♢ A ▷ A$.
   \end{itemize}
 \end{frame}
@@ -157,7 +168,7 @@
 
   The theorems of $\textsf{ILM}$ are the set of interpretability principles that
   are always provable in theories which are $Σ_1$ sound and have full induction.
-  An example of such theory is $\textsf{PA}$, thus $\prin{IL(PA)}=\ilm$
+  An example of such a theory is $\textsf{PA}$, thus $\prin{IL(PA)}=\ilm$
   (\cite{berarducci1990interpretability,shavrukov1988logic}).
 
   % TODO MISSING REFERENCE
@@ -177,7 +188,7 @@
     \item if $uS_wY$ and for all $y∈Y$ we have $yS_wZ_y$ then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
   \end{itemize}
 
-  \pause
+  \pause{}
   \vspace{0.3cm}
   A \textbf{generalized Veltman model} (GVM) is a tuple $⟨W,R,S,V⟩$ where
   $⟨W,R,S⟩$ is a GVF and $V⊆W×Var$ is a valuation.
@@ -188,47 +199,110 @@
 
 \begin{frame}
   \frametitle{Generalized Veltman Semantics}
-  Given a GVM $⟨W,R,S,V⟩$ we define $⊩\ ⊆W×Fm$ as follows:
+  Given a GVM $⟨W,R,S,V⟩$ we define $⊩\ ⊆W×\sf{Fm}$ as follows:
   \begin{itemize}
     \item $w⊮⊥$;
     \item $w⊩p$ iff $⟨w,p⟩∈V$;
     \item $w⊩A→B$ iff $w⊩A$ implies $w⊩B$;
     \item $w⊩□A$ iff for all $u$ such that $wRu$ we have $u⊩A$;
     % \item $w⊩♢A$ iff there is some $u$ such that $wRu$ and $u⊩A$;
-      \pause
+      \pause{}
     \item $w⊩A▷B$ iff $wRu$ and $u⊩A$ implies that there exists some $Y$ such
       that $uS_wY$ and for all $y∈Y$ we have $y⊩B$.
   \end{itemize}
   \begin{figure}[t]
-    \includegraphics[scale=0.8]{img/ArhdB-ord}
+    \includegraphics[scale=0.8]{img/ArhdB-gen}
     \centering
   \end{figure}
 \end{frame}
 
+
+\begin{frame}
+  \frametitle{Generalized frames revisited}
+
+  A \textbf{generalized Veltman frame} (GVF) is a tuple $⟨W,R,\{S_w:w∈W\}⟩$ with
+  $R⊆W×W$ and $S_w⊆W×(𝒫(W)∖\{∅\})$.\\ We write $uS_wY$ instead of $⟨u,Y⟩∈S_w$.
+  \begin{itemize}
+  \item $R$ is transitive and conversely well-founded;
+  \item if $uS_wY$ then $wRu$ and $\{v:wRv\}⊆Y$;
+  \item if $wRu$ then $uS_w\{u\}$;
+  \item if $wRuRv$ then $uS_w\{v\}$;
+  \item \color{red} quasi-transitivity: if $uS_wY$ and for all $y∈Y$ we have
+    $yS_wZ_y$ then $uS_w\left(⋃_{y∈Y}Z_y\right)$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Quasi-transitivity conditions in the literature}
+  \begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{c|l}
+      Nr. & Semantic requirement for quasi-transitivity\\
+      \hline
+      \label{cond:1}1 & \(uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ ∃ V⊆ ⋃_{y∈ Y}Z_y ∧ uS_xV\Big)\)\\
+      \label{cond:2}2 & \(uS_xY ⇒ ∀ \, \{ Z_y\}_{y∈ Y} \Big((∀\, y∈Y\ yS_xZ_y) ⇒ uS_x⋃_{y∈ Y}Z_y\Big)\)\\
+      \label{cond:3}3 & \(uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')\)\\
+      \label{cond:4}4 & \(uS_xY ⇒ ∃\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')\)\\
+      \label{cond:5}5 & \(uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ ∃ \, Y''{⊆}Y' ∧ uS_xY'')\)\\
+      \label{cond:6}6 & \(uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY' ⇒ uS_xY')\)\\
+      \label{cond:7}7 & \(uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ ∃ \, Y''{⊆}Y'\ uS_xY'')\)\\
+      \label{cond:8}8 & \(uS_xY ⇒ ∀\, y∈Y\, ∀ Y'(yS_xY'\wedge y∉Y' ⇒ uS_xY')\)\\
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Generalized frames revisited}
+
+  A \textbf{generalized Veltman frame} (GVF) is a tuple $⟨W,R,\{S_w:w∈W\}⟩$ with
+  $R⊆W×W$ and $S_w⊆W×(𝒫(W)∖\{∅\})$.\\ We write $uS_wY$ instead of $⟨u,Y⟩∈S_w$.
+  \begin{itemize}
+  \item $R$ is transitive and conversely well-founded;
+  \item if $uS_wY$ then $wRu$ and $\{v:wRv\}⊆Y$;
+  \item if $wRu$ then $uS_w\{u\}$;
+  \item if $wRuRv$ then $uS_w\{v\}$;
+  \item if $uS_wY$ and for all $y∈Y$ we have
+    $yS_wZ_y$ then $uS_w\left(⋃_{y∈Y}Z_y\right)$;
+  \item \color{blue} Monotonicity: if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Quasi-transitivity conditions in the literature}
+
+  \begin{figure}[t]
+    \includegraphics[scale=0.8]{img/trans-impl}
+    \centering
+  \end{figure}
+\end{frame}
+
+
 \begin{frame}
   \frametitle{Frame conditions}
-  Given any principle $P$ we say that a first order (or higher order) formula
-  $(P)_{gen}$ is the \textbf{frame condition} for $P$ if for any GVF $F$ we have
-  \[F⊨(P)_{gen}⇔F⊩P,\]
-  where $F⊩P$ iff $⟨F,V⟩⊩P$ for any valuation $V$.
-  \pause
+  Given any principle \sf{X} we say that a first order (or higher order) formula
+  $\kgen{X}$ is the \textbf{frame condition} for \sf{X} if for any GVF $F$ we have
+  \[F⊨\kgen{X}⇔F⊩\sf{X},\]
+  where $F⊩\sf{X}$ iff $⟨F,V⟩⊩\sf{X}$ for any valuation $V$.
+  \pause{}
 
   \vspace{0.7cm}
 
-  Example: The frame condition $(M)_{gen}$ is
-  \[ ∀w,x,V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz))).\]
+  Example: The frame condition $\kgen{M}$ is
+  \[ ∀w∀x∀V(xS_wV⇒ ∃V'⊆V(xS_wV',∀v'∈V'∀z(v'Rz⇒xRz))).\]
 \end{frame}
 
 \begin{frame}
   \frametitle{\prin{IL(All)} and the series of principles \rn and \rsn}
-  The logic \prin{IL(All)} is the intersection of interpretability
+  The logic \ilall{} is the intersection of interpretability
   logics of all reasonable arithmetical theories.
 
-  \pause
+  \pause{}
 
-  The best known lower bound for \prin{IL(All)} is $\prin{ILWR}^n\prin{R}_n$.
+  The best known lower bound for \ilall{} is $\prin{ILWR}^n\prin{R}_n$.
 
-  The series of principles \rn and \rsn are due to \cite{two-new-series}.
+  The series of principles \rn{} and \rsn{} are due to~\cite{two-new-series}.
 
   \vspace{0.2cm}
   Definition of $\rn$:
@@ -239,20 +313,47 @@
     R^{n+1}& ≔ A ▷ B → ((D_{n}▷A) ∧ U_{n}) ▷ B ∧ □ C
   \end{flalign*}
 
-  \pause
+  \pause{}
   We have found frame conditions for generalized Veltman semantics for $R^n$ and
-  $R_1$. The proofs have been formalised in Agda.
+  $R_1$. The proofs have been formalized in Agda.
+\end{frame}
+\begin{frame}
+  \frametitle{Frame conditions}
+  We have verified the following frame conditions:
+
+  \textbf{Ordinary Semantics}: $\principle{M}$,
+  $\principle{P_0}$, $\principle{R}$, $\principle{M_0}$
+
+  \textbf{Generalized Semantics}: $\principle{M}$, $\principle{P_0}$,
+  $\principle{R}$, $\principle{M_0}$, $\principle{R^n}$, $\principle{R_1}$.
 \end{frame}
 
-\section{Agda formalisation}
+
+
+
+\begin{frame}
+  \frametitle{Ordinary vs Generalized}
+  Can we transform ordinary models to generalized models and viceversa while
+  preserving modal theoremhood?
+  \pause{}
+  \begin{itemize}
+  \item Ordinary $⇒$ Generalized \textcolor{Chartreuse4}{$(\checkmark)$}
+    \break{} \pause{}
+    \item Generalized [3,4,5,6] $⇒$ Ordinary
+      \textcolor{Chartreuse4}{$(\checkmark)$} (Verbrugge, Mikec) \break{} \pause{}
+    \item Generalized [1,2] $⇒$ Ordinary \textcolor{DarkGoldenrod3}{(?)} (Vuković)
+  \end{itemize}
+\end{frame}
+
+\section{Agda formalization}
 \begin{frame}[fragile]
   \frametitle{Agda}
-  Agda is a \textbf{proof assistant} based on an extension of Martin Löf's constructive
-  type theory.
+  Agda is a \textbf{proof assistant} based on an extension of Martin Löf's
+  logical framework.
 
   \vspace{0.3cm}
-  \pause
-  Papers that use Agda (\textasciitilde 200):
+  \pause{}
+  Papers that use Agda (\textasciitilde{}200):
 
   \begin{itemize}
   \item \href{https://wiki.portal.chalmers.se/agda/Main/PapersUsingAgda}{wiki.portal.chalmers.se/agda/Main/PapersUsingAgda}
@@ -260,7 +361,7 @@
   \item \href{https://researchr.org/bibliography/agda-papers/publications}{researchr.org/bibliography/agda-papers/publications}
   \end{itemize}
 
-  \pause
+  \pause{}
 
   \vspace{0.3cm}
   How we prove things in Agda?
@@ -271,43 +372,90 @@
 
 \end{frame}
 
+% \begin{frame}[fragile]
+%   \frametitle{Agda theorem example}
+%   Given any GVM $M=⟨W,R,S,V⟩$, world $u∈W$ and formulas $A$, $B$ we have that:
+%   \[M,u⊩□ (A → B) → A ▷ B.\]
+%   \pause{}
+%   The property as an Agda type:
+% \begin{verbatim}
+%   ∀ {W R S V}
+%     {M : Model W R S V}
+%     {u : W}
+%     {A B : Fm}
+%    →
+%     M , u ⊩ □ (A ↝ B) ↝ A ▷ B
+% \end{verbatim}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Agda formalization}
+%   Our Agda library includes (\textasciitilde{} 5k lines of code):
+%   \begin{itemize}
+%   \item Definition of ordinary and generalized Veltman Semantics.
+%   \item Definition of logic IL and proof of soundness for all semantics.
+%   \item Many of the relevant interpretability principles in conjunction with
+%     their proven frame conditions. These include $\principle{M}$,
+%     $\principle{P_0}$, $\principle{R}$, $\principle{M_0}$ for both semantics and
+%     $\principle{R^n}$, $\principle{R_1}$ for generalized semantics.
+%   \item Analysis of quasi-transitivity properties for generalized Veltman
+%     semantics.
+%   \item Verified transformations between ordinary and generalized models that
+%     preserve modal theorems.
+%   \item A verified embedded domain specific language for Hilbert style proofs
+%     for the logic \il.
+%   \end{itemize}
+% \end{frame}
+
 \begin{frame}[fragile]
-  \frametitle{Agda theorem example}
-  Given any GVM $M=⟨W,R,S,V⟩$, world $w∈W$ and formulas $A,B$ we have that
-  \[M,w⊩□ (A → B) → A ▷ B\]
-  \pause
-  The property as an Agda type:
+  \frametitle{\il{} in Agda}
+
+\begin{Verbatim}[fontsize=\footnotesize]
+data _⊢_ (Π : List Fm) : Fm → Set where
+  -- classical axioms
+  C1 : ∀ {A B} →   Π ⊢ A ↝ (B ↝ A)
+  C2 : ∀ {A B C} → Π ⊢ (A ↝ (B ↝ C)) ↝ ((A ↝ B) ↝ (A ↝ C))
+  C3 : ∀ {A B} →   Π ⊢ (¬' A ↝ ¬' B) ↝ (B ↝ A)
+  -- GL axioms
+  K : ∀ {A B} →    Π ⊢ (□ (A ↝ B)) ↝ (□ A ↝ □ B)
+  L : ∀ {A} →      Π ⊢ □ (□ A ↝ A) ↝ □ A
+  -- IL axioms
+  J1 : ∀ {A B} →   Π ⊢ □ (A ↝ B) ↝ A ▷ B
+  J2 : ∀ {A B C} → Π ⊢ A ▷ B ∧ B ▷ C ↝ A ▷ C
+  J3 : ∀ {A B C} → Π ⊢ (A ▷ C ∧ B ▷ C) ↝ (A ∨ B) ▷ C
+  J4 : ∀ {A B} →   Π ⊢ A ▷ B ↝ ♢ A ↝ ♢ B
+  J5 : ∀ {A} →     Π ⊢ ♢ A ▷ A
+  -- rules
+  MP : ∀ {A B} → Π ⊢ A ↝ B → Π ⊢ A → Π ⊢ B
+  nec : ∀ {A} → [] ⊢ A → Π ⊢ □ A
+  Ax : ∀ {A} → A ∈ Π → Π ⊢ A
+\end{Verbatim}
+\end{frame}
+\begin{frame}[fragile]
+  \frametitle{\il{} derivation in Agda}
+  How do we prove $⊢_{\il{}}A→A$ in Agda? \break\pause{}
+
+  Everything explicit:
+  \begin{verbatim}
+  A↝A : ∀ {Π A} → Π ⊢ A ↝ A
+  A↝A {Π} {A} = MP (MP (C2 {Π} {A} {A ↝ A} {A})
+                 (C1 {Π} {A} {A ↝ A})) (C1 {Π} {A} {A})
+  \end{verbatim}
+\pause{}
+
+  We can rely on type inference:
 \begin{verbatim}
-  ∀ {W R S V}
-    {M : Model W R S V}
-    {w : W}
-    {A B : Fm}
-   →
-    M , w ⊩ □ (A ↝ B) ↝ A ▷ B
+  ⊢A↝A' : ∀ {A Π} → Π ⊢ A ↝ A
+  ⊢A↝A' {A} = MP (MP C2 C1) (C1 {B = A})
 \end{verbatim}
-\end{frame}
+  Still we do not see the intermediate steps!
 
-\begin{frame}
-  \frametitle{Agda formalisation}
-  Our Agda library includes (\textasciitilde 5k lines of code):
-  \begin{itemize}
-  \item Definition of ordinary and generalized Veltman Semantics.
-  \item Definition of logic IL and many of the relevant interpretability
-    principles in conjunction with their proven frame conditions. These include
-    $\principle{M}$, $\principle{P_0}$, $\principle{R}$, $\principle{M_0}$ for
-    both semantics and $\principle{R^n}$, $\principle{R_1}$ for generalized
-    semantics.
-  \item A verified embedded domain specific language for Hilbert style proofs
-    for the logic \il.
-  \item And much more... (see reference \cite{MasRovira:2020:MastersThesis}).
-  \end{itemize}
 \end{frame}
-
 \begin{frame}[fragile]
   \frametitle{Hilbert style proofs in Agda}
 
   Let us show $⊢_{\il}A▷A$ using our language.
-  \pause
+  \pause{}
   \vspace{0.6cm}
 \begin{semiverbatim}
 ⊢A▷A : \{A : Fm\} → [] ⊢ A ▷ A
@@ -321,10 +469,31 @@
 \end{frame}
 
 \begin{frame}
+  \frametitle{Live}
+  \centering \Huge Live demonstration
+\end{frame}
+
+
+\begin{frame}
   \frametitle{Open source}
   \centering
   \href{https://gitlab.com/janmasrovira/interpretability-logics}{gitlab.com/janmasrovira/interpretability-logics}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Personal experience}
+  \centering \large My experience after 11 months working on this thesis:
+  \\~\\
+  \begin{itemize}
+  \item I was part of two publications. I presented a short paper in AiML 2020
+    (Helsinki). \break{} \pause{}
+  \item Agda is difficult but rewarding. Our library has \textasciitilde{}5K
+    lines of code. \break{} \pause{}
+
+  \item \textbf{Joost and Luka are great supervisors!}
+  \end{itemize}
+\end{frame}
+
 
 \begin{frame}
   \centering \Huge Thank you!
@@ -334,7 +503,7 @@
   \frametitle{References}
   \nocite{joosten2020overview}
   \nocite{Verbrugge}
-  \printbibliography
+  \printbibliography{}
 \end{frame}
 
 \end{document}
