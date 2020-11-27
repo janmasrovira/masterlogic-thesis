@@ -41,7 +41,7 @@
     Joosten\inst{1} \and Luka Mikec\inst{2}}}
 \institute[UB, UZ]{\inst{1} Universitat de Barcelona \and
   \inst{2} University of Zagreb}
-\date[Nov 2020]{November 27th 2020}
+\date[Nov 2020]{November 27th, 2020}
 \titlegraphic{ \includegraphics[width=4cm]{img/ub-logo.pdf}}
 
 \newcommand{\prin}[1]{\ensuremath{\textbf{\textup{#1}}}\xspace}
@@ -58,6 +58,9 @@
 \renewcommand{\sf}[1]{\ensuremath{\mathsf{#1}}}
 \newcommand{\kgen}[1]{\text{($\mathsf{#1}$)\textsubscript{gen}}}
 \newcommand{\kord}[1]{\text{($\mathsf{#1}$)}}
+\newcommand{\agda}[0]{\includegraphics[height=\baselineskip]{img/agda}}
+\newcommand{\coq}[0]{\includegraphics[height=\baselineskip]{img/coq}}
+
 
 \begin{document}
 
@@ -157,13 +160,16 @@
   \item J4: $(A ▷ B) → (♢ A → ♢ B)$;
     \pause{}
   \item J5: $♢ A ▷ A$.
+    % from the assumption that A is consistent we can use the Henkin construction to
+    % build a model of A. This uniform model construction is nothing but an
+    % interpretation of T+A into the T+consistency of A.
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Logic \ilm}
 
-  The logic ILM is defined as \il + \prin{M}, where
+  The logic ILM is defined as \il{} + \prin{M}, where
   \[\prin{M}≔ A ▷ B → (A ∧ □ C) ▷ (B ∧ □ C).\]
 
   The theorems of $\textsf{ILM}$ are the set of interpretability principles that
@@ -252,21 +258,21 @@
   \end{table}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Generalized frames revisited}
+% \begin{frame}
+%   \frametitle{Generalized frames revisited}
 
-  A \textbf{generalized Veltman frame} (GVF) is a tuple $⟨W,R,\{S_w:w∈W\}⟩$ with
-  $R⊆W×W$ and $S_w⊆W×(𝒫(W)∖\{∅\})$.\\ We write $uS_wY$ instead of $⟨u,Y⟩∈S_w$.
-  \begin{itemize}
-  \item $R$ is transitive and conversely well-founded;
-  \item if $uS_wY$ then $wRu$ and $\{v:wRv\}⊆Y$;
-  \item if $wRu$ then $uS_w\{u\}$;
-  \item if $wRuRv$ then $uS_w\{v\}$;
-  \item if $uS_wY$ and for all $y∈Y$ we have
-    $yS_wZ_y$ then $uS_w\left(⋃_{y∈Y}Z_y\right)$;
-  \item \color{blue} Monotonicity: if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
-  \end{itemize}
-\end{frame}
+%   A \textbf{generalized Veltman frame} (GVF) is a tuple $⟨W,R,\{S_w:w∈W\}⟩$ with
+%   $R⊆W×W$ and $S_w⊆W×(𝒫(W)∖\{∅\})$.\\ We write $uS_wY$ instead of $⟨u,Y⟩∈S_w$.
+%   \begin{itemize}
+%   \item $R$ is transitive and conversely well-founded;
+%   \item if $uS_wY$ then $wRu$ and $\{v:wRv\}⊆Y$;
+%   \item if $wRu$ then $uS_w\{u\}$;
+%   \item if $wRuRv$ then $uS_w\{v\}$;
+%   \item if $uS_wY$ and for all $y∈Y$ we have
+%     $yS_wZ_y$ then $uS_w\left(⋃_{y∈Y}Z_y\right)$;
+%   \item \color{blue} Monotonicity: if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
+%   \end{itemize}
+% \end{frame}
 
 
 \begin{frame}
@@ -276,6 +282,9 @@
     \includegraphics[scale=0.8]{img/trans-impl}
     \centering
   \end{figure}
+
+  \centering
+  \color{SteelBlue4} Monotonicity: if $uS_wV⊆Z⊆\{u:wRu\}$ then $uS_wZ$.
 \end{frame}
 
 
@@ -302,7 +311,8 @@
 
   The best known lower bound for \ilall{} is $\prin{ILWR}^n\prin{R}_n$.
 
-  The series of principles \rn{} and \rsn{} are due to~\cite{two-new-series}.
+  The series of principles \rn{} and \rsn{} are due
+  to~\cite{two-new-series} (JSL).
 
   \vspace{0.2cm}
   Definition of $\rn$:
@@ -322,7 +332,7 @@
   We have verified the following frame conditions:
 
   \textbf{Ordinary Semantics}: $\principle{M}$,
-  $\principle{P_0}$, $\principle{R}$, $\principle{M_0}$
+  $\principle{P_0}$, $\principle{R}$, $\principle{M_0}$.
 
   \textbf{Generalized Semantics}: $\principle{M}$, $\principle{P_0}$,
   $\principle{R}$, $\principle{M_0}$, $\principle{R^n}$, $\principle{R_1}$.
@@ -337,11 +347,11 @@
   preserving modal theoremhood?
   \pause{}
   \begin{itemize}
-  \item Ordinary $⇒$ Generalized \textcolor{Chartreuse4}{$(\checkmark)$}
+  \item Ordinary $⇒$ Generalized [*] \textcolor{Chartreuse4}{$(\checkmark)$}
     \break{} \pause{}
     \item Generalized [3,4,5,6] $⇒$ Ordinary
       \textcolor{Chartreuse4}{$(\checkmark)$} (Verbrugge, Mikec) \break{} \pause{}
-    \item Generalized [1,2] $⇒$ Ordinary \textcolor{DarkGoldenrod3}{(?)} (Vuković)
+    \item Generalized [2] $⇒$ Ordinary \textcolor{DarkGoldenrod3}{(?)} (Vuković)
   \end{itemize}
 \end{frame}
 
@@ -435,11 +445,13 @@ data _⊢_ (Π : List Fm) : Fm → Set where
   \frametitle{\il{} derivation in Agda}
   How do we prove $⊢_{\il{}}A→A$ in Agda? \break\pause{}
 
-  Everything explicit:
+  All arguments are explicit:
   \begin{verbatim}
   A↝A : ∀ {Π A} → Π ⊢ A ↝ A
-  A↝A {Π} {A} = MP (MP (C2 {Π} {A} {A ↝ A} {A})
-                 (C1 {Π} {A} {A ↝ A})) (C1 {Π} {A} {A})
+  A↝A {Π} {A} = MP (MP
+                     (C2 {Π} {A} {A ↝ A} {A})
+                       (C1 {Π} {A} {A ↝ A}))
+                   (C1 {Π} {A} {A})
   \end{verbatim}
 \pause{}
 
@@ -477,14 +489,18 @@ data _⊢_ (Π : List Fm) : Fm → Set where
 \begin{frame}
   \frametitle{Open source}
   \centering
-  \href{https://gitlab.com/janmasrovira/interpretability-logics}{gitlab.com/janmasrovira/interpretability-logics}
+  \begin{itemize}
+  \item Agda \agda{}
+    \href{https://gitlab.com/janmasrovira/interpretability-logics}{gitlab.com/janmasrovira/interpretability-logics}
+    \break{} \\[1.1cm]
+  \item Coq \coq{} \href{https://gitlab.com/janmasrovira/coq-interpretability-logics}{gitlab.com/janmasrovira/coq-interpretability-logics}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Personal experience}
-  \centering \large My experience after 11 months working on this thesis:
-  \\~\\
   \begin{itemize}
+  \item 11 months working on this thesis. \break{} \pause{}
   \item I was part of two publications. I presented a short paper in AiML 2020
     (Helsinki). \break{} \pause{}
   \item Agda is difficult but rewarding. Our library has \textasciitilde{}5K
