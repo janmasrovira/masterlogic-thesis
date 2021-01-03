@@ -357,7 +357,7 @@ en algun assistent de la demostració.
    sufficiently strong arithmetical theories like \pa{} can represent, by means
    of a clever syntactical encoding, their provability predicate, \prov{T}{A},
    which states ``formula $A$ is provable in $T$''. A landmark result on this
-   predicate Gödel's second incompleteness theorem
+   predicate is Gödel's second incompleteness theorem
    (cite:godel1931formal,sep-goedel-incompleteness) and Löb's theorem
    (cite:lob1955solution,sep-logic-provability). Gödel second incompleteness
    theorem states that consistent and sufficiently strong theories like \pa{}
@@ -398,7 +398,8 @@ en algun assistent de la demostració.
    1. $w⊮⊥$;
    2. if $p$ is a propositional variable, then $w⊩p$ iff: $⟨w,p⟩∈V$;
    3. if $A$ and $B$ are formulas, then $w⊩A→B$ iff: if $w⊩A$ then $w⊩B$;
-   4. if $A$ is a formula, then $w⊩□A$ iff: if $wRu$ then $u⊩A$.
+   4. if $A$ is a formula, then $w⊩□A$ iff: if for any world $u$ such that $wRu$
+      then $u⊩A$.
    In order to state a powerful modal soundness and completeness theorem we
    ought to restrict the class of frames that we consider. We say that a frame
    $⟨W,R⟩$ is a $\text{\gl{}-frame}$ if $R$ is transitive and conversely
@@ -553,7 +554,7 @@ en algun assistent de la demostració.
    8. We give details for an embedding of propositional intuitionistic logic
       into Martin Löf's logical framework. This result is expected. Our
       contribution has been to provide detailed definitions and proofs, which we
-      were unable to find somewhere else. The proof detailed proof that $n+0=n$
+      were unable to find somewhere else. The detailed proof that $n+0=n$
       in Martin Löf's logical framework is also original. See cref:sec:def-new-types.
    9. During the development of this thesis we have coauthored two publications:
       - /An overview of Generalised Veltman Semantics/
@@ -696,17 +697,17 @@ en algun assistent de la demostració.
    3. /Implication/. If $A$ and $B$ are formulas, then $(A→B)$ is a formula.
    4. /Interprets/. If $A$ and $B$ are formulas, then $(A▷B)$ is a formula.
 
-   We will always drop outer parentheses.
+   We will often omit outer parentheses.
    {{{enddef}}}
 
    {{{begindef}}} *Convenience operators* {{{agda}}} {{{coq}}} We define the
    usual operators and constants in the following way:
-   1. $¬ A ≔ A → ⊥$;
+   1. $¬ A ≔ (A → ⊥)$;
    2. $⊤ ≔ ¬ ⊥$;
-   3. $A ∨ B ≔ (¬ A) → B$;
+   3. $A ∨ B ≔ ((¬ A) → B)$;
    4. $A ∧ B ≔ ¬ (A → ¬ B)$;
    5. $A ↔ B ≔ (A → B) ∧ (B → A)$;
-   6. $□ A ≔ (¬ A) ▷ ⊥$;
+   6. $□ A ≔ ((¬ A) ▷ ⊥)$;
    7. $♢ A ≔ ¬ □ ¬ A$.
 
    The precedence from higher to lower of the operators is in the following
@@ -841,11 +842,11 @@ en algun assistent de la demostració.
     15. $⊢_{\il} B → A ∨ B$;
     16. $⊢_{\il} A ▷ (A ∨ ♢ A)$;
     17. $⊢_{\il} (A ∨ ♢ A) ▷ A$;
-    18. $⊢_{\il} A → B ⇒ ⊢_{\il} □ A → □ B$;
-    19. $⊢_{\il} A ↔ B ⇒ ⊢_{\il} □ A ↔ □ B$;
+    18. $⊢_{\il} A → B \ \ ⇒\ \ ⊢_{\il} □ A → □ B$;
+    19. $⊢_{\il} A ↔ B \ \ ⇒\ \ ⊢_{\il} □ A ↔ □ B$;
     20. $⊢_{\il} □ (A ∧ B) ↔ (□ A ∧ □ B)$;
-    21. $⊢_{\il} A → B ⇒ ⊢_{\il} ♢ A → ♢ B$;
-    22. $⊢_{\il} A ↔ B ⇒ ⊢_{\il} ♢ A ↔ ♢ B$;
+    21. $⊢_{\il} A → B \ \ ⇒\ \ ⊢_{\il} ♢ A → ♢ B$;
+    22. $⊢_{\il} A ↔ B \ \ ⇒\ \ ⊢_{\il} ♢ A ↔ ♢ B$;
     23. $⊢_{\il} ¬ (A ∧ B) ↔ ¬ A ∨ ¬ B$;
     24. $⊢_{\il} (A ∨ ¬ B) → (A ∧ B ∨ ¬ B)$.
    {{{endtheorem}}} {{{beginproof}}} All proofs have been formalized
@@ -964,16 +965,20 @@ en algun assistent de la demostració.
     such that $wRu$ we have $u⊩A$. We see that $w⊩(¬A)▷⊥$ clearly holds as there
     is no $u$ such that $wRu⊩¬A$.
 
-    The Agda proof can be found in
-    cref:src:ordinaryveltmansemantics.properties. {{{endproof}}}
+    The Agda proof can be found in cref:src:ordinaryveltmansemantics.properties.
+    {{{endproof}}}
 
-    {{{begintheorem}}} *Decidability* {{{agda}}} If $W$ is finite and $R,S,V$
-    are decidable relations, then the forcing relation associated to the model
-    $M≔⟨W,R,S,V⟩$ is decidable. {{{endtheorem}}} {{{beginproof}}} We have
-    implemented a verified algorithm that given the mentioned conditions, a
-    world $w$ and a formula $A$, constructs either a proof of $M,w⊩A$ or a proof
-    of $M,w⊮A$. The implementation can be found in
-    cref:src:ordinaryveltmansemantics.finite. {{{endproof}}}
+    {{{begintheorem}}} *Decidability* {{{agda}}} This theorem must be understood
+    in the context of a proof assistant. In our case, Agda. If $W$ is finite and
+    $R,S,V$ are decidable Agda relations, then the forcing relation associated
+    with the model $M≔⟨W,R,S,V⟩$ is decidable.
+
+    {{{endtheorem}}} {{{beginproof}}} We have implemented a verified algorithm
+    that given the mentioned conditions, a world $w$ and a formula $A$,
+    constructs either a proof of $M,w⊩A$ or a proof of $M,w⊮A$. The
+    implementation of this algorithm can be found in
+    cref:src:ordinaryveltmansemantics.finite. We give details of our Agda
+    formalization in cref:sec:agda-thesis. {{{endproof}}}
 
     {{{begintheorem}}} *Local soundness for ordinary semantics* {{{agda}}}
     {{{coq}}} If $Π⊢_{\il}A$ and $M$ is an ordinary model with a world
@@ -1011,19 +1016,13 @@ en algun assistent de la demostració.
     to include the manuscript in cref:pdf:Verbrugge, where we also include some
     comments about the authorship of some handwritten notes in the document.
 
-    Generalized semantics generalize ordinary Veltman semantics in the
-    sense that each $S_w$ relates worlds to sets of worlds. Thanks to this
-    change, generalized Veltman semantics turn out to be more convenient and in
-
-
-    For instance, the logic \prin{ILP_0} (we will define principle \prin{P_0} in
-    cref:sec:prin-p0) is complete with respect to its characteristic class of
-    generalized Veltman frames but incomplete with respect to ordinary Veltman
-    semantics.
-
-    some cases necessary. For instance, the logic \prin{ILP_0} is complete with
-    respect to generalized Veltman semantics but incomplete with respect to
-    ordinary Veltman semantics.
+    Generalized semantics generalize ordinary Veltman semantics in the sense
+    that each $S_w$ relates worlds to sets of worlds. Thanks to this change,
+    generalized Veltman semantics turn out to be more convenient and necessary
+    in some cases. For instance, the logic \prin{ILP_0} (we will define
+    principle \prin{P_0} in cref:sec:prin-p0) is complete with respect to its
+    characteristic class of generalized Veltman frames but incomplete with
+    respect to ordinary Veltman semantics.
 
     In cref:sec:agda-gen-semantics we will comment on the Agda implementation of
     generalized Veltman semantics.
@@ -1296,7 +1295,7 @@ en algun assistent de la demostració.
     that for all $y∈Y$ there exists $f(Υ_{y})⊆Υ_{y}$ such that $yS_xf(Υ_{y})$.
     Then by (2) for $F$ it follows that $uS_x⋃_{y∈Y}f(Υ_{y})$. Then see that
     $⋃_{y∈Y}f(Υ_{y})⊆⋃_{y'∈Y'}Υ_{y'}$. It remains to show
-    $⋃_{y'∈Y'}Υ_{y'}⊆xR\{u:xRu\}$. Consider some $u$ such that there is some
+    $⋃_{y'∈Y'}Υ_{y'}⊆\{u:xRu\}$. Consider some $u$ such that there is some
     $y'∈Y'$ with $u∈Υ_{y'}$. By assumption we have $y'S'_xΥ_{y'}$ and thus
     $xRu$.
   To show $M,w⊩A⇔M',w⊩A$ we proceed by induction on $A$. The only
