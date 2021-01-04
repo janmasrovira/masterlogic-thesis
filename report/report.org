@@ -415,11 +415,10 @@ en algun assistent de la demostració.
    with the notion of /theorem's interpretability/. Moreover, we will allow for
    domain relativization. In the history of mathematics we find numerous
    examples (cite:visser1997overview) of theorems that use interpretations as a
-   cornerstone in their proofs. For instance, Gödel's incompleteness theorems
-   translate syntactical constructions into natural numbers. As another example
-   we have that Gödel's interpretation of \prin{ZF} plus the axiom of
-   constructibility ($V=L$) in \sf{ZF} serves as a proof of relative consistency
-   of the continuum hypothesis with respect to \prin{ZF}.
+   cornerstone in their proofs. For instance, we have that Gödel's
+   interpretation of \prin{ZF} plus the axiom of constructibility ($V=L$) in
+   \sf{ZF} serves as a proof of relative consistency of the continuum hypothesis
+   with respect to \prin{ZF}.
 
    Interpretability logics, as the name foretells, studies the behaviour of
    interpretations. There are a number of things that we need to specify. We do
@@ -505,13 +504,15 @@ en algun assistent de la demostració.
    #+begin_center
    $C_\prin{M}≔$ if $xS_wy$ and $yRz$ then $xRz$.
    #+end_center
-   Then, if we consider the class of Veltman frames that satisfy condition
+   Now, if we consider the class of Veltman frames that satisfy condition
    $C_\prin{M}$, we have soundness and completeness of \sf{ILM} and thus the
-   presented condition is a suitable frame condition for \sf{M}. There are
-   plenty of principles similar to \sf{M} in the literature. In this thesis we
-   list a number of interpretability principles, including \sf{M}, and we
-   present their frame condition for both ordinary and generalized Veltman
-   semantics.
+   presented condition is a suitable frame condition for \sf{M}.There are plenty
+   of principles similar to \sf{M} in the literature. In this thesis we list a
+   number of interpretability principles, including \sf{M}, and we present their
+   frame condition for both ordinary and generalized Veltman semantics. The
+   language of frame conditions is usually taken to be the language of first or
+   higher order formulas, where we have the $R$ and $S$ relations as primitive
+   symbols.
 
    Some principles, like \sf{M}, are useful because they allow us to axiomatize
    the interpretability logic for certain classes of theories. However, there
@@ -734,10 +735,25 @@ en algun assistent de la demostració.
    theorems and their respective proofs in Agda. The Agda proofs of the theorems
    presented in this section can be found in cref:src:il.properties.
 
-   {{{begindef}}} {{{agda}}} {{{coq}}} \glsadd{il} The logic \il{} encompasses
-   all classical theorems in the new language (given by C1, C2 and C3), all
-   theorems of \prin{GL} in the new language (given by L and K) plus some new
-   axiom schemas:
+   {{{begindef}}} {{{agda}}} {{{coq}}} \glsadd{il} In this definition we present
+   the Hilbert Calculus for the logic \il{}. We write $Π⊢_\il{}A$ to denote that
+   the formula $A$ follows from the set of assumptions $Π$. If $Π$ is empty we
+   simply write $⊢_\il{}A$.
+
+   Let us now define the relation $⊢_\il{}⊆𝒫(\fm{})×\fm{}$ inductively:
+   - /Axiom/. If $A$ is an instantiation of any of the \il{} axiom schemas, then
+     $A$ is a theorem of $\il{}$, which we denote with $⊢_{\il}A$. We list all
+     \il{} axiom schemas just below.
+   - /Modus ponens/: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$.
+   - /Necessitation/: if $⊢_{\il}A$ then $Π⊢_{\il}□A$. Notice that the
+     necessitation rule requires $A$ to be provable from an empty set of
+     assumptions. In the consequence of the rule ($Π⊢_{\il}□A$) we allow an
+     arbitrary context $Π$.
+   - /Identity/: If $A∈Π$ then $Π⊢_{\il}A$.
+
+   *The axioms of \il{}*. The logic \il{} encompasses all classical theorems in
+   the new language (given by C1, C2 and C3), all theorems of \prin{GL} in the
+   new language (given by L and K) plus some new axiom schemas:
    - C1: $A → (B → A)$;
    - C2: $(A → (B → C)) → ((A → B) → (A → C))$;
    - C3: $(¬ A → ¬ B) → (B → A)$;
@@ -771,15 +787,6 @@ en algun assistent de la demostració.
      consistency proof of $A$ we can build an interpretation of $A$ itself. This
      reflects the fact that the Henkin construction can be formalized.
 
-   If $A$ is an instantiation of any of the previous axiom schemas, then $A$ is
-   a theorem of $\il{}$, which we denote with $⊢_{\il}A$. Additionally it has
-   the following rules:
-   - /Necessitation/: if $⊢_{\il}A$ then $Π⊢_{\il}□A$. Notice that the
-     necessitation rule requires $A$ to be provable from an empty set of
-     assumptions. In the consequence of the rule ($Π⊢_{\il}□A$) we allow an
-     arbitrary context $Π$.
-   - /Modus ponens/: if $Π⊢_{\il}A→B$ and $Π⊢_{\il}A$ then $Π⊢_{\il}B$.
-   - /Identity/: If $A∈Π$ then $Π⊢_{\il}A$.
    {{{enddef}}}
 
    {{{beginremark}}} While it is acceptable to have an infinite set of
