@@ -1,8 +1,3 @@
-# [Ss]ection[[:space:]]+\[\[\([^]]*\)]]
-# [Dd]efinition[[:space:]]+\[\[\([^]]*\)]]
-# [tT]able[[:space:]]+\[\[\([^]]*\)]]
-# [tT]heorem[[:space:]]+\[\[\([^]]*\)]]
-# [lL]emma[[:space:]]+\[\[\([^]]*\)]]
 #+latex_compiler: xelatex
 #+latex_class: scrreprt
 #+options: H:4
