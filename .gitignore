@@ -6,7 +6,6 @@
 *.gz
 *.lock
 *.agdai
-*.el
 report/*.tex
 exercises/*.pdf
 report/report.pdf
