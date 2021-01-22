@@ -314,10 +314,6 @@ en algun assistent de la demostració.
   I want to thank Esperanza Buitrago for proof-reading the thesis and
   providing helpful feedback.
 
-  # I want to thank Peter Dybjer for introducing me to the wonderful language of
-  # Agda while I was a student at Chalmers. Also I want to thank him for the
-  # pointers regarding the underlying logic of Agda.
-
   I would like to thank all the teachers in the Master in Pure and Applied
   logic from the University of Barcelona, with a special thanks to Ramon
   Jansana. I feel privileged for having been part of this master.
