@@ -9,8 +9,7 @@ org2tex:
     - master
   script:
     - cd report
-    - cp custom-org-init.el /home/
-    - emacs report.org -batch -l ~/init.el -f org-latex-export-to-latex
+    - emacs report.org -batch -l ~/init.el -f load-init-block -f org-latex-export-to-latex
     - mv report.tex report1.tex
     - echo "% !TEX TS-program = xelatex" > header
     - cat header report1.tex > report.tex
