@@ -331,6 +331,13 @@ en algun assistent de la demostració.
 #+toc: headlines 2
 \newpage
 
+* Org config :noexport:
+  #+name: init
+  #+begin_src emacs-lisp
+(setq org-latex-prefer-user-labels t)
+(setq org-latex-caption-above nil)
+  #+end_src
+
 * Introduction
 ** Overview of interpretability logics
    <<sec:overview>> This thesis studies interpretability logics. These logics
