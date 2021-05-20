@@ -28,3 +28,6 @@ report/report.pdf
 *.snm
 *.vrb
 /presentation/pres.pdf
+/report/.pdf-view-restore
+/report/img/.pdf-view-restore
+*~
